@@ -1,0 +1,1 @@
+fn f(view: []const u8) { let p = view.as_mut_ptr(); }

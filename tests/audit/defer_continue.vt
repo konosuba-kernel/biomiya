@@ -1,0 +1,1 @@
+pub fn test()->i32{var i=0;var n=0;while i<3{defer{n+=1;}i+=1;continue;}n}

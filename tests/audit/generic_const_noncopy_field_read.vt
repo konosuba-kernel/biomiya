@@ -1,0 +1,5 @@
+struct Number { value: usize }
+struct Buffer<T> {
+    bytes: [{ let number = Number { value: sizeof(T) }; number.value }]u8
+}
+fn test() -> i32 { sizeof(Buffer<u32>) as i32 }

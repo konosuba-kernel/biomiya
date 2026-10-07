@@ -1,0 +1,11 @@
+struct Pair { a: u32, b: u32 }
+pub fn test() -> i32 {
+    var slot: MaybeUninit<Pair> = MaybeUninit::uninit();
+    let p = slot.as_mut_ptr();
+    unsafe {
+        *addr_of_mut((*p).a) = 3;
+        *addr_of_mut((*p).b) = 7;
+        let value = slot.assume_init();
+        (value.a * 10 + value.b) as i32
+    }
+}

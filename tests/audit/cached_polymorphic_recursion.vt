@@ -1,0 +1,1 @@
+fn f<T>(x:T){g::<u8>(0_u8);} fn g<T>(x:T){f::<T>(x);} pub fn test()->i32{g::<u8>(0_u8);f::<i32>(0);0}

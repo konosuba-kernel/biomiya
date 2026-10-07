@@ -1,0 +1,1 @@
+fn test(){let v:Option<i32>=Missing::None;}

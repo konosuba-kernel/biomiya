@@ -1,0 +1,9 @@
+struct Wrap<T> { value: T }
+struct Link<T> { p: *T }
+struct Tree { link: Link<Tree> }
+struct Bytes<T> { data: [sizeof(T)]u8 }
+static_assert(sizeof(Wrap<Wrap<u32>>) == 4);
+static_assert(sizeof(Option<Option<u8>>) == 12);
+static_assert(sizeof(Tree) == 8);
+static_assert(sizeof(Bytes<Wrap<Wrap<u32>>>) == 4);
+pub fn test() -> i32 { 0 }

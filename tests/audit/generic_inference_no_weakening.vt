@@ -1,0 +1,1 @@
+fn choose<T>(a:T,b:T)->T{a}fn test(){var x=3;let y=4;let r=choose(&y,&mut x);}

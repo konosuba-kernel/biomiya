@@ -1,0 +1,11 @@
+fn inner(out: &mut i32) -> i32 {
+    var value = 1;
+    defer { *out = *out * 10 + value; }
+    defer { *out = *out * 10 + 2; }
+    return { value = 3; 7 };
+}
+pub fn test() -> i32 {
+    var out = 0;
+    let result = inner(&mut out);
+    result * 100 + out
+}

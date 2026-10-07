@@ -1,0 +1,1 @@
+struct S{x:i32}@copy struct R{x:S}pub fn test()->i32{0}

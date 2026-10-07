@@ -1,0 +1,2 @@
+@trap fn h(frame: &mut arch::TrapFrame) { }
+fn f(frame: &mut arch::TrapFrame) { h(frame); }

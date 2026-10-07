@@ -1,0 +1,25 @@
+@copy struct Value<T> { value: T }
+struct ByCast<T> {
+    bytes: [{ let x: T = 258 as T; x as usize }]u8
+}
+struct ByRecord<T> {
+    bytes: [{ let x = Value::<T> { value: 3 }; x.value as usize }]u8
+}
+struct PairLengths<Z, A> {
+    bytes: [{
+        let x: Z = 258 as Z;
+        let y: A = 258 as A;
+        x as usize * 10_usize + y as usize
+    }]u8
+}
+fn test() -> i32 {
+    let small = ByCast::<u8> { bytes: [7_u8; 2] };
+    let large = ByCast::<u16> { bytes: [9_u8; 258] };
+    let record = ByRecord::<u8> { bytes: [11_u8; 3] };
+    static_assert(sizeof(ByCast<u8>) == 2_usize);
+    static_assert(sizeof(ByCast<u16>) == 258_usize);
+    static_assert(sizeof(ByRecord<u8>) == 3_usize);
+    static_assert(sizeof(PairLengths<u8, u16>) == 278_usize);
+    static_assert(sizeof(PairLengths<u16, u8>) == 2582_usize);
+    small.bytes[1] as i32 + large.bytes[257] as i32 + record.bytes[2] as i32
+}

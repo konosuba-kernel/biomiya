@@ -1,0 +1,1 @@
+pub fn test()->i32{var x=1;let y=loop{defer{x=9;}break x;};y*10+x}

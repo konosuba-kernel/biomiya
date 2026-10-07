@@ -1,0 +1,9 @@
+pub fn test() -> i32 {
+    var slot: MaybeUninit<[4]u32> = MaybeUninit::uninit();
+    let p = slot.as_mut_ptr();
+    for i in 0_usize..4_usize {
+        unsafe { *addr_of_mut((*p)[i]) = (i + 1) as u32; }
+    }
+    let values = unsafe { slot.assume_init() };
+    (values[0] + values[1] + values[2] + values[3]) as i32
+}

@@ -1,0 +1,1 @@
+pub fn test()->i32{let x=(-1_i8) as u64;if x==u64::MAX{1}else{0}}

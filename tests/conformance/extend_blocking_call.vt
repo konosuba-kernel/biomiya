@@ -1,0 +1,2 @@
+fn g() effects { may_block } { }
+fn f() { g(); }

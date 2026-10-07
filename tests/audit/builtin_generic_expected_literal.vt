@@ -1,0 +1,1 @@
+fn test()->i32{var x:u8=3;replace::<u8>(&mut x,7);x as i32}

@@ -1,0 +1,841 @@
+{
+  "schema": 1,
+  "target": "rv64-core-v1",
+  "cases": [
+    {
+      "id": "infer_binary",
+      "kind": "run",
+      "file": "../audit/infer_binary.vt",
+      "result": 3
+    },
+    {
+      "id": "infer_array",
+      "kind": "run",
+      "file": "../audit/infer_array.vt",
+      "result": 3
+    },
+    {
+      "id": "infer_if",
+      "kind": "run",
+      "file": "../audit/infer_if.vt",
+      "result": 1
+    },
+    {
+      "id": "infer_generic",
+      "kind": "run",
+      "file": "../audit/infer_generic.vt",
+      "result": 1
+    },
+    {
+      "id": "unused_generic_name",
+      "kind": "reject",
+      "file": "../audit/unused_generic_name.vt",
+      "category": "E_NAME"
+    },
+    {
+      "id": "unused_generic_dependent",
+      "kind": "accept",
+      "file": "../audit/unused_generic_dependent.vt"
+    },
+    {
+      "id": "negative_index",
+      "kind": "panic",
+      "file": "../audit/negative_index.vt"
+    },
+    {
+      "id": "negative_slice",
+      "kind": "panic",
+      "file": "../audit/negative_slice.vt"
+    },
+    {
+      "id": "narrow_index",
+      "kind": "run",
+      "file": "../audit/narrow_index.vt",
+      "result": 4
+    },
+    {
+      "id": "division_zero",
+      "kind": "panic",
+      "file": "../audit/division_zero.vt"
+    },
+    {
+      "id": "remainder_min",
+      "kind": "panic",
+      "file": "../audit/remainder_min.vt"
+    },
+    {
+      "id": "core_alias_allowed",
+      "kind": "run",
+      "file": "../audit/core_alias_allowed.vt",
+      "result": 2
+    },
+    {
+      "id": "fn_pointer",
+      "kind": "run",
+      "file": "../audit/fn_pointer.vt",
+      "result": 5
+    },
+    {
+      "id": "fn_unsafe_weakening",
+      "kind": "accept",
+      "file": "../audit/fn_unsafe_weakening.vt"
+    },
+    {
+      "id": "const_forward",
+      "kind": "run",
+      "file": "../audit/const_forward.vt",
+      "result": 5
+    },
+    {
+      "id": "const_local_bindings",
+      "kind": "run",
+      "file": "../audit/const_local_bindings.vt",
+      "result": 5
+    },
+    {
+      "id": "const_match",
+      "kind": "run",
+      "file": "../audit/const_match.vt",
+      "result": 7
+    },
+    {
+      "id": "const_array_index",
+      "kind": "run",
+      "file": "../audit/const_array_index.vt",
+      "result": 3
+    },
+    {
+      "id": "const_enum_payload",
+      "kind": "run",
+      "file": "../audit/const_enum_payload.vt",
+      "result": 9
+    },
+    {
+      "id": "enum_record",
+      "kind": "run",
+      "file": "../audit/enum_record.vt",
+      "result": 5
+    },
+    {
+      "id": "enum_equality",
+      "kind": "run",
+      "file": "../audit/enum_equality.vt",
+      "result": 1
+    },
+    {
+      "id": "mutable_reference_equality",
+      "kind": "run",
+      "file": "../audit/mutable_reference_equality.vt",
+      "result": 3
+    },
+    {
+      "id": "newtype",
+      "kind": "run",
+      "file": "../audit/newtype.vt",
+      "result": 6
+    },
+    {
+      "id": "method_rvalue_receiver",
+      "kind": "run",
+      "file": "../audit/method_rvalue_receiver.vt",
+      "result": 8
+    },
+    {
+      "id": "method_explicit",
+      "kind": "run",
+      "file": "../audit/method_explicit.vt",
+      "result": 8
+    },
+    {
+      "id": "for_move_array",
+      "kind": "run",
+      "file": "../audit/for_move_array.vt",
+      "result": 5
+    },
+    {
+      "id": "loop_break_value",
+      "kind": "run",
+      "file": "../audit/loop_break_value.vt",
+      "result": 6
+    },
+    {
+      "id": "return_unreachable_check",
+      "kind": "reject",
+      "file": "../audit/return_unreachable_check.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "range_not_value",
+      "kind": "reject",
+      "file": "../audit/range_not_value.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "array_from_slice_forbidden",
+      "kind": "reject",
+      "file": "../audit/array_from_slice_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "atomic_signed_forbidden",
+      "kind": "reject",
+      "file": "../audit/atomic_signed_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "atomic_bool_forbidden",
+      "kind": "reject",
+      "file": "../audit/atomic_bool_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "atomic_pointer",
+      "kind": "run",
+      "file": "../audit/atomic_pointer.vt",
+      "result": 7
+    },
+    {
+      "id": "pointer_const_weakening",
+      "kind": "run",
+      "file": "../audit/pointer_const_weakening.vt",
+      "result": 7
+    },
+    {
+      "id": "checked_cast",
+      "kind": "run",
+      "file": "../audit/checked_cast.vt",
+      "result": 9
+    },
+    {
+      "id": "bool_cast_forbidden",
+      "kind": "reject",
+      "file": "../audit/bool_cast_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "safe_fn_unsafe_body",
+      "kind": "reject",
+      "file": "../audit/safe_fn_unsafe_body.vt",
+      "category": "E_UNSAFE"
+    },
+    {
+      "id": "readonly_noncopy_move",
+      "kind": "reject",
+      "file": "../audit/readonly_noncopy_move.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "reserved_export",
+      "kind": "reject",
+      "file": "../audit/reserved_export.vt",
+      "category": "E_LINK"
+    },
+    {
+      "id": "duplicate_export",
+      "kind": "reject",
+      "file": "../audit/duplicate_export.vt",
+      "category": "E_LINK"
+    },
+    {
+      "id": "resource_copy_forbidden",
+      "kind": "reject",
+      "file": "../audit/resource_copy_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "noncopy_copy_attribute",
+      "kind": "reject",
+      "file": "../audit/noncopy_copy_attribute.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "repr_enum_forbidden",
+      "kind": "reject",
+      "file": "../audit/repr_enum_forbidden.vt",
+      "category": "E_ATTRIBUTE"
+    },
+    {
+      "id": "generic_c_fn_forbidden",
+      "kind": "reject",
+      "file": "../audit/generic_c_fn_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "packed_reference",
+      "kind": "accept",
+      "file": "../audit/packed_reference.vt"
+    },
+    {
+      "id": "cached_polymorphic_recursion",
+      "kind": "reject",
+      "file": "../audit/cached_polymorphic_recursion.vt",
+      "category": "E_INSTANTIATION"
+    },
+    {
+      "id": "unused_generic_bad_type",
+      "kind": "reject",
+      "file": "../audit/unused_generic_bad_type.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "match_shared",
+      "kind": "run",
+      "file": "../audit/match_shared.vt",
+      "result": 8
+    },
+    {
+      "id": "match_mutable",
+      "kind": "run",
+      "file": "../audit/match_mutable.vt",
+      "result": 7
+    },
+    {
+      "id": "match_nested_shared",
+      "kind": "run",
+      "file": "../audit/match_nested_shared.vt",
+      "result": 4
+    },
+    {
+      "id": "const_string",
+      "kind": "run",
+      "file": "../audit/const_string.vt",
+      "result": 106
+    },
+    {
+      "id": "static_string",
+      "kind": "run",
+      "file": "../audit/static_string.vt",
+      "result": 121
+    },
+    {
+      "id": "static_reference",
+      "kind": "run",
+      "file": "../audit/static_reference.vt",
+      "result": 17
+    },
+    {
+      "id": "static_slice",
+      "kind": "run",
+      "file": "../audit/static_slice.vt",
+      "result": 13
+    },
+    {
+      "id": "const_static_assert",
+      "kind": "run",
+      "file": "../audit/const_static_assert.vt",
+      "result": 5
+    },
+    {
+      "id": "static_atomic",
+      "kind": "run",
+      "file": "../audit/static_atomic.vt",
+      "result": 5
+    },
+    {
+      "id": "static_unsafe_cell",
+      "kind": "run",
+      "file": "../audit/static_unsafe_cell.vt",
+      "result": 8
+    },
+    {
+      "id": "generic_constructor_inference",
+      "kind": "run",
+      "file": "../audit/generic_constructor_inference.vt",
+      "result": 6
+    },
+    {
+      "id": "generic_enum_inference",
+      "kind": "run",
+      "file": "../audit/generic_enum_inference.vt",
+      "result": 6
+    },
+    {
+      "id": "generic_impl",
+      "kind": "run",
+      "file": "../audit/generic_impl.vt",
+      "result": 7
+    },
+    {
+      "id": "method_generic",
+      "kind": "run",
+      "file": "../audit/method_generic.vt",
+      "result": 7
+    },
+    {
+      "id": "array_dependency_const",
+      "kind": "run",
+      "file": "../audit/array_dependency_const.vt",
+      "result": 5
+    },
+    {
+      "id": "local_reborrow",
+      "kind": "run",
+      "file": "../audit/local_reborrow.vt",
+      "result": 7
+    },
+    {
+      "id": "slice_weakening",
+      "kind": "run",
+      "file": "../audit/slice_weakening.vt",
+      "result": 4
+    },
+    {
+      "id": "ptr_offset",
+      "kind": "run",
+      "file": "../audit/ptr_offset.vt",
+      "result": 7
+    },
+    {
+      "id": "ptr_bytes",
+      "kind": "run",
+      "file": "../audit/ptr_bytes.vt",
+      "result": 8
+    },
+    {
+      "id": "early_rhs_no_lhs",
+      "kind": "run",
+      "file": "../audit/early_rhs_no_lhs.vt",
+      "result": 9
+    },
+    {
+      "id": "defer_continue",
+      "kind": "run",
+      "file": "../audit/defer_continue.vt",
+      "result": 3
+    },
+    {
+      "id": "defer_break_value",
+      "kind": "run",
+      "file": "../audit/defer_break_value.vt",
+      "result": 19
+    },
+    {
+      "id": "unreached_defer",
+      "kind": "run",
+      "file": "../audit/unreached_defer.vt",
+      "result": 1
+    },
+    {
+      "id": "defer_panic",
+      "kind": "panic",
+      "file": "../audit/defer_panic.vt"
+    },
+    {
+      "id": "int_u64_checked",
+      "kind": "run",
+      "file": "../audit/int_u64_checked.vt",
+      "result": 7
+    },
+    {
+      "id": "int_i64_checked",
+      "kind": "run",
+      "file": "../audit/int_i64_checked.vt",
+      "result": 8
+    },
+    {
+      "id": "int_i64_multiply",
+      "kind": "panic",
+      "file": "../audit/int_i64_multiply.vt"
+    },
+    {
+      "id": "int_widen_signed",
+      "kind": "run",
+      "file": "../audit/int_widen_signed.vt",
+      "result": 1
+    },
+    {
+      "id": "int_widen_unsigned",
+      "kind": "run",
+      "file": "../audit/int_widen_unsigned.vt",
+      "result": 255
+    },
+    {
+      "id": "min_not_adjacent",
+      "kind": "reject",
+      "file": "../audit/min_not_adjacent.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "readonly_static_write",
+      "kind": "reject",
+      "file": "../audit/readonly_static_write.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "array_zero_sideeffect",
+      "kind": "run",
+      "file": "../audit/array_zero_sideeffect.vt",
+      "result": 9
+    },
+    {
+      "id": "borrow_field_reference_type",
+      "kind": "run",
+      "file": "../audit/borrow_field_reference_type.vt",
+      "result": 9
+    },
+    {
+      "id": "ffi_param_array_forbidden",
+      "kind": "reject",
+      "file": "../audit/ffi_param_array_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "atomic_failure_order",
+      "kind": "reject",
+      "file": "../audit/atomic_failure_order.vt",
+      "category": "E_CONST"
+    },
+    {
+      "id": "dynamic_atomic_order",
+      "kind": "reject",
+      "file": "../audit/dynamic_atomic_order.vt",
+      "category": "E_CONST"
+    },
+    {
+      "id": "atomic_pointer_fetch_forbidden",
+      "kind": "reject",
+      "file": "../audit/atomic_pointer_fetch_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "infer_match",
+      "kind": "run",
+      "file": "../audit/infer_match.vt",
+      "result": 7
+    },
+    {
+      "id": "infer_loop_break",
+      "kind": "run",
+      "file": "../audit/infer_loop_break.vt",
+      "result": 7
+    },
+    {
+      "id": "infer_branch_statement",
+      "kind": "run",
+      "file": "../audit/infer_branch_statement.vt",
+      "result": 7
+    },
+    {
+      "id": "pattern_wrong_record",
+      "kind": "reject",
+      "file": "../audit/pattern_wrong_record.vt",
+      "category": "E_PATTERN"
+    },
+    {
+      "id": "pattern_wrong_qualified_variant",
+      "kind": "reject",
+      "file": "../audit/pattern_wrong_qualified_variant.vt",
+      "category": "E_PATTERN"
+    },
+    {
+      "id": "pattern_unknown_qualifier",
+      "kind": "reject",
+      "file": "../audit/pattern_unknown_qualifier.vt",
+      "category": "E_NAME"
+    },
+    {
+      "id": "generic_const_block",
+      "kind": "run",
+      "file": "../audit/generic_const_block.vt",
+      "result": 8
+    },
+    {
+      "id": "generic_const_match",
+      "kind": "run",
+      "file": "../audit/generic_const_match.vt",
+      "result": 8
+    },
+    {
+      "id": "never_pointer_target",
+      "kind": "reject",
+      "file": "../audit/never_pointer_target.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "never_zero_array",
+      "kind": "reject",
+      "file": "../audit/never_zero_array.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "pattern_unsigned_negative",
+      "kind": "reject",
+      "file": "../audit/pattern_unsigned_negative.vt",
+      "category": "E_PATTERN"
+    },
+    {
+      "id": "integer_vectors",
+      "kind": "run",
+      "file": "../audit/integer_vectors.vt",
+      "result": 0
+    },
+    {
+      "id": "unknown_qualified_constructor",
+      "kind": "reject",
+      "file": "../audit/unknown_qualified_constructor.vt",
+      "category": "E_NAME"
+    },
+    {
+      "id": "unknown_qualified_unit_variant",
+      "kind": "reject",
+      "file": "../audit/unknown_qualified_unit_variant.vt",
+      "category": "E_NAME"
+    },
+    {
+      "id": "shared_method_move",
+      "kind": "reject",
+      "file": "../audit/shared_method_move.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "addr_explicit_type_forbidden",
+      "kind": "reject",
+      "file": "../audit/addr_explicit_type_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "ptr_offset_explicit_type_forbidden",
+      "kind": "reject",
+      "file": "../audit/ptr_offset_explicit_type_forbidden.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "volatile_explicit_mismatch",
+      "kind": "reject",
+      "file": "../audit/volatile_explicit_mismatch.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "replace_explicit_mismatch",
+      "kind": "reject",
+      "file": "../audit/replace_explicit_mismatch.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "forget_explicit_mismatch",
+      "kind": "reject",
+      "file": "../audit/forget_explicit_mismatch.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "nongeneric_intrinsic_type_arguments",
+      "kind": "reject",
+      "file": "../audit/nongeneric_intrinsic_type_arguments.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "builtin_generic_expected_literal",
+      "kind": "run",
+      "file": "../audit/builtin_generic_expected_literal.vt",
+      "result": 7
+    },
+    {
+      "id": "infer_match_constructor",
+      "kind": "run",
+      "file": "../audit/infer_match_constructor.vt",
+      "result": 7
+    },
+    {
+      "id": "struct_len_is_ordinary_field",
+      "kind": "run",
+      "file": "../audit/struct_len_is_ordinary_field.vt",
+      "result": 7
+    },
+    {
+      "id": "infer_generic_result_context",
+      "kind": "run",
+      "file": "../audit/infer_generic_result_context.vt",
+      "result": 7
+    },
+    {
+      "id": "infer_branch_tuple",
+      "kind": "run",
+      "file": "../audit/infer_branch_tuple.vt",
+      "result": 7
+    },
+    {
+      "id": "infer_array_empty_from_peer",
+      "kind": "run",
+      "file": "../audit/infer_array_empty_from_peer.vt",
+      "result": 0
+    },
+    {
+      "id": "defer_internal_loop_transfer",
+      "kind": "run",
+      "file": "../audit/defer_internal_loop_transfer.vt",
+      "result": 3
+    },
+    {
+      "id": "branch_no_implicit_reference_join",
+      "kind": "reject",
+      "file": "../audit/branch_no_implicit_reference_join.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "branch_reference_expected_adapter",
+      "kind": "run",
+      "file": "../audit/branch_reference_expected_adapter.vt",
+      "result": 3
+    },
+    {
+      "id": "generic_inference_no_weakening",
+      "kind": "reject",
+      "file": "../audit/generic_inference_no_weakening.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "generic_explicit_allows_weakening",
+      "kind": "run",
+      "file": "../audit/generic_explicit_allows_weakening.vt",
+      "result": 3
+    },
+    {
+      "id": "packed_aligned_reference",
+      "kind": "run",
+      "file": "../audit/packed_aligned_reference.vt",
+      "result": 7
+    },
+    {
+      "id": "autoderef_readonly_chain",
+      "kind": "reject",
+      "file": "../audit/autoderef_readonly_chain.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "grouped_fn_field_method",
+      "kind": "run",
+      "file": "../audit/grouped_fn_field_method.vt",
+      "result": 12
+    },
+    {
+      "id": "ptr_invalid_space_type",
+      "kind": "reject",
+      "file": "../audit/ptr_invalid_space_type.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "ptr_qualified_space",
+      "kind": "reject",
+      "file": "../audit/ptr_qualified_space.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "generic_const_enum_match",
+      "kind": "run",
+      "file": "../audit/generic_const_enum_match.vt",
+      "result": 6
+    },
+    {
+      "id": "generic_const_aggregate_choice",
+      "kind": "run",
+      "file": "../audit/generic_const_aggregate_choice.vt",
+      "result": 14
+    },
+    {
+      "id": "csr_outside_profile",
+      "file": "../audit/csr_outside_profile.vt",
+      "kind": "reject",
+      "category": "E_TARGET"
+    },
+    {
+      "id": "csr_constant_expression",
+      "file": "../audit/csr_constant_expression.vt",
+      "kind": "run",
+      "result": 7
+    },
+    {
+      "id": "panic_invalid_bytes",
+      "kind": "panic",
+      "file": "../audit/panic_invalid_bytes.vt"
+    },
+    {
+      "id": "generic_const_checked",
+      "file": "../audit/generic_const_checked.vt",
+      "kind": "run",
+      "result": 1051
+    },
+    {
+      "id": "generic_const_unused_values",
+      "file": "../audit/generic_const_unused_values.vt",
+      "kind": "run",
+      "result": 4
+    },
+    {
+      "id": "generic_const_unused_initializer_error",
+      "file": "../audit/generic_const_unused_initializer_error.vt",
+      "kind": "reject",
+      "category": "E_CONST"
+    },
+    {
+      "id": "const_dead_index_call",
+      "file": "../audit/const_dead_index_call.vt",
+      "kind": "reject",
+      "category": "E_CONST"
+    },
+    {
+      "id": "const_noncopy_field_read",
+      "file": "../audit/const_noncopy_field_read.vt",
+      "kind": "reject",
+      "category": "E_CONST"
+    },
+    {
+      "id": "generic_const_noncopy_field_read",
+      "file": "../audit/generic_const_noncopy_field_read.vt",
+      "kind": "reject",
+      "category": "E_CONST"
+    },
+    {
+      "id": "generic_bool_array_length",
+      "kind": "reject",
+      "file": "../audit/generic_bool_array_length.vt",
+      "category": "E_CONST"
+    },
+    {
+      "id": "generic_integer_condition",
+      "kind": "reject",
+      "file": "../audit/generic_integer_condition.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "generic_bool_arithmetic",
+      "kind": "reject",
+      "file": "../audit/generic_bool_arithmetic.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "generic_integer_logic",
+      "kind": "reject",
+      "file": "../audit/generic_integer_logic.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "generic_dependent_instantiation",
+      "kind": "run",
+      "file": "../audit/generic_dependent_instantiation.vt",
+      "result": 27
+    },
+    {
+      "id": "generic_dependent_invalid_cast",
+      "kind": "reject",
+      "file": "../audit/generic_dependent_invalid_cast.vt",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "generic_dependent_unused",
+      "kind": "accept",
+      "file": "../audit/generic_dependent_unused.vt"
+    },
+    {
+      "id": "const_block_queries",
+      "kind": "run",
+      "file": "../audit/const_block_queries.vt",
+      "result": 7
+    },
+    {
+      "id": "runtime_let_array_length",
+      "kind": "reject",
+      "file": "../audit/runtime_let_array_length.vt",
+      "category": "E_CONST"
+    }
+  ]
+}

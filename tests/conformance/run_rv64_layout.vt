@@ -1,0 +1,8 @@
+struct S { a: u8, b: u64 }
+static_assert(sizeof(S) == 16);
+static_assert(offsetof(S, b) == 8);
+static_assert(sizeof(Option<u8>) == 8);
+static_assert(sizeof(Atomic<u8>) == 4);
+static_assert(sizeof(arch::TrapFrame) == 288);
+static_assert(offsetof(arch::TrapFrame, sepc) == 256);
+pub fn test() -> i32 { 0 }

@@ -1,0 +1,1 @@
+fn f(v: Option<i32>) { let Some(x) = v; }

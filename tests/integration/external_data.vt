@@ -1,0 +1,12 @@
+extern abi(C) static VALUES: [3]i32;
+extern abi(C) static mut COUNTER: i32;
+extern abi(C) static BOUNDARY: u8;
+static LOCAL: [3]i32 = [10, 20, 12];
+static ADDRESS: *kernel const i32 = addr_of(LOCAL[1]);
+pub fn test() -> i32 {
+    unsafe {
+        COUNTER = VALUES[0] + *ADDRESS + VALUES[2];
+        let boundary = addr(addr_of(BOUNDARY));
+        if boundary == 0_usize { -1 } else { COUNTER }
+    }
+}

@@ -1,0 +1,4 @@
+extern abi(C) static kernel_end: u8;
+extern abi(C) static mut external_table: [512]u64;
+fn boundary() -> usize { unsafe { addr(addr_of(kernel_end)) } }
+fn table() -> *[512]u64 { unsafe { addr_of_mut(external_table) } }

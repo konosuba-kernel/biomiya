@@ -1,0 +1,1 @@
+struct B<T>{x:[{let n=true+false; sizeof(T)}]u8} fn test()->i32{sizeof(B<u32>) as i32}

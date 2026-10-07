@@ -1,0 +1,1 @@
+pub fn test()->i32{var x=0;let a=[{x=9;1};0];x}

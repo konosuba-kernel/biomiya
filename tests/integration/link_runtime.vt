@@ -1,0 +1,7 @@
+@align(4096)
+struct Page { number: i32 }
+fn identity(page: Page) -> Page { page }
+pub fn test() -> i32 {
+    let p = identity(Page { number: 42 });
+    p.number
+}

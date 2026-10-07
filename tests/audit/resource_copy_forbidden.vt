@@ -1,0 +1,1 @@
+@copy resource struct R{x:i32}pub fn test()->i32{0}

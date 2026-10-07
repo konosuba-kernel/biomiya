@@ -1,0 +1,2 @@
+struct S<T> { next: S<(T, i32)> }
+fn f(p: *S<i32>) { let n = sizeof(S<i32>); }

@@ -1,0 +1,1 @@
+struct B<T>{v:[sizeof(T)+1]u8}pub fn test()->i32{sizeof(B<u32>) as i32}

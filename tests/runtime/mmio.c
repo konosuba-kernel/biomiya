@@ -1,0 +1,2 @@
+#include "runtime.h"
+int __biomiya_test_entry(void) {volatile unsigned char*u=(void*)0x10000000; __asm__ volatile("fence iorw,iorw":::"memory");u[7]=0x5a; unsigned char a=u[7]; u[7]=0x37;unsigned char b=u[7];__asm__ volatile("fence iorw,iorw":::"memory");volatile uintptr_t *timer=(void*)0x02004000;*timer=0x7fffffffffffffffULL;uintptr_t wide=*timer;volatile unsigned *low=(void*)0x02004000;*low=0xfffffffeU;unsigned word=*low;return wide==0x7fffffffffffffffULL && word==0xfffffffeU ? a+b : -1;}

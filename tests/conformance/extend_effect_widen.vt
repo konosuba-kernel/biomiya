@@ -1,0 +1,5 @@
+fn g() { }
+fn f() effects { may_block } {
+    let p: fn() effects { may_block } = g;
+    p();
+}

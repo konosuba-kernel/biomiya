@@ -1,0 +1,17 @@
+extern abi(C) fn register_probe() -> i32;
+extern abi(C) static register_resume: u8;
+@trap
+fn handler(frame: &mut arch::TrapFrame) {
+    if frame.scause != 9_usize || frame.x[0] != 0_usize || frame.x[2] % 16_usize != 0_usize { panic("bad frame"); }
+    for i in 1_usize..32_usize {
+        if i != 2_usize {
+            if frame.x[i] != i * 17_usize { panic("bad register"); }
+            frame.x[i] = i * 19_usize;
+        }
+    }
+    if frame.sepc + 4_usize != unsafe { addr(addr_of(register_resume)) } { panic("bad resume"); }
+    frame.sepc += 4_usize;
+}
+@trap_entry
+fn entry(frame: &mut arch::TrapFrame) -> ! { arch::enter_trap_handler(frame, handler) }
+pub fn test() -> i32 { unsafe { register_probe() } }

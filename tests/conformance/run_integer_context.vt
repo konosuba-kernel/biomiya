@@ -1,0 +1,5 @@
+pub fn test() -> i32 {
+    let a: u8 = 250;
+    let b = a +% 10;
+    return b as i32;
+}

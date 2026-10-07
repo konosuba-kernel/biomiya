@@ -1,0 +1,8 @@
+@copy
+struct Pair { a: i32, b: i32 }
+fn first(p: Pair, ignored: i32) -> i32 { p.a }
+pub fn test() -> i32 {
+    var p = Pair { a: 2, b: 3 };
+    let old = first(p, { p.a = 9; 0 });
+    old * 10 + p.a
+}

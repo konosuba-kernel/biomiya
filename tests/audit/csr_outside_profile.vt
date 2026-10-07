@@ -1,0 +1,3 @@
+fn test() {
+    unsafe { let value = arch::riscv::csr_read(0x300_usize); }
+}

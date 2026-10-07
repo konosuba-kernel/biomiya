@@ -1,0 +1,1 @@
+struct S{x:i32}pub fn test()->i32{let a=[S{x:2},S{x:3}];var n=0;for move v in a { n+=v.x; } n}

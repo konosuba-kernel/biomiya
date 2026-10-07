@@ -1,0 +1,2 @@
+fn pick<T>(value: T) -> i32 { value.missing() }
+pub fn test() -> i32 { 0 }

@@ -1,0 +1,1 @@
+fn test(){let p:*i32=null;unsafe{let q=ptr_add::<u8>(p,1);}}

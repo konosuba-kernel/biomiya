@@ -1,0 +1,567 @@
+{
+  "schema": 1,
+  "target": "rv64-core-v1",
+  "status": "normative expectations; not executed by a compiler",
+  "cases": [
+    {
+      "id": "run_integer_context",
+      "file": "run_integer_context.vt",
+      "kind": "run",
+      "rule": "6.12;12.2",
+      "result": 4
+    },
+    {
+      "id": "run_generic_forward",
+      "file": "run_generic_forward.vt",
+      "kind": "run",
+      "rule": "4.1;10.2",
+      "result": 37
+    },
+    {
+      "id": "run_nested_match",
+      "file": "run_nested_match.vt",
+      "kind": "run",
+      "rule": "13.3",
+      "result": 2
+    },
+    {
+      "id": "run_record_order",
+      "file": "run_record_order.vt",
+      "kind": "run",
+      "rule": "5.2;28",
+      "result": 21
+    },
+    {
+      "id": "run_assignment_order",
+      "file": "run_assignment_order.vt",
+      "kind": "run",
+      "rule": "8.3",
+      "result": 19
+    },
+    {
+      "id": "run_compound_order",
+      "file": "run_compound_order.vt",
+      "kind": "run",
+      "rule": "12.6",
+      "result": 21
+    },
+    {
+      "id": "run_defer_return",
+      "file": "run_defer_return.vt",
+      "kind": "run",
+      "rule": "15.3",
+      "result": 723
+    },
+    {
+      "id": "run_question_defer",
+      "file": "run_question_defer.vt",
+      "kind": "run",
+      "rule": "11.4;15.3",
+      "result": 58
+    },
+    {
+      "id": "run_loop_cleanup",
+      "file": "run_loop_cleanup.vt",
+      "kind": "run",
+      "rule": "14.1;15.2",
+      "result": 2
+    },
+    {
+      "id": "run_closed_max",
+      "file": "run_closed_max.vt",
+      "kind": "run",
+      "rule": "12.5;14.1",
+      "result": 2
+    },
+    {
+      "id": "run_method_projection",
+      "file": "run_method_projection.vt",
+      "kind": "run",
+      "rule": "11.9",
+      "result": 7
+    },
+    {
+      "id": "run_tuple_array_equality",
+      "file": "run_tuple_array_equality.vt",
+      "kind": "run",
+      "rule": "11.8;12.3",
+      "result": 1
+    },
+    {
+      "id": "run_slice_split",
+      "file": "run_slice_split.vt",
+      "kind": "run",
+      "rule": "9.3;14.1",
+      "result": 56
+    },
+    {
+      "id": "run_atomic",
+      "file": "run_atomic.vt",
+      "kind": "run",
+      "rule": "21.3;22",
+      "result": 262
+    },
+    {
+      "id": "run_const_branch",
+      "file": "run_const_branch.vt",
+      "kind": "run",
+      "rule": "26",
+      "result": 8
+    },
+    {
+      "id": "run_aggregate_call",
+      "file": "run_aggregate_call.vt",
+      "kind": "run",
+      "rule": "RV64:R3",
+      "result": 92
+    },
+    {
+      "id": "run_rv64_layout",
+      "file": "run_rv64_layout.vt",
+      "kind": "run",
+      "rule": "RV64:R2;RV64:R6",
+      "result": 0
+    },
+    {
+      "id": "run_asm",
+      "file": "run_asm.vt",
+      "kind": "run",
+      "rule": "RV64:R8",
+      "result": 12
+    },
+    {
+      "id": "panic_overflow",
+      "file": "panic_overflow.vt",
+      "kind": "panic",
+      "rule": "12.2"
+    },
+    {
+      "id": "panic_bounds",
+      "file": "panic_bounds.vt",
+      "kind": "panic",
+      "rule": "11.8"
+    },
+    {
+      "id": "panic_shift",
+      "file": "panic_shift.vt",
+      "kind": "panic",
+      "rule": "12.2"
+    },
+    {
+      "id": "accept_unused_generic",
+      "file": "accept_unused_generic.vt",
+      "kind": "accept",
+      "rule": "10.2"
+    },
+    {
+      "id": "accept_move_without_analysis",
+      "file": "accept_move_without_analysis.vt",
+      "kind": "accept",
+      "rule": "7.1;8.5"
+    },
+    {
+      "id": "accept_special_transfer",
+      "file": "accept_special_transfer.vt",
+      "kind": "accept",
+      "rule": "27;RV64:R6"
+    },
+    {
+      "id": "reject_incomplete_match",
+      "file": "reject_incomplete_match.vt",
+      "kind": "reject",
+      "rule": "13.3",
+      "category": "E_PATTERN"
+    },
+    {
+      "id": "reject_refutable_let",
+      "file": "reject_refutable_let.vt",
+      "kind": "reject",
+      "rule": "13.3",
+      "category": "E_PATTERN"
+    },
+    {
+      "id": "reject_implicit_array_slice",
+      "file": "reject_implicit_array_slice.vt",
+      "kind": "reject",
+      "rule": "6.12",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "reject_late_inference",
+      "file": "reject_late_inference.vt",
+      "kind": "reject",
+      "rule": "6.12",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "reject_immutable_write",
+      "file": "reject_immutable_write.vt",
+      "kind": "reject",
+      "rule": "8.2",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "reject_unknown_attribute",
+      "file": "reject_unknown_attribute.vt",
+      "kind": "reject",
+      "rule": "5.8",
+      "category": "E_ATTRIBUTE"
+    },
+    {
+      "id": "reject_bad_atomic_order",
+      "file": "reject_bad_atomic_order.vt",
+      "kind": "reject",
+      "rule": "22",
+      "category": "E_CONST"
+    },
+    {
+      "id": "reject_const_dead_call",
+      "file": "reject_const_dead_call.vt",
+      "kind": "reject",
+      "rule": "26",
+      "category": "E_CONST"
+    },
+    {
+      "id": "reject_dead_type_error",
+      "file": "reject_dead_type_error.vt",
+      "kind": "reject",
+      "rule": "1.5;6.12",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "reject_missing_result",
+      "file": "reject_missing_result.vt",
+      "kind": "reject",
+      "rule": "5.4",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "reject_special_call",
+      "file": "reject_special_call.vt",
+      "kind": "reject",
+      "rule": "27",
+      "category": "E_CONTEXT"
+    },
+    {
+      "id": "reject_non_tail_transfer",
+      "file": "reject_non_tail_transfer.vt",
+      "kind": "reject",
+      "rule": "27;RV64:R6",
+      "category": "E_CONTEXT"
+    },
+    {
+      "id": "reject_raw_without_unsafe",
+      "file": "reject_raw_without_unsafe.vt",
+      "kind": "reject",
+      "rule": "17.1",
+      "category": "E_UNSAFE"
+    },
+    {
+      "id": "reject_duplicate_field",
+      "file": "reject_duplicate_field.vt",
+      "kind": "reject",
+      "rule": "5.2",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "reject_polymorphic_recursion",
+      "file": "reject_polymorphic_recursion.vt",
+      "kind": "reject",
+      "rule": "10.3",
+      "category": "E_INSTANTIATION"
+    },
+    {
+      "id": "reject_recursive_layout",
+      "file": "reject_recursive_layout.vt",
+      "kind": "reject",
+      "rule": "10.3",
+      "category": "E_LAYOUT"
+    },
+    {
+      "id": "reject_raw_autoderef",
+      "file": "reject_raw_autoderef.vt",
+      "kind": "reject",
+      "rule": "11.9",
+      "category": "E_TYPE"
+    },
+    {
+      "id": "reject_one_tuple",
+      "file": "reject_one_tuple.vt",
+      "kind": "reject",
+      "rule": "6.6;appendix A",
+      "category": "E_PARSE"
+    },
+    {
+      "id": "reject_uninitialized_binding",
+      "file": "reject_uninitialized_binding.vt",
+      "kind": "reject",
+      "rule": "8.1",
+      "category": "E_PARSE"
+    },
+    {
+      "id": "reject_asm_register",
+      "file": "reject_asm_register.vt",
+      "kind": "reject",
+      "rule": "RV64:R8",
+      "category": "E_TARGET"
+    },
+    {
+      "id": "extend_resource_discard",
+      "file": "extend_resource_discard.vt",
+      "kind": "extend-reject",
+      "rule": "30.3",
+      "category": "V_OWNERSHIP",
+      "extensions": [
+        "Ownership"
+      ],
+      "core_accepts": true
+    },
+    {
+      "id": "extend_move_join",
+      "file": "extend_move_join.vt",
+      "kind": "extend-reject",
+      "rule": "30.2",
+      "category": "V_OWNERSHIP",
+      "extensions": [
+        "Ownership"
+      ],
+      "core_accepts": true
+    },
+    {
+      "id": "extend_borrow_generic",
+      "file": "extend_borrow_generic.vt",
+      "kind": "extend-reject",
+      "rule": "31.5",
+      "category": "V_BORROW",
+      "extensions": [
+        "Ownership",
+        "Borrow"
+      ],
+      "core_accepts": true
+    },
+    {
+      "id": "extend_alias_conflict",
+      "file": "extend_alias_conflict.vt",
+      "kind": "extend-reject",
+      "rule": "31.1",
+      "category": "V_BORROW",
+      "extensions": [
+        "Ownership",
+        "Borrow"
+      ],
+      "core_accepts": true
+    },
+    {
+      "id": "extend_blocking_call",
+      "file": "extend_blocking_call.vt",
+      "kind": "extend-reject",
+      "rule": "32.1",
+      "category": "V_BLOCKING",
+      "extensions": [
+        "Blocking"
+      ],
+      "core_accepts": true
+    },
+    {
+      "id": "extend_resource_consume",
+      "file": "extend_resource_consume.vt",
+      "kind": "extend-accept",
+      "rule": "30.3",
+      "extensions": [
+        "Ownership"
+      ],
+      "core_accepts": true
+    },
+    {
+      "id": "extend_borrow_local",
+      "file": "extend_borrow_local.vt",
+      "kind": "extend-accept",
+      "rule": "31.1;31.2",
+      "extensions": [
+        "Ownership",
+        "Borrow"
+      ],
+      "core_accepts": true
+    },
+    {
+      "id": "extend_effect_widen",
+      "file": "extend_effect_widen.vt",
+      "kind": "extend-accept",
+      "rule": "32.2",
+      "extensions": [
+        "Blocking"
+      ],
+      "core_accepts": true
+    },
+    {
+      "id": "run_call_snapshot",
+      "file": "run_call_snapshot.vt",
+      "kind": "run",
+      "rule": "11.3;RV64:R3",
+      "result": 29
+    },
+    {
+      "id": "run_nested_generic_layout",
+      "kind": "run",
+      "rule": "10.3;RV64:R2",
+      "result": 0,
+      "file": "run_nested_generic_layout.vt"
+    },
+    {
+      "id": "run_repeat_array",
+      "kind": "run",
+      "rule": "11.1;26",
+      "result": 22,
+      "file": "run_repeat_array.vt"
+    },
+    {
+      "id": "run_raw_address",
+      "kind": "run",
+      "rule": "18.4;24",
+      "result": 10,
+      "file": "run_raw_address.vt"
+    },
+    {
+      "id": "run_uninit_fields",
+      "kind": "run",
+      "rule": "18.4;21.1",
+      "result": 37,
+      "file": "run_uninit_fields.vt"
+    },
+    {
+      "id": "run_raw_slice",
+      "kind": "run",
+      "rule": "9.3;18.4",
+      "result": 16,
+      "file": "run_raw_slice.vt"
+    },
+    {
+      "id": "run_const_raw_address",
+      "kind": "run",
+      "rule": "18.4;26;RV64:R1",
+      "result": 7,
+      "file": "run_const_raw_address.vt"
+    },
+    {
+      "id": "accept_extern_static",
+      "kind": "accept",
+      "rule": "5.7;18.4;25.3",
+      "file": "accept_extern_static.vt"
+    },
+    {
+      "id": "reject_nested_recursive_layout",
+      "kind": "reject",
+      "rule": "10.3",
+      "category": "E_LAYOUT",
+      "file": "reject_nested_recursive_layout.vt"
+    },
+    {
+      "id": "reject_growing_wrapped_layout",
+      "kind": "reject",
+      "rule": "10.3",
+      "category": "E_LAYOUT",
+      "file": "reject_growing_wrapped_layout.vt"
+    },
+    {
+      "id": "reject_raw_address_rvalue",
+      "kind": "reject",
+      "rule": "18.4",
+      "category": "E_TYPE",
+      "file": "reject_raw_address_rvalue.vt"
+    },
+    {
+      "id": "reject_raw_address_immutable",
+      "kind": "reject",
+      "rule": "18.4",
+      "category": "E_TYPE",
+      "file": "reject_raw_address_immutable.vt"
+    },
+    {
+      "id": "reject_raw_slice_without_unsafe",
+      "kind": "reject",
+      "rule": "9.3;17.1",
+      "category": "E_UNSAFE",
+      "file": "reject_raw_slice_without_unsafe.vt"
+    },
+    {
+      "id": "reject_raw_slice_space",
+      "kind": "reject",
+      "rule": "9.3;20",
+      "category": "E_TYPE",
+      "file": "reject_raw_slice_space.vt"
+    },
+    {
+      "id": "reject_readonly_slice_pointer",
+      "kind": "reject",
+      "rule": "9.3",
+      "category": "E_TYPE",
+      "file": "reject_readonly_slice_pointer.vt"
+    },
+    {
+      "id": "reject_repeat_noncopy_zero",
+      "kind": "reject",
+      "rule": "11.1",
+      "category": "E_TYPE",
+      "file": "reject_repeat_noncopy_zero.vt"
+    },
+    {
+      "id": "reject_repeat_dynamic",
+      "kind": "reject",
+      "rule": "11.1;26",
+      "category": "E_CONST",
+      "file": "reject_repeat_dynamic.vt"
+    },
+    {
+      "id": "reject_repeat_const_form",
+      "kind": "reject",
+      "rule": "11.1;appendix A",
+      "category": "E_PARSE",
+      "file": "reject_repeat_const_form.vt"
+    },
+    {
+      "id": "reject_extern_static_type",
+      "kind": "reject",
+      "rule": "5.7;25.1",
+      "category": "E_TYPE",
+      "file": "reject_extern_static_type.vt"
+    },
+    {
+      "id": "reject_extern_static_without_unsafe",
+      "kind": "reject",
+      "rule": "5.7;18.4",
+      "category": "E_UNSAFE",
+      "file": "reject_extern_static_without_unsafe.vt"
+    },
+    {
+      "id": "run_uninit_array",
+      "kind": "run",
+      "rule": "18.4;21.1",
+      "result": 10,
+      "file": "run_uninit_array.vt"
+    },
+    {
+      "id": "run_raw_address_shadow",
+      "kind": "run",
+      "rule": "4.5;18.4",
+      "result": 11,
+      "file": "run_raw_address_shadow.vt"
+    },
+    {
+      "id": "panic_raw_address_bounds",
+      "kind": "panic",
+      "rule": "18.4",
+      "file": "panic_raw_address_bounds.vt"
+    },
+    {
+      "id": "extend_raw_address_preserves_owner",
+      "kind": "extend-accept",
+      "rule": "18.4;30.1",
+      "extensions": [
+        "Ownership"
+      ],
+      "core_accepts": true,
+      "file": "extend_raw_address_preserves_owner.vt"
+    }
+  ],
+  "reference_version": "0.5"
+}

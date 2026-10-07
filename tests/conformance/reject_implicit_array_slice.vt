@@ -1,0 +1,2 @@
+fn take(v: []const i32) { }
+fn f() { let a = [1, 2]; take(a); }

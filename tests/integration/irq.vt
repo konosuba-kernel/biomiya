@@ -1,0 +1,23 @@
+static mut COUNT: i32 = 0;
+@irq
+fn handler(frame: &mut arch::TrapFrame) {
+    if frame.scause != 0x8000000000000001_usize || frame.sstatus & 2_usize != 0_usize { panic("bad IRQ frame"); }
+    unsafe {
+        arch::riscv::csr_write(0x144_usize, 0_usize);
+        COUNT += 1;
+    }
+}
+@trap_entry
+fn entry(frame: &mut arch::TrapFrame) -> ! {
+    arch::enter_irq_handler(frame, handler)
+}
+pub fn test() -> i32 {
+    unsafe {
+        arch::riscv::csr_write(0x104_usize, 2_usize);
+        arch::riscv::csr_write(0x144_usize, 2_usize);
+        arch::riscv::csr_write(0x100_usize, arch::riscv::csr_read(0x100_usize) | 2_usize);
+        while COUNT == 0 { arch::riscv::cpu_relax(); }
+        arch::riscv::csr_write(0x100_usize, arch::riscv::csr_read(0x100_usize) & ~2_usize);
+        COUNT
+    }
+}

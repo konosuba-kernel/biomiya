@@ -1,0 +1,1 @@
+fn test()->i32{let v=match Some(3){Some(n)=>1,None=>7_u8};v as i32+6}

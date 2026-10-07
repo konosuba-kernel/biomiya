@@ -1,0 +1,615 @@
+{
+  "schema": 1,
+  "reference_version": "0.5",
+  "target": "rv64-core-v1",
+  "review": {
+    "status": "reviewed",
+    "reviewed_by": "primary integration review with GPT-6.1-sol component agents",
+    "summary": "Core and rv64 component review is complete, including original-AST dependent constant replay, scoped constant prefixes, all-branch layout dependencies, declaration/constructor visibility, and field-receiver method inference. No known implementation omissions remain. Complete delivery is gated on the actual full-suite and clean-reproduction evidence. Extend remains interface-only.",
+    "date": "2026-10-07"
+  },
+  "known_gaps": [],
+  "areas": [
+    {
+      "id": "C01",
+      "status": "complete",
+      "clauses": [
+        "reference:1",
+        "reference:2",
+        "reference:3",
+        "reference:A",
+        "reference:C",
+        "reference:G",
+        "reference:H",
+        "reference:I"
+      ],
+      "implementation": [
+        "src/syntax/lexer.rs",
+        "src/syntax/parser.rs",
+        "src/source.rs",
+        "src/diagnostic.rs"
+      ],
+      "evidence": [
+        {
+          "check": "rust-tests",
+          "tests": [
+            "conformance_syntax",
+            "strict_grammar",
+            "literal_rules",
+            "expression_boundaries_and_fixed_unicode",
+            "invalid_utf8_diagnostic_points_to_actual_input",
+            "block_expression_full_contexts"
+          ]
+        },
+        {
+          "check": "Core-conformance",
+          "cases": [
+            "reject_one_tuple",
+            "reject_unknown_attribute",
+            "reject_dead_type_error"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "status": "complete",
+      "clauses": [
+        "reference:4",
+        "reference:5",
+        "reference:F"
+      ],
+      "implementation": [
+        "src/resolve.rs",
+        "src/check/mod.rs"
+      ],
+      "evidence": [
+        {
+          "check": "rust-tests",
+          "tests": [
+            "modules_forward_imports_visibility",
+            "namespaces_and_module_merge",
+            "duplicate_and_unknown_imports",
+            "builtins_and_impl_context"
+          ]
+        },
+        {
+          "check": "supplemental-integration",
+          "group": "modules"
+        },
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "unknown_qualified_constructor",
+            "unknown_qualified_unit_variant"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "status": "complete",
+      "clauses": [
+        "reference:6",
+        "reference:7",
+        "reference:10",
+        "reference:16",
+        "reference:B"
+      ],
+      "implementation": [
+        "src/types.rs",
+        "src/check/mod.rs",
+        "src/check/inference.rs",
+        "src/check/calls.rs"
+      ],
+      "evidence": [
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "infer_binary",
+            "infer_array",
+            "infer_generic",
+            "infer_match",
+            "infer_loop_break",
+            "infer_branch_statement",
+            "cached_polymorphic_recursion",
+            "unused_generic_bad_type",
+            "generic_constructor_inference",
+            "generic_enum_inference",
+            "generic_impl",
+            "method_generic",
+            "resource_copy_forbidden",
+            "noncopy_copy_attribute",
+            "infer_branch_tuple",
+            "infer_array_empty_from_peer",
+            "infer_match_constructor",
+            "infer_generic_result_context",
+            "branch_no_implicit_reference_join",
+            "branch_reference_expected_adapter",
+            "generic_inference_no_weakening",
+            "generic_explicit_allows_weakening",
+            "builtin_generic_expected_literal"
+          ]
+        },
+        {
+          "check": "rust-tests",
+          "tests": [
+            "effects_are_in_identity_but_not_core_compatibility",
+            "structural_constraints_precede_literal_defaults",
+            "inferred_constraints_are_strict_and_prior_locals_are_hard",
+            "constant_branch_prefixes_keep_independent_bindings_and_soft_tail_peers",
+            "atomic_compare_exchange_field_receiver_result_patterns"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "status": "complete",
+      "clauses": [
+        "reference:24",
+        "reference:26",
+        "rv64:R2"
+      ],
+      "implementation": [
+        "src/layout.rs",
+        "src/check/constants.rs",
+        "src/linkage.rs",
+        "src/check/deferred.rs"
+      ],
+      "evidence": [
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "const_local_bindings",
+            "const_match",
+            "const_array_index",
+            "const_enum_payload",
+            "static_reference",
+            "static_slice",
+            "static_atomic",
+            "static_unsafe_cell",
+            "generic_const_block",
+            "generic_const_match",
+            "generic_const_enum_match",
+            "generic_const_aggregate_choice",
+            "generic_const_checked",
+            "generic_const_unused_values",
+            "generic_const_unused_initializer_error",
+            "const_dead_index_call",
+            "const_noncopy_field_read",
+            "generic_const_noncopy_field_read",
+            "generic_bool_array_length",
+            "generic_integer_condition",
+            "generic_bool_arithmetic",
+            "generic_integer_logic",
+            "generic_dependent_instantiation",
+            "generic_dependent_invalid_cast",
+            "generic_dependent_unused",
+            "const_block_queries",
+            "runtime_let_array_length"
+          ]
+        },
+        {
+          "check": "rust-tests",
+          "tests": [
+            "finite_nested_generic_and_growing_recursion",
+            "enum_padding_zero_array_alignment_and_overflow",
+            "symbolic_layout_constants_substitute_and_dead_branch_dependencies_remain",
+            "dependent_constant_blocks",
+            "symbolic_local_constructor_match",
+            "finite_initializer_resources",
+            "symbolic_choices_compose",
+            "symbolic_unused_allowed_values",
+            "checked_length_conditions_substitute_query_operands",
+            "dependent_checked_operations_preserve_widths_and_operand_errors",
+            "ordinary_and_dependent_constants_have_normative_parity",
+            "constructors_preserve_field_and_generic_contracts",
+            "private_fields_remain_private_in_constant_construction_projection_and_layout",
+            "checked_generic_lengths_construct_and_project_each_instance",
+            "checked_deferred_instances_substitute_independently_and_survive_cloning",
+            "deferred_queries_preserve_dead_dependencies_and_fixed_indirection_stop",
+            "deferred_offsetof_retains_definition_module_visibility",
+            "deferred_dependencies_include_queries_nested_in_type_arguments_and_annotations",
+            "by_value_constant_constructors_participate_in_declaration_dependencies",
+            "constant_prefix_queries_are_lazy_and_scoped",
+            "nested_length_queries_replay_concrete_lexical_prefixes",
+            "dependent_length_roots_replay_all_operand_forms"
+          ]
+        },
+        {
+          "check": "Core-conformance",
+          "cases": [
+            "reject_nested_recursive_layout",
+            "reject_growing_wrapped_layout",
+            "run_const_raw_address"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "status": "complete",
+      "clauses": [
+        "reference:8",
+        "reference:11",
+        "reference:13",
+        "reference:14",
+        "reference:15",
+        "reference:28"
+      ],
+      "implementation": [
+        "src/check/expressions.rs",
+        "src/check/patterns.rs",
+        "src/lower.rs"
+      ],
+      "evidence": [
+        {
+          "check": "Core-conformance",
+          "cases": [
+            "run_nested_match",
+            "run_record_order",
+            "run_assignment_order",
+            "run_compound_order",
+            "run_defer_return",
+            "run_question_defer",
+            "run_loop_cleanup",
+            "run_closed_max"
+          ]
+        },
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "match_shared",
+            "match_mutable",
+            "match_nested_shared",
+            "early_rhs_no_lhs",
+            "defer_continue",
+            "defer_break_value",
+            "unreached_defer",
+            "defer_panic",
+            "pattern_wrong_record",
+            "pattern_wrong_qualified_variant",
+            "pattern_unknown_qualifier",
+            "defer_internal_loop_transfer",
+            "grouped_fn_field_method",
+            "struct_len_is_ordinary_field"
+          ]
+        },
+        {
+          "check": "rust-tests",
+          "tests": [
+            "full_expression_temporaries_end_before_next_statement",
+            "cleanup_is_late_and_return_is_saved",
+            "function_pointer_fields",
+            "defer_internal_transfers"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "status": "complete",
+      "clauses": [
+        "reference:25",
+        "rv64:R3"
+      ],
+      "implementation": [
+        "src/abi.rs",
+        "src/target/rv64.rs",
+        "src/toolchain.rs"
+      ],
+      "evidence": [
+        {
+          "check": "supplemental-integration",
+          "group": "c-abi"
+        },
+        {
+          "check": "supplemental-integration",
+          "group": "call-snapshots"
+        },
+        {
+          "check": "supplemental-integration",
+          "group": "external-data-relocations"
+        },
+        {
+          "check": "rust-tests",
+          "tests": [
+            "lp64_scalar_extensions_and_stack_arguments",
+            "c_aggregate_split_and_sret",
+            "biomiya_snapshots_and_zero_sized_omission"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C07",
+      "status": "complete",
+      "clauses": [
+        "reference:9",
+        "reference:17",
+        "reference:18",
+        "reference:19",
+        "reference:20",
+        "reference:21",
+        "reference:D"
+      ],
+      "implementation": [
+        "src/check/builtins.rs",
+        "src/lower.rs",
+        "src/target/rv64.rs"
+      ],
+      "evidence": [
+        {
+          "check": "supplemental-integration",
+          "group": "raw-storage"
+        },
+        {
+          "check": "Core-conformance",
+          "cases": [
+            "run_raw_address",
+            "run_uninit_fields",
+            "run_raw_slice",
+            "run_uninit_array",
+            "run_raw_address_shadow",
+            "reject_raw_without_unsafe",
+            "reject_raw_slice_space"
+          ]
+        },
+        {
+          "check": "rust-tests",
+          "tests": [
+            "assume_init_consumes_wrapper_once",
+            "readonly_slice_weakening_inspects_descriptor",
+            "dereference_and_shared_reborrow_inspect_mutable_reference",
+            "ordinary_by_value_mutable_reference_still_moves",
+            "huge_zero_sized_repeat_and_equality_need_no_element_loop",
+            "pointer_space_syntax"
+          ]
+        },
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "autoderef_readonly_chain",
+            "packed_aligned_reference",
+            "shared_method_move",
+            "ptr_invalid_space_type",
+            "ptr_qualified_space",
+            "addr_explicit_type_forbidden",
+            "ptr_offset_explicit_type_forbidden",
+            "volatile_explicit_mismatch",
+            "replace_explicit_mismatch",
+            "forget_explicit_mismatch",
+            "nongeneric_intrinsic_type_arguments"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "status": "complete",
+      "clauses": [
+        "reference:12",
+        "rv64:R4",
+        "rv64:R5"
+      ],
+      "implementation": [
+        "src/target/rv64.rs",
+        "src/check/constants.rs",
+        "runtime/rv64/runtime.c"
+      ],
+      "evidence": [
+        {
+          "check": "Core-conformance",
+          "cases": [
+            "panic_overflow",
+            "panic_bounds",
+            "panic_shift"
+          ]
+        },
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "negative_index",
+            "negative_slice",
+            "division_zero",
+            "remainder_min",
+            "int_u64_checked",
+            "int_i64_checked",
+            "int_i64_multiply",
+            "int_widen_signed",
+            "int_widen_unsigned",
+            "panic_invalid_bytes"
+          ]
+        },
+        {
+          "check": "rust-tests",
+          "tests": [
+            "arithmetic_checked_wrapping_and_panic_execute",
+            "checked_cast_boundaries_do_not_panic"
+          ]
+        },
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "integer_vectors"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "status": "complete",
+      "clauses": [
+        "reference:22",
+        "reference:23"
+      ],
+      "implementation": [
+        "src/check/builtins.rs",
+        "src/target/rv64.rs",
+        "src/target/README.md"
+      ],
+      "evidence": [
+        {
+          "check": "supplemental-integration",
+          "group": "atomics"
+        },
+        {
+          "check": "supplemental-integration",
+          "group": "mmio"
+        },
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "atomic_failure_order",
+            "dynamic_atomic_order",
+            "atomic_pointer_fetch_forbidden"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C10",
+      "status": "complete",
+      "clauses": [
+        "reference:27",
+        "rv64:R6",
+        "rv64:R7",
+        "rv64:R8"
+      ],
+      "implementation": [
+        "src/check/builtins.rs",
+        "src/lower.rs",
+        "src/target/rv64.rs",
+        "runtime/rv64/trap.S",
+        "platforms/qemu-virt/start.S"
+      ],
+      "evidence": [
+        {
+          "check": "supplemental-integration",
+          "group": "traps"
+        },
+        {
+          "check": "independent-platform",
+          "cases": [
+            "registers",
+            "trap",
+            "irq",
+            "nested",
+            "bad_return"
+          ]
+        },
+        {
+          "check": "rust-tests",
+          "tests": [
+            "arbitrary_export_name_and_asm_output_registers_execute"
+          ]
+        },
+        {
+          "check": "Core-conformance",
+          "cases": [
+            "reject_special_call",
+            "reject_non_tail_transfer",
+            "run_asm"
+          ]
+        },
+        {
+          "check": "rust-tests",
+          "tests": [
+            "custom_executable_section_can_trap_and_return"
+          ]
+        },
+        {
+          "check": "additional-Core-audit",
+          "cases": [
+            "csr_outside_profile",
+            "csr_constant_expression"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "C11",
+      "status": "complete",
+      "clauses": [
+        "rv64:R1",
+        "rv64:R9"
+      ],
+      "implementation": [
+        "src/driver.rs",
+        "src/toolchain.rs",
+        "tools/accept.py",
+        "tools/reproduce.py",
+        "examples/hello.vt"
+      ],
+      "evidence": [
+        {
+          "check": "rust-tests",
+          "tests": [
+            "cli_error_classes_and_unavailable_verification",
+            "malformed_elf_reports_link_error_without_host_panic",
+            "bounded_isa_attributes_and_flags",
+            "external_zbb_object_rejected_and_normal_artifacts_validated"
+          ]
+        },
+        {
+          "check": "supplemental-integration",
+          "group": "link-runtime"
+        },
+        {
+          "check": "reproducibility"
+        },
+        {
+          "check": "clean-reproduction"
+        },
+        {
+          "check": "gate-regressions"
+        }
+      ]
+    },
+    {
+      "id": "X01",
+      "status": "complete",
+      "clauses": [
+        "reference:E",
+        "extend:interface"
+      ],
+      "implementation": [
+        "src/extend.rs",
+        "src/hir.rs",
+        "src/ir.rs"
+      ],
+      "evidence": [
+        {
+          "check": "rust-tests",
+          "tests": [
+            "real_validators_are_explicitly_unavailable",
+            "configuration_dependencies_and_cycles",
+            "four_states_and_strict_gate",
+            "required_target_facts_remain_unknown_at_check",
+            "probes_cannot_claim_production_verification",
+            "dependency_reports_preserve_provenance",
+            "actual_slice_reborrow_retains_typed_source_and_result_in_view",
+            "actual_source_emission_and_linked_elf_supply_machine_view",
+            "actual_nested_effect_conversion_retains_both_semantic_types",
+            "checked_generic_lengths_survive_lowering_and_target_snapshot_clones"
+          ]
+        },
+        {
+          "check": "Core-conformance",
+          "cases": [
+            "extend_resource_discard",
+            "extend_move_join",
+            "extend_borrow_generic",
+            "extend_alias_conflict",
+            "extend_blocking_call",
+            "extend_resource_consume",
+            "extend_borrow_local",
+            "extend_effect_widen",
+            "extend_raw_address_preserves_owner"
+          ]
+        }
+      ]
+    }
+  ]
+}

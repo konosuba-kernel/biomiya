@@ -1,0 +1,58 @@
+struct Storage { before: u32, byte: Atomic<u8>, middle: u32, half: Atomic<u16>, after: u32 }
+pub fn test() -> i32 {
+    let storage = Storage { before: 0x12345678_u32, byte: Atomic::<u8>::new(250_u8), middle: 0x23456789_u32, half: Atomic::<u16>::new(250_u16), after: 0x3456789a_u32 };
+    if storage.byte.fetch_add(10_u8, Relaxed) != 250_u8 || storage.byte.load(Acquire) != 4_u8 { panic("fetch add u8"); }
+    if storage.byte.fetch_sub(5_u8, AcqRel) != 4_u8 || storage.byte.load(SeqCst) != 255_u8 { panic("fetch sub u8"); }
+    if storage.byte.fetch_and(15_u8, Acquire) != 255_u8 || storage.byte.fetch_or(128_u8, Release) != 15_u8 { panic("bitwise u8"); }
+    if storage.byte.exchange(17_u8, SeqCst) != 143_u8 { panic("exchange u8"); }
+    match storage.byte.compare_exchange(18_u8, 42_u8, SeqCst, Acquire) { Err(old) => { if old != 17_u8 { panic("CAS old u8"); } }, Ok(old) => { panic("CAS mismatch u8"); } }
+    match storage.byte.compare_exchange(17_u8, 42_u8, SeqCst, SeqCst) { Ok(old) => { if old != 17_u8 { panic("CAS success u8"); } }, Err(old) => { panic("CAS failure u8"); } }
+    storage.byte.store(99_u8, SeqCst);
+    if storage.byte.load(Relaxed) != 99_u8 { panic("store u8"); }
+    if storage.half.fetch_add(10_u16, Relaxed) != 250_u16 || storage.half.load(Acquire) != 260_u16 { panic("fetch add u16"); }
+    if storage.half.fetch_sub(5_u16, AcqRel) != 260_u16 || storage.half.load(SeqCst) != 255_u16 { panic("fetch sub u16"); }
+    if storage.half.fetch_and(15_u16, Acquire) != 255_u16 || storage.half.fetch_or(128_u16, Release) != 15_u16 { panic("bitwise u16"); }
+    if storage.half.exchange(17_u16, SeqCst) != 143_u16 { panic("exchange u16"); }
+    match storage.half.compare_exchange(18_u16, 42_u16, SeqCst, Acquire) { Err(old) => { if old != 17_u16 { panic("CAS old u16"); } }, Ok(old) => { panic("CAS mismatch u16"); } }
+    match storage.half.compare_exchange(17_u16, 42_u16, SeqCst, SeqCst) { Ok(old) => { if old != 17_u16 { panic("CAS success u16"); } }, Err(old) => { panic("CAS failure u16"); } }
+    storage.half.store(99_u16, SeqCst);
+    if storage.half.load(Relaxed) != 99_u16 { panic("store u16"); }
+    let a32 = Atomic::<u32>::new(250_u32);
+    if a32.fetch_add(10_u32, Relaxed) != 250_u32 || a32.load(Acquire) != 260_u32 { panic("fetch add u32"); }
+    if a32.fetch_sub(5_u32, AcqRel) != 260_u32 || a32.load(SeqCst) != 255_u32 { panic("fetch sub u32"); }
+    if a32.fetch_and(15_u32, Acquire) != 255_u32 || a32.fetch_or(128_u32, Release) != 15_u32 { panic("bitwise u32"); }
+    if a32.exchange(17_u32, SeqCst) != 143_u32 { panic("exchange u32"); }
+    match a32.compare_exchange(18_u32, 42_u32, SeqCst, Acquire) { Err(old) => { if old != 17_u32 { panic("CAS old u32"); } }, Ok(old) => { panic("CAS mismatch u32"); } }
+    match a32.compare_exchange(17_u32, 42_u32, SeqCst, SeqCst) { Ok(old) => { if old != 17_u32 { panic("CAS success u32"); } }, Err(old) => { panic("CAS failure u32"); } }
+    a32.store(99_u32, SeqCst);
+    if a32.load(Relaxed) != 99_u32 { panic("store u32"); }
+    let a64 = Atomic::<u64>::new(250_u64);
+    if a64.fetch_add(10_u64, Relaxed) != 250_u64 || a64.load(Acquire) != 260_u64 { panic("fetch add u64"); }
+    if a64.fetch_sub(5_u64, AcqRel) != 260_u64 || a64.load(SeqCst) != 255_u64 { panic("fetch sub u64"); }
+    if a64.fetch_and(15_u64, Acquire) != 255_u64 || a64.fetch_or(128_u64, Release) != 15_u64 { panic("bitwise u64"); }
+    if a64.exchange(17_u64, SeqCst) != 143_u64 { panic("exchange u64"); }
+    match a64.compare_exchange(18_u64, 42_u64, SeqCst, Acquire) { Err(old) => { if old != 17_u64 { panic("CAS old u64"); } }, Ok(old) => { panic("CAS mismatch u64"); } }
+    match a64.compare_exchange(17_u64, 42_u64, SeqCst, SeqCst) { Ok(old) => { if old != 17_u64 { panic("CAS success u64"); } }, Err(old) => { panic("CAS failure u64"); } }
+    a64.store(99_u64, SeqCst);
+    if a64.load(Relaxed) != 99_u64 { panic("store u64"); }
+    let anatural = Atomic::<usize>::new(250_usize);
+    if anatural.fetch_add(10_usize, Relaxed) != 250_usize || anatural.load(Acquire) != 260_usize { panic("fetch add usize"); }
+    if anatural.fetch_sub(5_usize, AcqRel) != 260_usize || anatural.load(SeqCst) != 255_usize { panic("fetch sub usize"); }
+    if anatural.fetch_and(15_usize, Acquire) != 255_usize || anatural.fetch_or(128_usize, Release) != 15_usize { panic("bitwise usize"); }
+    if anatural.exchange(17_usize, SeqCst) != 143_usize { panic("exchange usize"); }
+    match anatural.compare_exchange(18_usize, 42_usize, SeqCst, Acquire) { Err(old) => { if old != 17_usize { panic("CAS old usize"); } }, Ok(old) => { panic("CAS mismatch usize"); } }
+    match anatural.compare_exchange(17_usize, 42_usize, SeqCst, SeqCst) { Ok(old) => { if old != 17_usize { panic("CAS success usize"); } }, Err(old) => { panic("CAS failure usize"); } }
+    anatural.store(99_usize, SeqCst);
+    if anatural.load(Relaxed) != 99_usize { panic("store usize"); }
+    if storage.before != 0x12345678_u32 || storage.middle != 0x23456789_u32 || storage.after != 0x3456789a_u32 { panic("neighbor storage"); }
+    let first = 1_u32;
+    let second = 2_u32;
+    let p = addr_of(first);
+    let q = addr_of(second);
+    let pointer = Atomic::<*const u32>::new(p);
+    if pointer.load(Relaxed) != p || pointer.exchange(q, SeqCst) != p { panic("pointer exchange"); }
+    match pointer.compare_exchange(q, p, SeqCst, Acquire) { Ok(old) => { if old != q { panic("pointer old"); } }, Err(old) => { panic("pointer CAS"); } }
+    pointer.store(q, Release);
+    if pointer.load(Acquire) != q { panic("pointer store"); }
+    42
+}

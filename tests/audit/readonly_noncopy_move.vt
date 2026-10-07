@@ -1,0 +1,1 @@
+struct S{x:i32}fn take(s:&S)->S{*s}pub fn test()->i32{0}

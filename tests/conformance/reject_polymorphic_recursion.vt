@@ -1,0 +1,2 @@
+fn grow<T>(v: T) { grow((v, 1)); }
+fn f() { grow(1); }

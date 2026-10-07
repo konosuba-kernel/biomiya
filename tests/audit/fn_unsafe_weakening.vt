@@ -1,0 +1,1 @@
+fn f() {} pub fn test()->i32 { let p:unsafe fn()=f; unsafe { p(); } 0 }

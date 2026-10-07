@@ -1,0 +1,7 @@
+struct Buffer<T> {
+    bytes: [{
+        let atomic = Atomic::<usize>::new(sizeof(T) / 0_usize);
+        sizeof(T)
+    }]u8
+}
+fn test() -> i32 { sizeof(Buffer<u32>) as i32 }

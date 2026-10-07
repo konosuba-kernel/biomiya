@@ -1,0 +1,7 @@
+pub fn test() -> i32 {
+    var data = [1, 2, 3];
+    let (left, right) = split_at_mut(data[0..data.len], 1);
+    for item in left { *item += 10; }
+    for item in right { *item += 20; }
+    data[0] + data[1] + data[2]
+}

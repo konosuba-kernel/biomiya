@@ -1,0 +1,6 @@
+pub fn test() -> i32 {
+    var data = [1, 2];
+    var index: usize = 0;
+    data[index] += { index = 1; 9 };
+    data[0] * 10 + data[1]
+}

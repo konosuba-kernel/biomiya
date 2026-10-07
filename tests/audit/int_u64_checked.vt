@@ -1,0 +1,1 @@
+pub fn test()->i32{match u64::MAX +? 1_u64 {Some(_)=>0,None=>7}}

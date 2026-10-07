@@ -1,0 +1,16 @@
+@export("byte_\xff")
+fn first() -> i32 { 20 }
+@export("byte_\xfe")
+fn second() -> i32 { 22 }
+@export("quote\"slash\\end\\")
+fn quoted() -> i32 { 0 }
+@export("line\nbreak")
+fn newline() -> i32 { 0 }
+@export("汉字")
+@section(".custom_\xff\"\\")
+fn section() -> i32 { 0 }
+@export("data_\xfe\"\\")
+@section(".data_custom_\xfe\\")
+static VALUE: i32 = 0;
+static POINTER: *const i32 = addr_of(VALUE);
+pub fn test() -> i32 { first() + second() + quoted() + newline() + section() + unsafe { *POINTER } }

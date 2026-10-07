@@ -1,0 +1,9 @@
+pub fn test() -> i32 {
+    var data = [1, 2, 3];
+    let view = data[0..data.len];
+    let p = view.as_mut_ptr();
+    let again = unsafe { slice_from_raw_parts_mut(p, 3) };
+    again[1] = 9;
+    let empty = unsafe { slice_from_raw_parts(again.as_ptr(), 0) };
+    data[0] + data[1] + data[2] + view.len as i32 + empty.len as i32
+}

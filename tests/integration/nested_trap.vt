@@ -1,0 +1,9 @@
+@trap_entry
+fn entry(frame: &mut arch::TrapFrame) -> ! {
+    unsafe { arch::asm("unimp"); }
+    loop { arch::riscv::cpu_relax(); }
+}
+pub fn test() -> i32 {
+    unsafe { arch::asm("ecall"); }
+    0
+}

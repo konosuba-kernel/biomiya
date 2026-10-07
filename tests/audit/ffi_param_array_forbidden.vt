@@ -1,0 +1,1 @@
+extern abi(C) fn f(x:[2]i32);pub fn test()->i32{0}

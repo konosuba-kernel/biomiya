@@ -1,0 +1,1 @@
+fn f(p: *const u8) { let view = slice_from_raw_parts(p, 1); }

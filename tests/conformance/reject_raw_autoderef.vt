@@ -1,0 +1,2 @@
+struct S { x: i32 }
+fn f(p: *S) -> i32 { unsafe { p.x } }

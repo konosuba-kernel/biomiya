@@ -1,0 +1,1 @@
+fn test()->i32{let v=match false{true=>1,false=>7_u8};v as i32}

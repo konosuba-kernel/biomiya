@@ -1,0 +1,1 @@
+enum W<T>{A(T),B}pub fn test()->i32{let x=W::A(6);match x{W::A(v)=>v,W::B=>0}}

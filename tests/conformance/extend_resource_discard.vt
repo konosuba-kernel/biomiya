@@ -1,0 +1,2 @@
+resource struct Frame { value: usize }
+fn f() { let frame = Frame { value: 1 }; let _ = frame; }

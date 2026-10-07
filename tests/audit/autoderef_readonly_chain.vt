@@ -1,0 +1,1 @@
+struct S{x:i32}fn test(){var s=S{x:3};let r=&mut s;let rr=&r;rr.x=7;}

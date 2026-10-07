@@ -1,0 +1,1 @@
+pub fn test()->i32{var x=7;let p:*const i32=addr_of_mut(x);unsafe{*p}}

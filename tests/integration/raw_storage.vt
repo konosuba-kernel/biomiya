@@ -1,0 +1,12 @@
+@packed
+struct Packed { prefix: u8, value: u64 }
+pub fn test() -> i32 {
+    var p = Packed { prefix: 1_u8, value: 0_u64 };
+    let address = addr_of_mut(p.value);
+    unsafe { volatile_store(addr_of_mut(p.prefix), 7_u8); }
+    p.value = 35_u64;
+    var storage = MaybeUninit::<Packed>::uninit();
+    storage.write(p);
+    let initialized = unsafe { storage.assume_init() };
+    initialized.value as i32 + initialized.prefix as i32
+}

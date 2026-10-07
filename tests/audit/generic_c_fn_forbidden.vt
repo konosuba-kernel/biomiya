@@ -1,0 +1,1 @@
+extern abi(C) fn f<T>(x:T)->T{x}pub fn test()->i32{0}

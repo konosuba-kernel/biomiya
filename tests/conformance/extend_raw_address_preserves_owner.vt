@@ -1,0 +1,7 @@
+resource struct Token { value: u32 }
+fn release(token: Token) { let Token { value: n } = token; }
+fn f() {
+    let token = Token { value: 1 };
+    let p = addr_of(token);
+    release(token);
+}

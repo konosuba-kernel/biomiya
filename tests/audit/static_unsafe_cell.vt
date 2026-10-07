@@ -1,0 +1,1 @@
+static A:UnsafeCell<i32>=UnsafeCell::new(5);pub fn test()->i32{unsafe{*A.get()=8;*A.get()}}

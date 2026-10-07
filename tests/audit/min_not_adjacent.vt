@@ -1,0 +1,1 @@
+pub fn test()->i32{(- 128_i8) as i32}

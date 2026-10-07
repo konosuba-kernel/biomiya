@@ -1,0 +1,12 @@
+fn source() {}
+struct Buffer<T> {
+    bytes: [{
+        let f = source;
+        let atomic = Atomic::<usize>::new(sizeof(T));
+        let cell = UnsafeCell::<usize>::new(sizeof(T));
+        let uninit = MaybeUninit::<T>::uninit();
+        let pointer: *kernel const u8 = null;
+        sizeof(T)
+    }]u8
+}
+fn test() -> i32 { sizeof(Buffer<u32>) as i32 }

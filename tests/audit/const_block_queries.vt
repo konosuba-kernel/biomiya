@@ -1,0 +1,15 @@
+const N: usize = {
+    let n = 3_usize;
+    static_assert(n == 3_usize);
+    let values: [n]u8 = [7_u8; n];
+    values.len
+};
+struct Buffer<T> {
+    bytes: [{
+        let n = sizeof(T);
+        static_assert(n > 0_usize);
+        let values: [n]u8 = [7_u8; n];
+        values.len
+    }]u8
+}
+fn test() -> i32 { (N + sizeof(Buffer<u32>)) as i32 }

@@ -1,0 +1,1 @@
+fn test(){var x=3;let y=4;let r=if true{&y}else{&mut x};}

@@ -1,0 +1,2 @@
+fn work(p:&mut i32){defer {var n=0;loop{n+=1;if n<3{continue;}*p=n;break;}}}
+fn test()->i32{var result=0;work(&mut result);result}

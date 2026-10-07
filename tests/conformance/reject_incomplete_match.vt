@@ -1,0 +1,3 @@
+fn f(v: Option<i32>) -> i32 {
+    match v { Some(0) => 1, None => 0 }
+}

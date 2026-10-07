@@ -1,0 +1,1 @@
+fn test(){var x:u64=7;let y=replace::<u8>(&mut x,1_u64);}

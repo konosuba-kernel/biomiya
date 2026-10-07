@@ -1,0 +1,1 @@
+enum A{X(i32)}fn test()->i32{match A::X(7){Missing::X(v)=>v}}

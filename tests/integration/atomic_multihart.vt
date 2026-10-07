@@ -1,0 +1,32 @@
+static READY: Atomic<u32> = Atomic::<u32>::new(0);
+static DONE: Atomic<u32> = Atomic::<u32>::new(0);
+static COUNT: Atomic<u32> = Atomic::<u32>::new(0);
+static CAS: Atomic<u32> = Atomic::<u32>::new(0);
+static mut PUBLISHED: i32 = 0;
+fn increment_cas() {
+    loop {
+        let old = CAS.load(SeqCst);
+        match CAS.compare_exchange(old, old + 1_u32, SeqCst, Acquire) {
+            Ok(value) => { return; },
+            Err(value) => {},
+        }
+    }
+}
+@export("language_secondary")
+extern abi(C) fn secondary(hart: usize) {
+    if hart == 1_usize {
+        unsafe { PUBLISHED = 7; }
+        READY.store(1_u32, Release);
+        for i in 0_u32..5000_u32 { COUNT.fetch_add(1_u32, SeqCst); increment_cas(); }
+        DONE.store(1_u32, Release);
+    }
+    loop { arch::riscv::cpu_relax(); }
+}
+pub fn test() -> i32 {
+    while READY.load(Acquire) == 0_u32 { arch::riscv::cpu_relax(); }
+    if unsafe { PUBLISHED } != 7 { panic("publication"); }
+    for i in 0_u32..5000_u32 { COUNT.fetch_add(1_u32, SeqCst); increment_cas(); }
+    while DONE.load(Acquire) == 0_u32 { arch::riscv::cpu_relax(); }
+    if COUNT.load(SeqCst) != 10000_u32 || CAS.load(SeqCst) != 10000_u32 { panic("atomic count"); }
+    7
+}

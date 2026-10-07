@@ -1,0 +1,1 @@
+pub fn test()->i32{let x:Option<Option<i32>>=Some(Some(4));match &x{Some(Some(v))=>*v,Some(None)=>1,None=>0}}

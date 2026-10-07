@@ -1,0 +1,9 @@
+pub fn test() -> i32 {
+    let p = unsafe { ptr::<u16, mmio>(0x20000000_usize) };
+    unsafe { mmio_store(p, 0x98_u16); }
+    let q = unsafe { mmio_load(ptr::<u16, mmio>(0x20000040_usize)) };
+    let r = unsafe { mmio_load(ptr::<u16, mmio>(0x20000044_usize)) };
+    let y = unsafe { mmio_load(ptr::<u16, mmio>(0x20000048_usize)) };
+    unsafe { mmio_store(p, 0xff_u16); }
+    if q == 81_u16 && r == 82_u16 && y == 89_u16 { 1 } else { 0 }
+}

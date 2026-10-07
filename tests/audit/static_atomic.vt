@@ -1,0 +1,1 @@
+static A:Atomic<u32>=Atomic::new(5_u32);pub fn test()->i32{A.fetch_add(1_u32,SeqCst) as i32}

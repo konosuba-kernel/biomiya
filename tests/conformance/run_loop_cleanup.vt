@@ -1,0 +1,9 @@
+pub fn test() -> i32 {
+    var count = 0;
+    for i in 0..3 {
+        defer { count += 1; }
+        if i == 0 { continue; }
+        if i == 1 { break; }
+    }
+    count
+}

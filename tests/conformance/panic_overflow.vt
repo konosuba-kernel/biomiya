@@ -1,0 +1,1 @@
+pub fn test() -> i32 { let x: u8 = 255; (x + 1) as i32 }

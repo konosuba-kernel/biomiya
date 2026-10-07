@@ -1,0 +1,2 @@
+pub fn test() -> i32 { identity(37) }
+fn identity<T>(value: T) -> T { value }

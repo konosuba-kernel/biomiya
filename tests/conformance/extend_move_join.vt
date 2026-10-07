@@ -1,0 +1,6 @@
+struct Box { value: i32 }
+fn f(flag: bool) -> i32 {
+    let b = Box { value: 1 };
+    if flag { let old = b; }
+    b.value
+}

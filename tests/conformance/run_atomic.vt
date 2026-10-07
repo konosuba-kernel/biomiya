@@ -1,0 +1,6 @@
+pub fn test() -> i32 {
+    let a = Atomic::<u8>::new(255);
+    let old = a.fetch_add(1, Relaxed);
+    let r = a.compare_exchange(0, 7, SeqCst, Acquire);
+    match r { Ok(v) => old as i32 + v as i32 + a.load(Acquire) as i32, Err(v) => -1 }
+}

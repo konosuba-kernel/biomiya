@@ -1,0 +1,1 @@
+struct S{x:i32}impl S{fn value(&self)->i32{self.x}}pub fn test()->i32{let s=S{x:8};S::value(&s)}

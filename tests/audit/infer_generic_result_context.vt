@@ -1,0 +1,1 @@
+fn choose<T>(a:T,b:T)->T{b}fn test()->i32{let v=choose(1,if true{7_u8}else{9});v as i32}

@@ -1,0 +1,1 @@
+struct R{p:&i32}pub fn test()->i32{let x=9;let r=R{p:&x};match r{R{p:p}=>*p}}

@@ -1,0 +1,1 @@
+pub fn test()->i32{var x:Option<i32>=Some(1);match &mut x {Some(v)=>{*v=7;},None=>{}} match x {Some(v)=>v,None=>0}}

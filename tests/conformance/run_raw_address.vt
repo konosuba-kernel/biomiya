@@ -1,0 +1,12 @@
+@packed
+struct Packed { head: u8, word: u32 }
+fn pointer(r: &i32) -> *const i32 { addr_of(*r) }
+pub fn test() -> i32 {
+    var data = [1, 2];
+    var index: usize = 0;
+    let p = addr_of_mut(data[{ index += 1; index }]);
+    unsafe { *p = 9; }
+    let packed = Packed { head: 0, word: 7 };
+    let offset = addr(addr_of(packed.word)) - addr(addr_of(packed));
+    unsafe { *pointer(&data[1]) + offset as i32 }
+}

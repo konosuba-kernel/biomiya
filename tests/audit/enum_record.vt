@@ -1,0 +1,1 @@
+@copy enum E {A {x:i32,y:i32},B}pub fn test()->i32{let a=E::A {y:2,x:3}; match a {E::A{x:x,y:y}=>x+y,E::B=>0}}

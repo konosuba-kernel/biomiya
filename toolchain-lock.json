@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "host": "x86_64-unknown-linux-gnu",
+  "rust": "1.96.0",
+  "clang": "23.1.1",
+  "lld": "23.1.1",
+  "qemu": "11.1.1",
+  "target": "rv64-core-v1",
+  "isa": "rv64ima_zicsr_zifencei",
+  "abi": "lp64",
+  "unicode": "15.1.0",
+  "platform": "qemu-virt-core-v1"
+}

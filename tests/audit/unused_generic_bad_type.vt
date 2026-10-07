@@ -1,0 +1,1 @@
+fn unused<T>(x:T){let n:bool=3;} pub fn test()->i32{0}

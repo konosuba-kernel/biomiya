@@ -1,0 +1,7 @@
+pub fn test() -> i32 {
+    let a = Atomic::<u32>::new(0_u32);
+    match a.compare_exchange(0_u32, 42_u32, SeqCst, SeqCst) {
+        Ok(old) => a.load(SeqCst) as i32 + old as i32,
+        Err(old) => -1,
+    }
+}

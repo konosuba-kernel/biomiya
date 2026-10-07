@@ -1,0 +1,1 @@
+pub fn test()->i32{let a=Atomic::<bool>::new(false);0}

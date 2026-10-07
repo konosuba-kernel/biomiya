@@ -1,0 +1,7 @@
+struct Pair { a: i32, b: i32 }
+fn next(counter: &mut i32) -> i32 { *counter += 1; *counter }
+pub fn test() -> i32 {
+    var counter = 0;
+    let p = Pair { b: next(&mut counter), a: next(&mut counter) };
+    p.a * 10 + p.b
+}

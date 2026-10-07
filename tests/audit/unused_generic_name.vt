@@ -1,0 +1,1 @@
+fn unused<T>(x:T) { unknown_function(); } pub fn test()->i32 {0}

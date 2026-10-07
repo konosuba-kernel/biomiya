@@ -1,0 +1,1 @@
+pub fn test()->i32{match checked_cast::<u8>(256_i32){Some(x)=>x as i32,None=>9}}

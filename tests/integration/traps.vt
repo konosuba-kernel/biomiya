@@ -1,0 +1,18 @@
+static mut COUNT: i32 = 0;
+@trap
+fn handler(frame: &mut arch::TrapFrame) {
+    frame.sepc += 4_usize;
+    unsafe { COUNT += 1; }
+}
+@trap_entry
+fn entry(frame: &mut arch::TrapFrame) -> ! {
+    defer { unsafe { COUNT += 1; } }
+    arch::enter_trap_handler(frame, handler)
+}
+pub fn test() -> i32 {
+    var value: usize = 0;
+    unsafe {
+        arch::asm("li t3, 31\necall\nmv t6, t3", out("t6") value, clobber("t3"));
+        value as i32 + COUNT
+    }
+}

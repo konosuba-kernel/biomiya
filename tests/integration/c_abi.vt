@@ -1,0 +1,28 @@
+@repr(C)
+struct Pair { a: u64, b: u64 }
+@repr(C)
+struct Triple { a: u64, b: u64, c: u64 }
+extern abi(C) fn split_pair(a: u64, b: u64, c: u64, d: u64, e: u64, f: u64, p: Pair) -> Triple;
+@export("back_pair")
+extern abi(C) fn callback(p: Pair) -> u64 { p.a + p.b }
+@repr(C)
+struct Small { value: u32 }
+extern abi(C) fn small_roundtrip(value: Small) -> Small;
+extern abi(C) fn ten_scalars(a: u32, b: u32, c: u32, d: u32, e: u32, f: u32, g: u32, h: u32, i: u32, j: u32) -> u32;
+@export("back_small")
+extern abi(C) fn small_callback(value: Small) -> Small { Small { value: value.value + 1_u32 } }
+extern abi(C) fn pair_roundtrip(value: Pair) -> Pair;
+extern abi(C) fn triple_roundtrip(value: Triple) -> Triple;
+@export("back_pair_return")
+extern abi(C) fn pair_callback(value: Pair) -> Pair { value }
+@export("back_triple")
+extern abi(C) fn triple_callback(value: Triple) -> Triple { value }
+pub fn test() -> i32 {
+    let p = Pair { a: 20_u64, b: 22_u64 };
+    let r = unsafe { split_pair(0, 0, 0, 0, 0, 0, p) };
+    let s = unsafe { small_roundtrip(Small { value: 0x80000000_u32 }) };
+    let n = unsafe { ten_scalars(0x80000000_u32, 0, 0, 0, 0, 0, 0, 0, 1, 2) };
+    let pair = unsafe { pair_roundtrip(Pair { a: 19_u64, b: 23_u64 }) };
+    let triple = unsafe { triple_roundtrip(r) };
+    if pair.a + pair.b == 42_u64 && triple.c == 42_u64 && s.value == 0x80000001_u32 && n == 0x80000003_u32 { triple.c as i32 } else { -1 }
+}

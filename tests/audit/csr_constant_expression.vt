@@ -1,0 +1,7 @@
+fn test() -> i32 {
+    unsafe {
+        let literal = arch::riscv::csr_read(0x100_usize);
+        let computed = arch::riscv::csr_read({ let base = 0x80_usize; base * 2_usize });
+        if literal == computed { 7 } else { 0 }
+    }
+}

@@ -1,0 +1,4 @@
+@trap fn handler(frame: &mut arch::TrapFrame) { }
+@trap_entry fn entry(frame: &mut arch::TrapFrame) -> ! {
+    arch::enter_trap_handler(frame, handler)
+}

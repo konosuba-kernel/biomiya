@@ -1,0 +1,9 @@
+// The platform supplies startup and calls this explicitly exported C entry.
+@export("kernel_main")
+extern abi(C) fn kernel_main() {
+    for byte in "biomiya Core\n" {
+        unsafe {
+            mmio_store(ptr::<u8, mmio>(0x10000000_usize), *byte);
+        }
+    }
+}

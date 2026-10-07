@@ -1,0 +1,11 @@
+struct Box { value: i32 }
+impl Box {
+    fn add(&mut self, n: i32) { self.value += n; }
+    fn read(&self) -> i32 { self.value }
+}
+pub fn test() -> i32 {
+    var b = Box { value: 4 };
+    let r = &mut b;
+    r.add(3);
+    r.read()
+}

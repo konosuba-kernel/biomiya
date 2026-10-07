@@ -1,0 +1,9 @@
+struct S { f: fn() -> i32 }
+impl S {
+    fn f(&self) -> i32 { 2 }
+}
+fn source() -> i32 { 1 }
+fn test() -> i32 {
+    let s = S { f: source };
+    (s.f)() * 10 + s.f()
+}

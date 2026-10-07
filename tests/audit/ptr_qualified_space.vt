@@ -1,0 +1,3 @@
+fn test() {
+    unsafe { let p = ptr::<u32, kernel::Bogus>(0); }
+}

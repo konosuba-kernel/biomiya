@@ -1,0 +1,1 @@
+pub fn test()->i32{var a=i64::MAX;let x=a*2_i64;0}

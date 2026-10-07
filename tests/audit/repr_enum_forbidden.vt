@@ -1,0 +1,1 @@
+@repr(C) enum E{A}pub fn test()->i32{0}

@@ -1,0 +1,6 @@
+fn addr_of(value: i32) -> i32 { value + 1 }
+pub fn test() -> i32 {
+    let x = 6;
+    let p = core::addr_of(x);
+    unsafe { *p + addr_of(4) }
+}

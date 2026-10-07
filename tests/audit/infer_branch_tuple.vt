@@ -1,0 +1,1 @@
+fn test()->i32{let p=if true{(1,7)}else{(2_u8,3_u8)};p.1 as i32}

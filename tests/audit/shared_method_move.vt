@@ -1,0 +1,1 @@
+struct S{x:i32}impl S{fn take(self)->i32{self.x}}fn test()->i32{let s=S{x:7};let r=&s;r.take()}

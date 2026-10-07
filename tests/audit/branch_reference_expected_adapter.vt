@@ -1,0 +1,1 @@
+fn test()->i32{var x=3;let y=4;let r:&i32=if true{&mut x}else{&y};*r}

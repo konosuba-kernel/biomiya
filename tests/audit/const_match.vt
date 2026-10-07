@@ -1,0 +1,1 @@
+const X:i32=match Some(true) {Some(true)=>7,Some(false)=>8,None=>9};pub fn test()->i32{X}

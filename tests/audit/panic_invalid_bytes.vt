@@ -1,0 +1,1 @@
+fn test() -> i32 { panic("\xFF") }

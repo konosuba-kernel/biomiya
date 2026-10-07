@@ -1,0 +1,1 @@
+enum E{A(i32),B}pub fn test()->i32{let x=E::A(8);match &x {E::A(v)=>*v,E::B=>0}}

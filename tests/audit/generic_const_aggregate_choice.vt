@@ -1,0 +1,17 @@
+enum Size { Bytes(usize), Pair { a: usize, b: usize } }
+struct Buffer<T> {
+    bytes: [{
+        let size = if sizeof(T) == 4_usize {
+            Size::Bytes(sizeof(T))
+        } else {
+            Size::Pair { a: sizeof(T), b: 2_usize }
+        };
+        match size {
+            Size::Bytes(n) => n,
+            Size::Pair { a: x, b: y } => x + y
+        }
+    }]u8
+}
+fn test() -> i32 {
+    sizeof(Buffer<u32>) as i32 + sizeof(Buffer<u64>) as i32
+}

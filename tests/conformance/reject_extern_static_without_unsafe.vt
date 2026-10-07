@@ -1,0 +1,2 @@
+extern abi(C) static boundary: u8;
+fn f() -> usize { addr(addr_of(boundary)) }

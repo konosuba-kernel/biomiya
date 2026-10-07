@@ -1,0 +1,1 @@
+fn test(){unsafe{forget::<u8>(1_u64);}}

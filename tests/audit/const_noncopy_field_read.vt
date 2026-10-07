@@ -1,0 +1,3 @@
+struct Number { value: usize }
+const VALUE: usize = Number { value: 7_usize }.value;
+fn test() -> i32 { VALUE as i32 }

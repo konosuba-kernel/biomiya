@@ -1,0 +1,1 @@
+pub fn test()->i32{var a=[1,8];let p=addr_of_mut(a[0]);unsafe{*ptr_add_bytes(p,4_usize)}}

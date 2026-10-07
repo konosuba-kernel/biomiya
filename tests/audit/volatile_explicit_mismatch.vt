@@ -1,0 +1,1 @@
+fn test()->i32{var x:u64=7;unsafe{volatile_load::<u8>(addr_of(x)) as i32}}

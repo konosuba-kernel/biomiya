@@ -1,0 +1,1 @@
+const S:[]const u8="hello";pub fn test()->i32{S[1] as i32+S.len as i32}

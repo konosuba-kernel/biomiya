@@ -1,0 +1,11 @@
+fn fail() -> Result<i32, i32> { Err(5) }
+fn inner(out: &mut i32) -> Result<i32, i32> {
+    defer { *out = 8; }
+    let n = fail()?;
+    Ok(n)
+}
+pub fn test() -> i32 {
+    var out = 0;
+    let r = inner(&mut out);
+    match r { Ok(v) => v, Err(e) => e * 10 + out }
+}

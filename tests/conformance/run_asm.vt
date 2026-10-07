@@ -1,0 +1,5 @@
+pub fn test() -> i32 {
+    var out: usize = 0;
+    unsafe { arch::asm("add a1, a0, a0", in("a0") 6_usize, out("a1") out); }
+    out as i32
+}

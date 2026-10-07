@@ -1,0 +1,6 @@
+struct Pair { a: i32, b: i32 }
+fn exchange(p: Pair) -> Pair { Pair { a: p.b, b: p.a } }
+pub fn test() -> i32 {
+    let p = exchange(Pair { a: 2, b: 9 });
+    p.a * 10 + p.b
+}

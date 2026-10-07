@@ -1,0 +1,1 @@
+const X:i32={static_assert(true);let x=4;x+1};pub fn test()->i32{X}

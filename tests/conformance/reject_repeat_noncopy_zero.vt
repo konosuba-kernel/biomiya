@@ -1,0 +1,2 @@
+struct Item { value: i32 }
+fn f() { let items = [Item { value: 1 }; 0]; }

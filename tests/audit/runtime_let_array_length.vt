@@ -1,0 +1,5 @@
+fn test() -> i32 {
+    let n = 3_usize;
+    let values = [7_u8; n];
+    values[0] as i32
+}

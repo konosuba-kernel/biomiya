@@ -1,0 +1,5 @@
+pub fn test() -> i32 {
+    var count = 0;
+    for i in 254_u8..=255_u8 { count += 1; }
+    count
+}

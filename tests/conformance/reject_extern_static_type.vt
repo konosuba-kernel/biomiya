@@ -1,0 +1,1 @@
+extern abi(C) static bytes: []const u8;

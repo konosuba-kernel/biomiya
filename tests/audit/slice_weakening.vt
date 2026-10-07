@@ -1,0 +1,1 @@
+pub fn test()->i32{var a=[1,2];let m=a[0..2];let s:[]const i32=m;m[0]=4;s[0]}

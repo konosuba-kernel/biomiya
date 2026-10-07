@@ -1,0 +1,15 @@
+@copy
+struct Pair { a: i32, b: i32 }
+fn produce(out: &mut i32) -> Pair {
+    var p = Pair { a: 20, b: 22 };
+    defer { p.a = 99; *out = p.a; }
+    return p;
+}
+fn zero_argument(ignored: (), value: i32) -> i32 { value }
+pub fn test() -> i32 {
+    var out = 0;
+    let pair = produce(&mut out);
+    var side = 0;
+    let zero = zero_argument({ side = 41; () }, 1);
+    pair.a + pair.b + out + side + zero
+}

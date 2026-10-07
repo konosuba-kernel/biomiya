@@ -1,0 +1,1 @@
+fn test()->i32{let v=loop{if false{break 1;}break 7_u8;};v as i32}

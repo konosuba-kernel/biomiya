@@ -1,0 +1,9 @@
+pub fn test() -> i32 {
+    let p64 = unsafe { ptr::<u64, mmio>(0x02004000_usize) };
+    unsafe { mmio_store(p64, 0x7fffffffffffffff_u64); }
+    let a = unsafe { mmio_load(p64) };
+    let p32 = unsafe { ptr::<u32, mmio>(0x02004000_usize) };
+    unsafe { mmio_store(p32, 0xfffffffe_u32); }
+    let b = unsafe { mmio_load(p32) };
+    if a == 0x7fffffffffffffff_u64 && b == 0xfffffffe_u32 { 1 } else { 0 }
+}

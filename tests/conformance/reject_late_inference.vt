@@ -1,0 +1,1 @@
+fn f() { let x = None; let y: Option<i32> = x; }

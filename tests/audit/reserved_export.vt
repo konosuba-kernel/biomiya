@@ -1,0 +1,1 @@
+@export("__biomiya_reserved") fn f(){}pub fn test()->i32{0}

@@ -1,0 +1,4 @@
+struct ByCast<T> {
+    bytes: [{ let x: T = 258 as T; x as usize }]u8
+}
+fn test() -> i32 { 0 }

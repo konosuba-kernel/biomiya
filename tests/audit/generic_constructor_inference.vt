@@ -1,0 +1,1 @@
+struct W<T>{v:T}pub fn test()->i32{let x=W{v:6};x.v}

@@ -1,0 +1,1 @@
+fn test()->i32{let xs=[[],[0_u8;0]];xs[0].len as i32}

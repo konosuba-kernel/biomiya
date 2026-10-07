@@ -1,0 +1,1 @@
+pub fn test()->i32{return 1;let x:bool=4;}

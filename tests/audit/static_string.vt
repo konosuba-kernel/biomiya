@@ -1,0 +1,1 @@
+static S:[]const u8="xy";pub fn test()->i32{S[1] as i32}

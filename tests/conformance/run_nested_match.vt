@@ -1,0 +1,4 @@
+pub fn test() -> i32 {
+    let v: Option<bool> = Some(false);
+    match v { Some(true) => 1, Some(false) => 2, None => 3 }
+}

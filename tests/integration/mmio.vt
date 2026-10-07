@@ -1,0 +1,10 @@
+pub fn test() -> i32 {
+    let p = unsafe { ptr::<u8, mmio>(0x10000007_usize) };
+    unsafe { mmio_store(p, 90_u8); }
+    arch::device_write_fence();
+    let a = unsafe { mmio_load(p) };
+    unsafe { mmio_store(p, 55_u8); }
+    arch::device_read_fence();
+    let b = unsafe { mmio_load(p) };
+    a as i32 + b as i32
+}

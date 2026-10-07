@@ -1,0 +1,5 @@
+pub fn test() -> i32 {
+    var data = [0; 2];
+    let p = addr_of_mut(data[2]);
+    0
+}

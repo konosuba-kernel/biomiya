@@ -1,0 +1,19 @@
+struct Buffer<T> {
+    bytes: [{
+        let n = sizeof(T);
+        let a = match (n +? 1_usize) { Some(v) => v, None => 0_usize };
+        let b = match (n -? 1_usize) { Some(v) => v, None => 0_usize };
+        let c = match (n *? 2_usize) { Some(v) => v, None => 0_usize };
+        let d = match checked_cast::<u8>(n) { Some(v) => v as usize, None => 0_usize };
+        a + b + c + d
+    }]u8
+}
+struct Overflow<T> {
+    bytes: [match (sizeof(T) *? 18446744073709551615_usize) {
+        Some(n) => 0_usize,
+        None => 7_usize
+    }]u8
+}
+fn test() -> i32 {
+    (sizeof(Buffer<u32>) + sizeof(Buffer<[256]u8>) + sizeof(Overflow<u32>)) as i32
+}

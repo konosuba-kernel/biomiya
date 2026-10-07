@@ -1,0 +1,1 @@
+unsafe fn f(){let p=ptr::<i32>(0_usize);} pub fn test()->i32{0}

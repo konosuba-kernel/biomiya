@@ -1,0 +1,1 @@
+fn test(){arch::riscv::cpu_relax::<u8>();}

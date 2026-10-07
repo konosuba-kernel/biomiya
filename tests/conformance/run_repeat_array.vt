@@ -1,0 +1,8 @@
+static ZERO: [512]u64 = [0; 512];
+fn next(n: &mut i32) -> i32 { *n += 1; *n }
+pub fn test() -> i32 {
+    var n = 0;
+    let a = [next(&mut n); 3];
+    let empty = [next(&mut n); 0];
+    n * 10 + a[0] + a[2] + empty.len as i32 + ZERO[511] as i32
+}
