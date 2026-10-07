@@ -1,0 +1,86 @@
+{
+  "node": "S",
+  "revision": 2,
+  "reviewer": "/root/core_s_review",
+  "implementer": "/root",
+  "independence": {
+    "contributed_to_R_L_K_S": false,
+    "candidate_modified": false
+  },
+  "candidate": {
+    "files": [
+      {
+        "path": "docs/design/core-s-semantics.md",
+        "sha256": "b9e2ebb3d9f30647117b3ddcc39203aff7697935a40bf5361512b1d3437fd9d5"
+      },
+      {
+        "path": "README.md",
+        "sha256": "2c204d2390e8db40391585056ecd1c6bf11c7523ccf2e40d831ae5bff444a4ad"
+      }
+    ]
+  },
+  "input_versions": {
+    "L": {
+      "revision": 2,
+      "sha256": "c9f01f849bb351fe8876e65daf4158299907b0a91d547e8d688df89d1d7d8296",
+      "review": "build/simplification/core-s/L/review-r2.json"
+    },
+    "K": {
+      "revision": 1,
+      "sha256": "9158153ab9f02fed609c77db29375f255844a8205eb0d7bca34e83f46e42a7d2",
+      "review": "build/simplification/core-s/K/review-r1.json"
+    }
+  },
+  "verdict": "pass",
+  "scope": "S最终组合设计；基于完整r1审查、保留原件及r2精确diff作有界复核，检查F1/F2和所有受影响周边规则。",
+  "previous_review": "build/simplification/core-s/S/review-r1.json",
+  "checks": [
+    {
+      "action": "读取S r2 candidate及diff -u S/r1/core-s-semantics.md与最终稿，阅读所有命中Option/Result/导出/入口规则及其周边",
+      "result": "唯一正文变化是允许特殊函数export、明确两个固定类型标签/载荷、增加显式平台入口选择和真实链接路径；其余整体规则/README不变。"
+    },
+    {
+      "action": "Python验证r2两个冻结文件hash、保留r1 hash和fail记录、L r2/K r1实际hash及独立pass、贡献者身份",
+      "result": "全部匹配；本pass绑定当前精确文件，旧r1失败证据保留；前置L/K仍为原通过版本，审查者未编写任何设计。"
+    },
+    {
+      "action": "重验F1：固定构造的机械表示与枚举布局/构造/match/?/静态初始化一致性",
+      "result": "Some(T)=0、None=1、Ok(T)=0、Err(E)=1及载荷明确；按第13节固定枚举布局降低，不恢复用户泛型、Copy/resource或自动释放。构造/匹配/?的语义和全路径要求一致。"
+    },
+    {
+      "action": "重验F2：属性许可、源调用禁令、唯一平台选择、导出符号和硬件入口链接",
+      "result": "特殊函数可@export，只命名物理入口，不变为普通源调用/C函数/可取函数指针；构建显式选择唯一trap_entry导出名并检查属性/签名/唯一性，缺少或错误选择失败。平台链接别名或硬件桩直连命名导出，a0帧地址ABI明确，无隐藏shim或隐式main。"
+    },
+    {
+      "action": "rg -n 检索runtime与src的__biomiya_trap_entry，核对提案“现有硬件桩”事实",
+      "result": "runtime/rv64/trap.S:61实际call __biomiya_trap_entry，runtime.c有weak fallback，driver现有代码生成该桥接名。首次命令也传了不存在的platform目录导致rg exit2，但返回的runtime/src匹配文件已检查；未将此检索视为运行验证。提案的显式平台绑定有真实待接的汇编符号。"
+    },
+    {
+      "action": "检查保留前缀、链接冲突、特殊tail transfer和帧存活/清理周边合同",
+      "result": "用户导出不占__biomiya_，平台别名可以使用；多定义冲突构建失败；特殊属性仍互斥且不与C ABI并用；尾转移、活动帧、defer及无调度trap边界未变。"
+    },
+    {
+      "action": "Python重新核对文档/README本地链接目标和围栏；对照r1整体成功检查与实际diff",
+      "result": "链接存在、围栏成对；原先用户目标/大取舍披露、有限内建、check/synth、退出清理、常量图、单一IR/Extend/未来验收及README未实施声明未受修改，原成功检查经变更影响核对后适用于当前r2。"
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "F1",
+      "status": "resolved",
+      "basis": "第367行给定固定Option/Result全部变体、载荷与数值标签。"
+    },
+    {
+      "id": "F2",
+      "status": "resolved",
+      "basis": "第361行恢复特殊入口符号导出许可，第388行闭合构建选择、检查、命名和硬件汇编链接路径。"
+    }
+  ],
+  "gaps": [],
+  "limitations": [
+    "这是设计语义和平台合同验收；没有编译或链接Core S提案，没有运行QEMU、并发或内核移植，也没有验证行数/规模目标。",
+    "现有0.5硬件桩检索仅证实文稿引用的桥接名存在，不证明未来Core S编译器或平台构建已实现新增选择/绑定检查。",
+    "整体通过基于此前完整审查与精确局部修订复核；不把组件pass单独作为S通过证据。"
+  ],
+  "evidence_path": "build/simplification/core-s/S/review-r2.json"
+}

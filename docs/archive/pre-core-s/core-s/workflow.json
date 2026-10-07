@@ -1,0 +1,290 @@
+{
+  "task": "定义最小 Core S 语义；仅设计，不实施编译器",
+  "source_head": "5301ce5a0225127c45e33afcacd29157d38655f9",
+  "status": "complete",
+  "nodes": [
+    {
+      "id": "R",
+      "depends_on": [],
+      "implementer": "/root",
+      "reviewer": "/root/core_s_review",
+      "contributors": [
+        "/root"
+      ],
+      "write_scope": "build/simplification/core-s/R",
+      "status": "accepted",
+      "revision": 1,
+      "reviews": [
+        "build/simplification/core-s/R/review-r1.json"
+      ],
+      "candidate": {
+        "path": "build/simplification/core-s/R/contract.md",
+        "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de"
+      }
+    },
+    {
+      "id": "L",
+      "depends_on": [
+        "R"
+      ],
+      "implementer": "/root/core_s_language",
+      "reviewer": "/root/core_s_review",
+      "contributors": [
+        "/root/core_s_language"
+      ],
+      "write_scope": "build/simplification/core-s/L",
+      "status": "accepted",
+      "revision": 2,
+      "reviews": [
+        "build/simplification/core-s/L/review-r1.json",
+        "build/simplification/core-s/L/review-r2.json"
+      ],
+      "accepted_inputs": {
+        "R": 1
+      },
+      "candidate": {
+        "node": "L",
+        "revision": 2,
+        "status": "frozen_candidate_awaiting_independent_review",
+        "author": "/root/core_s_language",
+        "contributors": [
+          "/root/core_s_language"
+        ],
+        "files": [
+          {
+            "path": "build/simplification/core-s/L/proposal.md",
+            "sha256": "c9f01f849bb351fe8876e65daf4158299907b0a91d547e8d688df89d1d7d8296",
+            "lines": 223
+          }
+        ],
+        "input_versions": {
+          "R": {
+            "revision": 1,
+            "path": "build/simplification/core-s/R/contract.md",
+            "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de",
+            "independent_verdict": "pass",
+            "review_path": "build/simplification/core-s/R/review-r1.json"
+          }
+        },
+        "reference_inputs": [
+          {
+            "path": "docs/reference.md",
+            "role": "existing 0.5 baseline, not compatibility requirement"
+          },
+          {
+            "path": "build/simplification/core-s/K/proposal.md",
+            "role": "interface reference only; not formal dependency"
+          }
+        ],
+        "validation": [
+          {
+            "action": "Archive r1 proposal and candidate byte-for-byte before edits; verify r1 SHA256 against independent fail review",
+            "result": "L/r1 snapshot preserved; review-r1.json not edited"
+          },
+          {
+            "action": "Read independent review-r1.json F1 and root revision instructions",
+            "result": "Addressed F1 and all requested wording/comparison changes"
+          },
+          {
+            "action": "Verify accepted R r1 SHA256 remains current",
+            "result": "Matched d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de"
+          },
+          {
+            "action": "Python check 200..280 lines, balanced fences and correction landmarks",
+            "result": "223 lines; checks passed"
+          },
+          {
+            "action": "Scope of mutations",
+            "result": "Only L/r1 snapshots and L/proposal.md/candidate.json written; review and product files untouched"
+          }
+        ],
+        "limitations": [
+          "Author checks are not independent acceptance",
+          "Design examples were not compiled; no compiler/product files modified",
+          "No implementation-size or kernel-port validation"
+        ],
+        "unresolved": [],
+        "previous_candidate": {
+          "revision": 1,
+          "path": "build/simplification/core-s/L/r1/candidate.json",
+          "proposal_path": "build/simplification/core-s/L/r1/proposal.md",
+          "sha256": "4c36645da662c120de596d6c7f5c132c10b78d11a9e44597b50708f3f3e00e6f",
+          "review_path": "build/simplification/core-s/L/review-r1.json",
+          "independent_verdict": "fail"
+        },
+        "changes_from_r1": [
+          "Resolve independent finding F1: const value references allowed, static value reads forbidden; include positive and negative examples",
+          "Restrict constant comparisons to integers, bool and unit; forbid pointer and function relocation comparisons",
+          "Correct 0.5 defer-call evaluation description; distinguish parameter/local lifetime from right-value temporary lifetime",
+          "Describe defer activation as compiler state with static cleanup actions, not mandatory runtime flags",
+          "Explicitly allow both readonly and mutable static address forms within the dedicated constant unsafe syntax"
+        ]
+      },
+      "unresolved": []
+    },
+    {
+      "id": "K",
+      "depends_on": [
+        "R"
+      ],
+      "implementer": "/root/core_s_kernel",
+      "reviewer": "/root/core_s_review",
+      "contributors": [
+        "/root/core_s_kernel"
+      ],
+      "write_scope": "build/simplification/core-s/K",
+      "status": "accepted",
+      "revision": 1,
+      "reviews": [
+        "build/simplification/core-s/K/review-r1.json"
+      ],
+      "accepted_inputs": {
+        "R": 1
+      },
+      "candidate": {
+        "node": "K",
+        "revision": 1,
+        "status": "frozen_for_independent_review",
+        "implementer": "/root/core_s_kernel",
+        "contributors": [
+          "/root/core_s_kernel"
+        ],
+        "files": [
+          {
+            "path": "build/simplification/core-s/K/proposal.md",
+            "sha256": "9158153ab9f02fed609c77db29375f255844a8205eb0d7bca34e83f46e42a7d2",
+            "line_count": 121
+          }
+        ],
+        "input_versions": {
+          "R": {
+            "revision": 1,
+            "path": "build/simplification/core-s/R/contract.md",
+            "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de",
+            "accepted_review": "build/simplification/core-s/R/review-r1.json",
+            "verdict": "pass"
+          }
+        },
+        "reference_inputs": [
+          {
+            "path": "docs/architecture-rv64.md",
+            "sha256": "c5255467d59c4acc86e717313b838c4fe43f8c488b60108faa3ecb2004da6450"
+          },
+          {
+            "path": "build/research/kernel-capabilities/S/report.txt",
+            "sha256": "7b28bc00f61324b5a807939ab232d0d32b4984e1575ed3e6dcf2c778903a67dc"
+          }
+        ],
+        "validation": [
+          {
+            "action": "Read accepted R contract and review; compare sha256 and pass verdict",
+            "result": "Passed, exact bound R r1"
+          },
+          {
+            "action": "Read docs/architecture-rv64.md and kernel-capabilities/S/report.txt",
+            "result": "Mechanical rules and existing no-scheduling trap boundary preserved; source breaks stated"
+          },
+          {
+            "action": "Python line limit, relative link existence, finite interface and representative-operation markers",
+            "result": "Passed; 121 lines; required markers present; architecture link exists"
+          },
+          {
+            "action": "Author semantic inspection",
+            "result": "SC u32/u64 raw-slot protocol, permissions, byte initialization, fixed layouts, scalar C ABI, trap and resource-transfer limits explicit; no claim of static ownership safety"
+          },
+          {
+            "action": "Inspect intended changes",
+            "result": "Only K proposal.md and candidate.json authored; no product implementation or test expectation edits"
+          }
+        ],
+        "unresolved": [],
+        "integration_notes": [
+          "L owns concrete grammar, local-slot initialization checking, constant/layout/static dependency closure and defer/exit rules; S must reconcile K examples and L syntax. K specifies concrete uninitialized slot as var slot:T, explicit ptr_const, dedicated ptr::<T,space>, and unsafe slice element access."
+        ],
+        "limitations": [
+          "Author validation is not independent acceptance",
+          "Semantic examples are not compiled",
+          "No product tests or external kernel build run; task is design only",
+          "No compiler line-count or migration measurements"
+        ]
+      }
+    },
+    {
+      "id": "S",
+      "depends_on": [
+        "L",
+        "K"
+      ],
+      "implementer": "/root",
+      "reviewer": "/root/core_s_review",
+      "contributors": [
+        "/root"
+      ],
+      "write_scope": "docs/design/core-s-semantics.md; README.md",
+      "status": "accepted",
+      "revision": 2,
+      "reviews": [
+        "build/simplification/core-s/S/review-r1.json",
+        "build/simplification/core-s/S/review-r2.json"
+      ],
+      "accepted_inputs": {
+        "L": 2,
+        "K": 1
+      },
+      "candidate": {
+        "node": "S",
+        "revision": 2,
+        "author": "/root",
+        "contributors": [
+          "/root"
+        ],
+        "status": "frozen_candidate_awaiting_independent_review",
+        "input_versions": {
+          "L": {
+            "revision": 2,
+            "sha256": "c9f01f849bb351fe8876e65daf4158299907b0a91d547e8d688df89d1d7d8296",
+            "review": "build/simplification/core-s/L/review-r2.json"
+          },
+          "K": {
+            "revision": 1,
+            "sha256": "9158153ab9f02fed609c77db29375f255844a8205eb0d7bca34e83f46e42a7d2",
+            "review": "build/simplification/core-s/K/review-r1.json"
+          }
+        },
+        "files": [
+          {
+            "path": "docs/design/core-s-semantics.md",
+            "sha256": "b9e2ebb3d9f30647117b3ddcc39203aff7697935a40bf5361512b1d3437fd9d5"
+          },
+          {
+            "path": "README.md",
+            "sha256": "2c204d2390e8db40391585056ecd1c6bf11c7523ccf2e40d831ae5bff444a4ad"
+          }
+        ],
+        "integration_changes": [
+          "合并 L/K 并统一章节引用与原始槽/内建语法",
+          "固定 Option/Result 模式也必须写完整类型路径，移除 L 的简写例外",
+          "明确参数不可重绑定、只读拥有位置不可通过重标记指针获得写权限",
+          "闭合预导入、panic及属性允许集合，删除旧内建默认继承",
+          "新增单一检查/IR架构、Extend模型变化和未来验收矩阵",
+          "README仅加下一版设计入口，0.5实现/规范/测试未改"
+        ],
+        "validation": [
+          "代码围栏成对",
+          "相对文件链接目标存在",
+          "未留作者/节点K/L占位引用和方法伪语法",
+          "非编译性的正反例与布局审查留独立审查；未运行产品测试"
+        ],
+        "limitations": [
+          "设计未实施；代码规模与内核移植未验证"
+        ],
+        "prior_review": "build/simplification/core-s/S/review-r1.json",
+        "changes_r2": [
+          "F1: 固定Option/Result标签及载荷定义",
+          "F2: 特殊函数可导出但不开放源调用；平台显式选择入口并以链接别名或硬件桩直连，唯一性检查"
+        ]
+      },
+      "unresolved": []
+    }
+  ]
+}

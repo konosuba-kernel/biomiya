@@ -1,0 +1,67 @@
+{
+  "node": "K",
+  "revision": 1,
+  "status": "frozen_for_independent_review",
+  "implementer": "/root/core_s_kernel",
+  "contributors": [
+    "/root/core_s_kernel"
+  ],
+  "files": [
+    {
+      "path": "build/simplification/core-s/K/proposal.md",
+      "sha256": "9158153ab9f02fed609c77db29375f255844a8205eb0d7bca34e83f46e42a7d2",
+      "line_count": 121
+    }
+  ],
+  "input_versions": {
+    "R": {
+      "revision": 1,
+      "path": "build/simplification/core-s/R/contract.md",
+      "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de",
+      "accepted_review": "build/simplification/core-s/R/review-r1.json",
+      "verdict": "pass"
+    }
+  },
+  "reference_inputs": [
+    {
+      "path": "docs/architecture-rv64.md",
+      "sha256": "c5255467d59c4acc86e717313b838c4fe43f8c488b60108faa3ecb2004da6450"
+    },
+    {
+      "path": "build/research/kernel-capabilities/S/report.txt",
+      "sha256": "7b28bc00f61324b5a807939ab232d0d32b4984e1575ed3e6dcf2c778903a67dc"
+    }
+  ],
+  "validation": [
+    {
+      "action": "Read accepted R contract and review; compare sha256 and pass verdict",
+      "result": "Passed, exact bound R r1"
+    },
+    {
+      "action": "Read docs/architecture-rv64.md and kernel-capabilities/S/report.txt",
+      "result": "Mechanical rules and existing no-scheduling trap boundary preserved; source breaks stated"
+    },
+    {
+      "action": "Python line limit, relative link existence, finite interface and representative-operation markers",
+      "result": "Passed; 121 lines; required markers present; architecture link exists"
+    },
+    {
+      "action": "Author semantic inspection",
+      "result": "SC u32/u64 raw-slot protocol, permissions, byte initialization, fixed layouts, scalar C ABI, trap and resource-transfer limits explicit; no claim of static ownership safety"
+    },
+    {
+      "action": "Inspect intended changes",
+      "result": "Only K proposal.md and candidate.json authored; no product implementation or test expectation edits"
+    }
+  ],
+  "unresolved": [],
+  "integration_notes": [
+    "L owns concrete grammar, local-slot initialization checking, constant/layout/static dependency closure and defer/exit rules; S must reconcile K examples and L syntax. K specifies concrete uninitialized slot as var slot:T, explicit ptr_const, dedicated ptr::<T,space>, and unsafe slice element access."
+  ],
+  "limitations": [
+    "Author validation is not independent acceptance",
+    "Semantic examples are not compiled",
+    "No product tests or external kernel build run; task is design only",
+    "No compiler line-count or migration measurements"
+  ]
+}

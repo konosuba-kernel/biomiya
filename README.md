@@ -11,6 +11,7 @@
 
 编译器交付设计：
 
+- [Core S 最小语义方案](docs/design/core-s-semantics.md)：以显式类型、统一值复制和有限内核接口收束 Core 的下一版设计；尚未实施，不替代当前 0.5 合规范声明。
 - [Core 完整交付需求](docs/core-delivery.md)：已确认决策、交付范围、验收层次与实施里程碑。
 - [Rust 编译器架构](docs/compiler-design.md)：前端与语义 IR、RV64 后端、平台运行支持及 Extend 接口。
 - [实施 workflow 与验收门槛](docs/workflow.md)：并行所有权、集成循环与完整交付 Gate。

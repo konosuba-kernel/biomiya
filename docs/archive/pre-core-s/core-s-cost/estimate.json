@@ -1,0 +1,149 @@
+{
+  "revision": 1,
+  "scope": "已独立接受的Core S r2全部设计；本次仅估算，不实施",
+  "input_sha256": "b9e2ebb3d9f30647117b3ddcc39203aff7697935a40bf5361512b1d3437fd9d5",
+  "author": "/root",
+  "contributors": [
+    "/root",
+    "/root/core_s_language",
+    "/root/core_s_kernel"
+  ],
+  "measured_baseline": {
+    "handwritten_compiler_lines": 18430,
+    "generated_unicode_lines": 2096,
+    "tests_source_files": 264,
+    "tests_source_lines": 6091,
+    "tools_python_lines": 2459,
+    "runtime_platform_lines": 357,
+    "conformance_manifest_entries": 76,
+    "audit_manifest_entries": 141
+  },
+  "metric": "正常格式Rust物理行，含空行注释；所有手写编译器含驱动、链接、诊断和Extend计入。源位置基础设施计syntax；错误规则计所属模块，共享诊断结构和crate入口只计common。新IR表示计check_ir，类型表计resolve_types，布局及静态序列化计constants_layout；无另藏实现。",
+  "estimated_compiler_rows": [
+    {
+      "module": "syntax_source",
+      "low": 1100,
+      "high": 1500
+    },
+    {
+      "module": "resolve_types",
+      "low": 900,
+      "high": 1400
+    },
+    {
+      "module": "constants_layout",
+      "low": 1100,
+      "high": 1700
+    },
+    {
+      "module": "check_ir",
+      "low": 2300,
+      "high": 3400
+    },
+    {
+      "module": "rv64_abi",
+      "low": 1400,
+      "high": 2100
+    },
+    {
+      "module": "driver_toolchain_linkage_report",
+      "low": 1100,
+      "high": 1700
+    },
+    {
+      "module": "extend",
+      "low": 350,
+      "high": 650
+    },
+    {
+      "module": "common_diagnostic_crate_entry",
+      "low": 100,
+      "high": 200
+    }
+  ],
+  "estimated_compiler_total": [
+    8350,
+    12650
+  ],
+  "interpretation": "对外约8000—13000行；约10000行作为初步计划中心。不能承诺5000行或稳定低于8000行。模块端点相加是情景预算，不是统计置信区间或保证上界。",
+  "support_estimates": {
+    "tests_fixtures": [
+      5000,
+      8000
+    ],
+    "tools_including_generators": [
+      2000,
+      3000
+    ],
+    "runtime_platform": [
+      400,
+      650
+    ],
+    "representative_examples_support": [
+      400,
+      1000
+    ],
+    "generated_unicode": [
+      2096,
+      2096
+    ]
+  },
+  "support_metric": "非编译器代码粗预算分别计量；测试夹具包括测试所用C/汇编，代表模块与其必要支持单列不重复；不含文档、JSON清单、锁文件、第三方依赖源码。现有工具可能复用，不是全新增行。完整交付的源代码总量不会只有数千行。",
+  "work_effort": {
+    "unit": "熟悉仓库的熟练工程师有效人日，1人日约8小时；仅容量规划，低置信，无历史工时校准",
+    "rows": [
+      {
+        "scope": "有界原型：源码至RV64，覆盖具体聚合、快照/defer、一个常量布局依赖",
+        "low": 3,
+        "high": 5
+      },
+      {
+        "scope": "补齐原型以外的语法/类型/常量/语义实现",
+        "low": 8,
+        "high": 14
+      },
+      {
+        "scope": "后端ABI及内核操作/平台适配",
+        "low": 5,
+        "high": 8
+      },
+      {
+        "scope": "驱动/报告/Extend适配",
+        "low": 3,
+        "high": 5
+      },
+      {
+        "scope": "既有测试迁移、新增交叉用例、独立验收修复和文档",
+        "low": 7,
+        "high": 12
+      }
+    ],
+    "total": [
+      26,
+      44
+    ],
+    "prototype_included_not_added": true,
+    "caveat": "总计26—44人日约5—9人周，非Codex墙钟时间承诺；各开发行含本地单元检查，最后一行计测试迁移/跨模块验收/文档及常规返工，不保证覆盖重大架构重做。不能按agent数线性除工期。"
+  },
+  "reuse": "保留词法扫描、模块查找基础、机械布局和RV64栈槽后端、链接工具、QEMU设施；主要重写check/HIR/lower组合及常量调度，AST/类型/Extend按S适配。最终不得保留0.5兼容路径拖住新架构；过渡双轨体量单独报。",
+  "schedule": "原型及共享类型/IR/内建合同先行；冻结后前端语义、后端内核适配、驱动Extend测试夹具可由三个实施方向并行；整体验收和返工串行收口。当前并发上限含root共4，不能将26—44人日除以4作日历承诺。",
+  "risks": [
+    "常量—长度身份—类型规范化—布局图",
+    "defer片段单次检查后的槽/控制流重映射",
+    "聚合实参/返回快照与临时存储期",
+    "SC原子、ABI超八参、MMIO和trap真实运行证据",
+    "新旧测试语义迁移及已删除所有权保证不能冒充仍有效"
+  ],
+  "gates": [
+    "先做有界原型，真实源码到目标执行而非手工IR代替",
+    "在defer/?/聚合快照及常量布局难点闭合后重估，不能以算术子集行数外推完整编译器",
+    "每模块统计所有实际手写代码与共享复用，不压行、不藏进库；若预计持续超过行数目标，先重审语义/交付要求而非为完成而膨胀"
+  ],
+  "excluded": [
+    "新增平台或优化器",
+    "真实Extend验证器",
+    "自举/生产内核移植/通用OS库",
+    "兼容0.5源程序"
+  ],
+  "validation_limit": "读源码和清单、物理行统计及专业判断；无Core S实现、未跑产品测试，成本和理解难度收益未实测。"
+}

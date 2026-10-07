@@ -1,0 +1,36 @@
+{
+  "task": "Core S实施成本静态估算；不实施产品",
+  "input": {
+    "core_s_revision": 2,
+    "sha256": "b9e2ebb3d9f30647117b3ddcc39203aff7697935a40bf5361512b1d3437fd9d5"
+  },
+  "nodes": [
+    {
+      "id": "E",
+      "depends_on": [],
+      "status": "accepted",
+      "implementer": "/root",
+      "contributors": [
+        "/root",
+        "/root/core_s_language",
+        "/root/core_s_kernel"
+      ],
+      "reviewer": "/root/core_s_review",
+      "write_scope": "build/simplification/core-s-cost/",
+      "acceptance": [
+        "与当前源码统计和Core S范围一致",
+        "预算无重叠且不隐藏支持代码",
+        "估计与实测明确区分",
+        "覆盖迁移/验收/串行依赖，工时不是agent日历承诺"
+      ],
+      "revision": 1,
+      "candidate": {
+        "path": "build/simplification/core-s-cost/estimate.json",
+        "sha256": "5397b552709e403362d6a8a3d1e29c2128d031813a5b79fd48748e86f62645ff"
+      },
+      "review": "build/simplification/core-s-cost/review-r1.json",
+      "unresolved": []
+    }
+  ],
+  "status": "complete"
+}

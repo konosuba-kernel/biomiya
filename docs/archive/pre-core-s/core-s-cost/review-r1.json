@@ -1,0 +1,86 @@
+{
+  "node": "E",
+  "revision": 1,
+  "reviewer": "/root/core_s_review",
+  "implementer": "/root",
+  "independence": {
+    "contributed_to_this_estimate": false,
+    "candidate_modified": false
+  },
+  "candidate": {
+    "path": "build/simplification/core-s-cost/estimate.json",
+    "sha256": "5397b552709e403362d6a8a3d1e29c2128d031813a5b79fd48748e86f62645ff"
+  },
+  "input_versions": {
+    "S": {
+      "revision": 2,
+      "path": "docs/design/core-s-semantics.md",
+      "sha256": "b9e2ebb3d9f30647117b3ddcc39203aff7697935a40bf5361512b1d3437fd9d5",
+      "accepted_review": "build/simplification/core-s/S/review-r2.json"
+    }
+  },
+  "verdict": "pass",
+  "scope": "仅判断静态估算的计量方法、范围/总账、披露和规划合同一致性，不认可预算区间一定实现。",
+  "checks": [
+    {
+      "action": "阅读cost workflow、冻结estimate及S r2范围/未来验收/规模规则，核对input与candidate hash及独立身份",
+      "result": "当前S r2输入hash匹配，estimate hash匹配，审查者未贡献本次估算。估算覆盖S而非恢复0.5兼容功能，保留只读Extend接口但不计真实验证器。"
+    },
+    {
+      "action": "Python按物理行（含空行注释）重新统计src/*.rs排除生成unicode、tests源文件、tools Python及runtime+platforms源码/链接脚本；读取两个manifest cases数量",
+      "result": "全部实测值匹配：手写编译器18430、生成2096、测试264文件6091行、工具2459、runtime/platform357、conformance76、audit141。五个实测源集合不重叠。首次runtime-only统计221，补齐platforms启动汇编118和link.ld18后得到357；没有把README计为平台代码。"
+    },
+    {
+      "action": "核对全部编译器模块ownership与预算端点加总，检索仓库其余Rust位置",
+      "result": "8行预算之和8350—12650；src手写实现完整计入。诊断规则属所在模块、共同结构/crate入口只计common、IR属check_ir、源位置属syntax等归属已明确。额外experiments/core-b是历史独立试验，不是主编译器交付实现。"
+    },
+    {
+      "action": "核对非编译器支持预算及遗漏/重复风险",
+      "result": "测试夹具（含C/汇编）、工具/生成器、runtime/platform、代表模块与必要支持、生成unicode均单列；与编译器之和18246—27396行。文档/JSON清单/锁文件/第三方源码明确排除，现有工具复用不冒充新增；要求过渡双轨体量单独报告，不隐藏新库/shim。未来实际文件归属仍需按唯一集合落实。"
+    },
+    {
+      "action": "加总工作量行，核对原型包含、测试迁移/验收修复、平台/驱动/Extend适配及串行依赖",
+      "result": "五行端点之和26—44人日；原型已包含不另加；本地检查与最终跨模块验收/迁移/文档分开；先原型及共享合同，随后并行，集成返工收口。不能按agent数线性除工期。"
+    },
+    {
+      "action": "核对估算和实测界限、容量单位、风险与重估gate",
+      "result": "模块区间为情景预算而非置信区间/保证上界；工时为约8小时工程师有效人日，低置信且无历史校准，明确不是Codex墙钟承诺。列出常量图、defer重映射、快照/临时存储、SC/ABI/MMIO/trap运行证据和测试迁移风险；有界真实源码原型后重估，不用算术子集外推。"
+    }
+  ],
+  "gaps": [],
+  "measured_baseline_verified": {
+    "handwritten_compiler_lines": 18430,
+    "generated_unicode_lines": 2096,
+    "tests_source_files": 264,
+    "tests_source_lines": 6091,
+    "tools_python_lines": 2459,
+    "runtime_platform_lines": 357,
+    "conformance_manifest_entries": 76,
+    "audit_manifest_entries": 141
+  },
+  "arithmetic_verified": {
+    "compiler": [
+      8350,
+      12650
+    ],
+    "work_effort_person_days": [
+      26,
+      44
+    ],
+    "delivery_source_subtotal_including_generated": [
+      18246,
+      27396
+    ]
+  },
+  "nonblocking_notes": [
+    "support预算含生成数据；18246—27396仅按当前显式排除项定义的源代码小计，不是所有仓库文件或第三方代码总量。",
+    "后续原型宜优先补录实际人时与返工，才能把容量猜测转为经校准估算；本节点不要求尚不存在的历史证据。"
+  ],
+  "limitations": [
+    "未实施Core S，未运行产品测试、QEMU、内核模块或编译器试点；不证明行数上下界或26—44人日能实现。",
+    "预算数值由专业判断给出，没有校准模型、生产率分布或重大架构重做余量保证；通过只确认这些限制已诚实披露。",
+    "当前源码统计按目录/扩展名重新核对；未来预算模块划分尚无真实实现文件，无法证明未来实际代码永远不重叠，只能确认现有归属规则与总账可操作。",
+    "工程师人日不等于agent日历，独立审查/并发槽位也不能机械换算完工日期。"
+  ],
+  "evidence_path": "build/simplification/core-s-cost/review-r1.json"
+}

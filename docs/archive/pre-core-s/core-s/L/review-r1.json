@@ -1,0 +1,72 @@
+{
+  "node": "L",
+  "revision": 1,
+  "reviewer": "/root/core_s_review",
+  "implementer": "/root/core_s_language",
+  "independence": {
+    "contributed_to_candidate": false,
+    "candidate_modified": false
+  },
+  "candidate": {
+    "path": "build/simplification/core-s/L/proposal.md",
+    "sha256": "4c36645da662c120de596d6c7f5c132c10b78d11a9e44597b50708f3f3e00e6f"
+  },
+  "input_versions": {
+    "R": {
+      "revision": 1,
+      "path": "build/simplification/core-s/R/contract.md",
+      "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de",
+      "independent_verdict": "pass",
+      "review_path": "build/simplification/core-s/R/review-r1.json"
+    }
+  },
+  "verdict": "fail",
+  "checks": [
+    {
+      "action": "完整阅读 L proposal/candidate、R 已验收合同并与 K 已验收接口边界比较",
+      "result": "类型集合、语句式控制流、浅层模式、复制及 raw 槽、? 和退出清理的选择均明确；K/L 关键值和目标接口未发现本节点需新增机制才能成立的冲突。"
+    },
+    {
+      "action": "Python 验证候选及 R 哈希、R pass 判定、独立贡献者身份和行数",
+      "result": "哈希匹配，R r1 已通过，本审查者未参与 L 编写，候选220行。"
+    },
+    {
+      "action": "沿 check/synth 规则手工核对 n==0_u32、n==0、sum、select 和固定 Result 构造",
+      "result": "期待类型只向规定位置及算术子树传播；比较两侧独立 synth，显式函数和构造类型足以定型；未发现通过兄弟表达式恢复统一/默认修复。"
+    },
+    {
+      "action": "核对 match 覆盖、语句可达性、循环出口、不可达检查及 ?/defer 副作用顺序",
+      "result": "浅层变体位集取代模式矩阵；return/Err 先形成快照；RHS提前退出不求LHS；finish 的条件释放及清理时读取 pending 与例子一致；panic 不继续清理。"
+    },
+    {
+      "action": "核对别名、具体类型、数组长度、对齐、布局、常量和静态初始化的依赖图及边界反例",
+      "result": "指针递归/静态自地址与按值递归/sizeof-数组长度环被区分，零长度与短路不删除依赖；但 const 名字的允许与禁止规则直接冲突，见 F1。"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "F1",
+      "blocking": true,
+      "path": "build/simplification/core-s/L/proposal.md",
+      "lines": [
+        154,
+        158,
+        175
+      ],
+      "requirement": "R 的 L 验收要求常量/布局/静态依赖规则闭合且文档内部自洽。",
+      "finding": "154行白名单允许 const 名字，175行规定 const 引用连 C 节点；158行却明确写“无 const/statics 的值读取”。这两种接受边界对最基本具名常量引用给出相反规则。",
+      "counterexample": "const A:u32 = 1; const B:u32 = A; 其中 B 的初始化按154/175行可检查并求值，按158行的字面规则应拒绝 const 值读取。",
+      "required_resolution": "统一具名常量引用和静态/内存读取的许可边界，并说明该反例的唯一判定；保持所选受限 evaluator 和依赖图约束。审查者不代写修正文案。"
+    }
+  ],
+  "integration_notes": [
+    "L 的常量 unsafe 专用式当前仅接受 addr_of_mut(static-place)，故 mutable static 的 readonly addr_of 在常量位置不获同样授权。S 应明确呈现此限制或核对最终选择，不能把一般 runtime 许可直接搬入常量白名单。",
+    "K 中的 map.remove 等语义叙述不能作为 Core 方法语法；S 应用最终具名函数语法表示。"
+  ],
+  "limitations": [
+    "设计验收只核对书面规则和例子，未编译 Core S 示例或运行产品测试。",
+    "除已确认的 F1 外，当前检查未发现其他阻塞；不代表返工版本或最终 S 自动通过。",
+    "没有验证编译器实现规模、后端代码生成或内核移植。"
+  ],
+  "evidence_path": "build/simplification/core-s/L/review-r1.json"
+}

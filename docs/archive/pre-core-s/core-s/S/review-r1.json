@@ -1,0 +1,107 @@
+{
+  "node": "S",
+  "revision": 1,
+  "reviewer": "/root/core_s_review",
+  "implementer": "/root",
+  "independence": {
+    "contributed_to_R_L_K_S": false,
+    "candidate_modified": false
+  },
+  "candidate": {
+    "files": [
+      {
+        "path": "docs/design/core-s-semantics.md",
+        "sha256": "af1b9b74830c89d59b062103471740e28ebb819b850d0d8f718a05864c1928a0"
+      },
+      {
+        "path": "README.md",
+        "sha256": "2c204d2390e8db40391585056ecd1c6bf11c7523ccf2e40d831ae5bff444a4ad"
+      }
+    ]
+  },
+  "input_versions": {
+    "L": {
+      "revision": 2,
+      "sha256": "c9f01f849bb351fe8876e65daf4158299907b0a91d547e8d688df89d1d7d8296",
+      "review": "build/simplification/core-s/L/review-r2.json"
+    },
+    "K": {
+      "revision": 1,
+      "sha256": "9158153ab9f02fed609c77db29375f255844a8205eb0d7bca34e83f46e42a7d2",
+      "review": "build/simplification/core-s/K/review-r1.json"
+    }
+  },
+  "verdict": "fail",
+  "scope": "最终组合的完整设计文档、README入口及R目标；不只做装配文件检查。",
+  "checks": [
+    {
+      "action": "完整阅读最终稿、README、S candidate，并对照R合同与已验收L r2/K r1及整合变化",
+      "result": "单一小语义方向、大取舍及工程代价显眼；没有用组件pass替代组合判断；发现F1/F2整合缺口。"
+    },
+    {
+      "action": "Python核对两个冻结文件hash、L/K实际hash及其独立pass/版本，核对审查者与贡献者分离",
+      "result": "完全匹配输入和候选；L r2/K r1为当前独立通过版本，本审查者未参与任何设计编写。"
+    },
+    {
+      "action": "逐项核对新增全路径Option/Result模式、只读参数/拥有位置、预导入、panic、属性集合与已知类型检查",
+      "result": "select及载荷字面量反例已改全路径，期待类型未恢复求解；参数冻结不冻结其可写指针/切片目标；panic明确固定签名和不展开；属性白名单本身明确，但禁止特殊函数导出导致F2。"
+    },
+    {
+      "action": "核对跨语言/目标合同：raw槽和字段初始化、unsafe切片/const、复制/ABI快照、?与defer、有限常量图、SC/MMIO及trap清理",
+      "result": "基本接口一致；常量引用与static禁止、地址比较禁令和unsafe静态地址特例均保留；原子/设备/复制句柄没有冒充静态保证；固定Option/Result标签没有闭合，见F1。"
+    },
+    {
+      "action": "检查第8/15节正反例和代表路径，以及第16/17节单一检查IR/Extend与未来验收",
+      "result": "语言例与新模式语法相符；map_remove和(*ops).read消除了方法/自动解引用叙述；页表/锁/MMIO/C指针/资源回滚有具体操作及执行义务；清理片段复制不重新语义检查；未来验收不冒充已执行，旧Ownership/Borrow保证不沿用。"
+    },
+    {
+      "action": "Python检查两文件相对链接存在、代码围栏成对及单节引用指向现有章节；手工核对引用语义及README锚点标题",
+      "result": "文件链接与围栏通过；引用章节与目标内容相符；README的0.5修订入口未变。"
+    },
+    {
+      "action": "git diff -- README.md；git diff --name-only；Python将reference.md/architecture-rv64.md逐字节比对source_head",
+      "result": "README只新增下一版未实施设计入口；现有跟踪改动仅README；两份0.5规范保持原样。没有运行0.5测试冒充设计证据。"
+    },
+    {
+      "action": "检索旧reference的固定枚举概念定义和architecture R6特殊函数导出合同",
+      "result": "旧reference明定Option为Some/None、Result为Ok/Err；旧R6允许@export命名平台可链接特殊入口。最终稿未明确继承前者且显式排除后者，不能无声明借旧规则补缺口。"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "F1",
+      "blocking": true,
+      "path": "docs/design/core-s-semantics.md",
+      "lines": [
+        16,
+        86,
+        365
+      ],
+      "requirement": "最终源/目标语义与固定内建布局必须闭合，继承范围明确。",
+      "finding": "365行按枚举声明序从0编号，并称Option/Result使用同一固定枚举布局；文稿未给这两个固定构造的概念声明序或具体标签，16行又禁止未列出的旧规则自动继承。构造/模式中列举名字不是明确的表示合同。",
+      "counterexample": "Option::<u32>::None和Some(7)均有合法源语义，但None究竟使用标签0还是1无法仅由本稿确定；Result的Ok/Err也有同样缺口。原始存储/静态镜像与代码生成需要确定这一机械事实。",
+      "required_resolution": "明确固定Option/Result变体顺序和对应标签/载荷，或明确只继承旧概念变体定义的范围；不借此恢复用户泛型或旧Copy/resource机制。"
+    },
+    {
+      "id": "F2",
+      "blocking": true,
+      "path": "docs/design/core-s-semantics.md",
+      "lines": [
+        361,
+        384,
+        385,
+        386
+      ],
+      "requirement": "保留具体trap内核表达路径及平台继承/修订，不能以未定义接口维持必要能力。",
+      "finding": "361行将@export仅限普通函数/静态，并明确特殊函数不用普通export入口；384行又禁止其普通调用和取函数指针。虽然386行要求硬件桩进入trap_entry，本稿没有定义硬件桩选择、定位和链接该入口的替代符号/绑定合同。旧R6的@export命名路径被移除后，只有物理ABI仍不够连接两侧。",
+      "counterexample": "平台汇编保存帧后需进入一个用户@trap_entry函数：旧@export命名已被禁止，普通导出包装函数也因禁止普通调用特殊入口而不可作为替代；文稿未给平台可依赖的名称/选择规则。",
+      "required_resolution": "闭合特殊入口的实际平台绑定路径，同时保持特殊ABI、普通调用/函数指针禁令及无调度trap执行合同；若修改源导出许可，应显式与第13/14节一致。"
+    }
+  ],
+  "limitations": [
+    "仅对设计闭合性作判定，没有编译提案、运行QEMU/并发用例或外部内核；也未验收代码规模收益。",
+    "当前发现F1/F2阻塞；本记录不让S通过，也不静默撤销未变组件的既有判定。修订后的最终文件需重新绑定哈希独立重验。",
+    "文件存在性及章节编号检查只是文档辅助证据，不能替代语义审查；原始用户目标依据已验收R与派发摘要。"
+  ],
+  "evidence_path": "build/simplification/core-s/S/review-r1.json"
+}

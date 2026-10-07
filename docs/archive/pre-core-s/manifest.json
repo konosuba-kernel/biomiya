@@ -1,0 +1,94 @@
+{
+  "purpose": "byte-for-byte archive of accepted Core S design and cost records before implementation",
+  "source_head": "5301ce5a0225127c45e33afcacd29157d38655f9",
+  "files": [
+    {
+      "path": "core-s/K/candidate.json",
+      "sha256": "4dd40ef7c912e8ba2a59ab9d86cca00ee596feb3e395cc47d28b403c0d7a91c8"
+    },
+    {
+      "path": "core-s/K/proposal.md",
+      "sha256": "9158153ab9f02fed609c77db29375f255844a8205eb0d7bca34e83f46e42a7d2"
+    },
+    {
+      "path": "core-s/K/review-r1.json",
+      "sha256": "040880d1713b2fc87ba65ece2afc7d9f0ddfb98e2e4f23b4a83548893c4ee422"
+    },
+    {
+      "path": "core-s/L/candidate.json",
+      "sha256": "96315085d61d615f612c957bb26f247136075266487d4760cf5b9a824ccea211"
+    },
+    {
+      "path": "core-s/L/proposal.md",
+      "sha256": "c9f01f849bb351fe8876e65daf4158299907b0a91d547e8d688df89d1d7d8296"
+    },
+    {
+      "path": "core-s/L/r1/candidate.json",
+      "sha256": "834f02a0ee7871cc4d6cd290b6a15b9a95759051c263606487cc2567dde42e12"
+    },
+    {
+      "path": "core-s/L/r1/proposal.md",
+      "sha256": "4c36645da662c120de596d6c7f5c132c10b78d11a9e44597b50708f3f3e00e6f"
+    },
+    {
+      "path": "core-s/L/review-r1.json",
+      "sha256": "c4cdc089ea27fe1c9d3536c679e3d4c9c68aacfcd676b46ec3787e6cb9d69f3e"
+    },
+    {
+      "path": "core-s/L/review-r2.json",
+      "sha256": "c59563796d31f6a9c81d076b85d422d9e8c29d7405dbc42d6f7ce1220c397b89"
+    },
+    {
+      "path": "core-s/R/contract.md",
+      "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de"
+    },
+    {
+      "path": "core-s/R/review-r1.json",
+      "sha256": "2cc2b52adffcfb582fdca3f499a79f27e18dd7233aa5603280a9d89c7c3b68f8"
+    },
+    {
+      "path": "core-s/S/architecture-exploration.md",
+      "sha256": "d43d417c6c7ca535d47ab2558968630d627ea1fef28f62cd0b8a552e5d2ca185"
+    },
+    {
+      "path": "core-s/S/candidate.json",
+      "sha256": "97e7c6325f011f7207abdb4c3a152c39d63f9f0e1e47a998393749ca092fe615"
+    },
+    {
+      "path": "core-s/S/r1/README.md",
+      "sha256": "2c204d2390e8db40391585056ecd1c6bf11c7523ccf2e40d831ae5bff444a4ad"
+    },
+    {
+      "path": "core-s/S/r1/candidate.json",
+      "sha256": "32e74ac8ed214d52b6b08edbdaad677eaaffb580dcf3b430f662fb78110c8811"
+    },
+    {
+      "path": "core-s/S/r1/core-s-semantics.md",
+      "sha256": "af1b9b74830c89d59b062103471740e28ebb819b850d0d8f718a05864c1928a0"
+    },
+    {
+      "path": "core-s/S/review-r1.json",
+      "sha256": "490703cdba3a6b3b884f4aa2c1db91e11f67a2829ab2fde7baab08eec76440f5"
+    },
+    {
+      "path": "core-s/S/review-r2.json",
+      "sha256": "962b3e366322a680544f983f2827562118b0d8081dd7da7d423e5209bc16aa59"
+    },
+    {
+      "path": "core-s/workflow.json",
+      "sha256": "7c12e958f2e0d9d66a5ee9a5aa8512f47f14a75311a0d7b1d0c34d1e624c1c68"
+    },
+    {
+      "path": "core-s-cost/estimate.json",
+      "sha256": "5397b552709e403362d6a8a3d1e29c2128d031813a5b79fd48748e86f62645ff"
+    },
+    {
+      "path": "core-s-cost/review-r1.json",
+      "sha256": "a108e26d56ab389478da60d715c13d5c025fabd9083aeb2894bf310da39e9186"
+    },
+    {
+      "path": "core-s-cost/workflow.json",
+      "sha256": "a15e523d2045c0a5c5718d055772313bdb174cfec46919c6b16de9daabbbf02f"
+    }
+  ]
+}

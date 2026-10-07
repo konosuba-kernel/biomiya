@@ -1,0 +1,71 @@
+{
+  "node": "L",
+  "revision": 2,
+  "reviewer": "/root/core_s_review",
+  "implementer": "/root/core_s_language",
+  "independence": {
+    "contributed_to_candidate": false,
+    "candidate_modified": false
+  },
+  "candidate": {
+    "path": "build/simplification/core-s/L/proposal.md",
+    "sha256": "c9f01f849bb351fe8876e65daf4158299907b0a91d547e8d688df89d1d7d8296"
+  },
+  "input_versions": {
+    "R": {
+      "revision": 1,
+      "path": "build/simplification/core-s/R/contract.md",
+      "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de",
+      "independent_verdict": "pass",
+      "review_path": "build/simplification/core-s/R/review-r1.json"
+    }
+  },
+  "verdict": "pass",
+  "previous_review": "build/simplification/core-s/L/review-r1.json",
+  "checks": [
+    {
+      "action": "完整阅读 r2 proposal/candidate，并 diff -u L/r1/proposal.md 与当前候选",
+      "result": "变化限定为F1解决、常量地址比较限制、static取址授权、存储期与defer说明，以及对应反例；未改动已核对的核心类型/已知类型检查/位置/控制流/浅层match/退出规则。"
+    },
+    {
+      "action": "Python 核对 r2 hash、保留的 r1 hash、R输入hash/pass、独立身份与223行统计",
+      "result": "均匹配；r1原件和旧fail证据保留，R仍为已验收r1，本审查者不在贡献者集合中。"
+    },
+    {
+      "action": "对照原F1的反例和修订的常量许可/禁止规则",
+      "result": "const A:u32=1; const B:u32=A; 唯一判定为合法、B=1；static A:u32=1; const B:u32=A; 唯一判定为拒绝。const引用明确连C节点而非读取存储，原矛盾消除。"
+    },
+    {
+      "action": "检查新增常量比较限制与运行时比较规则、重定位数据和static取址特例",
+      "result": "编译期指针/函数地址比较全部拒绝，包括null与同符号；运行时同类型地址比较仍合法。专用unsafe常量式允许addr_of和addr_of_mut而不引入一般块求值，ptr_const/数值地址转换仍不在白名单。"
+    },
+    {
+      "action": "rg 阅读 docs/reference.md 15章相关defer词句，并核对r2存储/清理规则",
+      "result": "旧defer-call退出时读取当前值的说明与基线一致。参数/局部在清理后结束，右值临时在完整语句结束，与无临时取址/借用延长相容。"
+    },
+    {
+      "action": "检查静态清理展开对提前退出、条件分支与循环注册的覆盖",
+      "result": "注册点只在当前块的顺序路径中激活；分支内注册在自身块退出清理，循环每轮新块；编译期活动清理列表可覆盖?、return、break/continue，无须新运行时flag或可增长清理栈。显式pending布尔只表达用户资源协议。"
+    },
+    {
+      "action": "对照r1成功检查的未变部分并重读周边约束与正反例",
+      "result": "已知类型传播仍无兄弟反推/统一/默认修复；单层match覆盖、快照先于清理、raw槽初始化执行合同、有限布局依赖图和finish/sum/select示例继续成立。这里的新判定绑定r2哈希，不把r1整体fail冒充通过。"
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "F1",
+      "status": "resolved",
+      "basis": "r2常量许可条目、禁止条目、依赖边和成对正反例一致。"
+    }
+  ],
+  "gaps": [],
+  "integration_notes": [
+    "S 需正式装配最新已验收 L r2 与 K r1，核对目标特殊转移语法及全部最终示例；本pass不自动替代S验收。"
+  ],
+  "limitations": [
+    "设计验收未编译Core S例子，未运行产品测试或外部内核；静态清理展开是有限结构分析，未测量具体实现规模。",
+    "未改变R依赖；对未变条目的复核以保留r1原件、实际diff和周边全文检查为依据。"
+  ],
+  "evidence_path": "build/simplification/core-s/L/review-r2.json"
+}

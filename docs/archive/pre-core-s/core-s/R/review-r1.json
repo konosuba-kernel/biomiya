@@ -1,0 +1,57 @@
+{
+  "node": "R",
+  "revision": 1,
+  "reviewer": "/root/core_s_review",
+  "implementer": "/root",
+  "independence": {
+    "contributed_to_candidate": false,
+    "candidate_modified": false
+  },
+  "candidate": {
+    "path": "build/simplification/core-s/R/contract.md",
+    "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de"
+  },
+  "input_versions": {},
+  "verdict": "pass",
+  "requirement_basis": "派发提供的用户原始目标摘要：定一套足够小的语义；允许 Core 繁琐以优先高度简明；用户泛型与求解型推导可移除；defer 暂留；保留内核能力及 Extend；当前仅设计。",
+  "checks": [
+    {
+      "action": "阅读 dag-delivery/SKILL.md 与 references/node-contract.md；查找工作区及祖先 AGENTS.md",
+      "result": "已按独立验收规则执行；未找到适用 AGENTS.md。"
+    },
+    {
+      "action": "完整阅读 R/contract.md 和 workflow.json，核对 SHA256",
+      "result": "候选与派发及 workflow 的哈希一致。"
+    },
+    {
+      "action": "逐项核对用户目标及设计/实施边界",
+      "result": "单一小语义候选；允许繁琐语法；排除用户泛型、求解型推导、引用与隐式移动；defer 保留；内核和 Extend 是必须具体化的交付；只修订设计文档，不承诺实施或未经试点的净行数。"
+    },
+    {
+      "action": "核对新增破坏性取舍及其披露责任",
+      "result": "统一值复制、无自动析构与语言引用、去方法及自动借用、受限常量、有限 FFI/内建族等都被明确提出为新候选；要求最终显眼标出工程代价及删减；不把它们冒充逐项得到用户确认或现有平台兼容。"
+    },
+    {
+      "action": "核对 L/K/S 的输出、禁止改动与可观察验收要求",
+      "result": "L 需闭合值、类型、位置、退出和依赖规则，K 需列具体内核操作路径及有限接口族，S 需消除冲突并核对示例与链接；要求具体正反例及替代方案，不能以未来库/验证器代替能力。R 不需预先交付下游详细语义。"
+    },
+    {
+      "action": "Python 检查 workflow：依赖存在、DFS 无环、独立身份及 L/K 路径不重叠",
+      "result": "四项通过；R 的 reviewer 不在 contributors 中；L/K 仍 planned，未被记为已经启动。"
+    }
+  ],
+  "findings": [
+    "R 保持用户优先减少规则和实现机制的目标，并明确要求能力删减给出具体边界和可表达替代方案。",
+    "验收要求对于设计交付可操作：审查规则是否闭合、正反例是否一致、接口族是否有限且明确、原有合同继承范围是否具体；无需编译器实施才能判定文档节点。"
+  ],
+  "gaps": [],
+  "nonblocking_notes": [
+    "派发 L/K 时应绑定实际作者身份、记录依赖已验收 R revision/hash；提交下游候选时记录输入版本。当前节点未启动，因此不构成 R 缺口。"
+  ],
+  "limitations": [
+    "原始用户对话未作为独立文本输入；用户授权与目标按派发提供的明确摘要核对，合同对新增取舍的声明已单独检查。",
+    "本判定仅覆盖 R 共同合同与调度边界；不证明 L/K/S 语义已闭合、编译器已支持 Core S、内核示例可编译或代码量目标已达成。",
+    "未运行产品测试；当前节点是设计合同，产品执行测试不能验证其交付目标。"
+  ],
+  "evidence_path": "build/simplification/core-s/R/review-r1.json"
+}

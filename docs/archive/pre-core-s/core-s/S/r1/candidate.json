@@ -1,0 +1,48 @@
+{
+  "node": "S",
+  "revision": 1,
+  "author": "/root",
+  "contributors": [
+    "/root"
+  ],
+  "status": "frozen_candidate_awaiting_independent_review",
+  "input_versions": {
+    "L": {
+      "revision": 2,
+      "sha256": "c9f01f849bb351fe8876e65daf4158299907b0a91d547e8d688df89d1d7d8296",
+      "review": "build/simplification/core-s/L/review-r2.json"
+    },
+    "K": {
+      "revision": 1,
+      "sha256": "9158153ab9f02fed609c77db29375f255844a8205eb0d7bca34e83f46e42a7d2",
+      "review": "build/simplification/core-s/K/review-r1.json"
+    }
+  },
+  "files": [
+    {
+      "path": "docs/design/core-s-semantics.md",
+      "sha256": "af1b9b74830c89d59b062103471740e28ebb819b850d0d8f718a05864c1928a0"
+    },
+    {
+      "path": "README.md",
+      "sha256": "2c204d2390e8db40391585056ecd1c6bf11c7523ccf2e40d831ae5bff444a4ad"
+    }
+  ],
+  "integration_changes": [
+    "合并 L/K 并统一章节引用与原始槽/内建语法",
+    "固定 Option/Result 模式也必须写完整类型路径，移除 L 的简写例外",
+    "明确参数不可重绑定、只读拥有位置不可通过重标记指针获得写权限",
+    "闭合预导入、panic及属性允许集合，删除旧内建默认继承",
+    "新增单一检查/IR架构、Extend模型变化和未来验收矩阵",
+    "README仅加下一版设计入口，0.5实现/规范/测试未改"
+  ],
+  "validation": [
+    "代码围栏成对",
+    "相对文件链接目标存在",
+    "未留作者/节点K/L占位引用和方法伪语法",
+    "非编译性的正反例与布局审查留独立审查；未运行产品测试"
+  ],
+  "limitations": [
+    "设计未实施；代码规模与内核移植未验证"
+  ]
+}

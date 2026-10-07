@@ -1,0 +1,59 @@
+{
+  "node": "L",
+  "revision": 1,
+  "status": "frozen_candidate_awaiting_independent_review",
+  "author": "/root/core_s_language",
+  "contributors": [
+    "/root/core_s_language"
+  ],
+  "files": [
+    {
+      "path": "build/simplification/core-s/L/proposal.md",
+      "sha256": "4c36645da662c120de596d6c7f5c132c10b78d11a9e44597b50708f3f3e00e6f",
+      "lines": 220
+    }
+  ],
+  "input_versions": {
+    "R": {
+      "revision": 1,
+      "path": "build/simplification/core-s/R/contract.md",
+      "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de",
+      "independent_verdict": "pass",
+      "review_path": "build/simplification/core-s/R/review-r1.json"
+    }
+  },
+  "reference_inputs": [
+    {
+      "path": "docs/reference.md",
+      "role": "existing 0.5 baseline, not compatibility requirement"
+    },
+    {
+      "path": "build/simplification/core-s/K/proposal.md",
+      "role": "unaccepted interface reference only; not formal dependency"
+    }
+  ],
+  "validation": [
+    {
+      "action": "Read R contract and review-r1.json; compare SHA256 and pass verdict",
+      "result": "Matched accepted R r1"
+    },
+    {
+      "action": "Read relevant reference 0.5 language, expression, defer, constant, layout and ABI sections",
+      "result": "Recorded retained rules and explicit removals; baseline is not changed"
+    },
+    {
+      "action": "Python check proposal line count, balanced code fences and required semantic landmarks",
+      "result": "220 lines; all checks passed"
+    },
+    {
+      "action": "Review write scope",
+      "result": "Only L/proposal.md and L/candidate.json written by this author"
+    }
+  ],
+  "limitations": [
+    "Author checks are not independent acceptance",
+    "Design examples were not compiled; no compiler/product files modified",
+    "No implementation-size or kernel-port validation"
+  ],
+  "unresolved": []
+}

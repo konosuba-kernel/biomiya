@@ -1,0 +1,65 @@
+{
+  "node": "K",
+  "revision": 1,
+  "reviewer": "/root/core_s_review",
+  "implementer": "/root/core_s_kernel",
+  "independence": {
+    "contributed_to_candidate": false,
+    "candidate_modified": false
+  },
+  "candidate": {
+    "path": "build/simplification/core-s/K/proposal.md",
+    "sha256": "9158153ab9f02fed609c77db29375f255844a8205eb0d7bca34e83f46e42a7d2"
+  },
+  "input_versions": {
+    "R": {
+      "revision": 1,
+      "path": "build/simplification/core-s/R/contract.md",
+      "sha256": "d9c95d3d804f55a2bb46959d4f831f8bc0bfb218167e25511e144c68d06a32de",
+      "accepted_review": "build/simplification/core-s/R/review-r1.json",
+      "verdict": "pass"
+    }
+  },
+  "verdict": "pass",
+  "checks": [
+    {
+      "action": "完整阅读 K proposal/candidate、已验收 R 合同、旧 architecture-rv64、内核能力调查报告；阅读 reference 21.3/22/22.1/23 的相关旧规则",
+      "result": "K 保留单一 RV64 配置的机械 ABI/布局和无调度 trap 边界；原子改为 SC u32/u64 原始槽、删除窄/指针包装接口及 C 聚合按值等源破坏均明确；旧引用/移动保证未被沿用。"
+    },
+    {
+      "action": "Python SHA256 核对 K 候选、R 输入及两份 reference_inputs；核对 R review verdict/hash 和贡献者身份",
+      "result": "所有哈希匹配；前置 R r1 独立通过；本审查者不在 K contributors 中。"
+    },
+    {
+      "action": "逐项检查有限内建族的类型选择、返回值、unsafe 和求值机制，并反查隐式泛型/方法/移动回流",
+      "result": "内建元变量只按已知具体位置/指针或显式类型选择；不能用户重放或取内建函数指针；左到右实参快照、显式 const 弱化、CSR 白名单、汇编输入/输出保存及强 CAS 返回旧值均明确。"
+    },
+    {
+      "action": "检查原始槽、逐字段初始化、字节复制、切片、只读存储及活动原子槽的边界反例",
+      "result": "未初始化字段不能读取；写入不读旧值；零填充不证明函数指针/枚举合法；复制字节保留未初始化事实；切片访问 unsafe；地址重标记不授予权限/映射/生命周期；活动原子禁止普通及聚合复制访问。"
+    },
+    {
+      "action": "检查 SC 同步、IRQ-save 锁、MMIO/DMA、C 输出参数、页表回收、trap 尾转移与资源回滚路径",
+      "result": "锁先释放后恢复 SIE；SC 强 CAS 无伪失败，原子和 volatile 分离；DMA fence 不等于完成；C 失败不假定输出初始化；远程 TLB 确认前不回收；trap 转移保存帧后退出清理，panic 不清理；句柄转交/retain/release 不冒充语言所有权。"
+    },
+    {
+      "action": "Python 独立计算 TrapFrame 和 PageTable 布局，检查相对链接",
+      "result": "TrapFrame 偏移 0/256/264/272/280、大小288与候选一致；512个u64为4096字节；旧目标链接存在。"
+    }
+  ],
+  "findings": [
+    "K 所负责的内存、目标、ABI、原子、MMIO、CSR/汇编、入口和 trap 机制足以作为单一设计接口；没有把关键操作依赖于隐式宿主 C、用户泛型或未说明 shim。",
+    "代表内核路径给出了操作顺序和执行义务，且明确仅为语义伪代码；没有声称教学内核已可移植或抢占/睡眠系统调用在本配置受支持。"
+  ],
+  "gaps": [],
+  "integration_notes": [
+    "S 仍须核对 L 对 var 未初始化槽、位置投影、显式指针语法、unsafe 切片访问、固定整数集合、defer 退出和常量/静态依赖的最终规则，不能仅拼接两个文件即视为整体闭合。",
+    "K 的回滚段使用 map.remove/FD duplicate 等操作名为语义叙述；最终 Core 示例应按 L 的普通具名函数语法呈现，不能重新引入方法。"
+  ],
+  "limitations": [
+    "仅验收 K 的设计合同，不验收尚未完成的 L/S 或产品实现。",
+    "未运行编译器、QEMU、外部内核或并发 litmus；ABI 与原子映射只核对本仓库固定旧基线继承，未重新进行外部标准版本调查。",
+    "布局计算只覆盖保留的 TrapFrame 和代表页表；不声称所有未来代码生成均正确。"
+  ],
+  "evidence_path": "build/simplification/core-s/K/review-r1.json"
+}
