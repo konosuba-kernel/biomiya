@@ -1,0 +1,2 @@
+fn buffer<T>() { let bytes = [0_u8; sizeof(T)]; }
+pub fn test()->i32 { 0 }

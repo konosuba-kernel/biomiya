@@ -1,0 +1,8 @@
+fn identity<T>(value: T) -> T { value }
+fn forward<T>(value: T) -> T { identity::<T>(value) }
+fn add(left: i32, right: i32) -> i32 { left + right }
+pub fn test() -> i32 {
+    let pair: (i32, i32) = (identity::<i32>(19), 23);
+    let selected = if pair.0 < pair.1 { forward::<i32>(pair.0) } else { pair.1 };
+    add(selected, pair.1)
+}

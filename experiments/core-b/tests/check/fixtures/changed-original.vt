@@ -1,0 +1,5 @@
+fn identity<T>(value:T)->T { value }
+pub fn test()->i32 {
+    let x = 1 + identity(2_u64);
+    x as i32
+}
