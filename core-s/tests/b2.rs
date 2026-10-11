@@ -195,10 +195,10 @@ fn cli_builds_the_target_language_manifest_scanner_and_copy_app() {
     let names = [
         "runtime/bytes.vt",
         "runtime/linux.vt",
-        "compiler/source.vt",
-        "compiler/scan.vt",
-        "compiler/manifest.vt",
-        "app/copy.vt",
+        "tests/fixtures/b2-input/source.vt",
+        "tests/fixtures/b2-input/scan.vt",
+        "tests/fixtures/b2-input/manifest.vt",
+        "tests/fixtures/b2-input/copy.vt",
     ];
     let mut project = String::from("format 1\nprofile linux-user\nentry app::start\n");
     for name in names {

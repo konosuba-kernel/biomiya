@@ -1,8 +1,0 @@
-# Run the built target application from core-s, with this manifest argument.
-format 1
-profile linux-user
-entry app::start
-source compiler/source.vt
-source compiler/scan.vt
-source compiler/manifest.vt
-output build/compiler-sources.vt

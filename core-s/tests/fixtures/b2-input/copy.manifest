@@ -1,0 +1,8 @@
+# Run the built target application from core-s, with this manifest argument.
+format 1
+profile linux-user
+entry app::start
+source tests/fixtures/b2-input/source.vt
+source tests/fixtures/b2-input/scan.vt
+source tests/fixtures/b2-input/manifest.vt
+output build/b2-sources.vt

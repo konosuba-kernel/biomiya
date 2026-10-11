@@ -1,0 +1,11 @@
+format 1
+profile linux-user
+entry app::start
+source runtime/bytes.vt
+source runtime/linux.vt
+source tests/fixtures/b2-input/source.vt
+source tests/fixtures/b2-input/scan.vt
+source tests/fixtures/b2-input/manifest.vt
+source tests/fixtures/b2-input/copy.vt
+assembly runtime/linux.s0
+output build/b2-copy.elf

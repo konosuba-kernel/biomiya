@@ -79,10 +79,10 @@ fn program(extra: Option<&str>, entry: &str, provider: &str) -> Program {
     for name in [
         "runtime/bytes.vt",
         "runtime/linux.vt",
-        "compiler/source.vt",
-        "compiler/scan.vt",
-        "compiler/manifest.vt",
-        "app/copy.vt",
+        "tests/fixtures/b2-input/source.vt",
+        "tests/fixtures/b2-input/scan.vt",
+        "tests/fixtures/b2-input/manifest.vt",
+        "tests/fixtures/b2-input/copy.vt",
     ] {
         let path = base.join(name);
         let text = fs::read_to_string(&path).unwrap();
