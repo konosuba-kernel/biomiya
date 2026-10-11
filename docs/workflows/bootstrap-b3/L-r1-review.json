@@ -1,0 +1,51 @@
+{
+  "node": "L",
+  "candidate_revision": 1,
+  "input_revisions": {
+    "H": 2
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "不通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/lex.vt": "c1a589877f16c788a1c0714d5d1899ab72eaf7c114916af9aa4518fce97ab037",
+    "core-s/bootstrap/input.vt": "b39ef9e3f2e6d69ff375a0b2e3cf45bfe33584d02cd3ee6a0847b8a70ed7e89d",
+    "core-s/tests/b3_input.rs": "cddb1f9bcc3b026b2678682f5f21ea98761f7ac85851086886592e2f618f7d41"
+  },
+  "commands": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_input",
+      "exit_code": 0,
+      "result": "All four author tests passed independently."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/l_input.py > docs/workflows/bootstrap-b3/L-r1-independent-probes.json",
+      "exit_code": 0,
+      "result": "19 independent target probes passed for input/lexical behavior and observed documented resource-diagnostic omission."
+    }
+  ],
+  "findings": [
+    {
+      "id": "L1-resource-diagnostic",
+      "severity": "blocking",
+      "files": [
+        "core-s/bootstrap/input.vt",
+        "core-s/bootstrap/lex.vt"
+      ],
+      "problem": "Capacity errors omit observed actual value and configured capacity. Confirmed source overflow, source-count overflow, assembly-count overflow and decode-buffer overflow all emit only I_LIMIT file=... byte=.... Manifest/assembly-byte read overflow follows the same input::read path. This does not satisfy bootstrap-v1 §7/§13.2 resource-limit diagnostic requirement retained by H2.",
+      "required_change": "Include observed actual and capacity for manifest/source/assembly byte limits, source/assembly item limits and decode output capacity, while preserving relevant FileId/byte offset. A bounded reader may explicitly report its observed lower bound cap+1 instead of reading an unbounded file. Extend meaningful tests to assert values; do not weaken limit semantics."
+    }
+  ],
+  "verified_behavior": [
+    "Exact 4 MiB source accepted and one byte over rejected; source 33 and assembly 9 rejected.",
+    "Invalid UTF-8 surrogate/overlong/out-of-range/truncation and BOM rejected; UTF-8 inside string/comment accepted.",
+    "Assembly bytes are genuinely retained by input snapshot and available to a target program.",
+    "Alternating EINTR and at-most-three-byte reads/writes preserve complete output and diagnostics.",
+    "Read error, zero-progress write, partial output followed by write error, and fchmod error all exit 1 and leave no output.",
+    "Existing dangling symlink and input hardlink output are rejected without overwrite."
+  ],
+  "nonblocking_notes": [
+    "Rejecting 1__2 follows reference-next §2 and deliberately corrects an existing C0 lexer acceptance bug; document this mismatch in final differential results.",
+    "All other inspected L contracts and H2 shared API match. No other blocker found in this review."
+  ]
+}

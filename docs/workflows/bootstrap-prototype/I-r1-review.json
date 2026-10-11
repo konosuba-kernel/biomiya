@@ -1,0 +1,69 @@
+{
+  "node": "I",
+  "candidate_revision": 1,
+  "reviewer_agent_id": "/root/acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "acceptance_scope": "Final combined B0/B1 product behavior, not only assembly of independently accepted modules. Reviewer authored no product implementation.",
+  "dependency_revisions": {
+    "H": 2,
+    "E": 1,
+    "B": 1,
+    "P": 1
+  },
+  "file_hashes_verified": {
+    "core-s/src/main.rs": "5e4cb28be5bd613353bf015070f1e41762179567c215f271ab15b87e4a589694",
+    "core-s/tests/cli.rs": "69fdf2752e31c8e8bd1322becc8148187ff1a968cfd8ac91b65ab0bbbe5add8c",
+    "core-s/fixtures/bootstrap.vt": "ef2ff4f7a35f7dc4b3dffe477f86663f63331f25661536887097702300fb8096",
+    "core-s/README.md": "a5438a1a797321afda077e6d819dce84dd3300a57da6c914b30384a3f91ebfa2",
+    "docs/workflows/bootstrap-prototype/metrics-r1.json": "1f23b9feb8a026222bb1adec31dd5ac0a496b65d20d104ae96ae9911cfe5aa1c",
+    "docs/workflows/bootstrap-prototype/I-clean-build-r2.json": "b1497482da9592baead5716d4c03c1b1b3549f712b126e8665d509df721d1fd6",
+    "docs/workflows/bootstrap-prototype/I-clean-build-r2.txt": "62471dc6425ebe43dd057fe2cf071f1f1379d0b4fba1973cc6c70fd52417ce39"
+  },
+  "dependency_files_reverified": true,
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --all-features",
+      "exit_code": 0,
+      "result": "34 integration tests passed; 0 ignored; includes 19 true-source entries executed in direct and reference paths."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-prototype/probes/integration/probe.py",
+      "exit_code": 0,
+      "result": "Unicode entry with 600 checked additions and source-generated far control flow: direct/reference both 98; 86,017-byte ELF. Normal return 101 handled as normal program behavior. Empty PATH build, asm/build failures and both inode aliases preserve inputs/old artifacts. Independent 23-file offline build has identical ELF. cloc groups recomputed.",
+      "evidence": "docs/workflows/bootstrap-prototype/I-r1-independent.json"
+    },
+    {
+      "command": "cargo run --quiet --offline --manifest-path docs/workflows/bootstrap-prototype/probes/machine/Cargo.toml",
+      "exit_code": 0,
+      "result": "Archived E/B independent probe executes successfully with relative dependency path."
+    },
+    {
+      "command": "cargo run --quiet --offline --manifest-path docs/workflows/bootstrap-prototype/probes/pipeline/Cargo.toml",
+      "exit_code": 0,
+      "result": "Archived P independent probe executes successfully with relative dependency path."
+    }
+  ],
+  "inspection": [
+    "Production source has no subprocess execution or archived compiler service; runtime is generated as typed machine operations in main.rs.",
+    "Entry selection checks zero parameters, safe signature and u32 result before emission; syntax/name/type/unsupported/entry and UTF-8 errors are surfaced.",
+    "Publication uses create_new temporary file, writes complete bytes, sets mode and syncs before rename; failures remove owned temporary files. Unix inode/device comparison rejects existing source aliases.",
+    "Source list and every metrics hash/physical count independently verified. Runtime/publication/CLI included in own code; lexer/source/diagnostic included once; Unicode and tests explicitly separate.",
+    "README states retained whole-program AST/CFG, Rust-hosted seed, existing pilot semantics and missing R1a/.s0/SOS/self-hosting; does not count proposal-only features as implemented."
+  ],
+  "metrics_confirmed": {
+    "handwritten_physical_lines": 5734,
+    "handwritten_code": 5509,
+    "generated_code": 2095,
+    "test_code": 2435,
+    "fixture_physical_lines": 98
+  },
+  "findings": [],
+  "probe_archive": "docs/workflows/bootstrap-prototype/probes/archive-map.json",
+  "limitations": [
+    "Acceptance is for bounded single-file Core S B0/B1 prototype, not complete R1a or self-hosting.",
+    "No comprehensive recursion/time/memory adversarial hardening or concurrent hostile pathname-race protection is claimed or verified.",
+    "Linux low-eight-bit process exit is insufficient to disambiguate arbitrary normal return 101 from panic; controlled fixtures establish panic paths.",
+    "External Cargo dependencies are excluded from handwritten source totals and required for seed compiler build; generated target executables have no libc/toolchain dependency."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "node": "F",
+  "candidate_revision": 2,
+  "supersedes": "F-r1",
+  "input_revisions": {
+    "H": 3,
+    "L": 2
+  },
+  "test_backend_revision": {
+    "M": 3
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/types.vt": "27b3441af70d482e69114c9b98e446b05d37e4dd258d35532470af73d7131cc3",
+    "core-s/bootstrap/parse.vt": "a617258e3bbe70c9ad68e81de563c60381b8e1ce399cb45f63cb47fb65c4f814",
+    "core-s/bootstrap/check.vt": "1e0d3d24e1d30599ad3788e38190d62f16f8cd3192d2aeb3fd4caf5a25c9a007",
+    "core-s/bootstrap/ir.vt": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "core-s/tests/b3_frontend.rs": "4a3b9b603527700dd50dcc7301c30c5c7e7743616f6e0e46cc9a0cdd8ff9f118"
+  },
+  "dependency_hashes_revalidated": {
+    "H": {
+      "docs/design/bootstrap-b3.md": "f284c2b2af6f41d4f639006d0d6678aa730a9e06e2e583012afcd6eb63794896",
+      "core-s/bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+      "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+      "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+    },
+    "L": {
+      "core-s/bootstrap/lex.vt": "31915fb257899b833105706e42f2f2861b556cc8ef93c91b865d9b7b9062ac8c",
+      "core-s/bootstrap/input.vt": "78d23f79da810377f784b9e964031fbcf4465ec0f1dbd54d0a6f68810b2e380b",
+      "core-s/tests/b3_input.rs": "9487d019afb25333dad565946e16764f8ef4fc33882f1d8c32bee32c51c03a26"
+    },
+    "M": {
+      "core-s/bootstrap/rv64.vt": "4fcc5bea0bc960f2e91b25d695c18338341ef02d5cefb5e2ee18a54d5769895f",
+      "core-s/bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+      "core-s/bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+      "core-s/bootstrap/tests/machine.vt": "18f37dece32a7511ac6edea7ce1bf7b05a790e885f3195e599d0c1d1fa7c6172",
+      "core-s/tests/b3_machine.rs": "acf31a105bce1ea80c2e9e7d542190fa0feeeb63fbf1503a9502a456ef8ae9bd"
+    }
+  },
+  "commands": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_frontend",
+      "exit_code": 0,
+      "result": "All seven groups passed independently in 10.43s, including current frontend-source checking, new four-defect regressions, repeated count limit, nested static permission, and same-class recursive/aggregate overflow bounds."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/f_semantics.py 2 > docs/workflows/bootstrap-b3/F-r2-independent-semantics.json",
+      "exit_code": 0,
+      "result": "All 25 independent source cases now satisfy expected target behavior/diagnostics through an isolated reviewer driver and accepted M3; known C0 root-qualified shadowing bug is explicitly distinguished."
+    }
+  ],
+  "resolved_findings": [
+    "F1-mutable-static-array-len: mutable static array .len now rejects without unsafe; target E_PERMISSION retains file/offset.",
+    "F1-array-count-capacity-category: oversized representable integers report I_LIMIT actual=4294967296 limit=4294967295; true noninteger counts remain E_TYPE.",
+    "F1-unbounded-place-recursion: both 3000-deep field and index chains now report actual=65 limit=64 I_LIMIT instead of SIGSEGV under 1 MiB guest stack.",
+    "F1-capacity-diagnostic-overflow: rejected array count is compared/reported before multiplication; original oversized Big-array probe reports actual=4294967295 limit=0 I_LIMIT instead of panic101. Structure/Result accumulation and alignment use checked size_add."
+  ],
+  "verified_behavior": [
+    "Aggregate argument/return/error snapshots, RHS-before-LHS assignments, cleanup LIFO and late binding, nested cleanup, loop exits, Result ?, short circuit, bounds and slice projections execute as expected.",
+    "Invalid permission changes/global reads/defer returns retain explicit diagnostics and create no ELF.",
+    "Shared F/L/H records and accepted M3 boundaries match current candidate hashes; no product main or future I driver was used in this review."
+  ],
+  "findings": [],
+  "nonblocking_notes": [
+    "Final differential report must retain the known C0 root::n/local-shadowing defect and numeric-separator defect instead of claiming uniform seed equality or forcing the target to reproduce them.",
+    "F uses compact multi-statement lines. Final code-size report must disclose this and avoid presenting raw physical LOC as equivalent semantic complexity."
+  ],
+  "limitations": [
+    "F component acceptance is not compiler fixed-point completion. Formal I must still prove C1→C2→C3 equality, target tool isolation, compiler-source mutation, clean rebuild, total memory below budget and full relevant regression behavior.",
+    "Resource diagnostic units are explicitly declared by F2 candidate: array-size capacity compares element count against floor(byte_limit/element_size), not bytes."
+  ]
+}

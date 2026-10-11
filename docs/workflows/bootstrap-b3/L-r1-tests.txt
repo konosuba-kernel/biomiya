@@ -1,0 +1,11 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/b3_input.rs (core-s/target/debug/deps/b3_input-19003ced70ec38ae)
+
+running 4 tests
+test target_lexer_decodes_numbers_strings_ranges_and_nested_comments ... ok
+test target_manifest_limits_and_source_aliases_preserve_inputs ... ok
+test target_rejects_bad_numeric_tokens_utf8_and_unsupported_identifiers ... ok
+test target_input_keeps_manifest_snapshots_and_handles_short_io ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.89s
+

@@ -1,0 +1,46 @@
+$ cargo test --manifest-path core-s/Cargo.toml --features image --test image --test s0 --test backend
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running tests/backend.rs (core-s/target/debug/deps/backend-1369e9144859ab3e)
+
+running 14 tests
+test malformed_ir_returns_diagnostics_without_source_rechecking ... ok
+test malformed_externs_slices_and_new_ir_are_rejected ... ok
+test typed_lowering_exposes_checks_and_renderer_rejects_malformed_operations ... ok
+test overlap_copy_large_stack_offsets_and_zero_size_values_execute ... ok
+test hidden_result_unit_omission_and_over_eight_positions_follow_lp64 ... ok
+test typed_address_rendering_and_generated_labels_execute_without_collisions ... ok
+test aggregate_parameters_are_independent_and_results_use_hidden_slots ... ok
+test typed_control_flow_preserves_live_temporaries_across_far_edges ... ok
+test external_c_calls_symbol_addresses_bitcasts_and_dynamic_bounds_execute ... ok
+test branches_loops_and_recursive_calls_preserve_frames ... ok
+test explicit_bounds_pointer_offset_and_raw_storage_execute ... ok
+test unary_casts_unit_comparison_and_unreachable_execute ... ok
+test checked_arithmetic_and_shifts_really_stop ... ok
+test integer_widths_wrapping_comparisons_and_lp64_results_execute ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.45s
+
+     Running tests/image.rs (core-s/target/debug/deps/image-dd7cee056361d390)
+
+running 8 tests
+test malformed_operands_symbols_entries_and_ranges_are_rejected ... ok
+test data_and_external_symbol_validation_rejects_malformed_images ... ok
+test elf_headers_segments_entry_and_padding_are_exact ... ok
+test arbitrary_u64_constants_execute_and_write_exact_bytes ... ok
+test far_control_flow_calls_addresses_and_scratch_contract_execute ... ok
+test instructions_match_independent_clang_lld_bytes ... ok
+test data_abs64_bss_and_segment_permissions_execute_against_reference ... ok
+test text_capacity_is_checked_before_output_allocation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+
+     Running tests/s0.rs (core-s/target/debug/deps/s0-2a11429d949d1325)
+
+running 2 tests
+test malformed_and_unsupported_inputs_have_file_and_line_spans ... ok
+test fixed_grammar_encodes_all_operations_and_localizes_labels ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+exit=0

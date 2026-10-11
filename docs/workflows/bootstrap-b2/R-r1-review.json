@@ -1,0 +1,53 @@
+{
+  "node": "R",
+  "candidate_revision": 1,
+  "input_revisions": {
+    "F": 1,
+    "M": 1,
+    "A": 1
+  },
+  "reviewer_agent_id": "/root/b2_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/app/copy.build": "620989029954aaf7c2363f04ec265c7b34a5a49a7575a1260bfc7c33793573d1",
+    "core-s/app/copy.manifest": "3619638ab8bef23ed888f4c49077d3c6be3b3b89a6bef5af13fa0dc8ee216781",
+    "core-s/app/copy.vt": "a672ea6235291d797e037e8b5a671a9f2d75842f62ccaa665f8ea4a58f5a79ed",
+    "core-s/compiler/manifest.vt": "e9540994fb36717315f65abb6859e8cdf79b11c77d7774add64156955443a139",
+    "core-s/compiler/scan.vt": "c897e7dd554d935cb0a06d2c29ae6a0ea644718c1d6fa9b02e060e1278006c90",
+    "core-s/compiler/source.vt": "ccdccaedd001bd8924a07cfd3cb8bbdfb3ecb45353b4dde923ccfcb2cd0b0110",
+    "core-s/runtime/README.md": "4e992f2d3bd85c4d3d1cb3e51d7db2c54fb9b9007711e74ace8d38e2aab42f2b",
+    "core-s/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "core-s/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+    "core-s/runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+    "core-s/tests/b2_runtime.rs": "a1c6241aec218f58020bc1695f85b41b5a1868892ec2a98efd02944b29e6ca55"
+  },
+  "commands": [
+    {
+      "command": "python3 docs/workflows/bootstrap-b2/probes/run_r.py",
+      "exit_code": 0,
+      "result": "Offline all-feature library build plus standalone rustc test fixture: 9 tests pass, including original 6 and 3 independent probes."
+    },
+    {
+      "command": "Python SHA-256 comparison of R candidate",
+      "exit_code": 0,
+      "result": "All 11 frozen files match."
+    }
+  ],
+  "verified_contracts": [
+    "Actual RV64 process parses the manifest, reads sources in order, lexically scans, and writes exact concatenated bytes; empty inputs and multi-buffer inputs pass.",
+    "Injected providers force seven-byte I/O and EINTR; target code performs retry and byte-copy loops. The host only supplies fixture inputs and checks outputs.",
+    "Independent second-source-missing probe checks removal after a preceding source has already been written.",
+    "Independent dangling-output-symlink probe confirms O_EXCL rejection preserves the existing symlink and does not create its target.",
+    "Independent final-output-close failure probe closes fd 3 then returns an error after data was written; target exits 13 and removes new output.",
+    "Target parser rejects source/assembly path duplication; scanner accepts UTF-8 comments/string bytes while rejecting unsupported identifier bytes; precise token/error offsets verified by target library test.",
+    "Direct image and Clang/LLD reference execute the same target source and produce identical output bytes."
+  ],
+  "findings": [],
+  "limitations": [
+    "Runtime is Linux-user and bounded by static BSS buffers; no heap allocator, SOS adapter or self-compilation is claimed.",
+    "ASCII target manifest separators and ASCII identifiers are documented restrictions; numeric token semantic validation remains future parser work.",
+    "Cleanup invokes close/unlink; this does not establish crash durability or guarantee unlink succeeds when the environment refuses removal.",
+    "Project CLI integration, atomic executable publication, unused extern provider resolution and clean-build evidence belong to I."
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "node": "H",
+  "candidate_revision": 2,
+  "supersedes": "H-r1",
+  "input_revisions": {
+    "B2": "accepted"
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "docs/design/bootstrap-b3.md": "473c6b92f98071db77b0dfec87f49f47c9680038ad1284b5461ba617f0a16c26",
+    "core-s/bootstrap/model.vt": "9f242819c39937feacc80fb377ae2192314bb9ead3939dad612057f6e21411a8",
+    "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+    "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+  },
+  "commands": [
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/h_model.py 2",
+      "exit_code": 0,
+      "result": "Four H2 hashes match; original model probe and five independent boundary/reset/ownership modes pass; RW p_memsz remains 23162440."
+    },
+    {
+      "command": "python3 /tmp/b3-h2-check.py",
+      "exit_code": 0,
+      "result": "Author reported four diagnostic I/O modes reproduced."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/h_diagnostics.py",
+      "exit_code": 0,
+      "result": "Independent strengthened variant alternates EINTR and one-byte writes throughout max-width FileId/usize diagnostics; exact stderr preserved. Zero progress, errno -5 and oversized write returns each exit 1 with no hang or recursive failure."
+    }
+  ],
+  "verified_contracts": [
+    "Diagnostic short-write/EINTR finding from H1 is resolved in actual target execution. Failure reporting remains best-effort on permanent stderr errors and exits 1.",
+    "Explicit terminators and first LABEL 1 make F/M control-flow validation contract determinate without changing shared record layout/API.",
+    "H1 interface/DAG/model acceptance remains valid for H2; L/M input revisions should advance to H2, and final I must use H2 hashes."
+  ],
+  "findings": [],
+  "remaining_obligations": [
+    "Final measured 64 MiB compiler data budget and table/frame peaks at I.",
+    "M validates raw IDs and malformed typed IR including new explicit block contract.",
+    "Driver must reset model before registering/loading persistent sources."
+  ]
+}

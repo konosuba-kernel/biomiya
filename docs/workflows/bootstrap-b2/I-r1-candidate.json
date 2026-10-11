@@ -1,0 +1,38 @@
+{
+  "node": "I",
+  "revision": 1,
+  "implementer": "/root",
+  "input_revisions": {
+    "F": 1,
+    "M": 1,
+    "A": 1,
+    "R": 1
+  },
+  "files": {
+    "core-s/src/main.rs": "897484a44381d1ef6327e9dfea869019d36e60af048ae95c553d7c35ec2680d4",
+    "core-s/src/pipeline.rs": "24b21978a45bd66c2db12ff175c13b07c6af6ea7b312812798b75884722c1a6e",
+    "core-s/tests/b2.rs": "7001220ba9438a7d0bdb66d580e231da4080c147ff4a253a48e44f22ffc13ef0",
+    "core-s/tests/cli.rs": "b9c87eef1b711807c0f2c40c76f1ffc3356a548dd9732b44b590bd8a440f2295",
+    "core-s/README.md": "240626c7d146ca2cae05e03d402aa01efd4d00a379b64fd6cec70f8e10733893",
+    "core-s/.gitignore": "6192c78b3a190e1deae3b9235fba123041714ebbb86b43ccb858ba34b26994d5",
+    "docs/workflows/bootstrap-b2/measure.py": "073000e19774652aad8f99cd9cb4defe9760d8837851ed6e131aa6ebc6fae473",
+    "docs/workflows/bootstrap-b2/metrics-r1.json": "8ec1c7f9ff3ef5261f7a87e1211dade25770b11a8a927d8d91651f01f6b4f73c",
+    "docs/workflows/bootstrap-b2/clean_build.py": "6d60cddb35d7e17bb1c9f9d169e0cd4f4f6f4f7b226dc9ac36bc45ecc20cb45f",
+    "docs/workflows/bootstrap-b2/I-r1-clean-build.json": "a3fcb37ef062ecaf798529f0bfbaf3cc1f26a77f1609d4e62d935da3309871d4"
+  },
+  "verification": [
+    "cargo test --offline --manifest-path core-s/Cargo.toml --all-features: 61 passed",
+    "python3 docs/workflows/bootstrap-b2/clean_build.py: offline locked clean rebuild, 61 tests, empty PATH project build, identical ELF and real target source copy",
+    "python3 docs/workflows/bootstrap-b2/measure.py: full implementation/test/generated ledger"
+  ],
+  "evidence": [
+    "I-r1-tests.txt",
+    "I-r1-clean-tests.txt",
+    "I-r1-clean-build.json",
+    "metrics-r1.json"
+  ],
+  "test_changes": [
+    "Old CLI unsupported module case now uses unsupported enum; module is B2 capability. No old behavior cases removed."
+  ],
+  "scope": "Final B2 combination; still not B3 self-compilation"
+}

@@ -1,0 +1,38 @@
+{
+  "node": "F",
+  "revision": 1,
+  "implementer": "/root/b2_language",
+  "input_revisions": {
+    "H": 1
+  },
+  "files": {
+    "core-s/src/ast.rs": "8fa75c5360a01d7ff55194e88939e1e9f6b94869c247c7dc8ac7e6c5a4d8e415",
+    "core-s/src/model.rs": "a7fa2f9b416deb31828f201a90850ce261926c6116b3051cd1754547f2beeeaf",
+    "core-s/src/frontend.rs": "e510cb24e5f877de41d11a8655657f293d60b72b0b1615f1a320c73b3bca43eb",
+    "core-s/src/check.rs": "e13e5326f87624e1389893699b34ee0b103e83dd570ea1f517b7b2cf0815e8a8",
+    "core-s/src/modules.rs": "1ecb59270bab632a0b07d0cba27bfd538ec12b62cbffe5f5921348a2db2d783c",
+    "core-s/tests/check.rs": "109541c41d9d05bbdf016294bdc8420b666c5badd44970d188fbc1ceb4ba1d71",
+    "core-s/tests/pipeline.rs": "e402ed7e9b4403fba2e760125d5fc918f6f62d2d08a6a2aec12023a2a743298d",
+    "core-s/tests/b2_language.rs": "7c163ee882c75e762cab45a6f9c2da6a663ab514f9d6e7b12d39ea95f3e269ce"
+  },
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features frontend,check --test check --test b2_language",
+      "result": "passed: 7 B2 groups plus 6 pre-existing checker tests"
+    },
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features pipeline --test pipeline",
+      "result": "passed: 6 tests"
+    }
+  ],
+  "scope": "H r1 language increment: module merge/visibility, string/slice/static, pointer helpers, scalar extern ABI and checker CFG/data. Not full R1a.",
+  "limits": [
+    "Static initializer subset excludes arithmetic, casts and size queries with I_UNSUPPORTED.",
+    "Public cross-module structures require all fields pub; mixed visibility reports I_UNSUPPORTED.",
+    "Existing pilot integer widths, comparison literal typing and explicit unsafe blocks retained."
+  ],
+  "test_changes": [
+    "Previously unsupported module declaration now succeeds; the existing I_UNSUPPORTED pipeline case instead uses enum, still outside B2.",
+    "Hand-built checker ResolvedProgram fixtures gained empty globals and externs fields; existing expectations unchanged."
+  ]
+}

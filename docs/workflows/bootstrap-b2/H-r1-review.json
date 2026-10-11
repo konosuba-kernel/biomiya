@@ -1,0 +1,36 @@
+{
+  "node": "H",
+  "candidate_revision": 1,
+  "reviewer_agent_id": "/root/b2_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "docs/design/bootstrap-b2.md": "7110ecc08aaaa30648835d565c223f7752af77f8793e51b1ced91beeea5f37f4",
+    "core-s/src/lib.rs": "b072149da1620ccd8e4bbfbe5b9803dc1bfb7611e0ae40689e99734f84e2c980"
+  },
+  "commands": [
+    {
+      "command": "Python SHA-256 comparison of H candidate and topological sort of workflow.json",
+      "exit_code": 0,
+      "result": "Both candidate hashes match; layers H -> F/M/A -> R -> I. All dependencies exist and parallel file ownership does not overlap."
+    },
+    {
+      "command": "cargo check --manifest-path core-s/Cargo.toml",
+      "exit_code": 0,
+      "result": "Default feature compilation passes; project/s0 gated exports exist."
+    }
+  ],
+  "verified_contracts": [
+    "AST/model new fields and ownership make frontend data/extern/slice lowering consumable by backend without concurrent shared-file edits.",
+    "DataObject initialized bytes and BSS are disjoint; static pointers use ABS64, runtime symbol addresses PCREL; machine images and assembly reference share the data contract.",
+    "Extern FunctionId entries preserve existing call references, are omitted from emitted bodies, and require an explicitly supplied s0 text definition.",
+    "Project parsing is std-only with a concrete manifest structure; R uses library-level composition and therefore does not depend on I CLI.",
+    "Source payload and result execution, short I/O failures, missing symbols, permissions, BSS/relocations, reproducibility and code accounting remain mandatory final integration requirements."
+  ],
+  "findings": [],
+  "limitations": [
+    "Architecture/interface acceptance only. Language, runtime, scanner, project CLI, and s0 implementations are not approved by this review.",
+    "Default feature check does not exercise gated missing modules; implementing F/M/A is required before full feature checks can pass.",
+    "Full R1a, SOS and self-compilation are explicitly outside this B2 contract."
+  ]
+}

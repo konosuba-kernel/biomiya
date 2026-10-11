@@ -1,0 +1,16 @@
+{
+  "revision": "2",
+  "results": [
+    {
+      "name": "static_repeat_string_identity",
+      "expected": 1,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 2,
+      "seed_program_exit": 1,
+      "passed": false
+    }
+  ]
+}

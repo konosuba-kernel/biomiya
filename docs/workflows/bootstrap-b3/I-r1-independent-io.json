@@ -1,0 +1,117 @@
+[
+  {
+    "name": "final_CLI_repeated_EINTR_three_byte_reads_writes",
+    "exit": 0,
+    "program_exit": 71,
+    "statistics": "B3 sources=1 imports=0 assembly_files=0 source=78 assembly=0 names=6 name_bytes=14 decls=2 types=10 fields=0 params=0 max_ast=10 max_ir=18 max_frame=128 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=15 max_args=0 max_params=0 text=584 data=21 objects=2 symbols=18 fixups=21 relocations=1 elf=12289\n",
+    "syscall_counter_global": 114
+  },
+  {
+    "name": "missing_input",
+    "generation": "c1",
+    "exit": 1,
+    "stderr": "E_IO file=1 byte=0\n"
+  },
+  {
+    "name": "over_capacity",
+    "generation": "c1",
+    "exit": 1,
+    "stderr": "actual=4194305 limit=4194304 I_LIMIT file=1 byte=4194304\n"
+  },
+  {
+    "name": "existing_output",
+    "generation": "c1",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "dangling_symlink",
+    "generation": "c1",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "input_alias",
+    "generation": "c1",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "bad_assembly_check",
+    "generation": "c1",
+    "exit": 1,
+    "stderr": "E_LINK file=0 byte=0\n"
+  },
+  {
+    "name": "missing_input",
+    "generation": "c2",
+    "exit": 1,
+    "stderr": "E_IO file=1 byte=0\n"
+  },
+  {
+    "name": "over_capacity",
+    "generation": "c2",
+    "exit": 1,
+    "stderr": "actual=4194305 limit=4194304 I_LIMIT file=1 byte=4194304\n"
+  },
+  {
+    "name": "existing_output",
+    "generation": "c2",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "dangling_symlink",
+    "generation": "c2",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "input_alias",
+    "generation": "c2",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "bad_assembly_check",
+    "generation": "c2",
+    "exit": 1,
+    "stderr": "E_LINK file=0 byte=0\n"
+  },
+  {
+    "name": "missing_input",
+    "generation": "c3",
+    "exit": 1,
+    "stderr": "E_IO file=1 byte=0\n"
+  },
+  {
+    "name": "over_capacity",
+    "generation": "c3",
+    "exit": 1,
+    "stderr": "actual=4194305 limit=4194304 I_LIMIT file=1 byte=4194304\n"
+  },
+  {
+    "name": "existing_output",
+    "generation": "c3",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "dangling_symlink",
+    "generation": "c3",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "input_alias",
+    "generation": "c3",
+    "exit": 1,
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  {
+    "name": "bad_assembly_check",
+    "generation": "c3",
+    "exit": 1,
+    "stderr": "E_LINK file=0 byte=0\n"
+  }
+]

@@ -1,0 +1,51 @@
+{
+  "node": "M",
+  "candidate_revision": 1,
+  "input_revisions": {
+    "H": 1
+  },
+  "reviewer_agent_id": "/root/b2_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/src/machine.rs": "2e0b7c588091e703d65b83bda8c7b12c93075dd656f06e2f3064cca866e54395",
+    "core-s/src/backend.rs": "eccf7b3d4e7241ed1442cd4ca554f8cd55d7c2f96cf654c61ab549f9e676bea9",
+    "core-s/src/encode.rs": "e07e4ec9ee72482e7aee01eda5c60fdae4d69c2af85e9295b82166533f958888",
+    "core-s/src/image.rs": "425e76681c53a5f2bbc6c908fc41b1539930a5623b96e6dba527dcaf40540460",
+    "core-s/src/s0.rs": "0d391b3f73431fc4ecb13c16c69bff8cb437cdcffdfab167af3c55b606d8fdf1",
+    "core-s/tests/backend.rs": "b2c936c3bf16fcc0e0a9c9da0b425c2648c051b654b64e07353708b85ed6613a",
+    "core-s/tests/image.rs": "3a40e069d6849ece1abf4f5a239566b197545af2e5e65454c2fe53ffa23ff455",
+    "core-s/tests/s0.rs": "93738cfb9bbb83672c7e5881ef10fa1ee65a5f9563bcda67898b158ddd4fb452"
+  },
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features frontend,check,backend,image --test b2_language --test check --test backend --test image --test s0",
+      "exit_code": 0,
+      "result": "37 tests passed: 7 B2 language, 6 legacy checker, 14 backend, 8 image, 2 s0."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b2/probes/run_fm.py",
+      "exit_code": 0,
+      "result": "3 independent probe groups passed; actual source ELF runs returned 17 for shared mutable slice data, 101 for zero-length dynamic bounds, 2 for return snapshot before deferred mutation."
+    },
+    {
+      "command": "Python SHA-256 comparison of M candidate",
+      "exit_code": 0,
+      "result": "All 8 frozen file hashes match."
+    }
+  ],
+  "findings": [],
+  "verified_contracts": [
+    "Independent malformed data probes reject negative ABS64 underflow, byte-overlapping relocation records and text/data symbol collisions.",
+    "s0 diagnostics preserve exact file and line byte span including UTF-8 comment prefix and CRLF.",
+    "Existing machine/image tests exercise RO/RW/BSS, ABS64, external-symbol restrictions, 64 MiB limits and independently assembled reference bytes.",
+    "Real frontend output with data pointer relocation, dynamic bounds and deferred access executes under QEMU."
+  ],
+  "probe_notes": [
+    "Independent execution fixture initially omitted the required panic provider and executable permission; corrected fixture only, no product code changed."
+  ],
+  "limitations": [
+    "Project/CLI entry selection, all unused extern provider resolution, target runtime/scanner/manifest, short I/O, source publication and full B2 assembly acceptance belong to R/I.",
+    "This approves bounded B2 capability, not complete R1a or SOS or self-compilation."
+  ]
+}

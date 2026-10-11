@@ -1,0 +1,348 @@
+{
+  "hashes": {
+    "H-r3": "matched",
+    "L-r2": "matched",
+    "F-r3": "matched",
+    "M-r3": "matched",
+    "I-r2": "matched"
+  },
+  "checks": [
+    {
+      "case": "short",
+      "gen": 0,
+      "exit": 0,
+      "stderr": "",
+      "program_exit": 37
+    },
+    {
+      "case": "short",
+      "gen": 1,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=25 assembly=0 names=3 name_bytes=6 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "short",
+      "gen": 2,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=25 assembly=0 names=3 name_bytes=6 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "short",
+      "gen": 3,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=25 assembly=0 names=3 name_bytes=6 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "root",
+      "gen": 0,
+      "exit": 0,
+      "stderr": "",
+      "program_exit": 37
+    },
+    {
+      "case": "root",
+      "gen": 1,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=25 assembly=0 names=3 name_bytes=6 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "root",
+      "gen": 2,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=25 assembly=0 names=3 name_bytes=6 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "root",
+      "gen": 3,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=25 assembly=0 names=3 name_bytes=6 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "module",
+      "gen": 0,
+      "exit": 0,
+      "stderr": "",
+      "program_exit": 37
+    },
+    {
+      "case": "module",
+      "gen": 1,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=36 assembly=0 names=5 name_bytes=17 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "module",
+      "gen": 2,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=36 assembly=0 names=5 name_bytes=17 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "module",
+      "gen": 3,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=36 assembly=0 names=5 name_bytes=17 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "module_absolute",
+      "gen": 0,
+      "exit": 0,
+      "stderr": "",
+      "program_exit": 37
+    },
+    {
+      "case": "module_absolute",
+      "gen": 1,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=36 assembly=0 names=5 name_bytes=17 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "module_absolute",
+      "gen": 2,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=36 assembly=0 names=5 name_bytes=17 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "module_absolute",
+      "gen": 3,
+      "exit": 0,
+      "stderr": "B3 sources=1 imports=0 assembly_files=0 source=36 assembly=0 names=5 name_bytes=17 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n",
+      "program_exit": 37,
+      "check_exit": 0
+    },
+    {
+      "case": "double_prefix",
+      "gen": 0,
+      "exit": 1,
+      "stderr": "./in.vt:1:1: E_ENTRY: unknown entry function root::run\n"
+    },
+    {
+      "case": "double_prefix",
+      "gen": 1,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "double_prefix",
+      "gen": 2,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "double_prefix",
+      "gen": 3,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "empty_after_prefix",
+      "gen": 0,
+      "exit": 1,
+      "stderr": "./in.vt:1:1: E_ENTRY: unknown entry function \n"
+    },
+    {
+      "case": "empty_after_prefix",
+      "gen": 1,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "empty_after_prefix",
+      "gen": 2,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "empty_after_prefix",
+      "gen": 3,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "missing",
+      "gen": 0,
+      "exit": 1,
+      "stderr": "./in.vt:1:1: E_ENTRY: unknown entry function missing\n"
+    },
+    {
+      "case": "missing",
+      "gen": 1,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "missing",
+      "gen": 2,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "missing",
+      "gen": 3,
+      "exit": 1,
+      "stderr": "E_NAME file=0 byte=0\n",
+      "check_exit": 1
+    },
+    {
+      "case": "unsafe",
+      "gen": 0,
+      "exit": 1,
+      "stderr": "./in.vt:1:1: E_ENTRY: entry must be a safe fn() -> u32\n"
+    },
+    {
+      "case": "unsafe",
+      "gen": 1,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=20\n",
+      "check_exit": 1
+    },
+    {
+      "case": "unsafe",
+      "gen": 2,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=20\n",
+      "check_exit": 1
+    },
+    {
+      "case": "unsafe",
+      "gen": 3,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=20\n",
+      "check_exit": 1
+    },
+    {
+      "case": "arguments",
+      "gen": 0,
+      "exit": 1,
+      "stderr": "./in.vt:1:1: E_ENTRY: entry must be a safe fn() -> u32\n"
+    },
+    {
+      "case": "arguments",
+      "gen": 1,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=18\n",
+      "check_exit": 1
+    },
+    {
+      "case": "arguments",
+      "gen": 2,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=18\n",
+      "check_exit": 1
+    },
+    {
+      "case": "arguments",
+      "gen": 3,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=18\n",
+      "check_exit": 1
+    },
+    {
+      "case": "wrong_result",
+      "gen": 0,
+      "exit": 1,
+      "stderr": "./in.vt:1:1: E_ENTRY: entry must be a safe fn() -> u32\n"
+    },
+    {
+      "case": "wrong_result",
+      "gen": 1,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=15\n",
+      "check_exit": 1
+    },
+    {
+      "case": "wrong_result",
+      "gen": 2,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=15\n",
+      "check_exit": 1
+    },
+    {
+      "case": "wrong_result",
+      "gen": 3,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=15\n",
+      "check_exit": 1
+    }
+  ],
+  "rebuilt_hashes": {
+    "c1": "c7f24a2ea419cc4fd532c2e7eecded8da9a65208c918c203449ae0d7e8c2bebd",
+    "c2": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a",
+    "c3": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a"
+  },
+  "traces": [
+    {
+      "generation": 2,
+      "opened": [
+        "bootstrap/c2.build",
+        "bootstrap/model.vt",
+        "bootstrap/lex.vt",
+        "bootstrap/input.vt",
+        "bootstrap/types.vt",
+        "bootstrap/parse.vt",
+        "bootstrap/ir.vt",
+        "bootstrap/check.vt",
+        "bootstrap/image.vt",
+        "bootstrap/rv64.vt",
+        "bootstrap/s0.vt",
+        "bootstrap/main.vt",
+        "runtime/bytes.vt",
+        "runtime/linux.vt",
+        "runtime/linux.s0",
+        "build/c2.elf"
+      ],
+      "stderr": "95315 openat(AT_FDCWD,\"bootstrap/c2.build\",O_RDONLY) = 3\n95315 read(3,0x16b0e98,4096) = 425\n95315 read(3,0x16b1041,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/model.vt\",O_RDONLY) = 3\n95315 read(3,0x16b4e99,4096) = 4096\n95315 read(3,0x16b5e99,4096) = 4096\n95315 read(3,0x16b6e99,4096) = 4096\n95315 read(3,0x16b7e99,4096) = 2361\n95315 read(3,0x16b87d2,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/lex.vt\",O_RDONLY) = 3\n95315 read(3,0x16b87d2,4096) = 4096\n95315 read(3,0x16b97d2,4096) = 3645\n95315 read(3,0x16ba60f,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/input.vt\",O_RDONLY) = 3\n95315 read(3,0x16ba60f,4096) = 4096\n95315 read(3,0x16bb60f,4096) = 3638\n95315 read(3,0x16bc445,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/types.vt\",O_RDONLY) = 3\n95315 read(3,0x16bc445,4096) = 4096\n95315 read(3,0x16bd445,4096) = 4096\n95315 read(3,0x16be445,4096) = 4096\n95315 read(3,0x16bf445,4096) = 4096\n95315 read(3,0x16c0445,4096) = 4096\n95315 read(3,0x16c1445,4096) = 4096\n95315 read(3,0x16c2445,4096) = 239\n95315 read(3,0x16c2534,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/parse.vt\",O_RDONLY) = 3\n95315 read(3,0x16c2534,4096) = 4096\n95315 read(3,0x16c3534,4096) = 4096\n95315 read(3,0x16c4534,4096) = 4096\n95315 read(3,0x16c5534,4096) = 4096\n95315 read(3,0x16c6534,4096) = 4096\n95315 read(3,0x16c7534,4096) = 879\n95315 read(3,0x16c78a3,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/ir.vt\",O_RDONLY) = 3\n95315 read(3,0x16c78a3,4096) = 4096\n95315 read(3,0x16c88a3,4096) = 891\n95315 read(3,0x16c8c1e,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/check.vt\",O_RDONLY) = 3\n95315 read(3,0x16c8c1e,4096) = 4096\n95315 read(3,0x16c9c1e,4096) = 4096\n95315 read(3,0x16cac1e,4096) = 4096\n95315 read(3,0x16cbc1e,4096) = 4096\n95315 read(3,0x16ccc1e,4096) = 4096\n95315 read(3,0x16cdc1e,4096) = 4096\n95315 read(3,0x16cec1e,4096) = 3101\n95315 read(3,0x16cf83b,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/image.vt\",O_RDONLY) = 3\n95315 read(3,0x16cf83b,4096) = 4096\n95315 read(3,0x16d083b,4096) = 4096\n95315 read(3,0x16d183b,4096) = 4096\n95315 read(3,0x16d283b,4096) = 148\n95315 read(3,0x16d28cf,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/rv64.vt\",O_RDONLY) = 3\n95315 read(3,0x16d28cf,4096) = 4096\n95315 read(3,0x16d38cf,4096) = 4096\n95315 read(3,0x16d48cf,4096) = 4096\n95315 read(3,0x16d58cf,4096) = 4096\n95315 read(3,0x16d68cf,4096) = 4096\n95315 read(3,0x16d78cf,4096) = 4096\n95315 read(3,0x16d88cf,4096) = 4096\n95315 read(3,0x16d98cf,4096) = 4096\n95315 read(3,0x16da8cf,4096) = 4096\n95315 read(3,0x16db8cf,4096) = 4096\n95315 read(3,0x16dc8cf,4096) = 3075\n95315 read(3,0x16dd4d2,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/s0.vt\",O_RDONLY) = 3\n95315 read(3,0x16dd4d2,4096) = 4096\n95315 read(3,0x16de4d2,4096) = 4096\n95315 read(3,0x16df4d2,4096) = 2254\n95315 read(3,0x16dfda0,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"bootstrap/main.vt\",O_RDONLY) = 3\n95315 read(3,0x16dfda0,4096) = 4096\n95315 read(3,0x16e0da0,4096) = 1429\n95315 read(3,0x16e1335,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"runtime/bytes.vt\",O_RDONLY) = 3\n95315 read(3,0x16e1335,4096) = 2333\n95315 read(3,0x16e1c52,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"runtime/linux.vt\",O_RDONLY) = 3\n95315 read(3,0x16e1c52,4096) = 4096\n95315 read(3,0x16e2c52,4096) = 349\n95315 read(3,0x16e2daf,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"runtime/linux.s0\",O_RDONLY) = 3\n95315 read(3,0x1ab4e9a,4096) = 345\n95315 read(3,0x1ab4ff3,4096) = 0\n95315 close(3) = 0\n95315 openat(AT_FDCWD,\"build/c2.elf\",O_WRONLY|O_CREAT|O_EXCL,0600) = 3\n95315 write(3,0x2052ff0,1062968) = 1062968\n95315 fchmod(3,0755) = 0\n95315 close(3) = 0\n95315 write(2,0x9957e,2)B3 = 2\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x99580,7)sources = 7\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833512,2)13 = 2\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x99587,7)imports = 7\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833512,2)31 = 2\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x9958e,14)assembly_files = 14\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833513,1)1 = 1\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x9959c,6)source = 6\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc29583350e,6)188182 = 6\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995a2,8)assembly = 8\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)345 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995aa,5)names = 5\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833510,4)1721 = 4\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995af,10)name_bytes = 10\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc29583350f,5)29509 = 5\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995b9,5)decls = 5\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)411 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995be,5)types = 5\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)176 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995c3,6)fields = 6\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)115 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995c9,6)params = 6\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)405 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995cf,7)max_ast = 7\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)867 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995d6,6)max_ir = 6\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833510,4)1633 = 4\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995dc,9)max_frame = 9\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc29583350f,5)26384 = 5\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995e5,12)max_bindings = 12\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833512,2)18 = 2\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995f1,10)max_defers = 10\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833513,1)0 = 1\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x995fb,9)max_loops = 9\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833513,1)3 = 1\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x99604,9)max_saved = 9\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)182 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x9960d,9)max_slots = 9\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833510,4)1015 = 4\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x99616,8)max_args = 8\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)262 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x9961e,10)max_params = 10\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833513,1)7 = 1\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x99628,4)text = 4\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc29583350e,6)852792 = 6\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x9962c,4)data = 4\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc29583350e,6)200324 = 6\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x99630,7)objects = 7\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833511,3)529 = 3\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x99637,7)symbols = 7\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc29583350f,5)10456 = 5\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x9963e,6)fixups = 6\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc29583350f,5)20181 = 5\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x99644,11)relocations = 11\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc295833510,4)8280 = 4\n95315 write(2,0x9952b,1)  = 1\n95315 write(2,0x9964f,3)elf = 3\n95315 write(2,0x9952c,1)= = 1\n95315 write(2,0x7fc29583350d,7)1062968 = 7\n95315 write(2,0x99652,1)\n = 1\n95315 exit(0)\n"
+    },
+    {
+      "generation": 3,
+      "opened": [
+        "bootstrap/c3.build",
+        "bootstrap/model.vt",
+        "bootstrap/lex.vt",
+        "bootstrap/input.vt",
+        "bootstrap/types.vt",
+        "bootstrap/parse.vt",
+        "bootstrap/ir.vt",
+        "bootstrap/check.vt",
+        "bootstrap/image.vt",
+        "bootstrap/rv64.vt",
+        "bootstrap/s0.vt",
+        "bootstrap/main.vt",
+        "runtime/bytes.vt",
+        "runtime/linux.vt",
+        "runtime/linux.s0",
+        "build/c3.elf"
+      ],
+      "stderr": "95416 openat(AT_FDCWD,\"bootstrap/c3.build\",O_RDONLY) = 3\n95416 read(3,0x16f8e98,4096) = 425\n95416 read(3,0x16f9041,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/model.vt\",O_RDONLY) = 3\n95416 read(3,0x16fce99,4096) = 4096\n95416 read(3,0x16fde99,4096) = 4096\n95416 read(3,0x16fee99,4096) = 4096\n95416 read(3,0x16ffe99,4096) = 2361\n95416 read(3,0x17007d2,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/lex.vt\",O_RDONLY) = 3\n95416 read(3,0x17007d2,4096) = 4096\n95416 read(3,0x17017d2,4096) = 3645\n95416 read(3,0x170260f,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/input.vt\",O_RDONLY) = 3\n95416 read(3,0x170260f,4096) = 4096\n95416 read(3,0x170360f,4096) = 3638\n95416 read(3,0x1704445,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/types.vt\",O_RDONLY) = 3\n95416 read(3,0x1704445,4096) = 4096\n95416 read(3,0x1705445,4096) = 4096\n95416 read(3,0x1706445,4096) = 4096\n95416 read(3,0x1707445,4096) = 4096\n95416 read(3,0x1708445,4096) = 4096\n95416 read(3,0x1709445,4096) = 4096\n95416 read(3,0x170a445,4096) = 239\n95416 read(3,0x170a534,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/parse.vt\",O_RDONLY) = 3\n95416 read(3,0x170a534,4096) = 4096\n95416 read(3,0x170b534,4096) = 4096\n95416 read(3,0x170c534,4096) = 4096\n95416 read(3,0x170d534,4096) = 4096\n95416 read(3,0x170e534,4096) = 4096\n95416 read(3,0x170f534,4096) = 879\n95416 read(3,0x170f8a3,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/ir.vt\",O_RDONLY) = 3\n95416 read(3,0x170f8a3,4096) = 4096\n95416 read(3,0x17108a3,4096) = 891\n95416 read(3,0x1710c1e,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/check.vt\",O_RDONLY) = 3\n95416 read(3,0x1710c1e,4096) = 4096\n95416 read(3,0x1711c1e,4096) = 4096\n95416 read(3,0x1712c1e,4096) = 4096\n95416 read(3,0x1713c1e,4096) = 4096\n95416 read(3,0x1714c1e,4096) = 4096\n95416 read(3,0x1715c1e,4096) = 4096\n95416 read(3,0x1716c1e,4096) = 3101\n95416 read(3,0x171783b,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/image.vt\",O_RDONLY) = 3\n95416 read(3,0x171783b,4096) = 4096\n95416 read(3,0x171883b,4096) = 4096\n95416 read(3,0x171983b,4096) = 4096\n95416 read(3,0x171a83b,4096) = 148\n95416 read(3,0x171a8cf,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/rv64.vt\",O_RDONLY) = 3\n95416 read(3,0x171a8cf,4096) = 4096\n95416 read(3,0x171b8cf,4096) = 4096\n95416 read(3,0x171c8cf,4096) = 4096\n95416 read(3,0x171d8cf,4096) = 4096\n95416 read(3,0x171e8cf,4096) = 4096\n95416 read(3,0x171f8cf,4096) = 4096\n95416 read(3,0x17208cf,4096) = 4096\n95416 read(3,0x17218cf,4096) = 4096\n95416 read(3,0x17228cf,4096) = 4096\n95416 read(3,0x17238cf,4096) = 4096\n95416 read(3,0x17248cf,4096) = 3075\n95416 read(3,0x17254d2,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/s0.vt\",O_RDONLY) = 3\n95416 read(3,0x17254d2,4096) = 4096\n95416 read(3,0x17264d2,4096) = 4096\n95416 read(3,0x17274d2,4096) = 2254\n95416 read(3,0x1727da0,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"bootstrap/main.vt\",O_RDONLY) = 3\n95416 read(3,0x1727da0,4096) = 4096\n95416 read(3,0x1728da0,4096) = 1429\n95416 read(3,0x1729335,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"runtime/bytes.vt\",O_RDONLY) = 3\n95416 read(3,0x1729335,4096) = 2333\n95416 read(3,0x1729c52,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"runtime/linux.vt\",O_RDONLY) = 3\n95416 read(3,0x1729c52,4096) = 4096\n95416 read(3,0x172ac52,4096) = 349\n95416 read(3,0x172adaf,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"runtime/linux.s0\",O_RDONLY) = 3\n95416 read(3,0x1afce9a,4096) = 345\n95416 read(3,0x1afcff3,4096) = 0\n95416 close(3) = 0\n95416 openat(AT_FDCWD,\"build/c3.elf\",O_WRONLY|O_CREAT|O_EXCL,0600) = 3\n95416 write(3,0x209aff0,1062968) = 1062968\n95416 fchmod(3,0755) = 0\n95416 close(3) = 0\n95416 write(2,0xe157e,2)B3 = 2\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe1580,7)sources = 7\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e02,2)13 = 2\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe1587,7)imports = 7\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e02,2)31 = 2\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe158e,14)assembly_files = 14\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e03,1)1 = 1\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe159c,6)source = 6\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9dfe,6)188182 = 6\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15a2,8)assembly = 8\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)345 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15aa,5)names = 5\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e00,4)1721 = 4\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15af,10)name_bytes = 10\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9dff,5)29509 = 5\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15b9,5)decls = 5\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)411 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15be,5)types = 5\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)176 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15c3,6)fields = 6\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)115 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15c9,6)params = 6\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)405 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15cf,7)max_ast = 7\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)867 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15d6,6)max_ir = 6\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e00,4)1633 = 4\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15dc,9)max_frame = 9\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9dff,5)26384 = 5\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15e5,12)max_bindings = 12\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e02,2)18 = 2\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15f1,10)max_defers = 10\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e03,1)0 = 1\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe15fb,9)max_loops = 9\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e03,1)3 = 1\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe1604,9)max_saved = 9\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)182 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe160d,9)max_slots = 9\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e00,4)1015 = 4\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe1616,8)max_args = 8\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)262 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe161e,10)max_params = 10\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e03,1)7 = 1\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe1628,4)text = 4\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9dfe,6)852792 = 6\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe162c,4)data = 4\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9dfe,6)200324 = 6\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe1630,7)objects = 7\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e01,3)529 = 3\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe1637,7)symbols = 7\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9dff,5)10456 = 5\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe163e,6)fixups = 6\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9dff,5)20181 = 5\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe1644,11)relocations = 11\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9e00,4)8280 = 4\n95416 write(2,0xe152b,1)  = 1\n95416 write(2,0xe164f,3)elf = 3\n95416 write(2,0xe152c,1)= = 1\n95416 write(2,0x7fe41b8c9dfd,7)1062968 = 7\n95416 write(2,0xe1652,1)\n = 1\n95416 exit(0)\n"
+    }
+  ]
+}

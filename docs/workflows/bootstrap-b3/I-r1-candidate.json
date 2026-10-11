@@ -1,0 +1,47 @@
+{
+  "node": "I",
+  "revision": 1,
+  "implementer": "/root",
+  "contributors": [
+    "/root"
+  ],
+  "input_revisions": {
+    "H": 3,
+    "L": 2,
+    "F": 3,
+    "M": 3
+  },
+  "files": {
+    "core-s/bootstrap/main.vt": "df4cbaed1c07382508d82bb8ced551426625df008f47679b2bdd1b98361d43a1",
+    "core-s/bootstrap/c1.build": "f3db937c66510ca8aedd55f59b5c0cab270eb6b61596a346c33445f47b5bce04",
+    "core-s/bootstrap/c2.build": "3f5df47ca716357e5c721c50bf0de00e08367c17b916adb21eef62636870c02b",
+    "core-s/bootstrap/c3.build": "f51d6e749cc4b00ace61e01f50218c810001c30160ff9e42e70fbf3fd032f677",
+    "core-s/tests/b3.rs": "bee519efaadbe3ef489597741fb2fd3f6be8d0ad43b5eec283db9b919957ea33",
+    "core-s/README.md": "74336f5f06d27e05363469d95769aec95bd75ae862aca07248dfd7d5cd30b81a",
+    "docs/workflows/bootstrap-b3/clean_build.py": "de522bd1929c8619c17518fc78d14e3f7d3a881740c5122589b5ce89db68162f",
+    "docs/workflows/bootstrap-b3/metrics.py": "9e88ddb6c31ee63c595448e87aa011bc9658f813806167bc2658703dadf201bc",
+    "docs/workflows/bootstrap-b3/metrics.json": "eba74b686c90ddfc7dd4463ad9742ea4d78c2fe181fc8a3024e9cc74c9682e5a",
+    "docs/workflows/bootstrap-b3/README.md": "462ae5f5580762c58054949d6ec28a16eaa3f9358f3b5acf274709a5401922c3"
+  },
+  "evidence": {
+    "I-tests.txt": "8484ae10a6aa15ebe934772ba0b7b83f9d352dc46e5035cf428baf3c1bd1b68a",
+    "I-clean-tests.txt": "69fdcb20cc89665b50397bbced2e3f6703f03cd561676a732678743948773531",
+    "I-clean-build.json": "9b5f4fb1ab4b5881b18a9b0cb47e1659af46d6c54a0385ad6af566e9ea1b97c9",
+    "I-workspace-build.json": "53fa42d2b45e18e101085a52e92a86a2091b30ffe9cd850529abb24f42b9ee13",
+    "I-baseline-check.json": "c0f1a0959f47c32037da810632061ba73ea2e1ed8ffda9c7a314bd0d4d1f7598"
+  },
+  "author_results": {
+    "workspace_tests": 81,
+    "source_only_clean_tests": 81,
+    "c2_c3_full_file_equal": true,
+    "diagnostic_source_mutation_test": true,
+    "guest_stack_bytes": 1048576,
+    "target_PATH": "empty",
+    "baseline_product_sources_unchanged": true
+  },
+  "known_limits": [
+    "Linux-user Core S/B2 subset only",
+    "Dense formatting makes line-count comparisons insufficient",
+    "Static memory layout is not measured RSS; largest function frame is not call-chain peak"
+  ]
+}

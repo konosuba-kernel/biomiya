@@ -1,0 +1,56 @@
+{
+  "revision": "3",
+  "results": [
+    {
+      "name": "static_repeat_string_identity",
+      "expected": 1,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 1,
+      "seed_program_exit": 1,
+      "passed": true
+    },
+    {
+      "name": "static_repeat_nested_identity",
+      "expected": 10,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 10,
+      "seed_program_exit": 10,
+      "passed": true
+    },
+    {
+      "name": "static_repeat_pointer_and_string",
+      "expected": 7,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 7,
+      "seed_program_exit": 7,
+      "passed": true
+    },
+    {
+      "name": "static_repeat_zero_bad_string",
+      "expected": "E_TYPE",
+      "target_compile_exit": 1,
+      "target_stderr": "E_TYPE file=1 byte=23\n",
+      "seed_compile_exit": 1,
+      "seed_stderr": "input.vt:1:17: E_TYPE: string requires []const u8\n",
+      "passed": true
+    },
+    {
+      "name": "static_repeat_zero_bad_address",
+      "expected": "E_TYPE",
+      "target_compile_exit": 1,
+      "target_stderr": "E_TYPE file=1 byte=53\n",
+      "seed_compile_exit": 1,
+      "seed_stderr": "input.vt:1:34: E_TYPE: static pointer type mismatch\n",
+      "passed": true
+    }
+  ]
+}

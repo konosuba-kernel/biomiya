@@ -1,0 +1,54 @@
+{
+  "node": "M",
+  "revision": 2,
+  "implementer": "/root/b3_machine",
+  "input_revisions": {
+    "H": 3
+  },
+  "status": "candidate",
+  "files": {
+    "core-s/bootstrap/rv64.vt": "5cb91a78fbb6b61b7923421ec793be37812a837300b1d3beb256b7c8d8c62f10",
+    "core-s/bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+    "core-s/bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+    "core-s/bootstrap/tests/machine.vt": "4c518ec97f8932ff3c19a2093720fed9c3f2b4ae50318caa0049f3fabe5ae195",
+    "core-s/tests/b3_machine.rs": "c43c120509660a143b7649020b6faac2f216938abb306d4c27e57dd134fd435f"
+  },
+  "evidence": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_machine",
+      "exit_code": 0,
+      "result": "6 tests pass; old five groups plus missing/non-1 first LABEL, direct/mutual value cycle rejection, valid self pointer/slice execution"
+    }
+  ],
+  "coverage": [
+    "typed slots/validated scalar and aggregate IR/explicit terminators",
+    "aggregate hidden return plus 10 arguments crossing registers/stack and caller snapshot",
+    "ABS64 addend, initialized data and 8KiB BSS tail zero",
+    "RV64 constants including i64 boundaries execute exact 104-byte payload and LLVM behavior",
+    "all B2 s0 opcodes and distant fixed control transfers byte-equal to Rust and clang/lld",
+    "overflow, divide zero, shift range panic101; wrapping result0",
+    "malformed slot/type/pointer/call/return/label IR; frame limit with actual/capacity",
+    "duplicate/undefined symbols, ABS64 bounds/underflow/overlap and jump-to-data rejection",
+    "s0 register/immediate/syntax/local-label checks and unsupported instruction diagnostic"
+  ],
+  "limits": [
+    "M component is not C1->C2->C3; integration belongs I",
+    "M uses one 16MiB+12KiB ELF buffer plus ~2MiB relocation bitmap and label maps",
+    "No source semantics rederived in backend; F owns typing, snapshot placement and cleanup expansion",
+    "Whole-program text 8MiB, initialized pool8MiB, image span64MiB, frame256KiB as H",
+    "VT fixture file output is chmod by test harness only; production executable mode belongs L/I input::save",
+    "Type validation adds 73737 bytes of static DFS state; traversal uses bounded explicit arrays rather than recursion."
+  ],
+  "notes": [
+    "Pair fixups keep signed addend contract; register/opcode metadata is read from placeholder instructions",
+    "memmove machine helper emitted once per image to bound symbols/text instead of four labels at every aggregate copy",
+    "No Rust compiler implementation source changed"
+  ],
+  "supersedes": "M-r1",
+  "changes": [
+    "Require first instruction LABEL 1 and remove first-instruction terminator exception",
+    "Use explicit bounded DFS tables over value type edges before checking concrete layout equations; pointer/slice edges terminate, avoiding call-stack recursion",
+    "Add direct/mutual self-value cycle and self-pointer/self-slice controls; retain M1 test expectations"
+  ],
+  "extra_storage_bytes": 73737
+}

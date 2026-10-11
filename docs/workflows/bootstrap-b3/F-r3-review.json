@@ -1,0 +1,70 @@
+{
+  "node": "F",
+  "candidate_revision": 3,
+  "supersedes": "F-r2",
+  "input_revisions": {
+    "H": 3,
+    "L": 2
+  },
+  "test_backend_revision": {
+    "M": 3
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/types.vt": "27b3441af70d482e69114c9b98e446b05d37e4dd258d35532470af73d7131cc3",
+    "core-s/bootstrap/parse.vt": "14855b13c5b0f4c1e97860f4fa864adc8407fe931fdb8c8b2a2b9a544388544d",
+    "core-s/bootstrap/check.vt": "1e0d3d24e1d30599ad3788e38190d62f16f8cd3192d2aeb3fd4caf5a25c9a007",
+    "core-s/bootstrap/ir.vt": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "core-s/tests/b3_frontend.rs": "83e1e6aab92433d92ce57102feff1f7bde8a07c2bf4c5781e6d8f8d478d5e95e"
+  },
+  "dependency_hashes_revalidated": {
+    "H": {
+      "docs/design/bootstrap-b3.md": "f284c2b2af6f41d4f639006d0d6678aa730a9e06e2e583012afcd6eb63794896",
+      "core-s/bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+      "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+      "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+    },
+    "L": {
+      "core-s/bootstrap/lex.vt": "31915fb257899b833105706e42f2f2861b556cc8ef93c91b865d9b7b9062ac8c",
+      "core-s/bootstrap/input.vt": "78d23f79da810377f784b9e964031fbcf4465ec0f1dbd54d0a6f68810b2e380b",
+      "core-s/tests/b3_input.rs": "9487d019afb25333dad565946e16764f8ef4fc33882f1d8c32bee32c51c03a26"
+    },
+    "M": {
+      "core-s/bootstrap/rv64.vt": "4fcc5bea0bc960f2e91b25d695c18338341ef02d5cefb5e2ee18a54d5769895f",
+      "core-s/bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+      "core-s/bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+      "core-s/bootstrap/tests/machine.vt": "18f37dece32a7511ac6edea7ce1bf7b05a790e885f3195e599d0c1d1fa7c6172",
+      "core-s/tests/b3_machine.rs": "acf31a105bce1ea80c2e9e7d542190fa0feeeb63fbf1503a9502a456ef8ae9bd"
+    }
+  },
+  "commands": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_frontend",
+      "exit_code": 0,
+      "result": "All seven permanent test groups pass independently in 10.46s, including prior resource/permission regressions and shared-target assertions for 8193 repeated static relocations."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/f_semantics.py 3 static_repeat_ > docs/workflows/bootstrap-b3/F-r3-independent-repeat.json",
+      "exit_code": 0,
+      "result": "Five independent real-source cases through F3/M3: repeated string identity now matches C0 exit1, nested record+array string identity matches exit10, pointer+string relocation snapshot matches exit7; zero-count bad string/address types rejected."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "F2-static-repeat-evaluation",
+      "result": "The first repeat element is serialized exactly once; later elements copy its bytes and captured relocation targets/addends with shifted destinations. Nested repetitions preserve alias identity. Original F2 integration counterexample is now corrected."
+    }
+  ],
+  "verified_contracts": [
+    "F2 accepted unchanged types/check/ir files retain exact hashes. Only parse static validation/serialization and relevant tests changed in F3.",
+    "No global literal-content interning was used to hide repeated-evaluation semantics: ordinary array literals still serialize independently.",
+    "F1 four defects remain covered by current full frontend tests; the F2 followup blocker is closed."
+  ],
+  "findings": [],
+  "limitations": [
+    "Prior F2 self-compilation artifacts are stale. Formal I must rebuild C1/C2/C3 and prove fixed point, perturbation, isolation, memory and scale using F3.",
+    "Known seed root-qualified shadowing and numeric-separator discrepancies remain explicit final-report obligations."
+  ]
+}

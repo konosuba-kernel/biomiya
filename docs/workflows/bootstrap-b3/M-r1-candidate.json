@@ -1,0 +1,46 @@
+{
+  "node": "M",
+  "revision": 1,
+  "implementer": "/root/b3_machine",
+  "input_revisions": {
+    "H": 3
+  },
+  "status": "candidate",
+  "files": {
+    "core-s/bootstrap/rv64.vt": "6f055066d6a87f61fbf61e8740fc861fe19c95df102ad6e808b27d4f6ef73862",
+    "core-s/bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+    "core-s/bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+    "core-s/bootstrap/tests/machine.vt": "57cbe5a6044415bcf6bfbd43a3c24f8b32ec56dd7d28bd13d86180d32ed8456a",
+    "core-s/tests/b3_machine.rs": "81cfb63ebfc85e6aaee56de21bc9bb5d964786affa98552128fae1f5898b235f"
+  },
+  "evidence": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features pipeline,image --test b3_machine",
+      "exit_code": 0,
+      "result": "5 tests pass; each invokes target emitter/assembler under QEMU; clean declared-source seed build; PATH empty for target execution"
+    }
+  ],
+  "coverage": [
+    "typed slots/validated scalar and aggregate IR/explicit terminators",
+    "aggregate hidden return plus 10 arguments crossing registers/stack and caller snapshot",
+    "ABS64 addend, initialized data and 8KiB BSS tail zero",
+    "RV64 constants including i64 boundaries execute exact 104-byte payload and LLVM behavior",
+    "all B2 s0 opcodes and distant fixed control transfers byte-equal to Rust and clang/lld",
+    "overflow, divide zero, shift range panic101; wrapping result0",
+    "malformed slot/type/pointer/call/return/label IR; frame limit with actual/capacity",
+    "duplicate/undefined symbols, ABS64 bounds/underflow/overlap and jump-to-data rejection",
+    "s0 register/immediate/syntax/local-label checks and unsupported instruction diagnostic"
+  ],
+  "limits": [
+    "M component is not C1->C2->C3; integration belongs I",
+    "M uses one 16MiB+12KiB ELF buffer plus ~2MiB relocation bitmap and label maps",
+    "No source semantics rederived in backend; F owns typing, snapshot placement and cleanup expansion",
+    "Whole-program text 8MiB, initialized pool8MiB, image span64MiB, frame256KiB as H",
+    "VT fixture file output is chmod by test harness only; production executable mode belongs L/I input::save"
+  ],
+  "notes": [
+    "Pair fixups keep signed addend contract; register/opcode metadata is read from placeholder instructions",
+    "memmove machine helper emitted once per image to bound symbols/text instead of four labels at every aggregate copy",
+    "No Rust compiler implementation source changed"
+  ]
+}

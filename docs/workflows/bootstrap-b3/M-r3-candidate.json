@@ -1,0 +1,54 @@
+{
+  "node": "M",
+  "revision": 3,
+  "implementer": "/root/b3_machine",
+  "input_revisions": {
+    "H": 3
+  },
+  "status": "candidate",
+  "files": {
+    "core-s/bootstrap/rv64.vt": "4fcc5bea0bc960f2e91b25d695c18338341ef02d5cefb5e2ee18a54d5769895f",
+    "core-s/bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+    "core-s/bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+    "core-s/bootstrap/tests/machine.vt": "18f37dece32a7511ac6edea7ce1bf7b05a790e885f3195e599d0c1d1fa7c6172",
+    "core-s/tests/b3_machine.rs": "acf31a105bce1ea80c2e9e7d542190fa0feeeb63fbf1503a9502a456ef8ae9bd"
+  },
+  "evidence": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_machine",
+      "exit_code": 0,
+      "result": "6 tests pass, including array-root pointer -> element pointer OFFSET projection and both permission-change directions rejected"
+    }
+  ],
+  "coverage": [
+    "typed slots/validated scalar and aggregate IR/explicit terminators",
+    "aggregate hidden return plus 10 arguments crossing registers/stack and caller snapshot",
+    "ABS64 addend, initialized data and 8KiB BSS tail zero",
+    "RV64 constants including i64 boundaries execute exact 104-byte payload and LLVM behavior",
+    "all B2 s0 opcodes and distant fixed control transfers byte-equal to Rust and clang/lld",
+    "overflow, divide zero, shift range panic101; wrapping result0",
+    "malformed slot/type/pointer/call/return/label IR; frame limit with actual/capacity",
+    "duplicate/undefined symbols, ABS64 bounds/underflow/overlap and jump-to-data rejection",
+    "s0 register/immediate/syntax/local-label checks and unsupported instruction diagnostic"
+  ],
+  "limits": [
+    "M component is not C1->C2->C3; integration belongs I",
+    "M uses one 16MiB+12KiB ELF buffer plus ~2MiB relocation bitmap and label maps",
+    "No source semantics rederived in backend; F owns typing, snapshot placement and cleanup expansion",
+    "Whole-program text 8MiB, initialized pool8MiB, image span64MiB, frame256KiB as H",
+    "VT fixture file output is chmod by test harness only; production executable mode belongs L/I input::save",
+    "Type validation adds 73737 bytes of static DFS state; traversal uses bounded explicit arrays rather than recursion."
+  ],
+  "notes": [
+    "Pair fixups keep signed addend contract; register/opcode metadata is read from placeholder instructions",
+    "memmove machine helper emitted once per image to bound symbols/text instead of four labels at every aggregate copy",
+    "No Rust compiler implementation source changed"
+  ],
+  "supersedes": "M-r2",
+  "changes": [
+    "OFFSET accepts differing pointee TypeId for internal layout projection, requires both pointers and usize byte operand, and exact unchanged flags",
+    "Valid aggregate ABI fixture now uses OFFSET from *[2]u32 to its second *u32, still exits97",
+    "Negative fixtures reject mutable->const and const->mutable OFFSET; readonly views must use explicit BITCAST"
+  ],
+  "extra_storage_bytes": 73737
+}

@@ -1,0 +1,42 @@
+{
+  "node": "E",
+  "candidate_revision": 1,
+  "owner_agent_id": "/root/encoder",
+  "status": "candidate_ready_for_independent_review",
+  "prerequisite": {
+    "node": "H",
+    "revision": 2,
+    "review": "docs/workflows/bootstrap-prototype/H-r2-review.json"
+  },
+  "files": {
+    "core-s/src/encode.rs": "459c705bb29cc919f0a86ea819c8d4848f5af5f470dc0556b13a0c7ea6520cf9",
+    "core-s/src/image.rs": "314a1cca58b98a9bbf5261db958fe2a4eddd2dd285fb80c9e2a35f5fc8aeb43e",
+    "core-s/tests/image.rs": "0af8b9faf0830a8a8c3bafb28f4407d4ea5029bc56c9be7bfe5a6ac4a2141d02"
+  },
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features image --test image",
+      "exit_code": 0,
+      "result": "6 passed; 0 failed; 0 ignored; 0.51s"
+    }
+  ],
+  "tools": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+    "clang": "clang version 23.1.1",
+    "ld.lld": "LLD 23.1.1 (compatible with GNU linkers)",
+    "qemu-riscv64": "qemu-riscv64 version 11.1.1"
+  },
+  "coverage": [
+    "Independent Clang/LLD byte comparison covers all machine arithmetic, immediate, load/store forms, Jalr, Ecall, Unimp, every fixed conditional expansion, forward call/address and backward jump beyond 4 KiB.",
+    "QEMU executes 78 constant patterns including highest bit, all ones and low-12 carry boundaries; stdout is compared against host-constructed little-endian u64 values.",
+    "QEMU executes long calls, address equality, forward/backward branches, all four condition types and checks t0..t5 survive control expansions.",
+    "ELF header, all three PT_LOAD permissions/alignment/filesz/memsz, entry, zero padding and deterministic repeated output checked across 4 KiB boundaries.",
+    "Invalid registers/immediates, duplicate/missing/empty labels, nonexistent/end entry, base alignment/address overflow and >64 MiB text rejected."
+  ],
+  "limitations": [
+    "Machine-level tests only; real .vt pipeline integration belongs to I.",
+    "No source static/BSS, ABS64, object files, general assembler, OS or self-hosting.",
+    "Build emits machine bytes without external tools; tests deliberately require Clang/LLD and QEMU and fail if absent.",
+    "64 MiB bound test allocates a large input Program but rejection occurs before code output allocation."
+  ]
+}

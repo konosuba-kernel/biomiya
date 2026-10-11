@@ -1,0 +1,10 @@
+{
+  "node": "H",
+  "revision": 1,
+  "implementer": "/root",
+  "files": {
+    "docs/design/bootstrap-b2.md": "7110ecc08aaaa30648835d565c223f7752af77f8793e51b1ced91beeea5f37f4",
+    "core-s/src/lib.rs": "b072149da1620ccd8e4bbfbe5b9803dc1bfb7611e0ae40689e99734f84e2c980"
+  },
+  "scope": "interface/document contract, not implemented language/system"
+}

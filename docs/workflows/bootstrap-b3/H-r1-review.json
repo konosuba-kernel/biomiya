@@ -1,0 +1,37 @@
+{
+  "node": "H",
+  "candidate_revision": 1,
+  "input_revisions": {
+    "B2": "accepted"
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "docs/design/bootstrap-b3.md": "50001ff3389394a5677b6f545f8526ecb28886e64c67d99942251fcdf77c99c3",
+    "core-s/bootstrap/model.vt": "a7b795d6fbf5b449ef486ddb0bcca7be7e9c9bfc09d74b3c729a3171d0f5de9e",
+    "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+    "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+  },
+  "commands": [
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/h_model.py",
+      "exit_code": 0,
+      "result": "Reverified four candidate hashes; rebuilt original model probe and executed on RV64; exact RW p_memsz 23162440. Independent five-mode probe verifies stable copied/interned names, anonymous and upgraded symbols, reset isolation/basic layout, source/data/name capacity diagnostics, conflicting symbol kinds."
+    }
+  ],
+  "verified_contracts": [
+    "B3 requires actual C0→C1→C2→C3 compilation, complete C2/C3 byte equality, C0 differential behavior, user-source and compiler-source perturbations; explicitly rejects self-copying/template/host-compiler substitutes.",
+    "H→L→F and H→M with L/F/M→I is acyclic, formal dependencies and non-overlapping implementation ownership are recorded; reviewer has not authored products.",
+    "Actual model records match documented shared tables and typed-IR envelope; one-based fixed tables check append capacity and runtime failure is independent of L.",
+    "H is an interface/model acceptance only. Final target compiler resource use and all B3 behavioral criteria remain mandatory in I."
+  ],
+  "findings": [],
+  "nonblocking_notes": [
+    "Driver prose says input snapshot followed by reset/registration: implementation must reset_all before input::load, or otherwise retain snapshot outside model and register it only after reset; do not clear populated source tables. This ordering clarification does not change any public API.",
+    "Diagnostic helper currently performs one write per text fragment, so short-write/EINTR diagnostic completeness is not established by H; L/I short-I/O acceptance must include required diagnostic behavior or revise helper with dependency-aware re-review.",
+    "Raw u32 IDs and direct public arrays require consumer-specific bounds/type validation. H append tests do not certify malformed IR handling in M.",
+    "23,162,440-byte model RW segment is measured, not a final compiler memory figure. M/L/F additions, arena/frame peaks and final total under the 64 MiB data budget must be independently measured at I.",
+    "Declared CAP constants currently duplicate literal append bounds/array lengths. Any future capacity change must update all three and revalidate boundary probes."
+  ]
+}

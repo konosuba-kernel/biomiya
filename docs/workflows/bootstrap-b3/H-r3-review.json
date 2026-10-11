@@ -1,0 +1,35 @@
+{
+  "node": "H",
+  "candidate_revision": 3,
+  "supersedes": "H-r2",
+  "input_revisions": {
+    "B2": "accepted"
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "docs/design/bootstrap-b3.md": "f284c2b2af6f41d4f639006d0d6678aa730a9e06e2e583012afcd6eb63794896",
+    "core-s/bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+    "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+    "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+  },
+  "commands": [
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/h_model.py 3",
+      "exit_code": 0,
+      "result": "All hashes, original RV64 probe and five independent model modes pass. RW p_memsz unchanged at 23162440."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/h_diagnostics.py limit",
+      "exit_code": 0,
+      "result": "New limit_at prints exact actual/capacity and retained FileId/offset under alternating EINTR/one-byte writes, including maximum usize actual. Zero/error/oversize writes remain bounded and exit 1."
+    }
+  ],
+  "verified_contracts": [
+    "New limit_at is an additive positional diagnostic helper; prior limit preserves its old 0/0 behavior.",
+    "No shared table/type layout changes; prior H2 acceptance remains valid with H3 dependency refresh.",
+    "L capacity-diagnostic repair can use H3; this does not itself accept L2."
+  ],
+  "findings": []
+}

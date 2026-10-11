@@ -1,0 +1,15 @@
+   Compiling biomiya-core-s v0.1.0 (/home/mii/code/konOSuba/biomiya/core-s)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+     Running tests/b3_frontend.rs (core-s/target/debug/deps/b3_frontend-cbee3969eb3cc4ab)
+
+running 7 tests
+test frontend_merges_module_imports_and_accepts_prefix_namespaces ... ok
+test frontend_depth_limits_and_type_shadowing_fail_before_guest_stack_overflow ... ok
+test frontend_rejects_invalid_programs_with_source_diagnostics ... ok
+test frontend_accepts_forward_layout_snapshots_results_and_cleanup ... ok
+test frontend_static_layout_keeps_large_zero_arrays_in_bss ... ok
+test frontend_reports_permission_and_capacity_errors_without_target_panics ... ok
+test frontend_checks_actual_bootstrap_sources_and_ir_block_contract ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.49s
+

@@ -1,0 +1,167 @@
+{
+  "task": "architecture and B0/B1 prototype",
+  "skill": "/home/mii/.codex/skills/dag-delivery/SKILL.md",
+  "user_clarification": "Use subagents to execute DAG",
+  "nodes": [
+    {
+      "id": "H",
+      "dependencies": [],
+      "input_revisions": {},
+      "implementers": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/acceptance"
+      ],
+      "write_scope": [
+        "docs/design/bootstrap-prototype.md",
+        "core-s/src/machine.rs",
+        "core-s/Cargo.toml",
+        "core-s/src/lib.rs"
+      ],
+      "acceptance": "architecture contract and shared types internally consistent; default cargo check",
+      "status": "accepted",
+      "candidate_revision": 2,
+      "reviews": [
+        "H-r1-review.json",
+        "H-r2-review.json"
+      ],
+      "unresolved": [],
+      "contributors": [
+        "/root"
+      ],
+      "candidate_record": "H-r2-candidate.json"
+    },
+    {
+      "id": "E",
+      "dependencies": [
+        "H"
+      ],
+      "input_revisions": {
+        "H": 2
+      },
+      "implementers": [
+        "/root/encoder"
+      ],
+      "reviewers": [
+        "/root/acceptance"
+      ],
+      "write_scope": [
+        "core-s/src/encode.rs",
+        "core-s/src/image.rs",
+        "core-s/tests/image.rs"
+      ],
+      "acceptance": "direct encoder rejects invalid inputs; boundary and reference encoding tests; ELF contract",
+      "status": "accepted",
+      "candidate_revision": 1,
+      "reviews": [
+        "E-r1-review.json"
+      ],
+      "unresolved": [],
+      "contributors": [
+        "/root/encoder"
+      ],
+      "candidate_record": "E-r1-candidate.json"
+    },
+    {
+      "id": "B",
+      "dependencies": [
+        "H"
+      ],
+      "input_revisions": {
+        "H": 2
+      },
+      "implementers": [
+        "/root/backend"
+      ],
+      "reviewers": [
+        "/root/acceptance"
+      ],
+      "write_scope": [
+        "core-s/src/backend.rs",
+        "core-s/tests/backend.rs"
+      ],
+      "acceptance": "typed machine lowering; legacy backend behavior; scratch/call/frame contract",
+      "status": "accepted",
+      "candidate_revision": 1,
+      "reviews": [
+        "B-r1-review.json"
+      ],
+      "unresolved": [],
+      "contributors": [
+        "/root/backend"
+      ],
+      "candidate_record": "B-r1-candidate.json"
+    },
+    {
+      "id": "P",
+      "dependencies": [
+        "H"
+      ],
+      "input_revisions": {
+        "H": 2
+      },
+      "implementers": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/acceptance"
+      ],
+      "write_scope": [
+        "core-s/src/pipeline.rs",
+        "core-s/src/frontend.rs",
+        "core-s/src/check.rs",
+        "core-s/tests/pipeline.rs"
+      ],
+      "acceptance": "real source compilation and rejecting diagnostics, no fallback; snapshot/defer/Result behavior facts",
+      "status": "accepted",
+      "candidate_revision": 1,
+      "reviews": [
+        "P-r1-review.json"
+      ],
+      "unresolved": [],
+      "contributors": [
+        "/root"
+      ],
+      "candidate_record": "P-r1-candidate.json"
+    },
+    {
+      "id": "I",
+      "dependencies": [
+        "E",
+        "B",
+        "P"
+      ],
+      "input_revisions": {
+        "E": 1,
+        "B": 1,
+        "P": 1
+      },
+      "implementers": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/acceptance"
+      ],
+      "write_scope": [
+        "core-s/src/main.rs",
+        "core-s/tests/cli.rs",
+        "core-s/fixtures/",
+        "core-s/README.md"
+      ],
+      "acceptance": "source-to-ELF execution and oracle comparison; tool-free build; errors/atomic output/determinism; clean build and scale report",
+      "status": "accepted",
+      "candidate_revision": 1,
+      "reviews": [
+        "I-r1-review.json"
+      ],
+      "unresolved": [],
+      "contributors": [
+        "/root"
+      ],
+      "candidate_record": "I-r1-candidate.json"
+    }
+  ],
+  "status": "complete",
+  "delivery_scope": "B0/B1 prototype only; no R1a/SOS/self-hosting claim"
+}

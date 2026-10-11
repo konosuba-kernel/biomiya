@@ -1,0 +1,57 @@
+{
+  "node": "M",
+  "candidate_revision": 2,
+  "supersedes": "M-r1",
+  "input_revisions": {
+    "H": 3
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "不通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/rv64.vt": "5cb91a78fbb6b61b7923421ec793be37812a837300b1d3beb256b7c8d8c62f10",
+    "core-s/bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+    "core-s/bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+    "core-s/bootstrap/tests/machine.vt": "4c518ec97f8932ff3c19a2093720fed9c3f2b4ae50318caa0049f3fabe5ae195",
+    "core-s/tests/b3_machine.rs": "c43c120509660a143b7649020b6faac2f216938abb306d4c27e57dd134fd435f"
+  },
+  "dependency_hashes_revalidated": {
+    "docs/design/bootstrap-b3.md": "f284c2b2af6f41d4f639006d0d6678aa730a9e06e2e583012afcd6eb63794896",
+    "core-s/bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+    "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+    "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+  },
+  "commands": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_machine",
+      "exit_code": 0,
+      "result": "All six groups pass independently, including new first-label/value-cycle tests and valid self-pointer/self-slice controls."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/m_machine.py 2 > docs/workflows/bootstrap-b3/M-r2-independent-probes.json",
+      "exit_code": 0,
+      "result": "Eight independent target modes: old invalid block/direct cycle rejected; mixed struct/zero-array cycle rejected; valid 8000-deep forward type chain accepted without host or target recursion failure. Newly added legal aggregate-to-field OFFSET projection is incorrectly rejected."
+    }
+  ],
+  "resolved_findings": [
+    "M1-first-block-contract: missing/non-1 entry LABEL rejected as I_INTERNAL, without ELF.",
+    "M1-recursive-value-layout: direct/mutual/mixed value cycles rejected; pointer/slice indirection remains valid."
+  ],
+  "findings": [
+    {
+      "id": "M2-offset-projection",
+      "severity": "blocking",
+      "file": "core-s/bootstrap/rv64.vt",
+      "problem": "Opcode 7 calls same(dst,a), requiring identical pointer pointee TypeId. H3 explicitly permits internal layout projections, so legal *[2]u32 plus 4-byte offset to *u32 is rejected as I_INTERNAL. Independent target probe confirms no ELF is generated; this also prevents F slice.len projection from integrating.",
+      "required_change": "Permit already-typed internal OFFSET projection to a different pointee while requiring pointer operands, usize offset and preserved access permissions. Keep source-level pointer cast legality owned by F; add positive projection and negative const-permission/nonpointer operand tests."
+    }
+  ],
+  "verified_contracts": [
+    "M1 two blockers are resolved without weakening author tests or valid ABI/image/assembler behavior.",
+    "Type-cycle algorithm uses explicit bounded storage and accepted an independent 8000-deep chain.",
+    "M2 adds 73737 bytes of DFS state; final I resource accounting must include this measured-layout addition."
+  ],
+  "limitations": [
+    "M2 remains not accepted because legal typed projection is required for integration. No product files changed by reviewer."
+  ]
+}

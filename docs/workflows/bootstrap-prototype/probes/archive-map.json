@@ -1,0 +1,37 @@
+[
+  {
+    "original_path": "/tmp/core-s-independent-review-788cvdot/src/main.rs",
+    "archive_path": "docs/workflows/bootstrap-prototype/probes/machine/src/main.rs",
+    "sha256": "f74ea5d4ed1e9fea1b1c8d17609c76fcb78b7ecd54894719433663d3eb42aeb2"
+  },
+  {
+    "original_path": "/tmp/core-s-independent-review-788cvdot/Cargo.toml",
+    "archive_path": "docs/workflows/bootstrap-prototype/probes/machine/Cargo.original.toml",
+    "sha256": "6c1f894fedfa546a614dd6fd9b4c69896909531fddfc4960073f7e7618ccff20"
+  },
+  {
+    "archive_path": "docs/workflows/bootstrap-prototype/probes/machine/Cargo.toml",
+    "sha256": "aa99a7ab4a54576407815f364e7a214f09889c2d54a25fa2a0e58f0baf29a432",
+    "change": "Only dependency path rewritten relative to archive directory; original manifest separately retained."
+  },
+  {
+    "original_path": "/tmp/core-s-pipeline-review-70r3udr2/src/main.rs",
+    "archive_path": "docs/workflows/bootstrap-prototype/probes/pipeline/src/main.rs",
+    "sha256": "a0164975df025953aa0497a6cb6a43f021a3a66c8eec2fb9c9b082fc2295502f"
+  },
+  {
+    "original_path": "/tmp/core-s-pipeline-review-70r3udr2/Cargo.toml",
+    "archive_path": "docs/workflows/bootstrap-prototype/probes/pipeline/Cargo.original.toml",
+    "sha256": "b3e3abac944e730032d2406621ac456e04301b1d71375f856f2a9589aefc6a6c"
+  },
+  {
+    "archive_path": "docs/workflows/bootstrap-prototype/probes/pipeline/Cargo.toml",
+    "sha256": "961790e10a1ee5d01bc7df5823e0b701f5ef2e038e3c2b4b51adb5a02f5fb6a2",
+    "change": "Only dependency path rewritten relative to archive directory; original manifest separately retained."
+  },
+  {
+    "archive_path": "docs/workflows/bootstrap-prototype/probes/integration/probe.py",
+    "sha256": "9f92b4dd6007fd45a8393c84db763e3c779abd9042e70c8450263765fa631455",
+    "origin": "Independent I r1 inline validation preserved as rerunnable script; archived script independently rerun successfully."
+  }
+]

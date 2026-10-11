@@ -1,0 +1,281 @@
+module bootstrap::parse;
+import bootstrap::model;
+import bootstrap::lex;
+import bootstrap::types;
+
+pub struct Node { pub tag:u32, pub a:u32, pub b:u32, pub c:u32, pub d:u32, pub next:u32, pub start:u32, pub bits:usize }
+pub static mut nodes:[32769]Node = [Node {tag:0,a:0,b:0,c:0,d:0,next:0,start:0,bits:0};32769];
+pub static mut count:u32 = 0;
+static mut expression_depth:u32 = 0;
+static mut block_depth:u32 = 0;
+static mut statement_depth:u32 = 0;
+static mut walk_depth:u32 = 0;
+static mut string_buffer:[65536]u8 = [0;65536];
+pub fn get(id:u32) -> Node { unsafe { if id == 0_u32 || id > count { types::fail(7); } return nodes[id as usize]; } }
+pub fn add(tag:u32,a:u32,b:u32,c:u32,d:u32,bits:usize,start:u32) -> u32 {
+    unsafe { if count >= 32768_u32 { model::limit((count as usize)+1_usize,32768); } count = count+1_u32; nodes[count as usize] = Node {tag:tag,a:a,b:b,c:c,d:d,next:0,start:start,bits:bits}; return count; }
+}
+pub fn append(tail:u32,node:u32) -> u32 { if tail != 0_u32 { unsafe { nodes[tail as usize].next = node; } } return node; }
+pub fn reset() -> () { unsafe { if (count as usize) > model::max_ast { model::max_ast = count as usize; } count = 0; } return (); }
+fn start() -> u32 { unsafe { return types::token.start; } }
+fn result_type() -> u32 {
+    types::need("::"); types::need("<"); let a:u32 = types::type_expr(false); types::need(","); let b:u32 = types::type_expr(false); types::close_gt(); return types::intern(10,a,b,0);
+}
+pub fn expression(minimum:u32,head:bool) -> u32 {
+    unsafe { if expression_depth >= 64_u32 { model::limit_at((expression_depth as usize)+1_usize,64,types::token.file,types::token.start as usize); } expression_depth = expression_depth+1_u32; }
+    let result:u32 = expression_inner(minimum,head);
+    unsafe { expression_depth = expression_depth-1_u32; } return result;
+}
+fn expression_inner(minimum:u32,head:bool) -> u32 {
+    let sp:u32 = start(); var value:u32 = 0;
+    unsafe {
+        if types::token.kind == 2_u32 { value = add(1,types::token.suffix,0,0,0,types::token.number,sp); types::advance(); }
+        else { if types::token.kind == 3_u32 {
+            let len:usize = lex::decode(types::token,core::slice_of_mut(string_buffer));
+            let name:u32 = model::name(core::slice_from_raw_parts(core::slice_of(string_buffer).data,len));
+            value = add(20,name,0,0,0,0,sp); types::advance();
+        } else { if types::eat("true") { value = add(2,0,0,0,0,1,sp); }
+        else { if types::eat("false") { value = add(2,0,0,0,0,0,sp); }
+        else { if types::eat("null") { value = add(4,0,0,0,0,0,sp); }
+        else { if types::eat("(") { if types::eat(")") { value = add(3,0,0,0,0,0,sp); } else { value = expression(0,false); types::need(")"); } }
+        else { if types::eat("[") {
+            if types::eat("]") { value = add(13,0,0,0,0,0,sp); }
+            else {
+                let first:u32 = expression(0,false);
+                if types::eat(";") { let n:types::Constant = types::constant(0,5); if !types::integer(n.ty) { types::fail(3); } if n.bits > 4294967295_usize { model::limit_at(n.bits,4294967295,types::token.file,types::token.start as usize); } types::need("]"); value = add(14,first,n.bits as u32,0,0,0,sp); }
+                else { var tail:u32 = first; while types::eat(",") && !types::at("]") { tail = append(tail,expression(0,false)); } types::need("]"); value = add(13,first,0,0,0,0,sp); }
+            }
+        } else { if types::at("!") || types::at("~") || types::at("-") || types::at("*") {
+            var op:u32 = 1; if types::at("~") { op = 2; } if types::at("-") { op = 3; } if types::at("*") { op = 4; } types::advance(); value = add(6,op,expression(12,head),0,0,0,sp);
+        } else { if types::at("sizeof") || types::at("alignof") {
+            var kind:u32 = 17; if types::at("alignof") { kind = 18; } types::advance(); types::need("("); let ty:u32 = types::type_expr(false); types::need(")"); types::layout(ty); value = add(kind,ty,0,0,0,0,sp);
+        } else {
+            if types::at("offsetof") || types::at("Option") { types::fail(5); }
+            let name:u32 = types::path(); let text:[]const u8 = types::text(name);
+            if model::equal(text,"Result") && types::at("::") {
+                let ty:u32 = result_type(); types::need("::"); var tag:u32 = 0;
+                if types::eat("Ok") { tag = 0; } else { types::need("Err"); tag = 1; }
+                types::need("("); let payload:u32 = expression(0,false); types::need(")"); value = add(15,ty,tag,payload,0,0,sp);
+            } else { if model::equal(text,"core::ptr") && types::eat("::") {
+                types::need("<"); let ty:u32 = types::type_expr(false); types::close_gt(); types::need("("); let arg:u32 = expression(0,false); types::need(")"); value = add(19,ty,arg,0,0,0,sp);
+            } else { if !head && types::eat("{") {
+                if types::shadowed(name) { types::fail(3); } let decl:u32 = types::resolve(types::token.file,name,false); if decl == 0_u32 { types::fail(2); } if model::decls[decl as usize].kind != 1_u32 { types::fail(3); }
+                let ty:u32 = model::decls[decl as usize].ty; types::layout(ty);
+                var first:u32 = 0; var tail:u32 = 0;
+                while !types::eat("}") {
+                    let field:u32 = types::ident(); types::need(":"); let expr:u32 = expression(0,false); let pair:u32 = add(31,field,expr,0,0,0,sp);
+                    if first == 0_u32 { first = pair; } tail = append(tail,pair);
+                    if !types::eat(",") { types::need("}"); break; }
+                }
+                value = add(12,ty,first,0,0,0,sp);
+            } else { value = add(5,name,0,0,0,0,sp); } } }
+        } } } } } } } } }
+        loop {
+            if minimum <= 13_u32 && types::eat(".") { value = add(10,value,types::ident(),0,0,0,sp); continue; }
+            if minimum <= 13_u32 && types::eat("[") { let index:u32 = expression(0,false); types::need("]"); value = add(11,value,index,0,0,0,sp); continue; }
+            if minimum <= 13_u32 && types::eat("?") { value = add(16,value,0,0,0,0,sp); continue; }
+            if minimum <= 13_u32 && types::eat("(") {
+                let target:Node = get(value); if target.tag != 5_u32 { types::fail(5); }
+                var first:u32 = 0; var tail:u32 = 0;
+                while !types::eat(")") { let arg:u32 = expression(0,false); if first == 0_u32 { first = arg; } tail = append(tail,arg); if !types::eat(",") { types::need(")"); break; } }
+                value = add(9,target.a,first,0,0,0,sp); continue;
+            }
+            if minimum <= 11_u32 && types::eat("as") { value = add(8,value,types::type_expr(false),0,0,0,sp); continue; }
+            let power:u32 = types::precedence(); if power == 0_u32 || power < minimum { break; }
+            let op:u32 = types::binop(); types::advance(); let right:u32 = expression(power+1_u32,head); value = add(7,op,value,right,0,0,sp);
+        }
+    }
+    return value;
+}
+fn pattern() -> u32 {
+    let sp:u32 = start();
+    if types::eat("_") { return add(42,0,0,0,0,0,sp); }
+    if types::eat("Result") {
+        let ty:u32 = result_type(); types::need("::"); var tag:u32 = 0;
+        if !types::eat("Ok") { types::need("Err"); tag = 1; }
+        types::need("("); var name:u32 = 0; var declared:u32 = 0;
+        if !types::eat("_") { name = types::ident(); types::need(":"); declared = types::type_expr(false); }
+        types::need(")"); return add(40,ty,tag,name,declared,0,sp);
+    }
+    unsafe { if types::token.kind == 2_u32 || types::at("true") || types::at("false") { return expression(13,false); } }
+    types::fail(5); return 0;
+}
+pub fn block() -> u32 {
+    unsafe { if block_depth >= 48_u32 { model::limit_at((block_depth as usize)+1_usize,48,types::token.file,types::token.start as usize); } block_depth = block_depth+1_u32; }
+    let result:u32 = block_inner(); unsafe { block_depth = block_depth-1_u32; } return result;
+}
+fn block_inner() -> u32 {
+    let sp:u32 = start(); types::need("{"); var mark:u32 = 0; unsafe { mark = types::value_name_count; } var first:u32 = 0; var tail:u32 = 0;
+    while !types::eat("}") { let item:u32 = statement(); if first == 0_u32 { first = item; } tail = append(tail,item); }
+    unsafe { types::value_name_count = mark; } return add(101,first,0,0,0,0,sp);
+}
+pub fn statement() -> u32 {
+    unsafe { if statement_depth >= 64_u32 { model::limit_at((statement_depth as usize)+1_usize,64,types::token.file,types::token.start as usize); } statement_depth = statement_depth+1_u32; }
+    let result:u32 = statement_inner(); unsafe { statement_depth = statement_depth-1_u32; } return result;
+}
+fn statement_inner() -> u32 {
+    let sp:u32 = start();
+    if types::eat(";") { return add(114,0,0,0,0,0,sp); }
+    if types::at("{") { return block(); }
+    if types::eat("unsafe") { return add(105,block(),0,0,0,0,sp); }
+    if types::at("let") || types::at("var") {
+        var mutable:u32 = 0; if types::at("var") { mutable = 1; } types::advance(); let name:u32 = types::ident(); types::need(":"); let ty:u32 = types::type_expr(false); types::layout(ty);
+        var value:u32 = 0; if types::eat("=") { value = expression(0,false); } types::need(";"); types::value_name(name); return add(102,name,ty,value,mutable,0,sp);
+    }
+    if types::eat("if") { let condition:u32 = expression(0,true); let then_:u32 = block(); var other:u32 = 0; if types::eat("else") { if types::at("if") { let nested:u32 = statement(); other = add(101,nested,0,0,0,0,sp); } else { other = block(); } } return add(106,condition,then_,other,0,0,sp); }
+    if types::eat("while") { let condition:u32 = expression(0,true); return add(107,condition,block(),0,0,0,sp); }
+    if types::eat("loop") { return add(108,block(),0,0,0,0,sp); }
+    if types::eat("return") { let value:u32 = expression(0,false); types::need(";"); return add(109,value,0,0,0,0,sp); }
+    if types::eat("break") { types::need(";"); return add(110,0,0,0,0,0,sp); }
+    if types::eat("continue") { types::need(";"); return add(111,0,0,0,0,0,sp); }
+    if types::eat("defer") { return add(112,block(),0,0,0,0,sp); }
+    if types::eat("match") {
+        let value:u32 = expression(0,true); types::need("{"); var first:u32 = 0; var tail:u32 = 0;
+        while !types::eat("}") {
+            let p:u32 = pattern(); types::need("=>"); var mark:u32 = 0; unsafe { mark = types::value_name_count; }
+            let pat:Node = get(p); if pat.tag == 40_u32 && pat.c != 0_u32 { types::value_name(pat.c); }
+            let body:u32 = block(); unsafe { types::value_name_count = mark; } let arm:u32 = add(41,p,body,0,0,0,sp); if first == 0_u32 { first = arm; } tail = append(tail,arm);
+            if !types::eat(",") { types::need("}"); break; }
+        }
+        return add(113,value,first,0,0,0,sp);
+    }
+    if types::at("for") || types::at("resource") || types::at("enum") || types::at("type") { types::fail(5); }
+    let target:u32 = expression(0,false);
+    if types::eat("=") { let value:u32 = expression(0,false); types::need(";"); return add(103,target,value,0,0,0,sp); }
+    types::need(";"); return add(104,target,0,0,0,0,sp);
+}
+
+fn walk_enter(node:u32) -> () {
+    unsafe { if walk_depth >= 64_u32 { model::limit_at((walk_depth as usize)+1_usize,64,types::token.file,get(node).start as usize); } walk_depth = walk_depth+1_u32; } return ();
+}
+fn walk_leave() -> () { unsafe { walk_depth = walk_depth-1_u32; } return (); }
+pub fn constant_value(node:u32,expected:u32) -> types::Constant {
+    walk_enter(node); let result:types::Constant = constant_inner(node,expected); walk_leave(); return result;
+}
+fn constant_inner(node:u32,expected:u32) -> types::Constant {
+    let n:Node = get(node); var ty:u32 = expected;
+    if n.tag == 1_u32 { if n.a != 0_u32 { ty = n.a; } if ty == 0_u32 { ty = 5; } if !types::integer(ty) || n.bits > types::max(ty) { types::fail(3); } return types::Constant {bits:n.bits,ty:ty}; }
+    if n.tag == 2_u32 { return types::Constant {bits:n.bits,ty:2}; }
+    if n.tag == 3_u32 { return types::Constant {bits:0,ty:1}; }
+    if n.tag == 4_u32 { if types::info(ty).kind != 6_u32 { types::fail(3); } return types::Constant {bits:0,ty:ty}; }
+    if n.tag == 5_u32 { unsafe { let id:u32 = types::resolve(types::token.file,n.a,false); if id == 0_u32 { types::fail(2); } let d:model::Decl = model::decls[id as usize]; if d.kind != 4_u32 { types::fail(5); } return types::Constant {bits:d.bits,ty:d.ty}; } }
+    if n.tag == 17_u32 { return types::Constant {bits:types::info(n.a).size,ty:5}; }
+    if n.tag == 18_u32 { return types::Constant {bits:types::info(n.a).align,ty:5}; }
+    if n.tag == 8_u32 { let value:types::Constant = constant_value(n.a,0); if !types::integer(value.ty) || !types::integer(n.b) { types::fail(3); } return types::Constant {bits:value.bits&types::max(n.b),ty:n.b}; }
+    if n.tag == 6_u32 { var value:types::Constant = constant_value(n.b,expected); if n.a == 1_u32 { if value.ty != 2_u32 { types::fail(3); } value.bits = 1_usize-value.bits; } else { if !types::integer(value.ty) { types::fail(3); } if n.a == 2_u32 { value.bits = (~value.bits)&types::max(value.ty); } else { if n.a != 3_u32 || value.bits != 0_usize { types::fail(3); } } } return value; }
+    if n.tag == 7_u32 { let a:types::Constant = constant_value(n.b,expected); let b:types::Constant = constant_value(n.c,a.ty); if a.ty != b.ty { types::fail(3); } var result:u32 = a.ty; if n.a >= 14_u32 { result = 2; } return types::Constant {bits:types::apply(n.a,a.bits,b.bits,a.ty),ty:result}; }
+    types::fail(5); return types::Constant {bits:0,ty:0};
+}
+fn field_value(list:u32,name:u32) -> u32 {
+    var result:u32 = 0; var p:u32 = list;
+    while p != 0_u32 { let item:Node = get(p); if item.a == name { if result != 0_u32 { types::fail(2); } result = item.b; } p = item.next; }
+    if result == 0_u32 { types::fail(3); } return result;
+}
+fn zero(node:u32,ty:u32) -> bool { walk_enter(node); let result:bool = zero_inner(node,ty); walk_leave(); return result; }
+fn zero_inner(node:u32,ty:u32) -> bool {
+    let n:Node = get(node); let t:model::Type = types::info(ty);
+    if n.tag == 20_u32 { if t.kind != 8_u32 || t.a != 3_u32 || t.flags != 1_u32 { types::fail(3); } return false; }
+    if n.tag == 9_u32 { let ignored:u32 = static_address(node,ty); return false; }
+    if t.kind == 9_u32 {
+        if n.tag != 12_u32 || n.a != ty { types::fail(3); }
+        var i:u32 = 0; var all:bool = true;
+        unsafe { while i < t.count { let field:model::Field = model::fields[(t.first+i) as usize]; if !zero(field_value(n.b,field.name),field.ty) { all = false; } i = i+1_u32; } }
+        var c:u32 = 0; var item:u32 = n.b; while item != 0_u32 { c = c+1_u32; item = get(item).next; } if c != t.count { types::fail(3); } return all;
+    }
+    if t.kind == 7_u32 {
+        if n.tag == 14_u32 { if n.b != t.b { types::fail(3); } return zero(n.a,t.a); }
+        if n.tag != 13_u32 { types::fail(3); }
+        var p:u32 = n.a; var c:u32 = 0; var all:bool = true;
+        while p != 0_u32 { if !zero(p,t.a) { all = false; } c = c+1_u32; p = get(p).next; } if c != t.b { types::fail(3); } return all;
+    }
+    if t.kind == 10_u32 { if n.tag != 15_u32 || n.a != ty { types::fail(3); } var payload:u32 = t.a; if n.b == 1_u32 { payload = t.b; } let empty:bool = zero(n.c,payload); return n.b == 0_u32 && empty; }
+    if t.kind == 8_u32 { types::fail(5); }
+    let value:types::Constant = constant_value(node,ty); if value.ty != ty { types::fail(3); } return value.bits == 0_usize;
+}
+pub fn put(offset:usize,bits:usize,size:usize) -> () {
+    var i:usize = 0; unsafe { if offset > model::data_byte_count || size > model::data_byte_count-offset || size > 8_usize { types::fail(7); } while i < size { model::data_bytes[offset+i] = ((bits>>(i*8_usize))&255_usize) as u8; i = i+1_usize; } } return ();
+}
+pub fn string_data(name:u32) -> u32 {
+    let bytes:[]const u8 = types::text(name); var size:usize = bytes.len; if size == 0_usize { size = 1; }
+    unsafe {
+        let first:usize = model::data_byte_count; var i:usize = 0; while i < bytes.len { model::data_byte(bytes[i]); i = i+1_usize; } if bytes.len == 0_usize { model::data_byte(0); }
+        let symbol:u32 = model::symbol(0,2); let ignored:u32 = model::add_data(model::Data {symbol:symbol,region:2,align:1,size:size,first:first,count:size}); return symbol;
+    }
+}
+fn static_address(node:u32,ty:u32) -> u32 {
+    let n:Node = get(node); let t:model::Type = types::info(ty);
+    unsafe {
+            let name:[]const u8 = types::text(n.a); let mutable:bool = model::equal(name,"core::addr_of_mut") || model::equal(name,"addr_of_mut");
+            if !mutable && !model::equal(name,"core::addr_of") && !model::equal(name,"addr_of") { types::fail(5); }
+            if n.b == 0_u32 || get(n.b).next != 0_u32 || get(n.b).tag != 5_u32 { types::fail(5); }
+            let id:u32 = types::resolve(types::token.file,get(n.b).a,false); if id == 0_u32 { types::fail(2); } let d:model::Decl = model::decls[id as usize];
+            if d.kind != 5_u32 || t.kind != 6_u32 || t.a != d.ty { types::fail(3); }
+            if mutable && (d.flags&4_u32) == 0_u32 { types::fail(4); }
+            if t.flags == 0_u32 && !mutable { types::fail(3); }
+            return d.symbol;
+    }
+}
+fn serialize(node:u32,ty:u32,object:u32,offset:usize) -> () { walk_enter(node); serialize_inner(node,ty,object,offset); walk_leave(); return (); }
+fn serialize_inner(node:u32,ty:u32,object:u32,offset:usize) -> () {
+    let n:Node = get(node); let t:model::Type = types::info(ty);
+    unsafe {
+        let destination:usize = model::data_objs[object as usize].first+offset;
+        if t.kind == 9_u32 { var i:u32 = 0; while i < t.count { let field:model::Field = model::fields[(t.first+i) as usize]; serialize(field_value(n.b,field.name),field.ty,object,offset+field.offset); i = i+1_u32; } return (); }
+        if t.kind == 7_u32 {
+            let stride:usize = types::info(t.a).size;
+            if n.tag == 14_u32 {
+                if t.b == 0_u32 { return (); }
+                let first:u32 = model::data_relocation_count+1_u32;
+                serialize(n.a,t.a,object,offset);
+                let last:u32 = model::data_relocation_count;
+                var i:u32 = 1;
+                while i < t.b {
+                    let displacement:usize = (i as usize)*stride;
+                    var byte:usize = 0; while byte < stride { model::data_bytes[destination+displacement+byte] = model::data_bytes[destination+byte]; byte = byte+1_usize; }
+                    var r:u32 = first; while r <= last {
+                        let ref:model::DataRelocation = model::data_relocations[r as usize];
+                        if ref.object == object && ref.offset >= offset && ref.offset < offset+stride {
+                            let ignored:u32 = model::add_data_relocation(model::DataRelocation {object:object,offset:ref.offset+displacement,target:ref.target,addend:ref.addend});
+                        }
+                        r = r+1_u32;
+                    }
+                    i = i+1_u32;
+                }
+                return ();
+            }
+            var i:u32 = 0; var item:u32 = n.a;
+            while i < t.b { serialize(item,t.a,object,offset+(i as usize)*stride); item = get(item).next; i = i+1_u32; }
+            return ();
+        }
+        if t.kind == 10_u32 { put(destination,n.b as usize,4); var payload:u32 = t.a; if n.b == 1_u32 { payload = t.b; } serialize(n.c,payload,object,offset+(t.first as usize)); return (); }
+        if n.tag == 20_u32 {
+            if t.kind != 8_u32 || t.a != 3_u32 || t.flags != 1_u32 { types::fail(3); }
+            let symbol:u32 = string_data(n.a); let ignored:u32 = model::add_data_relocation(model::DataRelocation {object:object,offset:offset,target:symbol,addend:0}); put(destination+8_usize,types::text(n.a).len,8); return ();
+        }
+        if n.tag == 9_u32 { let symbol:u32 = static_address(node,ty); let ignored:u32 = model::add_data_relocation(model::DataRelocation {object:object,offset:offset,target:symbol,addend:0}); return (); }
+        let value:types::Constant = constant_value(node,ty); if value.ty != ty { types::fail(3); } put(destination,value.bits,t.size);
+    }
+    return ();
+}
+pub fn collect() -> () {
+    types::headers_collect();
+    unsafe {
+        var id:u32 = 1;
+        while id <= model::decl_count {
+            let d:model::Decl = model::decls[id as usize];
+            if d.kind == 5_u32 {
+                reset(); types::seek(d.file,d.init_start); let value:u32 = expression(0,false); types::need(";"); let t:model::Type = types::info(d.ty);
+                let all_zero:bool = zero(value,d.ty); var region:u32 = 2; if (d.flags&4_u32) != 0_u32 { region = 3; if all_zero { region = 4; } }
+                var size:usize = t.size; if size == 0_usize { size = 1; }
+                let first:usize = model::data_byte_count; var amount:usize = size; if region == 4_u32 { amount = 0; }
+                if amount > 8388608_usize-model::data_byte_count { model::limit(model::data_byte_count+amount,8388608); }
+                var i:usize = 0; while i < amount { model::data_byte(0); i = i+1_usize; }
+                let object:u32 = model::add_data(model::Data {symbol:d.symbol,region:region,align:t.align,size:size,first:first,count:amount});
+                if region != 4_u32 { serialize(value,d.ty,object,0); }
+            }
+            id = id+1_u32;
+        }
+        reset();
+    }
+    return ();
+}

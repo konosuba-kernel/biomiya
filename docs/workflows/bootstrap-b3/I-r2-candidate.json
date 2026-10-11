@@ -1,0 +1,54 @@
+{
+  "node": "I",
+  "revision": 2,
+  "implementer": "/root",
+  "contributors": [
+    "/root"
+  ],
+  "input_revisions": {
+    "H": 3,
+    "L": 2,
+    "F": 3,
+    "M": 3
+  },
+  "files": {
+    "core-s/bootstrap/main.vt": "ccbea227c2ecc130ff808b362850405d4d45616c84cba90c563a77b3dca0c0e9",
+    "core-s/bootstrap/c1.build": "f3db937c66510ca8aedd55f59b5c0cab270eb6b61596a346c33445f47b5bce04",
+    "core-s/bootstrap/c2.build": "3f5df47ca716357e5c721c50bf0de00e08367c17b916adb21eef62636870c02b",
+    "core-s/bootstrap/c3.build": "f51d6e749cc4b00ace61e01f50218c810001c30160ff9e42e70fbf3fd032f677",
+    "core-s/tests/b3.rs": "6b0a22887bd4a56bae848c050e5b5ffd6de4754544fc30335a54c850a45af90f",
+    "core-s/README.md": "d1008422df4f1d39b021cbcb6b978161ad674a50a22a4d10e83dc4aa2ab23693",
+    "docs/workflows/bootstrap-b3/clean_build.py": "5909ab32c3d8031b6d946bea92948c9c7963120e56ca43c7f7ae69fd176a1300",
+    "docs/workflows/bootstrap-b3/metrics.py": "c8c4efdcbb32d20d546a17a95c4b262ea4fd7d4bfbc335a7334475296f6bb3d3",
+    "docs/workflows/bootstrap-b3/metrics.json": "2153cd5c69c3a98ab3594650c8abc84d579108774d6ee19321a9822f9b14b523",
+    "docs/workflows/bootstrap-b3/README.md": "fcf10b24c0cb12d4b9e3cae434b26eddc53a69a1d16732f29bd9daaa03dd8a1b"
+  },
+  "evidence": {
+    "I-r2-tests.txt": "03249f2a6f3b499dcbc33c14f93f5a268e5b155274aa96661b649712d5b92baf",
+    "I-r2-clean/I-clean-tests.txt": "09c2afcce131c729ab9dd83d6dd410a5f6d3c303aefa9cb30f3e3cca62f0bff5",
+    "I-r2-clean/I-clean-build.json": "4cbddf02c71c3379790d6b11b3e08360c66b09ac9893e23a0af5c4073f9647f1",
+    "I-r2-workspace-build.json": "b4c121d8f1c4a7341245710e6a66bf026880af04e90418c025dcf104dcf15e9f",
+    "I-baseline-check.json": "c0f1a0959f47c32037da810632061ba73ea2e1ed8ffda9c7a314bd0d4d1f7598"
+  },
+  "author_results": {
+    "workspace_tests": 81,
+    "source_only_clean_tests": 81,
+    "c2_c3_full_file_equal": true,
+    "diagnostic_source_mutation_test": true,
+    "guest_stack_bytes": 1048576,
+    "target_PATH": "empty",
+    "baseline_product_sources_unchanged": true
+  },
+  "known_limits": [
+    "Linux-user Core S/B2 subset only",
+    "Dense formatting makes line-count comparisons insufficient",
+    "Static memory layout is not measured RSS; largest function frame is not call-chain peak"
+  ],
+  "supersedes": "I-r1",
+  "changes": [
+    "Normalize one leading root:: in manifest entry, matching C0 for root and named modules.",
+    "Permanent C0/C1/C2/C3 qualified entry build regression; target check additionally creates no output.",
+    "Correct historical B2 documentation and regenerate exact I2 ELF/source/resource metrics.",
+    "Clean builder writes evidence into a fresh directory to preserve earlier revisions; I1 independent script snapshots now separately counted."
+  ]
+}

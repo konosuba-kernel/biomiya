@@ -1,0 +1,118 @@
+{
+  "host_compiler": {
+    "physical_lines": 7681,
+    "cloc": {
+      "blank": 181,
+      "comment": 67,
+      "code": 7433,
+      "nFiles": 17
+    }
+  },
+  "generated_unicode": {
+    "physical_lines": 2096,
+    "cloc": {
+      "blank": 0,
+      "comment": 1,
+      "code": 2095,
+      "nFiles": 1
+    }
+  },
+  "tests": {
+    "physical_lines": 3963,
+    "cloc": {
+      "blank": 60,
+      "comment": 53,
+      "code": 3850,
+      "nFiles": 10
+    }
+  },
+  "behavior_inputs": {
+    "physical_lines": 98,
+    "cloc": {
+      "blank": 1,
+      "comment": 1,
+      "code": 96,
+      "nFiles": 1
+    }
+  },
+  "target_compiler": {
+    "physical_lines": 4040,
+    "source_bytes": 181404,
+    "cloc": {
+      "blank": 110,
+      "comment": 12,
+      "code": 3918,
+      "nFiles": 11
+    }
+  },
+  "target_runtime": {
+    "physical_lines": 189,
+    "source_bytes": 6778,
+    "cloc": {
+      "blank": 18,
+      "comment": 4,
+      "code": 167,
+      "nFiles": 2
+    }
+  },
+  "platform_s0": {
+    "physical_lines": 19,
+    "source_bytes": 345,
+    "cloc": {
+      "blank": 0,
+      "comment": 1,
+      "code": 18,
+      "nFiles": 1
+    }
+  },
+  "b2_input_application": {
+    "physical_lines": 251,
+    "source_bytes": 11636,
+    "cloc": {
+      "blank": 11,
+      "comment": 4,
+      "code": 236,
+      "nFiles": 4
+    }
+  },
+  "new_rust_tests": {
+    "physical_lines": 1583,
+    "source_bytes": 54332,
+    "cloc": {
+      "blank": 3,
+      "comment": 7,
+      "code": 1573,
+      "nFiles": 4
+    }
+  },
+  "new_target_fixtures": {
+    "physical_lines": 467,
+    "source_bytes": 15189,
+    "cloc": {
+      "blank": 13,
+      "comment": 1,
+      "code": 453,
+      "nFiles": 2
+    }
+  },
+  "b3_validation_tools": {
+    "physical_lines": 514,
+    "source_bytes": 35714,
+    "cloc": {
+      "blank": 2,
+      "comment": 179,
+      "code": 333,
+      "nFiles": 7
+    }
+  },
+  "I1_independent_probe_snapshots": {
+    "physical_lines": 187,
+    "source_bytes": 15462,
+    "cloc": {
+      "blank": 0,
+      "comment": 28,
+      "code": 159,
+      "nFiles": 5
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "node": "P",
+  "candidate_revision": 1,
+  "reviewer_agent_id": "/root/acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "dependency_revisions": {
+    "H": 2
+  },
+  "file_hashes_verified": {
+    "core-s/src/pipeline.rs": "f5b5fd212e22fd6915b8547772df9c02f6cede6a9aa579d268b6634c54fdd727",
+    "core-s/src/frontend.rs": "6f3ae60bf5c5f39442562b004ef61b153f4f21b1ab2a0ada56b9e86c8fdd7daf",
+    "core-s/src/check.rs": "95a0098d95288df6e50334e4e9b4496812ea666d775af5c3b2b0bd7f2130acd1",
+    "core-s/tests/pipeline.rs": "ccaa70ef30fbaa1058723bf81c2dd6ce76089b43fd4c1e12994cdbdecd8fe27c"
+  },
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features pipeline --test pipeline",
+      "exit_code": 0,
+      "result": "6 passed; 0 ignored"
+    },
+    {
+      "command": "cargo run --quiet --manifest-path /tmp/core-s-pipeline-review-70r3udr2/Cargo.toml",
+      "exit_code": 0,
+      "result": "Ten additional diagnostic-preservation cases, including inactive const dependency cycle, zero-size recursive layout, sizeof/length cycle, unreachable errors, mutability, incomplete match, illegal defer, unsupported static and malformed syntax; FileId 91 and exact code/span/message preserved. Exact 4 MiB whitespace boundary accepted. Aggregate source snapshot appears in CFG before mutating call.",
+      "probe_source": "/tmp/core-s-pipeline-review-70r3udr2/src/main.rs",
+      "probe_sha256": "a0164975df025953aa0497a6cb6a43f021a3a66c8eec2fb9c9b082fc2295502f"
+    }
+  ],
+  "inspection": [
+    "Pipeline explicitly invokes parse, resolve and check with immediate error propagation; no archived compiler fallback or semantic duplication.",
+    "Cycle diagnostics now select declared layout, const or length spans; implementation preserves dependency traversal and rejection classification.",
+    "Immutable candidate hashes matched immediately before final review."
+  ],
+  "findings": [],
+  "limitations": [
+    "P acceptance covers source-to-CFG and interface composition. Actual defer/Result runtime behavior is reserved for I final integration acceptance.",
+    "Temporary independent probe was not added to product sources."
+  ]
+}

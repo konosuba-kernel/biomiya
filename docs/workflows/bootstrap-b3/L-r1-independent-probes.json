@@ -1,0 +1,101 @@
+{
+  "revision": "1",
+  "probes": 19,
+  "results": [
+    {
+      "name": "source_exact_4MiB",
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "name": "source_over_4MiB",
+      "exit": 1,
+      "stderr": "I_LIMIT file=1 byte=0\n"
+    },
+    {
+      "name": "source_33",
+      "exit": 1,
+      "stderr": "I_LIMIT file=0 byte=522\n"
+    },
+    {
+      "name": "assembly_9",
+      "exit": 1,
+      "stderr": "I_LIMIT file=0 byte=203\n"
+    },
+    {
+      "name": "surrogate",
+      "exit": 1,
+      "stderr": "E_PARSE file=1 byte=1\n"
+    },
+    {
+      "name": "overlong",
+      "exit": 1,
+      "stderr": "E_PARSE file=1 byte=1\n"
+    },
+    {
+      "name": "out_of_range",
+      "exit": 1,
+      "stderr": "E_PARSE file=1 byte=1\n"
+    },
+    {
+      "name": "truncated",
+      "exit": 1,
+      "stderr": "E_PARSE file=1 byte=1\n"
+    },
+    {
+      "name": "bom",
+      "exit": 1,
+      "stderr": "E_PARSE file=1 byte=0\n"
+    },
+    {
+      "name": "utf8_string_comment",
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "name": "assembly_snapshot",
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "name": "decode_capacity",
+      "exit": 1,
+      "stderr": "I_LIMIT file=1 byte=0\n"
+    },
+    {
+      "name": "repeated_eintr_short_io",
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "name": "fchmod_error",
+      "exit": 1,
+      "stderr": "E_IO file=0 byte=0\n"
+    },
+    {
+      "name": "read_error",
+      "exit": 1,
+      "stderr": "E_IO file=0 byte=0\n"
+    },
+    {
+      "name": "write_zero",
+      "exit": 1,
+      "stderr": "E_IO file=0 byte=0\n"
+    },
+    {
+      "name": "write_error",
+      "exit": 1,
+      "stderr": "E_IO file=0 byte=0\n"
+    },
+    {
+      "name": "dangling_output_symlink",
+      "exit": 1,
+      "stderr": "E_IO file=0 byte=0\n"
+    },
+    {
+      "name": "hardlink_input_output",
+      "exit": 1,
+      "stderr": "E_IO file=0 byte=0\n"
+    }
+  ]
+}

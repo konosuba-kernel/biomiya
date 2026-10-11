@@ -1,0 +1,28 @@
+{
+  "node": "H",
+  "revision": 3,
+  "implementer": "/root",
+  "contributors": [
+    "/root/b3_frontend",
+    "/root",
+    "/root/b3_machine"
+  ],
+  "input_revisions": {
+    "B2": "accepted"
+  },
+  "files": {
+    "docs/design/bootstrap-b3.md": "f284c2b2af6f41d4f639006d0d6678aa730a9e06e2e583012afcd6eb63794896",
+    "core-s/bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+    "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+    "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+  },
+  "evidence": [
+    "C0 project bootstrap/tests/model.build --root . and QEMU target/b3-h-probe.elf exit0"
+  ],
+  "scope": "Contracts and actual shared model only, not B3 self compilation",
+  "supersedes": "H-r2",
+  "changes": [
+    "Add limit_at(actual,capacity,file,offset); old limit wraps with 0/0. No layout change."
+  ],
+  "consumer_impact": "L2 needs new positional capacity diagnostic; no existing API/layout changes."
+}

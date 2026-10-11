@@ -1,0 +1,1103 @@
+{
+  "date": "2026-10-09",
+  "timezone": "Asia/Shanghai",
+  "revision": "8feff82b1e9ae58ada07975339b071f88feb27e7",
+  "counter": "cloc 2.10",
+  "scope": "Static source size, not coverage, runtime performance, or removable LOC. Separate core-s includes path-reused files once. Snapshots are not summed as one compiler.",
+  "baseline": {
+    "total": {
+      "files": 31,
+      "physical_newlines": 20526,
+      "code": 20332,
+      "comment": 114,
+      "blank": 80
+    },
+    "handwritten": {
+      "files": 30,
+      "physical_newlines": 18430,
+      "code": 18237,
+      "comment": 113,
+      "blank": 80
+    },
+    "groups": {
+      "前端与名字解析": {
+        "files": 7,
+        "physical_newlines": 2342,
+        "code": 2308,
+        "comment": 19,
+        "blank": 15
+      },
+      "语义检查": {
+        "files": 9,
+        "physical_newlines": 8402,
+        "code": 8376,
+        "comment": 22,
+        "blank": 4
+      },
+      "类型与布局": {
+        "files": 2,
+        "physical_newlines": 1241,
+        "code": 1229,
+        "comment": 11,
+        "blank": 1
+      },
+      "HIR CFG 与降低": {
+        "files": 3,
+        "physical_newlines": 2632,
+        "code": 2579,
+        "comment": 24,
+        "blank": 29
+      },
+      "ABI 与 RV64 后端": {
+        "files": 3,
+        "physical_newlines": 1702,
+        "code": 1695,
+        "comment": 5,
+        "blank": 2
+      },
+      "Extend": {
+        "files": 1,
+        "physical_newlines": 706,
+        "code": 689,
+        "comment": 16,
+        "blank": 1
+      },
+      "驱动工具链与链接名字": {
+        "files": 5,
+        "physical_newlines": 1405,
+        "code": 1361,
+        "comment": 16,
+        "blank": 28
+      },
+      "生成的 Unicode 表": {
+        "files": 1,
+        "physical_newlines": 2096,
+        "code": 2095,
+        "comment": 1,
+        "blank": 0
+      }
+    },
+    "files": [
+      {
+        "path": "src/abi.rs",
+        "physical_newlines": 266,
+        "sha256": "5a8278e25eaea3a6bc48906a7f0d663e01088bc880673b89f02fc8df50073f42",
+        "blank": 0,
+        "comment": 2,
+        "code": 264,
+        "language": "Rust",
+        "group": "ABI 与 RV64 后端"
+      },
+      {
+        "path": "src/check/builtins.rs",
+        "physical_newlines": 850,
+        "sha256": "df9a5d0d06c50056527a57ab42d1b702a567a193fede6158ef6801d6a11c1e52",
+        "blank": 1,
+        "comment": 0,
+        "code": 849,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/check/calls.rs",
+        "physical_newlines": 940,
+        "sha256": "635c280842738492b0ee91f8b12906abbda62633e3206c5ba061f48d2ee74045",
+        "blank": 0,
+        "comment": 1,
+        "code": 939,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/check/constants.rs",
+        "physical_newlines": 1251,
+        "sha256": "4d1cba65b2b48845b2c3c670027d2d50b5122bb64a251f02902067d226e5a084",
+        "blank": 1,
+        "comment": 2,
+        "code": 1248,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/check/deferred.rs",
+        "physical_newlines": 579,
+        "sha256": "ba320d1abbf93f41d058cfeeb89317709c622345255899037be9d8f9ca574444",
+        "blank": 1,
+        "comment": 6,
+        "code": 572,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/check/expressions.rs",
+        "physical_newlines": 1212,
+        "sha256": "40f52d4861955d275e1b566fba75c09ca016e0b3a66e441867221b9929e39f28",
+        "blank": 1,
+        "comment": 0,
+        "code": 1211,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/check/inference.rs",
+        "physical_newlines": 1370,
+        "sha256": "cef8e5458ff359ba448794f535eb485a650f1d390f90b815f934bb8fee7078b5",
+        "blank": 0,
+        "comment": 11,
+        "code": 1359,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/check/mod.rs",
+        "physical_newlines": 1447,
+        "sha256": "6d71f20c6e70971c445b1ce05fdaf0471f8b404c964c952f30f0a273aaa314e6",
+        "blank": 0,
+        "comment": 2,
+        "code": 1445,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/check/names.rs",
+        "physical_newlines": 349,
+        "sha256": "ad4d08d7981269c8fb8b333f3529fa77f6afab90471111b65cd742bb776d5a55",
+        "blank": 0,
+        "comment": 0,
+        "code": 349,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/check/patterns.rs",
+        "physical_newlines": 404,
+        "sha256": "4a4d398e86a40fe863c99bad60bf464b39839d3c663dca03e1dd900eb8fa4953",
+        "blank": 0,
+        "comment": 0,
+        "code": 404,
+        "language": "Rust",
+        "group": "语义检查"
+      },
+      {
+        "path": "src/diagnostic.rs",
+        "physical_newlines": 43,
+        "sha256": "e8abafc4086e3daeebc3c19b310f165f620a180ca5ff8116f6b7e4438718bf9c",
+        "blank": 6,
+        "comment": 0,
+        "code": 37,
+        "language": "Rust",
+        "group": "前端与名字解析"
+      },
+      {
+        "path": "src/driver.rs",
+        "physical_newlines": 560,
+        "sha256": "2c4d35850c1b73eda1f4d2695f1dfc9f80cc4be6dedc8f088292692cd0e69f51",
+        "blank": 10,
+        "comment": 1,
+        "code": 549,
+        "language": "Rust",
+        "group": "驱动工具链与链接名字"
+      },
+      {
+        "path": "src/extend.rs",
+        "physical_newlines": 706,
+        "sha256": "cab722982440146ec501ed21f70d681b55b52a57280766ee04648e98566bbaf8",
+        "blank": 1,
+        "comment": 16,
+        "code": 689,
+        "language": "Rust",
+        "group": "Extend"
+      },
+      {
+        "path": "src/hir.rs",
+        "physical_newlines": 224,
+        "sha256": "e5a98d2c7ae658e645eaefd477789c7fe64f5175d86c70dfea8a930f749dcad8",
+        "blank": 9,
+        "comment": 5,
+        "code": 210,
+        "language": "Rust",
+        "group": "HIR CFG 与降低"
+      },
+      {
+        "path": "src/ir.rs",
+        "physical_newlines": 263,
+        "sha256": "a48955d6821cb6a6603a00936b2005f0d06976e500b7ab640646adbc78527d52",
+        "blank": 19,
+        "comment": 9,
+        "code": 235,
+        "language": "Rust",
+        "group": "HIR CFG 与降低"
+      },
+      {
+        "path": "src/layout.rs",
+        "physical_newlines": 674,
+        "sha256": "167db5259cd185a005859922835339c3c797cba1549828d747184909a11d631f",
+        "blank": 0,
+        "comment": 4,
+        "code": 670,
+        "language": "Rust",
+        "group": "类型与布局"
+      },
+      {
+        "path": "src/lib.rs",
+        "physical_newlines": 20,
+        "sha256": "70eaf05253fd9c4821bc3470966cea73ff54804b455e123608f694a1e1aeb731",
+        "blank": 1,
+        "comment": 1,
+        "code": 18,
+        "language": "Rust",
+        "group": "驱动工具链与链接名字"
+      },
+      {
+        "path": "src/linkage.rs",
+        "physical_newlines": 287,
+        "sha256": "8614d582d63f13739c415a199a451ba4afbdd3ef84d8f91a73780da807435f9b",
+        "blank": 0,
+        "comment": 8,
+        "code": 279,
+        "language": "Rust",
+        "group": "驱动工具链与链接名字"
+      },
+      {
+        "path": "src/lower.rs",
+        "physical_newlines": 2145,
+        "sha256": "d13f4f093aa9128a8e0e49634995706fa4d32481c4fd605dca4001f2aad3257e",
+        "blank": 1,
+        "comment": 10,
+        "code": 2134,
+        "language": "Rust",
+        "group": "HIR CFG 与降低"
+      },
+      {
+        "path": "src/main.rs",
+        "physical_newlines": 5,
+        "sha256": "3ae669206128e4f1e6b3ba875fca9e5e93138bc8bdd44da90c8f163b5b90823e",
+        "blank": 0,
+        "comment": 0,
+        "code": 5,
+        "language": "Rust",
+        "group": "驱动工具链与链接名字"
+      },
+      {
+        "path": "src/resolve.rs",
+        "physical_newlines": 622,
+        "sha256": "af1ca1e5cd4b31fc50d000f954dc709bccd0ccdecba17fb5015ebe69fd277dbb",
+        "blank": 0,
+        "comment": 8,
+        "code": 614,
+        "language": "Rust",
+        "group": "前端与名字解析"
+      },
+      {
+        "path": "src/source.rs",
+        "physical_newlines": 90,
+        "sha256": "5c801bbac87b4fd65de79a7815d5230c2b69a8b011a15e8d21989baec865fff1",
+        "blank": 9,
+        "comment": 0,
+        "code": 81,
+        "language": "Rust",
+        "group": "前端与名字解析"
+      },
+      {
+        "path": "src/syntax/ast.rs",
+        "physical_newlines": 279,
+        "sha256": "19b5aa70448d707f5b5a1a7c85db8ddba85e2a0cbdb6530611a1f3d0508f5561",
+        "blank": 0,
+        "comment": 4,
+        "code": 275,
+        "language": "Rust",
+        "group": "前端与名字解析"
+      },
+      {
+        "path": "src/syntax/lexer.rs",
+        "physical_newlines": 194,
+        "sha256": "ca33203662cfa337b4e662a7c7967d50e62549e6abb99f325199efb523b3b897",
+        "blank": 0,
+        "comment": 7,
+        "code": 187,
+        "language": "Rust",
+        "group": "前端与名字解析"
+      },
+      {
+        "path": "src/syntax/mod.rs",
+        "physical_newlines": 7,
+        "sha256": "83a57fc10fcf5078b088ef3b9d73470388ed18f223caae2b7e5074ffea79a00f",
+        "blank": 0,
+        "comment": 0,
+        "code": 7,
+        "language": "Rust",
+        "group": "前端与名字解析"
+      },
+      {
+        "path": "src/syntax/parser.rs",
+        "physical_newlines": 1107,
+        "sha256": "4ab3ef49517c6b8d6bf37939edc4f2bdd01d3a431b6f1f212f0558a2cdbfda32",
+        "blank": 0,
+        "comment": 0,
+        "code": 1107,
+        "language": "Rust",
+        "group": "前端与名字解析"
+      },
+      {
+        "path": "src/syntax/unicode.rs",
+        "physical_newlines": 2096,
+        "sha256": "6c1c6102c04cc4f4f8985595a209706388695baec71ba1ceec2046d3f6e27feb",
+        "blank": 0,
+        "comment": 1,
+        "code": 2095,
+        "language": "Rust",
+        "group": "生成的 Unicode 表"
+      },
+      {
+        "path": "src/target/mod.rs",
+        "physical_newlines": 1,
+        "sha256": "a0cca57316035b3c59b62008b8160e64f1e4e5f98213317985cc0cdfc5c323a1",
+        "blank": 0,
+        "comment": 0,
+        "code": 1,
+        "language": "Rust",
+        "group": "ABI 与 RV64 后端"
+      },
+      {
+        "path": "src/target/rv64.rs",
+        "physical_newlines": 1435,
+        "sha256": "69c59bc8d3a449fdd490294515af701e227533e80761a6d1a6023dade34c1221",
+        "blank": 2,
+        "comment": 3,
+        "code": 1430,
+        "language": "Rust",
+        "group": "ABI 与 RV64 后端"
+      },
+      {
+        "path": "src/toolchain.rs",
+        "physical_newlines": 533,
+        "sha256": "b51544391121e414ac3311f8517d4bb3ab529351a7ec6609bb6498b19e8f71b0",
+        "blank": 17,
+        "comment": 6,
+        "code": 510,
+        "language": "Rust",
+        "group": "驱动工具链与链接名字"
+      },
+      {
+        "path": "src/types.rs",
+        "physical_newlines": 567,
+        "sha256": "bda937e98961bfb9a2a93a3dbabf7dd09437b33a065866b2e5b28f32d4abf853",
+        "blank": 1,
+        "comment": 7,
+        "code": 559,
+        "language": "Rust",
+        "group": "类型与布局"
+      }
+    ]
+  },
+  "core_s": {
+    "total": {
+      "files": 10,
+      "physical_newlines": 6826,
+      "code": 6647,
+      "comment": 41,
+      "blank": 138
+    },
+    "handwritten": {
+      "files": 9,
+      "physical_newlines": 4730,
+      "code": 4552,
+      "comment": 40,
+      "blank": 138
+    },
+    "own_source": {
+      "files": 6,
+      "physical_newlines": 4403,
+      "code": 4247,
+      "comment": 33,
+      "blank": 123
+    },
+    "files": [
+      {
+        "path": "core-s/src/ast.rs",
+        "physical_newlines": 233,
+        "sha256": "a0846d5dd582cf64db2c39a5b7d08ae15a486911999c4375b204668c8ef6a316",
+        "blank": 19,
+        "comment": 1,
+        "code": 213,
+        "language": "Rust"
+      },
+      {
+        "path": "core-s/src/backend.rs",
+        "physical_newlines": 880,
+        "sha256": "99394386bfd0805c3f23155c2b376c38d562f22bd6f8b0469b49e3559a21de2f",
+        "blank": 39,
+        "comment": 10,
+        "code": 831,
+        "language": "Rust"
+      },
+      {
+        "path": "core-s/src/check.rs",
+        "physical_newlines": 1457,
+        "sha256": "95a0098d95288df6e50334e4e9b4496812ea666d775af5c3b2b0bd7f2130acd1",
+        "blank": 13,
+        "comment": 5,
+        "code": 1439,
+        "language": "Rust"
+      },
+      {
+        "path": "core-s/src/frontend.rs",
+        "physical_newlines": 1538,
+        "sha256": "ad14e954e0292fb13db40572378d59a48aaa3449ba121f2ae76a7798482f2523",
+        "blank": 19,
+        "comment": 4,
+        "code": 1515,
+        "language": "Rust"
+      },
+      {
+        "path": "core-s/src/lib.rs",
+        "physical_newlines": 26,
+        "sha256": "c93784667dac7e2c255381749f4603065e6ef086339d9a8a854c76d4ac85d2ed",
+        "blank": 4,
+        "comment": 2,
+        "code": 20,
+        "language": "Rust"
+      },
+      {
+        "path": "core-s/src/model.rs",
+        "physical_newlines": 269,
+        "sha256": "1c98d0c49a68ad16fb7b113eec8cb88dfc440bfa0e5212493d432cbc1286a052",
+        "blank": 29,
+        "comment": 11,
+        "code": 229,
+        "language": "Rust"
+      },
+      {
+        "path": "src/diagnostic.rs",
+        "physical_newlines": 43,
+        "sha256": "e8abafc4086e3daeebc3c19b310f165f620a180ca5ff8116f6b7e4438718bf9c",
+        "blank": 6,
+        "comment": 0,
+        "code": 37,
+        "language": "Rust"
+      },
+      {
+        "path": "src/source.rs",
+        "physical_newlines": 90,
+        "sha256": "5c801bbac87b4fd65de79a7815d5230c2b69a8b011a15e8d21989baec865fff1",
+        "blank": 9,
+        "comment": 0,
+        "code": 81,
+        "language": "Rust"
+      },
+      {
+        "path": "src/syntax/lexer.rs",
+        "physical_newlines": 194,
+        "sha256": "ca33203662cfa337b4e662a7c7967d50e62549e6abb99f325199efb523b3b897",
+        "blank": 0,
+        "comment": 7,
+        "code": 187,
+        "language": "Rust"
+      },
+      {
+        "path": "src/syntax/unicode.rs",
+        "physical_newlines": 2096,
+        "sha256": "6c1c6102c04cc4f4f8985595a209706388695baec71ba1ceec2046d3f6e27feb",
+        "blank": 0,
+        "comment": 1,
+        "code": 2095,
+        "language": "Rust"
+      }
+    ],
+    "cli_main_exists": false,
+    "frontend_test_exists": false
+  },
+  "support": {
+    "rust_tests": {
+      "total": {
+        "files": 11,
+        "physical_newlines": 3399,
+        "code": 3369,
+        "comment": 5,
+        "blank": 25
+      },
+      "files": [
+        {
+          "path": "tests/backend.rs",
+          "physical_newlines": 736,
+          "sha256": "0e780a48b1c45ec24cffe09abc5b1e209dd179180b4b535c216252505bc63eb0",
+          "blank": 0,
+          "comment": 1,
+          "code": 735,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/check.rs",
+          "physical_newlines": 271,
+          "sha256": "d794af2a93eae6697a821dce7f7b15d8b2f7973723f6bcbca982fb6062d4d1f2",
+          "blank": 10,
+          "comment": 0,
+          "code": 261,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/const_constructors.rs",
+          "physical_newlines": 198,
+          "sha256": "83e79abf9197b47c6983b2e6a815aafb951d640b9d13048939fa5435a01acd94",
+          "blank": 4,
+          "comment": 1,
+          "code": 193,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/const_parity.rs",
+          "physical_newlines": 133,
+          "sha256": "3783549a9d429c854132c7b9102c571368b65eef7e533ee33dacdc7eb2564cee",
+          "blank": 0,
+          "comment": 1,
+          "code": 132,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/driver.rs",
+          "physical_newlines": 263,
+          "sha256": "45f35623d3dac910813643357ffdf7389879aa35cefe3629ca427dfb3d9df355",
+          "blank": 5,
+          "comment": 0,
+          "code": 258,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/extend.rs",
+          "physical_newlines": 645,
+          "sha256": "e09983759b0e4867201253e5946ce487c7f691721f3781dde0be5a8beb388ab6",
+          "blank": 1,
+          "comment": 1,
+          "code": 643,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/inference.rs",
+          "physical_newlines": 59,
+          "sha256": "306b61b27a038e8bd353eb9fd46bf4b99ef741cbe33e54af159bb6b10c9920ee",
+          "blank": 1,
+          "comment": 0,
+          "code": 58,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/layout_abi.rs",
+          "physical_newlines": 478,
+          "sha256": "8b5b782c8da94a88dc0f8e80c0cec990118be3fc700f8fe5d403bdf6feb56e74",
+          "blank": 2,
+          "comment": 0,
+          "code": 476,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/lower.rs",
+          "physical_newlines": 378,
+          "sha256": "9b642c139157c8ca2c28cc81c989306585586c493973c123e09355b360f60c7d",
+          "blank": 1,
+          "comment": 1,
+          "code": 376,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/resolve.rs",
+          "physical_newlines": 109,
+          "sha256": "92a90245b35730939e82b04f729c8937134930e6b8ae4832ec2a075178dd90d3",
+          "blank": 0,
+          "comment": 0,
+          "code": 109,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/syntax.rs",
+          "physical_newlines": 129,
+          "sha256": "493ceca0f2b834bf884d92b88ecade201f8a4e59db5ad56d73975d68825da679",
+          "blank": 1,
+          "comment": 0,
+          "code": 128,
+          "language": "Rust"
+        }
+      ]
+    },
+    "tools": {
+      "total": {
+        "files": 10,
+        "physical_newlines": 2459,
+        "code": 2309,
+        "comment": 23,
+        "blank": 127
+      },
+      "files": [
+        {
+          "path": "tools/accept.py",
+          "physical_newlines": 596,
+          "sha256": "077530f0eb459eb328d5c786a0b117955e8894d744588ec063937a07896bd540",
+          "blank": 33,
+          "comment": 2,
+          "code": 561,
+          "language": "Python"
+        },
+        {
+          "path": "tools/conformance.py",
+          "physical_newlines": 359,
+          "sha256": "8b3570fe28c865899acaa7ac4e71489b2602dba4d4655d54bea3a398ce788707",
+          "blank": 19,
+          "comment": 4,
+          "code": 336,
+          "language": "Python"
+        },
+        {
+          "path": "tools/doctor.py",
+          "physical_newlines": 40,
+          "sha256": "a188302bfcf9dd133013bb7073353aa95740669a50322dc2097756fb522e2cc0",
+          "blank": 5,
+          "comment": 1,
+          "code": 34,
+          "language": "Python"
+        },
+        {
+          "path": "tools/generate_integer_audit.py",
+          "physical_newlines": 47,
+          "sha256": "ec58f7ce426f26fc504864f8c7d618ef0167b3e946924afcde253055f0b1e46c",
+          "blank": 2,
+          "comment": 1,
+          "code": 44,
+          "language": "Python"
+        },
+        {
+          "path": "tools/generate_unicode.py",
+          "physical_newlines": 13,
+          "sha256": "2a4a90e537a9044f85b79099641d198bda6b0a9a3f1f9190cfde24b576b3e758",
+          "blank": 0,
+          "comment": 1,
+          "code": 12,
+          "language": "Python"
+        },
+        {
+          "path": "tools/reproduce.py",
+          "physical_newlines": 275,
+          "sha256": "80ca3844c5ee527377775c381afc3c5951ace1469f2343f9d54a3996d60a2124",
+          "blank": 16,
+          "comment": 3,
+          "code": 256,
+          "language": "Python"
+        },
+        {
+          "path": "tools/test_audit.py",
+          "physical_newlines": 37,
+          "sha256": "6b12e8550abaf5a70998a28e1aece732d575530c01521aa4fe4fba1b94b71eed",
+          "blank": 4,
+          "comment": 1,
+          "code": 32,
+          "language": "Python"
+        },
+        {
+          "path": "tools/test_harness.py",
+          "physical_newlines": 158,
+          "sha256": "ee76ad49ab5febd02c7ec8ec97c541978b4e1e49ed9873af56796b11d601cb31",
+          "blank": 16,
+          "comment": 1,
+          "code": 141,
+          "language": "Python"
+        },
+        {
+          "path": "tools/test_integration.py",
+          "physical_newlines": 676,
+          "sha256": "e22cd352d947b5da2b06a62ebaa9a98bdcc815b4ac8c5ae24847767ba5e4b630",
+          "blank": 22,
+          "comment": 8,
+          "code": 646,
+          "language": "Python"
+        },
+        {
+          "path": "tools/test_runtime.py",
+          "physical_newlines": 258,
+          "sha256": "50a86af3a99c13a6d0ce0945275b548d3c75619082fcbb32ad7734f983bc3195",
+          "blank": 10,
+          "comment": 1,
+          "code": 247,
+          "language": "Python"
+        }
+      ]
+    },
+    "platform_support": {
+      "total": {
+        "files": 2,
+        "physical_newlines": 136,
+        "code": 136,
+        "comment": 0,
+        "blank": 0
+      },
+      "files": [
+        {
+          "path": "platforms/qemu-virt/link.ld",
+          "physical_newlines": 18,
+          "sha256": "fdaa81e80302cd583941bb9fb9a2ca81484534f8945f24697d9f124c587fe32b",
+          "blank": 0,
+          "comment": 0,
+          "code": 18,
+          "language": "Linker Script"
+        },
+        {
+          "path": "platforms/qemu-virt/start.S",
+          "physical_newlines": 118,
+          "sha256": "2ac2ff8768ebbaacc931d52404431555bc580a7ab92ec4972bd916cf6aaf6a9a",
+          "blank": 0,
+          "comment": 0,
+          "code": 118,
+          "language": "Assembly"
+        }
+      ]
+    },
+    "runtime": {
+      "total": {
+        "files": 3,
+        "physical_newlines": 221,
+        "code": 221,
+        "comment": 0,
+        "blank": 0
+      },
+      "files": [
+        {
+          "path": "runtime/rv64/runtime.c",
+          "physical_newlines": 18,
+          "sha256": "de44ba537fffdf28d1d3c6f0345474007b1f785314c6e801ebee3881a9212f3f",
+          "blank": 0,
+          "comment": 0,
+          "code": 18,
+          "language": "C"
+        },
+        {
+          "path": "runtime/rv64/runtime.h",
+          "physical_newlines": 12,
+          "sha256": "158e27a963513c3d3da069b3329045e5559568f6800efdd89fef1601c195b362",
+          "blank": 0,
+          "comment": 0,
+          "code": 12,
+          "language": "C/C++ Header"
+        },
+        {
+          "path": "runtime/rv64/trap.S",
+          "physical_newlines": 191,
+          "sha256": "b2443c1968a3c5e0f1465f7e4269755b98ba7ec8c7b779e5e8cc5e7583543f40",
+          "blank": 0,
+          "comment": 0,
+          "code": 191,
+          "language": "Assembly"
+        }
+      ]
+    },
+    "core_s_tests": {
+      "total": {
+        "files": 2,
+        "physical_newlines": 1303,
+        "code": 1265,
+        "comment": 8,
+        "blank": 30
+      },
+      "files": [
+        {
+          "path": "core-s/tests/backend.rs",
+          "physical_newlines": 976,
+          "sha256": "a0a4254f79ffa2c0ed7c653b740568fed186d5afbf13540cb3224f2161f61863",
+          "blank": 19,
+          "comment": 6,
+          "code": 951,
+          "language": "Rust"
+        },
+        {
+          "path": "core-s/tests/check.rs",
+          "physical_newlines": 327,
+          "sha256": "2ef323c395f8a98fae13bf8d1dfd689a2efaafef39071d3bef888bb812f0f48d",
+          "blank": 11,
+          "comment": 2,
+          "code": 314,
+          "language": "Rust"
+        }
+      ]
+    },
+    "vt_fixtures": {
+      "files": 235,
+      "physical_newlines": 2481,
+      "nonblank_lines": 2420,
+      "note": "Not recognized by cloc; no code/comment split claimed."
+    },
+    "test_implementation": {
+      "total": {
+        "files": 29,
+        "physical_newlines": 3610,
+        "code": 3577,
+        "comment": 6,
+        "blank": 27
+      },
+      "files": [
+        {
+          "path": "tests/backend.rs",
+          "physical_newlines": 736,
+          "sha256": "0e780a48b1c45ec24cffe09abc5b1e209dd179180b4b535c216252505bc63eb0",
+          "blank": 0,
+          "comment": 1,
+          "code": 735,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/check.rs",
+          "physical_newlines": 271,
+          "sha256": "d794af2a93eae6697a821dce7f7b15d8b2f7973723f6bcbca982fb6062d4d1f2",
+          "blank": 10,
+          "comment": 0,
+          "code": 261,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/const_constructors.rs",
+          "physical_newlines": 198,
+          "sha256": "83e79abf9197b47c6983b2e6a815aafb951d640b9d13048939fa5435a01acd94",
+          "blank": 4,
+          "comment": 1,
+          "code": 193,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/const_parity.rs",
+          "physical_newlines": 133,
+          "sha256": "3783549a9d429c854132c7b9102c571368b65eef7e533ee33dacdc7eb2564cee",
+          "blank": 0,
+          "comment": 1,
+          "code": 132,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/driver.rs",
+          "physical_newlines": 263,
+          "sha256": "45f35623d3dac910813643357ffdf7389879aa35cefe3629ca427dfb3d9df355",
+          "blank": 5,
+          "comment": 0,
+          "code": 258,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/extend.rs",
+          "physical_newlines": 645,
+          "sha256": "e09983759b0e4867201253e5946ce487c7f691721f3781dde0be5a8beb388ab6",
+          "blank": 1,
+          "comment": 1,
+          "code": 643,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/inference.rs",
+          "physical_newlines": 59,
+          "sha256": "306b61b27a038e8bd353eb9fd46bf4b99ef741cbe33e54af159bb6b10c9920ee",
+          "blank": 1,
+          "comment": 0,
+          "code": 58,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/integration/atomic_multihart.c",
+          "physical_newlines": 3,
+          "sha256": "efe5d348380e68a6c05b565144a1598c13b11d85515ee34804f4f1888294c1ea",
+          "blank": 0,
+          "comment": 1,
+          "code": 2,
+          "language": "C"
+        },
+        {
+          "path": "tests/integration/c_abi.c",
+          "physical_newlines": 17,
+          "sha256": "5fabba6bfb5158dceafe9cdd815fb0738bd247d382f8770de0f2bf3bb9a987bb",
+          "blank": 2,
+          "comment": 0,
+          "code": 15,
+          "language": "C"
+        },
+        {
+          "path": "tests/integration/external_data.c",
+          "physical_newlines": 3,
+          "sha256": "5a117bcb833866e3a4095ac3d06981db09ea566647ee5f2eca0f4e5993cf557a",
+          "blank": 0,
+          "comment": 0,
+          "code": 3,
+          "language": "C"
+        },
+        {
+          "path": "tests/integration/registers.c",
+          "physical_newlines": 2,
+          "sha256": "f354535154deca1b8366f0a70aa89c9e79e58405d5036d5ce7d8b6a1338992ac",
+          "blank": 0,
+          "comment": 0,
+          "code": 2,
+          "language": "C"
+        },
+        {
+          "path": "tests/layout_abi.rs",
+          "physical_newlines": 478,
+          "sha256": "8b5b782c8da94a88dc0f8e80c0cec990118be3fc700f8fe5d403bdf6feb56e74",
+          "blank": 2,
+          "comment": 0,
+          "code": 476,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/lower.rs",
+          "physical_newlines": 378,
+          "sha256": "9b642c139157c8ca2c28cc81c989306585586c493973c123e09355b360f60c7d",
+          "blank": 1,
+          "comment": 1,
+          "code": 376,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/resolve.rs",
+          "physical_newlines": 109,
+          "sha256": "92a90245b35730939e82b04f729c8937134930e6b8ae4832ec2a075178dd90d3",
+          "blank": 0,
+          "comment": 0,
+          "code": 109,
+          "language": "Rust"
+        },
+        {
+          "path": "tests/runtime/atomic.c",
+          "physical_newlines": 15,
+          "sha256": "dd60024190d93756a9ca740e25b99688a6b99762cde2d7896671275209495a4b",
+          "blank": 0,
+          "comment": 0,
+          "code": 15,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/bad_return.c",
+          "physical_newlines": 4,
+          "sha256": "8daaaa01da233dd64d89cb95030c69d3121059782fd01d9a003436c86f3d1c41",
+          "blank": 0,
+          "comment": 0,
+          "code": 4,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/fault.c",
+          "physical_newlines": 2,
+          "sha256": "162a32fad5312e4dbbf6929294c037aa6766b9e2660d9928f8ad507f7aac6c17",
+          "blank": 0,
+          "comment": 0,
+          "code": 2,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/irq.c",
+          "physical_newlines": 5,
+          "sha256": "442e497b7e016451166ddd425c105e8947379f3dd03abd691740ae9a025bd4fe",
+          "blank": 0,
+          "comment": 0,
+          "code": 5,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/kernel.c",
+          "physical_newlines": 2,
+          "sha256": "ad6c2960efaf41b15fb51ef73a56a787581c90c2fd6cf25624a206221cdc154b",
+          "blank": 0,
+          "comment": 0,
+          "code": 2,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/mmio.c",
+          "physical_newlines": 2,
+          "sha256": "0811e5706afc299758fe5daa4790c6cd0c98a3a408f596fd98bd329a4aa6b1a9",
+          "blank": 0,
+          "comment": 0,
+          "code": 2,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/mmio16.c",
+          "physical_newlines": 2,
+          "sha256": "66744e051304d4ddeb5aec59a584a95fcaf5b2cd65a246f942462f4e35b9ef2f",
+          "blank": 0,
+          "comment": 0,
+          "code": 2,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/nested.c",
+          "physical_newlines": 3,
+          "sha256": "1d7e59d70c38e71b4118da6783da88ae2a36b64706f8d6db1094c53293d78e7f",
+          "blank": 0,
+          "comment": 0,
+          "code": 3,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/normal.c",
+          "physical_newlines": 3,
+          "sha256": "a76786849240b4af5ea95fe7526661ba4123d737286332b751b30b1c0fcc474d",
+          "blank": 0,
+          "comment": 0,
+          "code": 3,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/panic.c",
+          "physical_newlines": 2,
+          "sha256": "ef5283565ddcaeed0a6156c1f922a59e54d03374badc38bb72aaec0ac14eea09",
+          "blank": 0,
+          "comment": 0,
+          "code": 2,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/registers.S",
+          "physical_newlines": 134,
+          "sha256": "1dd7abb09db90f6750ad5a3529b28def8f164cc762f8fc8bb15fdd64651aa3a7",
+          "blank": 0,
+          "comment": 0,
+          "code": 134,
+          "language": "Assembly"
+        },
+        {
+          "path": "tests/runtime/registers.c",
+          "physical_newlines": 6,
+          "sha256": "81bd38f300e58962cd91745839bffd9d11ada690b560dced21e5fdd96846e6ea",
+          "blank": 0,
+          "comment": 0,
+          "code": 6,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/timeout.c",
+          "physical_newlines": 1,
+          "sha256": "f7776af6401afedd763fcb13d75003febaca318b62b6de1fa91cdad3af69aa37",
+          "blank": 0,
+          "comment": 0,
+          "code": 1,
+          "language": "C"
+        },
+        {
+          "path": "tests/runtime/trap.c",
+          "physical_newlines": 5,
+          "sha256": "11e75f87c53b5d452977cd78236ceed33517a47ae4f567a30df32a43a601c4ff",
+          "blank": 0,
+          "comment": 0,
+          "code": 5,
+          "language": "C"
+        },
+        {
+          "path": "tests/syntax.rs",
+          "physical_newlines": 129,
+          "sha256": "493ceca0f2b834bf884d92b88ecade201f8a4e59db5ad56d73975d68825da679",
+          "blank": 1,
+          "comment": 0,
+          "code": 128,
+          "language": "Rust"
+        }
+      ]
+    }
+  },
+  "validation": {
+    "baseline_tests_passed": 23,
+    "core_s_checker_tests_passed": 6,
+    "core_s_library_all_features_check": "passed",
+    "full_acceptance_rerun": false
+  }
+}

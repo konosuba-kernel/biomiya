@@ -1,0 +1,30 @@
+import ast,pathlib,subprocess,json,tempfile
+R=pathlib.Path('/home/mii/code/konOSuba/biomiya');C=R/'core-s'
+s=(R/'docs/workflows/bootstrap-b3/probes/f_semantics.py').read_text();tree=ast.parse(s);env={}
+for n in tree.body:
+ if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='CASES' for t in n.targets):exec(compile(ast.Module(body=[n],type_ignores=[]),'cases','exec'),env)
+results=[]
+with tempfile.TemporaryDirectory(prefix='b3-i-cli-') as tmp:
+ root=pathlib.Path(tmp)
+ for name,source,expected in env['CASES']:
+  row={'case':name,'expected':expected,'generations':[]};d=root/name;d.mkdir();(d/'in.vt').write_text(source)
+  for gen in ['c1','c2','c3']:
+   (d/'p.build').write_text(f'format 1\nprofile linux-user\nentry run\nsource in.vt\noutput {gen}.elf\n')
+   p=subprocess.run(['/usr/bin/qemu-riscv64','-s','1048576',str(C/f'build/{gen}.elf'),'build','p.build'],cwd=d,capture_output=True,timeout=30,env={'PATH':''})
+   rec={'generation':gen,'compile_exit':p.returncode,'stderr':p.stderr.decode()}
+   if p.returncode==0:rec['program_exit']=subprocess.run(['/usr/bin/qemu-riscv64',str(d/f'{gen}.elf')],timeout=10).returncode
+   rec['passed']=rec.get('program_exit')==expected if isinstance(expected,int) else (p.returncode==1 and expected in rec['stderr'] and not(d/f'{gen}.elf').exists())
+   row['generations'].append(rec)
+  results.append(row)
+ # CLI root-qualified entry regression, compare exact same manifest
+ d=root/'root_entry';d.mkdir();(d/'in.vt').write_text('fn run()->u32{return 37;}')
+ row={'case':'root_qualified_entry','generations':[]}
+ for gen in ['c0','c1','c2','c3']:
+  (d/'p.build').write_text(f'format 1\nprofile linux-user\nentry root::run\nsource in.vt\noutput {gen}.elf\n')
+  args=[str(C/'target/debug/core-s'),'project','p.build'] if gen=='c0' else ['/usr/bin/qemu-riscv64','-s','1048576',str(C/f'build/{gen}.elf'),'build','p.build']
+  p=subprocess.run(args,cwd=d,capture_output=True,timeout=30,env={'PATH':''});rec={'generation':gen,'compile_exit':p.returncode,'stderr':p.stderr.decode()}
+  if p.returncode==0:rec['program_exit']=subprocess.run(['/usr/bin/qemu-riscv64',str(d/f'{gen}.elf')]).returncode
+  row['generations'].append(rec)
+ results.append(row)
+pathlib.Path('/tmp/b3-i-cli-review.json').write_text(json.dumps(results,indent=2)+'\n')
+print(json.dumps([{'case':r['case'],'results':[{'gen':g['generation'],'compile':g['compile_exit'],'run':g.get('program_exit'),'passed':g.get('passed')} for g in r['generations']]}for r in results],indent=2))

@@ -1,0 +1,39 @@
+{
+  "node": "B",
+  "candidate_revision": 1,
+  "reviewer_agent_id": "/root/acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "dependency_revisions": {
+    "H": 2
+  },
+  "file_hashes_verified": {
+    "core-s/src/backend.rs": "7e775379a3dd798281933f622bf14c6fbeed1bcba18da23ca168d0eda1dcce02",
+    "core-s/tests/backend.rs": "1a7003139db103ce35549e5cce7e5370766cda464d60f87dfec8e75afdc7fe44"
+  },
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features backend --test backend",
+      "exit_code": 0,
+      "result": "12 tests passed; none ignored"
+    },
+    {
+      "command": "cargo run --quiet --manifest-path /tmp/core-s-independent-review-788cvdot/Cargo.toml",
+      "exit_code": 0,
+      "result": "20,000 deterministic Li bit patterns independently decoded/executed with non-destination register preservation; 26 PC-relative low-12 carry/backward/high-base address checks; six typed-CFG-to-direct-ELF QEMU cases for unsigned div/rem/wrapping arithmetic/shifts",
+      "probe_source": "/tmp/core-s-independent-review-788cvdot/src/main.rs",
+      "probe_sha256": "f74ea5d4ed1e9fea1b1c8d17609c76fcb78b7ecd54894719433663d3eb42aeb2"
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Independent probe is a temporary local artifact, identified by path and SHA-256; product sources/tests were not modified.",
+    "Real .vt source, CLI atomic publication and complete assembled product remain I acceptance scope."
+  ],
+  "inspection": [
+    "machine lowers typed CFG directly; emit delegates to assembly(machine(...)); renderer does not parse assembly or invoke subprocesses.",
+    "t6 appears as immediate address/prologue/control scratch, with no backend live value carried across jumps or calls. t0..t5 remain intact across control expansion.",
+    "LP64 narrow extension, hidden aggregate result, independent aggregate parameters, frame save/restore, memmove copy loops and extra argument positions reviewed and executed by regressions.",
+    "Renderer generated local labels reserve all input labels/references, preserving relocation collision avoidance."
+  ]
+}

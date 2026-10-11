@@ -1,0 +1,51 @@
+{
+  "node": "M",
+  "candidate_revision": 3,
+  "supersedes": "M-r2",
+  "input_revisions": {
+    "H": 3
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/rv64.vt": "4fcc5bea0bc960f2e91b25d695c18338341ef02d5cefb5e2ee18a54d5769895f",
+    "core-s/bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+    "core-s/bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+    "core-s/bootstrap/tests/machine.vt": "18f37dece32a7511ac6edea7ce1bf7b05a790e885f3195e599d0c1d1fa7c6172",
+    "core-s/tests/b3_machine.rs": "acf31a105bce1ea80c2e9e7d542190fa0feeeb63fbf1503a9502a456ef8ae9bd"
+  },
+  "dependency_hashes_revalidated": {
+    "docs/design/bootstrap-b3.md": "f284c2b2af6f41d4f639006d0d6678aa730a9e06e2e583012afcd6eb63794896",
+    "core-s/bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+    "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+    "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+  },
+  "commands": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_machine",
+      "exit_code": 0,
+      "result": "All six groups pass independently. Positive aggregate-to-field OFFSET now participates in an actual target program returning 97. Both permission-change directions are rejected; prior ABI/ELF/clang-lld comparisons and errors remain intact."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/m_machine.py 3 > docs/workflows/bootstrap-b3/M-r3-independent-probes.json",
+      "exit_code": 0,
+      "result": "Eight independent target modes pass: prior three malformed cases rejected; mixed value cycle rejected; deep 8000-type valid chain accepted; legal differing-pointee OFFSET accepted and emitted program executes; normal wrap/aggregate controls match."
+    }
+  ],
+  "resolved_findings": [
+    "M1-first-block-contract: first instruction must be LABEL 1.",
+    "M1-recursive-value-layout: explicit bounded DFS rejects value cycles while permitting pointer/slice recursion.",
+    "M2-offset-projection: OFFSET permits typed internal layout projection and requires two pointers, usize offset, and exact permission preservation."
+  ],
+  "verified_contracts": [
+    "No source typing was reintroduced in M; source-level arbitrary pointer-cast legality remains F responsibility.",
+    "Direct machine/ELF construction, static initialized/BSS/ABS64 data, fixed far transfers and .s0 parsing work in the target language without production host tool calls.",
+    "All current M candidate hashes and H3 inputs match independently verified versions."
+  ],
+  "findings": [],
+  "limitations": [
+    "Component acceptance does not prove C1→C2→C3; final F/M/L integration, source mutation, differential behavior and full resource/scale accounting remain I obligations.",
+    "M additional DFS state 73737 bytes must remain in final memory accounting."
+  ]
+}

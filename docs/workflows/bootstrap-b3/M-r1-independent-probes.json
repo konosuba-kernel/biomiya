@@ -1,0 +1,40 @@
+{
+  "revision": "1",
+  "results": [
+    {
+      "mode": "nolabel",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 101
+    },
+    {
+      "mode": "labeltwo",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 101
+    },
+    {
+      "mode": "valuetypecycle",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 101
+    },
+    {
+      "mode": "wrap",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 0
+    },
+    {
+      "mode": "ir",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 97
+    }
+  ]
+}

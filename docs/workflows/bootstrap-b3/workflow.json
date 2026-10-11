@@ -1,0 +1,177 @@
+{
+  "scope": "B3 actual compiler self-compilation, Linux-user",
+  "status": "complete",
+  "nodes": [
+    {
+      "id": "H",
+      "dependencies": [],
+      "input_revisions": {},
+      "write_scope": [
+        "docs/design/bootstrap-b3.md",
+        "core-s/bootstrap/model.vt",
+        "core-s/bootstrap/tests/model.vt",
+        "core-s/bootstrap/tests/model.build"
+      ],
+      "implementers": [
+        "/root/b3_frontend",
+        "/root"
+      ],
+      "contributors": [
+        "/root/b3_frontend",
+        "/root",
+        "/root/b3_machine"
+      ],
+      "reviewers": [
+        "/root/b3_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 3,
+      "acceptance": "bootstrap-v1 B3 and frozen bootstrap-b3 node contract; independent acceptance mandatory",
+      "reviews": [
+        "H-r1-review.json",
+        "H-r2-review.json",
+        "H-r3-review.json"
+      ]
+    },
+    {
+      "id": "L",
+      "dependencies": [
+        "H"
+      ],
+      "input_revisions": {
+        "H": 3
+      },
+      "write_scope": [
+        "core-s/bootstrap/lex.vt",
+        "core-s/bootstrap/input.vt",
+        "core-s/tests/b3_input.rs"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b3_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 2,
+      "acceptance": "bootstrap-v1 B3 and frozen bootstrap-b3 node contract; independent acceptance mandatory",
+      "reviews": [
+        "L-r1-review.json",
+        "L-r2-review.json"
+      ]
+    },
+    {
+      "id": "F",
+      "dependencies": [
+        "H",
+        "L"
+      ],
+      "input_revisions": {
+        "H": 3,
+        "L": 2
+      },
+      "write_scope": [
+        "core-s/bootstrap/parse.vt",
+        "core-s/bootstrap/types.vt",
+        "core-s/bootstrap/check.vt",
+        "core-s/bootstrap/ir.vt",
+        "core-s/tests/b3_frontend.rs"
+      ],
+      "implementers": [
+        "/root/b3_frontend",
+        "/root"
+      ],
+      "contributors": [
+        "/root/b3_frontend",
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b3_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 3,
+      "acceptance": "bootstrap-v1 B3 and frozen bootstrap-b3 node contract; independent acceptance mandatory",
+      "reviews": [
+        "F-r1-review.json",
+        "F-r2-review.json",
+        "F-r2-integration-followup.json",
+        "F-r3-review.json"
+      ]
+    },
+    {
+      "id": "M",
+      "dependencies": [
+        "H"
+      ],
+      "input_revisions": {
+        "H": 3
+      },
+      "write_scope": [
+        "core-s/bootstrap/rv64.vt",
+        "core-s/bootstrap/image.vt",
+        "core-s/bootstrap/s0.vt",
+        "core-s/tests/b3_machine.rs",
+        "core-s/bootstrap/tests/machine.vt"
+      ],
+      "implementers": [
+        "/root/b3_machine"
+      ],
+      "contributors": [
+        "/root/b3_machine"
+      ],
+      "reviewers": [
+        "/root/b3_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 3,
+      "acceptance": "bootstrap-v1 B3 and frozen bootstrap-b3 node contract; independent acceptance mandatory",
+      "reviews": [
+        "M-r1-review.json",
+        "M-r2-review.json",
+        "M-r3-review.json"
+      ]
+    },
+    {
+      "id": "I",
+      "dependencies": [
+        "L",
+        "F",
+        "M"
+      ],
+      "input_revisions": {
+        "H": 3,
+        "L": 2,
+        "F": 3,
+        "M": 3
+      },
+      "write_scope": [
+        "core-s/bootstrap/main.vt",
+        "core-s/bootstrap/*.build",
+        "core-s/tests/b3.rs",
+        "core-s/README.md",
+        "docs/workflows/bootstrap-b3/"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b3_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 2,
+      "acceptance": "bootstrap-v1 B3 and frozen bootstrap-b3 node contract; independent acceptance mandatory",
+      "reviews": [
+        "I-r1-review.json",
+        "I-r2-review.json"
+      ],
+      "candidate": "I-r2-candidate.json"
+    }
+  ],
+  "exploration": "All required latest candidates independently accepted: H3/L2/F3/M3/I2. Final integration includes current three-generation byte fixed point, 81 full regressions, source-only clean rebuild, behavior/mutation/isolation checks and explicit limits."
+}

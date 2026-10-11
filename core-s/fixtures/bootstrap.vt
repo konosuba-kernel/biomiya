@@ -1,0 +1,98 @@
+// Core S pilot syntax, not the proposed R1a syntax.
+struct Pair { left:u32, right:u32 }
+struct Header { bytes:[COUNT]u8 }
+const COUNT:usize = 4;
+
+fn arithmetic() -> u32 {
+    let x:u32 = 6;
+    if x * 7_u32 == 42_u32 { return 42; }
+    return 1;
+}
+fn ten(a:u32,b:u32,c:u32,d:u32,e:u32,f:u32,g:u32,h:u32,i:u32,j:u32) -> u32 {
+    return a+b+c+d+e+f+g+h+i+j;
+}
+fn stack_arguments() -> u32 { return ten(1,2,3,4,5,6,7,8,9,10); }
+unsafe fn mutate(p:*kernel Pair) -> u32 {
+    unsafe { (*p).left = 99; }
+    return 2;
+}
+fn take(p:Pair, other:u32) -> u32 { return p.left + other; }
+fn aggregate_snapshot() -> u32 {
+    var pair:Pair = Pair { left:40, right:0 };
+    var result:u32 = 0;
+    unsafe { result = take(pair, mutate(addr_of_mut(pair))); }
+    if pair.left == 99_u32 { return result; }
+    return 1;
+}
+fn make_pair() -> Pair { return Pair { left:20, right:22 }; }
+fn aggregate_result() -> u32 {
+    let pair:Pair = make_pair();
+    return pair.left + pair.right;
+}
+fn saved_return(log:*kernel u32) -> u32 {
+    var n:u32 = 42;
+    defer { n = 0; unsafe { *log = *log + 1; } }
+    return n;
+}
+fn return_cleanup() -> u32 {
+    var log:u32 = 0;
+    let n:u32 = saved_return(addr_of_mut(log));
+    return n + log;
+}
+fn cleanup_order() -> u32 {
+    var log:u32 = 0;
+    { defer { log = log * 10 + 1; } defer { log = log * 10 + 2; } }
+    return log;
+}
+fn loop_cleanup() -> u32 {
+    var i:u32 = 0;
+    var log:u32 = 0;
+    while i < 4_u32 {
+        i = i + 1;
+        defer { log = log + 1; }
+        if i == 2_u32 { continue; }
+        if i == 3_u32 { break; }
+    }
+    return log;
+}
+fn fail() -> Result<u32,u32> { return Result::<u32,u32>::Err(23); }
+fn forward(log:*kernel u32) -> Result<u32,u32> {
+    defer { unsafe { *log = *log + 1; } }
+    let value:u32 = fail()?;
+    return Result::<u32,u32>::Ok(value);
+}
+fn result_cleanup() -> u32 {
+    var log:u32 = 0;
+    let value:Result<u32,u32> = forward(addr_of_mut(log));
+    match value {
+        Result::<u32,u32>::Ok(n:u32) => { return n; },
+        Result::<u32,u32>::Err(e:u32) => { return e + log; },
+    }
+}
+fn fib(n:u32) -> u32 {
+    if n < 2_u32 { return n; }
+    return fib(n-1) + fib(n-2);
+}
+fn recursion() -> u32 { return fib(6); }
+fn layout_and_array() -> u32 {
+    let header:Header = Header { bytes:[7;COUNT] };
+    return header.bytes[0] as u32 + sizeof(Header) as u32;
+}
+fn wide_constant() -> u32 {
+    let n:usize = 0x8000000000000800;
+    return (n >> 63_usize) as u32 + 41;
+}
+fn unsigned_abi(n:u32) -> u32 { if n > 0x7fffffff_u32 { return 42; } return 1; }
+fn narrow_abi() -> u32 { return unsigned_abi(0xffffffff); }
+fn wrapping() -> u32 { let n:u8 = 255; return (n +% 2_u8) as u32; }
+fn short_circuit() -> u32 {
+    let zero:u32 = 0;
+    if false && zero / zero == 0_u32 { return 1; }
+    if true || zero / zero == 0_u32 { return 42; }
+    return 2;
+}
+fn zero_array() -> u32 { let a:[0]u8 = [7;0]; return a.len as u32; }
+fn overflow() -> u32 { let n:u8 = 255; return (n + 1_u8) as u32; }
+fn divide_zero() -> u32 { let n:u32 = 0; return n / n; }
+fn bounds() -> u32 { let a:[2]u32 = [1,2]; let i:usize = 2; return a[i]; }
+fn shift_bounds() -> u32 { let n:u8 = 1; return (n << 8_u8) as u32; }

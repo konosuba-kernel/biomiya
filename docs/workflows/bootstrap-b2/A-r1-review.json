@@ -1,0 +1,39 @@
+{
+  "node": "A",
+  "candidate_revision": 1,
+  "input_revisions": {
+    "H": 1
+  },
+  "reviewer_agent_id": "/root/b2_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/src/project.rs": "38126095d58cab5e8ee61f2f7c0974707fd323a64afd6b72b0a9e983a5e60a14"
+  },
+  "commands": [
+    {
+      "command": "rustc --edition 2024 --test docs/workflows/bootstrap-b2/probes/a_manifest.rs -o /tmp/konosuba-b2-a-review && /tmp/konosuba-b2-a-review",
+      "exit_code": 0,
+      "result": "6 tests passed: 4 implementation tests plus 2 independently authored cross-product/boundary probes."
+    },
+    {
+      "command": "Python SHA-256 comparison of A candidate",
+      "exit_code": 0,
+      "result": "Frozen project.rs hash matches."
+    }
+  ],
+  "findings": [],
+  "verified_contracts": [
+    "Preserves source and assembly ordering, root-qualified entry text and UTF-8 path bytes.",
+    "Enforces exactly one required metadata directive, one argument per directive, at least one source and duplicate-input exclusion across source/assembly.",
+    "Enforces manifest 16384-byte, source 32, assembly 8 and path 96-byte inclusive limits.",
+    "Rejects absolute/dot/parent/empty component/backslash/control/whitespace paths across all path-bearing directives.",
+    "Errors identify directive line; unsupported profiles explicitly contain I_UNSUPPORTED."
+  ],
+  "probe_notes": [
+    "Initial independent test expected duplicate on line 7 but input has five lines: corrected test expectation to line 6, with no product edits."
+  ],
+  "limitations": [
+    "Parser acceptance only: filesystem root resolution, symlink/inode aliases, atomic publication and entry type/name validation belong to I."
+  ]
+}

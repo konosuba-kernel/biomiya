@@ -1,0 +1,7 @@
+format 1
+profile linux-user
+entry bootstrap::probe::start
+source bootstrap/model.vt
+source bootstrap/tests/model.vt
+assembly runtime/linux.s0
+output target/b3-h-probe.elf

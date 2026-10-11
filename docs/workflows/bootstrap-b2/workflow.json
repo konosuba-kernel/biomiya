@@ -1,0 +1,203 @@
+{
+  "scope": "B2",
+  "nodes": [
+    {
+      "id": "H",
+      "dependencies": [],
+      "input_revisions": {},
+      "write_scope": [
+        "docs/design/bootstrap-b2.md",
+        "core-s/src/lib.rs"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b2_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "acceptance": "docs/design/bootstrap-b2.md node contract; mandatory final matrix applies",
+      "reviews": [
+        "H-r1-review.json"
+      ]
+    },
+    {
+      "id": "F",
+      "dependencies": [
+        "H"
+      ],
+      "input_revisions": {
+        "H": 1
+      },
+      "write_scope": [
+        "core-s/src/ast.rs",
+        "core-s/src/model.rs",
+        "core-s/src/frontend.rs",
+        "core-s/src/check.rs",
+        "core-s/src/modules.rs",
+        "core-s/tests/check.rs",
+        "core-s/tests/pipeline.rs",
+        "core-s/tests/b2_language.rs"
+      ],
+      "implementers": [
+        "/root/b2_language"
+      ],
+      "contributors": [
+        "/root/b2_language"
+      ],
+      "reviewers": [
+        "/root/b2_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "acceptance": "docs/design/bootstrap-b2.md node contract; mandatory final matrix applies",
+      "reviews": [
+        "F-r1-review.json"
+      ]
+    },
+    {
+      "id": "M",
+      "dependencies": [
+        "H"
+      ],
+      "input_revisions": {
+        "H": 1
+      },
+      "write_scope": [
+        "core-s/src/machine.rs",
+        "core-s/src/backend.rs",
+        "core-s/src/encode.rs",
+        "core-s/src/image.rs",
+        "core-s/src/s0.rs",
+        "core-s/tests/backend.rs",
+        "core-s/tests/image.rs",
+        "core-s/tests/s0.rs"
+      ],
+      "implementers": [
+        "/root/b2_machine"
+      ],
+      "contributors": [
+        "/root/b2_machine"
+      ],
+      "reviewers": [
+        "/root/b2_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "acceptance": "docs/design/bootstrap-b2.md node contract; mandatory final matrix applies",
+      "reviews": [
+        "M-r1-review.json"
+      ]
+    },
+    {
+      "id": "A",
+      "dependencies": [
+        "H"
+      ],
+      "input_revisions": {
+        "H": 1
+      },
+      "write_scope": [
+        "core-s/src/project.rs"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b2_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "acceptance": "docs/design/bootstrap-b2.md node contract; mandatory final matrix applies",
+      "reviews": [
+        "A-r1-review.json"
+      ]
+    },
+    {
+      "id": "R",
+      "dependencies": [
+        "F",
+        "M",
+        "A"
+      ],
+      "input_revisions": {
+        "F": 1,
+        "M": 1,
+        "A": 1
+      },
+      "write_scope": [
+        "core-s/runtime/",
+        "core-s/compiler/",
+        "core-s/app/",
+        "core-s/tests/b2_runtime.rs"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b2_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "acceptance": "docs/design/bootstrap-b2.md node contract; mandatory final matrix applies",
+      "reviews": [
+        "R-r1-review.json"
+      ]
+    },
+    {
+      "id": "I",
+      "dependencies": [
+        "F",
+        "M",
+        "A",
+        "R"
+      ],
+      "input_revisions": {
+        "F": 1,
+        "M": 1,
+        "A": 1,
+        "R": 1
+      },
+      "write_scope": [
+        "core-s/src/lib.rs",
+        "core-s/src/pipeline.rs",
+        "core-s/src/main.rs",
+        "core-s/tests/b2.rs",
+        "core-s/tests/cli.rs",
+        "core-s/README.md",
+        "core-s/.gitignore",
+        "docs/workflows/bootstrap-b2/measure.py",
+        "docs/workflows/bootstrap-b2/metrics-r1.json",
+        "docs/workflows/bootstrap-b2/clean_build.py"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b2_acceptance"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "acceptance": "docs/design/bootstrap-b2.md node contract; mandatory final matrix applies",
+      "reviews": [
+        "I-r1-review.json"
+      ]
+    }
+  ],
+  "status": "accepted",
+  "completed_scope": "B2: real target-language manifest/source scanning and IO, project seed CLI. Not B3 self-compilation.",
+  "final_evidence": "I-r1-review.json"
+}

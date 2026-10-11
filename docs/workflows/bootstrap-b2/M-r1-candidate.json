@@ -1,0 +1,47 @@
+{
+  "node": "M",
+  "revision": 1,
+  "implementer": "/root/b2_machine",
+  "input_revisions": {
+    "H": 1
+  },
+  "files": {
+    "core-s/src/machine.rs": "2e0b7c588091e703d65b83bda8c7b12c93075dd656f06e2f3064cca866e54395",
+    "core-s/src/backend.rs": "eccf7b3d4e7241ed1442cd4ca554f8cd55d7c2f96cf654c61ab549f9e676bea9",
+    "core-s/src/encode.rs": "e07e4ec9ee72482e7aee01eda5c60fdae4d69c2af85e9295b82166533f958888",
+    "core-s/src/image.rs": "425e76681c53a5f2bbc6c908fc41b1539930a5623b96e6dba527dcaf40540460",
+    "core-s/src/s0.rs": "0d391b3f73431fc4ecb13c16c69bff8cb437cdcffdfab167af3c55b606d8fdf1",
+    "core-s/tests/backend.rs": "b2c936c3bf16fcc0e0a9c9da0b425c2648c051b654b64e07353708b85ed6613a",
+    "core-s/tests/image.rs": "3a40e069d6849ece1abf4f5a239566b197545af2e5e65454c2fe53ffa23ff455",
+    "core-s/tests/s0.rs": "93738cfb9bbb83672c7e5881ef10fa1ee65a5f9563bcda67898b158ddd4fb452"
+  },
+  "evidence": [
+    "docs/workflows/bootstrap-b2/M-r1-validation.txt"
+  ],
+  "validation": {
+    "backend": 14,
+    "image": 8,
+    "s0": 2,
+    "reference_tools": [
+      "clang",
+      "ld.lld",
+      "qemu-riscv64",
+      "qemu-system-riscv64"
+    ]
+  },
+  "changes": [
+    "typed data objects and static ELF RO/RW/BSS + ABS64",
+    "external scalar C calls; slice layout; pointer bitcast/symbol address/dynamic bounds",
+    "bounded s0 parser, local labels per FileId, exact source spans",
+    "assembly renderer data sections and relocation equivalence"
+  ],
+  "limitations": [
+    "image is a static 64 MiB bounded Linux-user prototype, no object linker or relocatable output",
+    "unused extern resolution is the R/I combiner responsibility using Compilation.externs; every called symbol is already checked by encoding",
+    "s0 deliberately only frozen grammar, no CSR/A or directives"
+  ],
+  "old_test_changes": [
+    "Add empty data and externs fields to typed constructors",
+    "M-mode reference test linker now explicitly places rodata/data after text to keep reset entry at 0x80000000; preserves old expected outcomes"
+  ]
+}

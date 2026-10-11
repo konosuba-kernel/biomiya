@@ -1,0 +1,15 @@
+{
+  "node": "A",
+  "revision": 1,
+  "implementer": "/root",
+  "input_revisions": {
+    "H": 1
+  },
+  "files": {
+    "core-s/src/project.rs": "38126095d58cab5e8ee61f2f7c0974707fd323a64afd6b72b0a9e983a5e60a14"
+  },
+  "verification": [
+    "rustc --edition 2024 --test core-s/src/project.rs -o /tmp/konosuba-b2-project-test",
+    "/tmp/konosuba-b2-project-test: 4 tests passed"
+  ]
+}

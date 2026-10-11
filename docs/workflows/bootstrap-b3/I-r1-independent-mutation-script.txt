@@ -1,0 +1,18 @@
+import pathlib,subprocess,tempfile,json,hashlib,re
+R=pathlib.Path('/home/mii/code/konOSuba/biomiya');C=R/'core-s';q='/usr/bin/qemu-riscv64'
+with tempfile.TemporaryDirectory(prefix='b3-i-mutation-') as tmp:
+ d=pathlib.Path(tmp);manifest=(C/'bootstrap/c3.build').read_text();paths=[l.split()[1] for l in manifest.splitlines() if l.startswith(('source ','assembly '))]
+ for p in paths:
+  f=d/p;f.parent.mkdir(exist_ok=True,parents=True);f.write_bytes((C/p).read_bytes())
+ f=d/'bootstrap/rv64.vt';s=f.read_text();assert s.count('constant(10,101);')==1;f.write_text(s.replace('constant(10,101);','constant(10,103);'))
+ (d/'self.build').write_text(re.sub(r'output .*','output mutant.elf',manifest));(d/'compiler.elf').write_bytes((C/'build/c2.elf').read_bytes());(d/'compiler.elf').chmod(0o755)
+ p=subprocess.run([q,'-s','1048576','-strace','compiler.elf','build','self.build'],cwd=d,env={'PATH':''},capture_output=True,timeout=120)
+ trace=p.stderr.decode();assert p.returncode==0,(p.returncode,trace[-3000:]);assert 'execve(' not in trace;opened=re.findall(r'openat\([^,]+,"([^"]+)"',trace);assert opened and set(opened)<=set(paths+['self.build','mutant.elf']),(opened,trace)
+ cases=[]
+ for name,src,expected in [('overflow','fn run()->u32{let n:u8=255;return (n+1_u8) as u32;}',103),('ordinary','fn run()->u32{var n:u32=3;while n<8_u32{n=n+1_u32;}return n*7_u32;}',56)]:
+  (d/'in.vt').write_text(src);(d/'p.build').write_text(f'format 1\nprofile linux-user\nentry run\nsource in.vt\noutput {name}.elf\n')
+  p=subprocess.run([q,'-s','1048576','mutant.elf','build','p.build'],cwd=d,env={'PATH':''},capture_output=True,timeout=30);assert p.returncode==0,p.stderr
+  status=subprocess.run([q,str(d/f'{name}.elf')],timeout=10).returncode;assert status==expected,(name,status)
+  cases.append({'name':name,'expected':expected,'exit':status})
+ out={'mutation':'bootstrap/rv64.vt: constant(10,101); -> constant(10,103);','parent_generation':'C2','mutant_sha256':hashlib.sha256((d/'mutant.elf').read_bytes()).hexdigest(),'opened':opened,'no_guest_execve':True,'no_self_image_read':True,'cases':cases,'trace':trace}
+ pathlib.Path('/tmp/b3-i-mutation-review.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({k:v for k,v in out.items() if k!='trace'},indent=2))

@@ -1,0 +1,15 @@
+module bootstrap::probe;
+import bootstrap::model;
+pub fn start() -> u32 {
+    model::reset_all();
+    let n:u32 = model::name("name");
+    let n2:u32 = model::name("name");
+    if n != n2 { return 1; }
+    let s:u32 = model::symbol(n,0);
+    if model::symbol(n,1) != s { return 2; }
+    unsafe {
+        if model::types[5].size != 8_usize { return 3; }
+        if model::symbols[s as usize].kind != 1_u32 { return 4; }
+    }
+    return 0;
+}

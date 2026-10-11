@@ -1,0 +1,84 @@
+{
+  "node": "F",
+  "revision": 3,
+  "implementer": "/root/b3_frontend",
+  "contributors": [
+    "/root/b3_frontend",
+    "/root"
+  ],
+  "input_revisions": {
+    "H": 3,
+    "L": 2
+  },
+  "files": {
+    "core-s/bootstrap/types.vt": "27b3441af70d482e69114c9b98e446b05d37e4dd258d35532470af73d7131cc3",
+    "core-s/bootstrap/parse.vt": "14855b13c5b0f4c1e97860f4fa864adc8407fe931fdb8c8b2a2b9a544388544d",
+    "core-s/bootstrap/check.vt": "1e0d3d24e1d30599ad3788e38190d62f16f8cd3192d2aeb3fd4caf5a25c9a007",
+    "core-s/bootstrap/ir.vt": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "core-s/tests/b3_frontend.rs": "83e1e6aab92433d92ce57102feff1f7bde8a07c2bf4c5781e6d8f8d478d5e95e"
+  },
+  "evidence": [
+    "All seven permanent frontend test groups passed on F3 in 10.44s; root record F-r3-tests.txt. The static fixture now requires all 8193 repeated Name string relocations to share one target, and zero-count invalid string/address initializers are rejected.",
+    "C0 built F3 and fifteen adversarial RV64 source cases passed expected diagnostics under a 1 MiB guest stack.",
+    "Additional author zero-count probes: bad string/bad const-loss address rejected E_TYPE; valid zero-count string and nested repeated structure accepted.",
+    "Actual emitted-program pointer identity and current full self-compilation remain downstream I acceptance; the F3 candidate does not claim these are yet independently accepted."
+  ],
+  "features": [
+    "declaration registration and module/name visibility",
+    "concrete layouts/constants and bounded typed source AST",
+    "static initialized data/ABS64 and direct all-zero BSS path",
+    "slot-based IR with explicit typed memory projections",
+    "aggregate source-order argument and return snapshots",
+    "RHS-before-LHS assignment using captured typed address IR",
+    "single formal checking of defer bodies and cloned typed fragments",
+    "Result constructors/match/?; loops/branch/cleanup; pointers/slices and unsafe checks",
+    "Static array repetition snapshots complete element bytes and relocation identity exactly once, including nested aggregates"
+  ],
+  "capacities": {
+    "ast_nodes": 32768,
+    "saved_ir_instructions": 65536,
+    "bindings": 8192,
+    "defer_fragments": 1024,
+    "loops": 256,
+    "source_struct_fields": 256,
+    "prepare_depth": 32,
+    "type_depth": 64,
+    "constant_depth": 64,
+    "expression_depth": 64,
+    "parse_block_depth": 48,
+    "place_depth": 64,
+    "parse_statement_depth": 64,
+    "constant_static_walk_depth": 64,
+    "array_count": 4294967295,
+    "array_bytes": 67108864
+  },
+  "new_metrics": [
+    "check::max_bindings",
+    "check::max_defers",
+    "check::max_loops",
+    "ir::max_saved",
+    "model::max_ast",
+    "model::max_ir"
+  ],
+  "scope": "Frontend only; actual Linux self-compilation and behavior differential are I acceptance, not yet proven by this F candidate.",
+  "limits": [
+    "Core S/B2 primary subset; unsupported modern language forms explicitly I_UNSUPPORTED",
+    "No lowering optimization; fixed arenas and max-frame limit belongs mechanical backend",
+    "Source contains compact multi-statement lines; physical LOC alone must not be presented as a semantic complexity comparison."
+  ],
+  "supersedes_revision": 2,
+  "repairs": {
+    "F1-mutable-static-array-len": "Call access(base) before generating array length constant; mutable static and nested fields retain unsafe access requirement.",
+    "F1-array-count-capacity-category": "Separate integer type validation from u32 representation limit for type array counts and repeat counts; oversized integers report I_LIMIT with source position.",
+    "F1-unbounded-place-recursion": "Make is_place iterative; bound place depth at 64; additionally bound statement nesting and constant/static AST walks at 64, including else-if and left-associative constant chains.",
+    "F1-capacity-diagnostic-overflow": "Report rejected array counts without multiplication. All struct/Result size additions and alignment padding use overflow-checked size_add and report I_LIMIT before overflowing.",
+    "F2-static-repeat-snapshot": "Serialize the first repeat element once. Copy its entire byte representation and its relocation snapshot into later elements, preserving target symbols and addends while translating destination offsets; nested repeats compose. Ordinary array literals still serialize each expression independently. No global string-content interning is introduced.",
+    "F2-zero-repeat-initializer-check": "The recursive zero/validation pass validates string types and static address expressions before output allocation, including when array repeat count is zero. Static address checking is shared with serialization."
+  },
+  "diagnostic_units": {
+    "array_count_representation": "actual and limit are element counts, limit 4294967295.",
+    "array_size_capacity": "actual is requested element count, limit is floor(67108864 / element_size); no rejected product is evaluated.",
+    "aggregate_size_addition_or_alignment": "actual is requested additional bytes; limit is remaining representable usize bytes (usize::MAX - current_size). No new structure-size hard cap.",
+    "recursive_walks": "actual and limit count active calls in the named recursive walk; AST walkers share the constant/static walk counter."
+  }
+}

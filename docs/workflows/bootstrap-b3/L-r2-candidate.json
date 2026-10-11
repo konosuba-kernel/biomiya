@@ -1,0 +1,24 @@
+{
+  "node": "L",
+  "revision": 2,
+  "implementer": "/root",
+  "contributors": [
+    "/root"
+  ],
+  "input_revisions": {
+    "H": 3
+  },
+  "files": {
+    "core-s/bootstrap/lex.vt": "31915fb257899b833105706e42f2f2861b556cc8ef93c91b865d9b7b9062ac8c",
+    "core-s/bootstrap/input.vt": "78d23f79da810377f784b9e964031fbcf4465ec0f1dbd54d0a6f68810b2e380b",
+    "core-s/tests/b3_input.rs": "9487d019afb25333dad565946e16764f8ef4fc33882f1d8c32bee32c51c03a26"
+  },
+  "evidence": [
+    "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_input: 4 passed; L-r2-tests.txt"
+  ],
+  "scope": "Real manifest loading and immutable source/assembly snapshots, stateless lexing, UTF-8 validation, bounded buffers, exclusive executable output with short-I/O handling; no parser/backend claim.",
+  "supersedes": "L-r1",
+  "changes": [
+    "Capacity failures report observed required capacity lower bound, capacity and original FileId/byte position through H3 limit_at."
+  ]
+}

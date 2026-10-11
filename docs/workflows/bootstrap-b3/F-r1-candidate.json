@@ -1,0 +1,63 @@
+{
+  "node": "F",
+  "revision": 1,
+  "implementer": "/root/b3_frontend",
+  "contributors": [
+    "/root/b3_frontend",
+    "/root"
+  ],
+  "input_revisions": {
+    "H": 3,
+    "L": 2
+  },
+  "files": {
+    "core-s/bootstrap/types.vt": "9d841759c1f31db14bf2ed401fcebbffd5ac7c60a9731e5b22c980847e5ada5b",
+    "core-s/bootstrap/parse.vt": "74ac61bb1e9e5e13f89e7a80bce7513867051496ebac2c2735005743ee3afda4",
+    "core-s/bootstrap/check.vt": "22dabf1e3ebb74e403179c4317a2f2663e51384b3fa99e8842ae70c377680950",
+    "core-s/bootstrap/ir.vt": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "core-s/tests/b3_frontend.rs": "1799cf4aabb582fb3dec8f76557a036e4db625a4cd87f4fa0ac02683752c31b1"
+  },
+  "evidence": [
+    "cargo test --features pipeline,image --test b3_frontend: original 5 tests passed in 10.61s on latest product files",
+    "Root-added sixth persistent depth/shadowing test passed separately in 0.63s; test code frozen after that run",
+    "15 separate RV64 -s1048576 adversarial source inputs passed expected diagnostics (temporary /tmp/b3-f-adversarial.py)",
+    "Header+layout+static data, complete typed IR for real current bootstrap VT compiler sources, module merge/prefix namespaces, B2 acceptance/rejection examples, bounded deep recursion, complete explicit block terminators exercised"
+  ],
+  "features": [
+    "declaration registration and module/name visibility",
+    "concrete layouts/constants and bounded typed source AST",
+    "static initialized data/ABS64 and direct all-zero BSS path",
+    "slot-based IR with explicit typed memory projections",
+    "aggregate source-order argument and return snapshots",
+    "RHS-before-LHS assignment using captured typed address IR",
+    "single formal checking of defer bodies and cloned typed fragments",
+    "Result constructors/match/?; loops/branch/cleanup; pointers/slices and unsafe checks"
+  ],
+  "capacities": {
+    "ast_nodes": 32768,
+    "saved_ir_instructions": 65536,
+    "bindings": 8192,
+    "defer_fragments": 1024,
+    "loops": 256,
+    "source_struct_fields": 256,
+    "prepare_depth": 32,
+    "type_depth": 64,
+    "constant_depth": 64,
+    "expression_depth": 64,
+    "parse_block_depth": 48
+  },
+  "new_metrics": [
+    "check::max_bindings",
+    "check::max_defers",
+    "check::max_loops",
+    "ir::max_saved",
+    "model::max_ast",
+    "model::max_ir"
+  ],
+  "scope": "Frontend only; actual Linux self-compilation and behavior differential are I acceptance, not yet proven by this F candidate.",
+  "limits": [
+    "Core S/B2 primary subset; unsupported modern language forms explicitly I_UNSUPPORTED",
+    "No lowering optimization; fixed arenas and max-frame limit belongs mechanical backend",
+    "Source contains compact multi-statement lines; physical LOC alone must not be presented as a semantic complexity comparison."
+  ]
+}

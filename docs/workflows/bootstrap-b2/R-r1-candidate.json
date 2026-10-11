@@ -1,0 +1,35 @@
+{
+  "node": "R",
+  "revision": 1,
+  "implementer": "/root",
+  "input_revisions": {
+    "F": 1,
+    "M": 1,
+    "A": 1
+  },
+  "files": {
+    "core-s/app/copy.build": "620989029954aaf7c2363f04ec265c7b34a5a49a7575a1260bfc7c33793573d1",
+    "core-s/app/copy.manifest": "3619638ab8bef23ed888f4c49077d3c6be3b3b89a6bef5af13fa0dc8ee216781",
+    "core-s/app/copy.vt": "a672ea6235291d797e037e8b5a671a9f2d75842f62ccaa665f8ea4a58f5a79ed",
+    "core-s/compiler/manifest.vt": "e9540994fb36717315f65abb6859e8cdf79b11c77d7774add64156955443a139",
+    "core-s/compiler/scan.vt": "c897e7dd554d935cb0a06d2c29ae6a0ea644718c1d6fa9b02e060e1278006c90",
+    "core-s/compiler/source.vt": "ccdccaedd001bd8924a07cfd3cb8bbdfb3ecb45353b4dde923ccfcb2cd0b0110",
+    "core-s/runtime/README.md": "4e992f2d3bd85c4d3d1cb3e51d7db2c54fb9b9007711e74ace8d38e2aab42f2b",
+    "core-s/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "core-s/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+    "core-s/runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+    "core-s/tests/b2_runtime.rs": "a1c6241aec218f58020bc1695f85b41b5a1868892ec2a98efd02944b29e6ca55"
+  },
+  "verification": [
+    "cargo build --offline --manifest-path core-s/Cargo.toml --lib --all-features",
+    "CARGO_MANIFEST_DIR=<absolute core-s> rustc --edition 2024 --test core-s/tests/b2_runtime.rs --cfg feature=\"pipeline\" --cfg feature=\"image\" --extern biomiya_core_s=core-s/target/debug/libbiomiya_core_s.rlib -L dependency=core-s/target/debug/deps -o /tmp/konosuba-b2-runtime-test",
+    "/tmp/konosuba-b2-runtime-test: 6 passed"
+  ],
+  "scope": "Real RV64 target IO + manifest + scanner + source concatenation, not self-compilation",
+  "limits": [
+    "ASCII identifier scanner; numeric lexeme value/grammar later",
+    "16 KiB manifest,64 KiB source,96-byte paths,32 sources,8 assembly paths",
+    "Target manifest separators ASCII whitespace; host also accepts Unicode whitespace separators",
+    "Current app returns error categories, scanner library retains byte offset"
+  ]
+}

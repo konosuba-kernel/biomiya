@@ -1,0 +1,128 @@
+{
+  "node": "I",
+  "candidate_revision": 1,
+  "input_revisions": {
+    "F": 1,
+    "M": 1,
+    "A": 1,
+    "R": 1
+  },
+  "reviewer_agent_id": "/root/b2_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/src/main.rs": "897484a44381d1ef6327e9dfea869019d36e60af048ae95c553d7c35ec2680d4",
+    "core-s/src/pipeline.rs": "24b21978a45bd66c2db12ff175c13b07c6af6ea7b312812798b75884722c1a6e",
+    "core-s/tests/b2.rs": "7001220ba9438a7d0bdb66d580e231da4080c147ff4a253a48e44f22ffc13ef0",
+    "core-s/tests/cli.rs": "b9c87eef1b711807c0f2c40c76f1ffc3356a548dd9732b44b590bd8a440f2295",
+    "core-s/README.md": "240626c7d146ca2cae05e03d402aa01efd4d00a379b64fd6cec70f8e10733893",
+    "core-s/.gitignore": "6192c78b3a190e1deae3b9235fba123041714ebbb86b43ccb858ba34b26994d5",
+    "docs/workflows/bootstrap-b2/measure.py": "073000e19774652aad8f99cd9cb4defe9760d8837851ed6e131aa6ebc6fae473",
+    "docs/workflows/bootstrap-b2/metrics-r1.json": "8ec1c7f9ff3ef5261f7a87e1211dade25770b11a8a927d8d91651f01f6b4f73c",
+    "docs/workflows/bootstrap-b2/clean_build.py": "6d60cddb35d7e17bb1c9f9d169e0cd4f4f6f4f7b226dc9ac36bc45ecc20cb45f",
+    "docs/workflows/bootstrap-b2/I-r1-clean-build.json": "a3fcb37ef062ecaf798529f0bfbaf3cc1f26a77f1609d4e62d935da3309871d4"
+  },
+  "dependency_hashes_revalidated": {
+    "H": {
+      "docs/design/bootstrap-b2.md": "7110ecc08aaaa30648835d565c223f7752af77f8793e51b1ced91beeea5f37f4",
+      "core-s/src/lib.rs": "b072149da1620ccd8e4bbfbe5b9803dc1bfb7611e0ae40689e99734f84e2c980"
+    },
+    "A": {
+      "core-s/src/project.rs": "38126095d58cab5e8ee61f2f7c0974707fd323a64afd6b72b0a9e983a5e60a14"
+    },
+    "F": {
+      "core-s/src/ast.rs": "8fa75c5360a01d7ff55194e88939e1e9f6b94869c247c7dc8ac7e6c5a4d8e415",
+      "core-s/src/model.rs": "a7fa2f9b416deb31828f201a90850ce261926c6116b3051cd1754547f2beeeaf",
+      "core-s/src/frontend.rs": "e510cb24e5f877de41d11a8655657f293d60b72b0b1615f1a320c73b3bca43eb",
+      "core-s/src/check.rs": "e13e5326f87624e1389893699b34ee0b103e83dd570ea1f517b7b2cf0815e8a8",
+      "core-s/src/modules.rs": "1ecb59270bab632a0b07d0cba27bfd538ec12b62cbffe5f5921348a2db2d783c",
+      "core-s/tests/check.rs": "109541c41d9d05bbdf016294bdc8420b666c5badd44970d188fbc1ceb4ba1d71",
+      "core-s/tests/pipeline.rs": "e402ed7e9b4403fba2e760125d5fc918f6f62d2d08a6a2aec12023a2a743298d",
+      "core-s/tests/b2_language.rs": "7c163ee882c75e762cab45a6f9c2da6a663ab514f9d6e7b12d39ea95f3e269ce"
+    },
+    "M": {
+      "core-s/src/machine.rs": "2e0b7c588091e703d65b83bda8c7b12c93075dd656f06e2f3064cca866e54395",
+      "core-s/src/backend.rs": "eccf7b3d4e7241ed1442cd4ca554f8cd55d7c2f96cf654c61ab549f9e676bea9",
+      "core-s/src/encode.rs": "e07e4ec9ee72482e7aee01eda5c60fdae4d69c2af85e9295b82166533f958888",
+      "core-s/src/image.rs": "425e76681c53a5f2bbc6c908fc41b1539930a5623b96e6dba527dcaf40540460",
+      "core-s/src/s0.rs": "0d391b3f73431fc4ecb13c16c69bff8cb437cdcffdfab167af3c55b606d8fdf1",
+      "core-s/tests/backend.rs": "b2c936c3bf16fcc0e0a9c9da0b425c2648c051b654b64e07353708b85ed6613a",
+      "core-s/tests/image.rs": "3a40e069d6849ece1abf4f5a239566b197545af2e5e65454c2fe53ffa23ff455",
+      "core-s/tests/s0.rs": "93738cfb9bbb83672c7e5881ef10fa1ee65a5f9563bcda67898b158ddd4fb452"
+    },
+    "R": {
+      "core-s/app/copy.build": "620989029954aaf7c2363f04ec265c7b34a5a49a7575a1260bfc7c33793573d1",
+      "core-s/app/copy.manifest": "3619638ab8bef23ed888f4c49077d3c6be3b3b89a6bef5af13fa0dc8ee216781",
+      "core-s/app/copy.vt": "a672ea6235291d797e037e8b5a671a9f2d75842f62ccaa665f8ea4a58f5a79ed",
+      "core-s/compiler/manifest.vt": "e9540994fb36717315f65abb6859e8cdf79b11c77d7774add64156955443a139",
+      "core-s/compiler/scan.vt": "c897e7dd554d935cb0a06d2c29ae6a0ea644718c1d6fa9b02e060e1278006c90",
+      "core-s/compiler/source.vt": "ccdccaedd001bd8924a07cfd3cb8bbdfb3ecb45353b4dde923ccfcb2cd0b0110",
+      "core-s/runtime/README.md": "4e992f2d3bd85c4d3d1cb3e51d7db2c54fb9b9007711e74ace8d38e2aab42f2b",
+      "core-s/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+      "core-s/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+      "core-s/runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+      "core-s/tests/b2_runtime.rs": "a1c6241aec218f58020bc1695f85b41b5a1868892ec2a98efd02944b29e6ca55"
+    },
+    "I": {
+      "core-s/src/main.rs": "897484a44381d1ef6327e9dfea869019d36e60af048ae95c553d7c35ec2680d4",
+      "core-s/src/pipeline.rs": "24b21978a45bd66c2db12ff175c13b07c6af6ea7b312812798b75884722c1a6e",
+      "core-s/tests/b2.rs": "7001220ba9438a7d0bdb66d580e231da4080c147ff4a253a48e44f22ffc13ef0",
+      "core-s/tests/cli.rs": "b9c87eef1b711807c0f2c40c76f1ffc3356a548dd9732b44b590bd8a440f2295",
+      "core-s/README.md": "240626c7d146ca2cae05e03d402aa01efd4d00a379b64fd6cec70f8e10733893",
+      "core-s/.gitignore": "6192c78b3a190e1deae3b9235fba123041714ebbb86b43ccb858ba34b26994d5",
+      "docs/workflows/bootstrap-b2/measure.py": "073000e19774652aad8f99cd9cb4defe9760d8837851ed6e131aa6ebc6fae473",
+      "docs/workflows/bootstrap-b2/metrics-r1.json": "8ec1c7f9ff3ef5261f7a87e1211dade25770b11a8a927d8d91651f01f6b4f73c",
+      "docs/workflows/bootstrap-b2/clean_build.py": "6d60cddb35d7e17bb1c9f9d169e0cd4f4f6f4f7b226dc9ac36bc45ecc20cb45f",
+      "docs/workflows/bootstrap-b2/I-r1-clean-build.json": "a3fcb37ef062ecaf798529f0bfbaf3cc1f26a77f1609d4e62d935da3309871d4"
+    }
+  },
+  "commands": [
+    {
+      "command": "python3 docs/workflows/bootstrap-b2/clean_build.py",
+      "exit_code": 0,
+      "result": "Independent rerun: source-only offline --locked rebuild passes all 61 tests; empty PATH clean/workspace seed builds produce byte-identical ELF; QEMU copies 9667 expected source bytes."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b2/probes/i_cli.py",
+      "exit_code": 0,
+      "result": "Independent CLI probes pass root-qualified entry, different cwd with explicit root, empty PATH build, actual exit 17, symlink aliases of both source files/assembly/manifest, unused extern rejection, exact second-file line diagnostics, duplicate provider rejection, preserved old output and no leftover temporary files."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b2/measure.py",
+      "exit_code": 0,
+      "result": "Reproduced frozen metrics: host 7433 code lines; target runtime/compiler/app/assembly 421; total handwritten 7854. project.rs inline tests split; generated Unicode 2095 and Rust tests 3850 separately counted."
+    },
+    {
+      "command": "Python revalidation of all H/A/F/M/R/I candidate hashes and prior independent review revisions",
+      "exit_code": 0,
+      "result": "Every frozen candidate matches current files; all input r1 verdicts remain passed."
+    }
+  ],
+  "clean_build_result": {
+    "node": "I",
+    "revision": 1,
+    "source_only_clean_build": true,
+    "offline_locked_tests_passed": 61,
+    "production_build_PATH": "empty",
+    "workspace_and_clean_seed_elf_identical": true,
+    "elf_sha256": "480ad21cb13ead42bed200437f9656a7039dae80f354054edfe4c036d6704f81",
+    "elf_file_bytes": 86017,
+    "actual_target_copied_bytes": 9667,
+    "copied_sha256": "e5342732e5f7fb83e4f0753f9b79f1900d6c20612ba1c07bc94f7110e5c146f2",
+    "source_input_policy": "Only core-s source/tests/fixtures/runtime/compiler/app and Cargo files plus source.rs,diagnostic.rs,lexer.rs,unicode.rs; no target or old semantic compiler copied."
+  },
+  "verified_contracts": [
+    "Project CLI implements the frozen manifest root rules, correct multi-file SourceMap diagnostics, scalar safe entry signature checks and all declared extern provider validation.",
+    "Real target language runtime, manifest parser and scanner execute in RV64 QEMU and perform input/output themselves; direct production build has no external tool requirement.",
+    "Typed static RO/RW/BSS, ABS64, slice bounds/permissions and module visibility remain covered by accepted F/M revisions and the clean full suite.",
+    "All source, assembly and manifest aliases are protected before publishing; failed builds preserve prior outputs.",
+    "Clean-build script copies source plus only the four direct reused files, omits prior build outputs/archived compiler, clears target/wrapper environment and compares output with current workspace seed.",
+    "README states no self-compilation, no complete R1a/SOS, fixed target buffers and still whole-program host AST/CFG; it reports growth rather than an unsupported reduction claim."
+  ],
+  "findings": [],
+  "limitations": [
+    "B2 is complete only within H r1 bounded Linux-user prototype scope; B3 self-compilation, SOS hosting, full R1a, per-function arena migration and broad resource limits remain unimplemented.",
+    "Clean build uses cached locked Cargo dependencies and requires installed reference tools for testing; production seed-to-ELF invocation was verified with empty PATH.",
+    "File publication is atomic rename, not a malicious concurrent-path replacement security boundary or crash-durability guarantee."
+  ]
+}

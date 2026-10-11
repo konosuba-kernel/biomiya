@@ -1,0 +1,315 @@
+{
+  "date": "2026-10-10",
+  "cloc_version": "2.10",
+  "method": "Physical lines plus cloc code. VT counted as C only for its shared comment/string syntax. project.rs cfg(test) tail separated into tests. Entire source hashes and line intervals recorded. Third-party Cargo dependencies and build outputs excluded; generated Unicode separate; workflow validation scripts/independent probes are tooling, not shipped compiler/runtime.",
+  "groups": {
+    "host_compiler": {
+      "physical_lines": 7681,
+      "cloc": {
+        "blank": 181,
+        "comment": 67,
+        "code": 7433,
+        "nFiles": 17
+      },
+      "files": [
+        {
+          "path": "core-s/src/ast.rs",
+          "first_line": 1,
+          "last_line": 263,
+          "source_sha256": "8fa75c5360a01d7ff55194e88939e1e9f6b94869c247c7dc8ac7e6c5a4d8e415"
+        },
+        {
+          "path": "core-s/src/backend.rs",
+          "first_line": 1,
+          "last_line": 1328,
+          "source_sha256": "eccf7b3d4e7241ed1442cd4ca554f8cd55d7c2f96cf654c61ab549f9e676bea9"
+        },
+        {
+          "path": "core-s/src/check.rs",
+          "first_line": 1,
+          "last_line": 2046,
+          "source_sha256": "e13e5326f87624e1389893699b34ee0b103e83dd570ea1f517b7b2cf0815e8a8"
+        },
+        {
+          "path": "core-s/src/encode.rs",
+          "first_line": 1,
+          "last_line": 306,
+          "source_sha256": "e07e4ec9ee72482e7aee01eda5c60fdae4d69c2af85e9295b82166533f958888"
+        },
+        {
+          "path": "core-s/src/frontend.rs",
+          "first_line": 1,
+          "last_line": 1713,
+          "source_sha256": "e510cb24e5f877de41d11a8655657f293d60b72b0b1615f1a320c73b3bca43eb"
+        },
+        {
+          "path": "core-s/src/image.rs",
+          "first_line": 1,
+          "last_line": 151,
+          "source_sha256": "425e76681c53a5f2bbc6c908fc41b1539930a5623b96e6dba527dcaf40540460"
+        },
+        {
+          "path": "core-s/src/lib.rs",
+          "first_line": 1,
+          "last_line": 39,
+          "source_sha256": "b072149da1620ccd8e4bbfbe5b9803dc1bfb7611e0ae40689e99734f84e2c980"
+        },
+        {
+          "path": "core-s/src/machine.rs",
+          "first_line": 1,
+          "last_line": 182,
+          "source_sha256": "2e0b7c588091e703d65b83bda8c7b12c93075dd656f06e2f3064cca866e54395"
+        },
+        {
+          "path": "core-s/src/main.rs",
+          "first_line": 1,
+          "last_line": 283,
+          "source_sha256": "897484a44381d1ef6327e9dfea869019d36e60af048ae95c553d7c35ec2680d4"
+        },
+        {
+          "path": "core-s/src/model.rs",
+          "first_line": 1,
+          "last_line": 293,
+          "source_sha256": "a7fa2f9b416deb31828f201a90850ce261926c6116b3051cd1754547f2beeeaf"
+        },
+        {
+          "path": "core-s/src/modules.rs",
+          "first_line": 1,
+          "last_line": 345,
+          "source_sha256": "1ecb59270bab632a0b07d0cba27bfd538ec12b62cbffe5f5921348a2db2d783c"
+        },
+        {
+          "path": "core-s/src/pipeline.rs",
+          "first_line": 1,
+          "last_line": 30,
+          "source_sha256": "24b21978a45bd66c2db12ff175c13b07c6af6ea7b312812798b75884722c1a6e"
+        },
+        {
+          "path": "core-s/src/project.rs",
+          "first_line": 1,
+          "last_line": 109,
+          "source_sha256": "38126095d58cab5e8ee61f2f7c0974707fd323a64afd6b72b0a9e983a5e60a14"
+        },
+        {
+          "path": "core-s/src/s0.rs",
+          "first_line": 1,
+          "last_line": 266,
+          "source_sha256": "0d391b3f73431fc4ecb13c16c69bff8cb437cdcffdfab167af3c55b606d8fdf1"
+        },
+        {
+          "path": "src/source.rs",
+          "first_line": 1,
+          "last_line": 90,
+          "source_sha256": "5c801bbac87b4fd65de79a7815d5230c2b69a8b011a15e8d21989baec865fff1"
+        },
+        {
+          "path": "src/diagnostic.rs",
+          "first_line": 1,
+          "last_line": 43,
+          "source_sha256": "e8abafc4086e3daeebc3c19b310f165f620a180ca5ff8116f6b7e4438718bf9c"
+        },
+        {
+          "path": "src/syntax/lexer.rs",
+          "first_line": 1,
+          "last_line": 194,
+          "source_sha256": "ca33203662cfa337b4e662a7c7967d50e62549e6abb99f325199efb523b3b897"
+        }
+      ]
+    },
+    "target_runtime": {
+      "physical_lines": 189,
+      "cloc": {
+        "blank": 18,
+        "comment": 4,
+        "code": 167,
+        "nFiles": 2
+      },
+      "files": [
+        {
+          "path": "core-s/runtime/bytes.vt",
+          "first_line": 1,
+          "last_line": 58,
+          "source_sha256": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5"
+        },
+        {
+          "path": "core-s/runtime/linux.vt",
+          "first_line": 1,
+          "last_line": 131,
+          "source_sha256": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78"
+        }
+      ]
+    },
+    "target_compiler": {
+      "physical_lines": 199,
+      "cloc": {
+        "blank": 7,
+        "comment": 4,
+        "code": 188,
+        "nFiles": 3
+      },
+      "files": [
+        {
+          "path": "core-s/compiler/manifest.vt",
+          "first_line": 1,
+          "last_line": 81,
+          "source_sha256": "e9540994fb36717315f65abb6859e8cdf79b11c77d7774add64156955443a139"
+        },
+        {
+          "path": "core-s/compiler/scan.vt",
+          "first_line": 1,
+          "last_line": 111,
+          "source_sha256": "c897e7dd554d935cb0a06d2c29ae6a0ea644718c1d6fa9b02e060e1278006c90"
+        },
+        {
+          "path": "core-s/compiler/source.vt",
+          "first_line": 1,
+          "last_line": 7,
+          "source_sha256": "ccdccaedd001bd8924a07cfd3cb8bbdfb3ecb45353b4dde923ccfcb2cd0b0110"
+        }
+      ]
+    },
+    "target_app": {
+      "physical_lines": 52,
+      "cloc": {
+        "blank": 4,
+        "comment": 0,
+        "code": 48,
+        "nFiles": 1
+      },
+      "files": [
+        {
+          "path": "core-s/app/copy.vt",
+          "first_line": 1,
+          "last_line": 52,
+          "source_sha256": "a672ea6235291d797e037e8b5a671a9f2d75842f62ccaa665f8ea4a58f5a79ed"
+        }
+      ]
+    },
+    "target_assembly": {
+      "physical_lines": 19,
+      "cloc": {
+        "blank": 0,
+        "comment": 1,
+        "code": 18,
+        "nFiles": 1
+      },
+      "files": [
+        {
+          "path": "core-s/runtime/linux.s0",
+          "first_line": 1,
+          "last_line": 19,
+          "source_sha256": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+        }
+      ]
+    },
+    "generated_unicode": {
+      "physical_lines": 2096,
+      "cloc": {
+        "blank": 0,
+        "comment": 1,
+        "code": 2095,
+        "nFiles": 1
+      },
+      "files": [
+        {
+          "path": "src/syntax/unicode.rs",
+          "first_line": 1,
+          "last_line": 2096,
+          "source_sha256": "6c1c6102c04cc4f4f8985595a209706388695baec71ba1ceec2046d3f6e27feb"
+        }
+      ]
+    },
+    "tests": {
+      "physical_lines": 3963,
+      "cloc": {
+        "blank": 60,
+        "comment": 53,
+        "code": 3850,
+        "nFiles": 10
+      },
+      "files": [
+        {
+          "path": "core-s/src/project.rs",
+          "first_line": 110,
+          "last_line": 191,
+          "source_sha256": "38126095d58cab5e8ee61f2f7c0974707fd323a64afd6b72b0a9e983a5e60a14"
+        },
+        {
+          "path": "core-s/tests/b2.rs",
+          "first_line": 1,
+          "last_line": 235,
+          "source_sha256": "7001220ba9438a7d0bdb66d580e231da4080c147ff4a253a48e44f22ffc13ef0"
+        },
+        {
+          "path": "core-s/tests/b2_language.rs",
+          "first_line": 1,
+          "last_line": 231,
+          "source_sha256": "7c163ee882c75e762cab45a6f9c2da6a663ab514f9d6e7b12d39ea95f3e269ce"
+        },
+        {
+          "path": "core-s/tests/b2_runtime.rs",
+          "first_line": 1,
+          "last_line": 416,
+          "source_sha256": "a1c6241aec218f58020bc1695f85b41b5a1868892ec2a98efd02944b29e6ca55"
+        },
+        {
+          "path": "core-s/tests/backend.rs",
+          "first_line": 1,
+          "last_line": 1393,
+          "source_sha256": "b2c936c3bf16fcc0e0a9c9da0b425c2648c051b654b64e07353708b85ed6613a"
+        },
+        {
+          "path": "core-s/tests/check.rs",
+          "first_line": 1,
+          "last_line": 329,
+          "source_sha256": "109541c41d9d05bbdf016294bdc8420b666c5badd44970d188fbc1ceb4ba1d71"
+        },
+        {
+          "path": "core-s/tests/cli.rs",
+          "first_line": 1,
+          "last_line": 240,
+          "source_sha256": "b9c87eef1b711807c0f2c40c76f1ffc3356a548dd9732b44b590bd8a440f2295"
+        },
+        {
+          "path": "core-s/tests/image.rs",
+          "first_line": 1,
+          "last_line": 846,
+          "source_sha256": "3a40e069d6849ece1abf4f5a239566b197545af2e5e65454c2fe53ffa23ff455"
+        },
+        {
+          "path": "core-s/tests/pipeline.rs",
+          "first_line": 1,
+          "last_line": 127,
+          "source_sha256": "e402ed7e9b4403fba2e760125d5fc918f6f62d2d08a6a2aec12023a2a743298d"
+        },
+        {
+          "path": "core-s/tests/s0.rs",
+          "first_line": 1,
+          "last_line": 64,
+          "source_sha256": "93738cfb9bbb83672c7e5881ef10fa1ee65a5f9563bcda67898b158ddd4fb452"
+        }
+      ]
+    },
+    "behavior_inputs": {
+      "physical_lines": 98,
+      "cloc": {
+        "blank": 1,
+        "comment": 1,
+        "code": 96,
+        "nFiles": 1
+      },
+      "files": [
+        {
+          "path": "core-s/fixtures/bootstrap.vt",
+          "first_line": 1,
+          "last_line": 98,
+          "source_sha256": "ef2ff4f7a35f7dc4b3dffe477f86663f63331f25661536887097702300fb8096"
+        }
+      ]
+    }
+  },
+  "handwritten_total": {
+    "physical_lines": 8140,
+    "code": 7854
+  }
+}

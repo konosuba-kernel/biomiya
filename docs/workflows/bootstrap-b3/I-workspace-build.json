@@ -1,0 +1,9 @@
+{
+  "c2_c3_byte_equal": true,
+  "sha256": "69f48b38186521759cdbe044cc26774b2c41c4fd1d21786cc91460164b110566",
+  "file_bytes": 1058872,
+  "statistics": [
+    "B3 sources=13 imports=31 assembly_files=1 source=188065 assembly=345 names=1721 name_bytes=29509 decls=411 types=176 fields=115 params=405 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=851076 data=200318 objects=528 symbols=10446 fixups=20159 relocations=8280 elf=1058872\n",
+    "B3 sources=13 imports=31 assembly_files=1 source=188065 assembly=345 names=1721 name_bytes=29509 decls=411 types=176 fields=115 params=405 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=851076 data=200318 objects=528 symbols=10446 fixups=20159 relocations=8280 elf=1058872\n"
+  ]
+}

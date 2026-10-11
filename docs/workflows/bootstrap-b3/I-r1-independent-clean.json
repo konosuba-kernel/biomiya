@@ -1,0 +1,124 @@
+{
+  "node": "I",
+  "source_only_clean_build": true,
+  "offline_locked_tests_passed": 81,
+  "test_seconds": 89.41380792500058,
+  "target_build_PATH": "empty",
+  "guest_stack_bytes": 1048576,
+  "c2_c3_byte_equal": true,
+  "hashes": {
+    "c1": "0a07618eeb9e50aa860a8d31830bf9062a1086085c950d5d82228062361b016a",
+    "c2": "69f48b38186521759cdbe044cc26774b2c41c4fd1d21786cc91460164b110566",
+    "c3": "69f48b38186521759cdbe044cc26774b2c41c4fd1d21786cc91460164b110566"
+  },
+  "elf_file_bytes": {
+    "c1": 763960,
+    "c2": 1058872,
+    "c3": 1058872
+  },
+  "generation_seconds": [
+    21.99932367100064,
+    25.712742458999855
+  ],
+  "compiler_statistics": [
+    "B3 sources=13 imports=31 assembly_files=1 source=188065 assembly=345 names=1721 name_bytes=29509 decls=411 types=176 fields=115 params=405 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=851076 data=200318 objects=528 symbols=10446 fixups=20159 relocations=8280 elf=1058872\n",
+    "B3 sources=13 imports=31 assembly_files=1 source=188065 assembly=345 names=1721 name_bytes=29509 decls=411 types=176 fields=115 params=405 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=851076 data=200318 objects=528 symbols=10446 fixups=20159 relocations=8280 elf=1058872\n"
+  ],
+  "elf_memory": {
+    "c1": {
+      "segments": [
+        {
+          "flags": 5,
+          "file_bytes": 556908,
+          "memory_bytes": 556908,
+          "address": 65536
+        },
+        {
+          "flags": 4,
+          "file_bytes": 1613,
+          "memory_bytes": 1613,
+          "address": 622592
+        },
+        {
+          "flags": 6,
+          "file_bytes": 198712,
+          "memory_bytes": 52553432,
+          "address": 626688
+        }
+      ],
+      "writable_memory_bytes": 52553432,
+      "image_span_bytes": 53114584,
+      "bss_bytes": 52354720
+    },
+    "c2": {
+      "segments": [
+        {
+          "flags": 5,
+          "file_bytes": 851076,
+          "memory_bytes": 851076,
+          "address": 65536
+        },
+        {
+          "flags": 4,
+          "file_bytes": 1613,
+          "memory_bytes": 1613,
+          "address": 917504
+        },
+        {
+          "flags": 6,
+          "file_bytes": 198712,
+          "memory_bytes": 52553432,
+          "address": 921600
+        }
+      ],
+      "writable_memory_bytes": 52553432,
+      "image_span_bytes": 53409496,
+      "bss_bytes": 52354720
+    },
+    "c3": {
+      "segments": [
+        {
+          "flags": 5,
+          "file_bytes": 851076,
+          "memory_bytes": 851076,
+          "address": 65536
+        },
+        {
+          "flags": 4,
+          "file_bytes": 1613,
+          "memory_bytes": 1613,
+          "address": 917504
+        },
+        {
+          "flags": 6,
+          "file_bytes": 198712,
+          "memory_bytes": 52553432,
+          "address": 921600
+        }
+      ],
+      "writable_memory_bytes": 52553432,
+      "image_span_bytes": 53409496,
+      "bss_bytes": 52354720
+    }
+  },
+  "source_sha256": {
+    "bootstrap/c1.build": "f3db937c66510ca8aedd55f59b5c0cab270eb6b61596a346c33445f47b5bce04",
+    "bootstrap/c2.build": "3f5df47ca716357e5c721c50bf0de00e08367c17b916adb21eef62636870c02b",
+    "bootstrap/c3.build": "f51d6e749cc4b00ace61e01f50218c810001c30160ff9e42e70fbf3fd032f677",
+    "bootstrap/check.vt": "1e0d3d24e1d30599ad3788e38190d62f16f8cd3192d2aeb3fd4caf5a25c9a007",
+    "bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+    "bootstrap/input.vt": "78d23f79da810377f784b9e964031fbcf4465ec0f1dbd54d0a6f68810b2e380b",
+    "bootstrap/ir.vt": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "bootstrap/lex.vt": "31915fb257899b833105706e42f2f2861b556cc8ef93c91b865d9b7b9062ac8c",
+    "bootstrap/main.vt": "df4cbaed1c07382508d82bb8ced551426625df008f47679b2bdd1b98361d43a1",
+    "bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+    "bootstrap/parse.vt": "14855b13c5b0f4c1e97860f4fa864adc8407fe931fdb8c8b2a2b9a544388544d",
+    "bootstrap/rv64.vt": "4fcc5bea0bc960f2e91b25d695c18338341ef02d5cefb5e2ee18a54d5769895f",
+    "bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+    "bootstrap/types.vt": "27b3441af70d482e69114c9b98e446b05d37e4dd258d35532470af73d7131cc3",
+    "runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+    "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78"
+  },
+  "source_input_policy": "Only core-s source/tests/fixtures/runtime/compiler/app/bootstrap and Cargo files plus source.rs,diagnostic.rs,lexer.rs,unicode.rs; no target or old semantic compiler copied."
+}

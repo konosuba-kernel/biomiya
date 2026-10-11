@@ -1,0 +1,42 @@
+{
+  "node": "H",
+  "candidate_revision": 1,
+  "reviewer_agent_id": "/root/acceptance",
+  "independent": true,
+  "verdict": "不通过",
+  "file_hashes_verified": {
+    "docs/design/bootstrap-prototype.md": "b3d590ad71776fdac4dd939b3d61de199c94014cf5b2b8f59720b30663e6bcb6",
+    "core-s/src/machine.rs": "dc069d91aaf88339d5e41b49be6700d81a9215e80307eec56ee10f37dd067fb1",
+    "core-s/Cargo.toml": "c560b460d78dbd96a720e1b9b2f4a0f5e235514af5397a35b794df90b8413cba",
+    "core-s/src/lib.rs": "1fb8d48b044b8f05890363fad7571702dbd6d27637b9576d35fb42fbd8613003"
+  },
+  "commands": [
+    {
+      "command": "cargo check --manifest-path core-s/Cargo.toml",
+      "exit_code": 0,
+      "result": "passed default-feature compilation"
+    },
+    {
+      "command": "Python SHA-256 comparison of all four candidate files",
+      "exit_code": 0,
+      "result": "all four match frozen candidate"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "blocking",
+      "file": "core-s/src/lib.rs",
+      "detail": "pipeline feature is defined, but pipeline module is not declared. H owns feature/module declarations; P write scope excludes lib.rs. Consequently P cannot deliver public pipeline::compile within the frozen interface. Add cfg-gated pipeline module export to H and publish revision 2, or explicitly revise ownership and freeze that handoff."
+    }
+  ],
+  "verified_contracts": [
+    "Machine operations can represent existing unsigned Core S integer backend; arbitrary constants can be synthesized with Li expansion.",
+    "Fixed 12-byte branch inverse skip and 8-byte PC-relative jump/call are coherent for 64 MiB text and reserved t6 scratch.",
+    "Minimal ELF text plus placeholder R/RW segments and Linux exit adapter scope are internally consistent.",
+    "CLI entry validation, atomic output, same-file rejection, determinism and real-source integration criteria are explicit."
+  ],
+  "limitations": [
+    "Architecture acceptance only; no encode/image/pipeline implementation is present or approved by this review.",
+    "Existing backend still uses textual emission and will be replaced by B; its t6 accesses must respect scratch liveness in implementation."
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "node": "I",
+  "candidate_revision": 1,
+  "input_revisions": {
+    "H": 3,
+    "L": 2,
+    "F": 3,
+    "M": 3
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "不通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/main.vt": "df4cbaed1c07382508d82bb8ced551426625df008f47679b2bdd1b98361d43a1",
+    "core-s/bootstrap/c1.build": "f3db937c66510ca8aedd55f59b5c0cab270eb6b61596a346c33445f47b5bce04",
+    "core-s/bootstrap/c2.build": "3f5df47ca716357e5c721c50bf0de00e08367c17b916adb21eef62636870c02b",
+    "core-s/bootstrap/c3.build": "f51d6e749cc4b00ace61e01f50218c810001c30160ff9e42e70fbf3fd032f677",
+    "core-s/tests/b3.rs": "bee519efaadbe3ef489597741fb2fd3f6be8d0ad43b5eec283db9b919957ea33",
+    "core-s/README.md": "74336f5f06d27e05363469d95769aec95bd75ae862aca07248dfd7d5cd30b81a",
+    "docs/workflows/bootstrap-b3/clean_build.py": "de522bd1929c8619c17518fc78d14e3f7d3a881740c5122589b5ce89db68162f",
+    "docs/workflows/bootstrap-b3/metrics.py": "9e88ddb6c31ee63c595448e87aa011bc9658f813806167bc2658703dadf201bc",
+    "docs/workflows/bootstrap-b3/metrics.json": "eba74b686c90ddfc7dd4463ad9742ea4d78c2fe181fc8a3024e9cc74c9682e5a",
+    "docs/workflows/bootstrap-b3/README.md": "462ae5f5580762c58054949d6ec28a16eaa3f9358f3b5acf274709a5401922c3"
+  },
+  "dependency_candidate_hashes_verified": [
+    "H-r3",
+    "L-r2",
+    "F-r3",
+    "M-r3"
+  ],
+  "author_evidence_hashes_verified": {
+    "I-tests.txt": "8484ae10a6aa15ebe934772ba0b7b83f9d352dc46e5035cf428baf3c1bd1b68a",
+    "I-clean-tests.txt": "69fdcb20cc89665b50397bbced2e3f6703f03cd561676a732678743948773531",
+    "I-clean-build.json": "9b5f4fb1ab4b5881b18a9b0cb47e1659af46d6c54a0385ad6af566e9ea1b97c9",
+    "I-workspace-build.json": "53fa42d2b45e18e101085a52e92a86a2091b30ffe9cd850529abb24f42b9ee13",
+    "I-baseline-check.json": "c0f1a0959f47c32037da810632061ba73ea2e1ed8ffda9c7a314bd0d4d1f7598"
+  },
+  "independent_evidence": {
+    "I-r1-independent-cli.json": "7d2cf7024939c4204261c308e323e41278653c7684751f5c538256621958aed3",
+    "I-r1-independent-io.json": "6ab6bce5d015e1ac0ec1bb3099f25cdb9fcf2e9ce92acd9387e50f4cf72930c8",
+    "I-r1-independent-mutation.json": "2530591de3d4388f2e9f2f8a54984baede97ac6ad708bd9815127f6a023ccb5f",
+    "I-r1-independent-clean.json": "a984545f428ec9950e9240cfb7d08ec2c97e7e6334ac2cffd9a60174ce76dc0d",
+    "I-r1-independent-clean-tests.txt": "b1cb818f1f765ec9363129ff948f76e8018916b7d13ddbda2138f18eb4008f50",
+    "I-r1-independent-cli-script.txt": "7425f37af7442d9cb9964e758699cf03e490dbcf41047f4e3b6d1e881bf9de24",
+    "I-r1-independent-io-script.txt": "8ceeca0611661e658d1427bb88c6a60dc00eaa272b7745bb2f472a19d9d8fbfa",
+    "I-r1-independent-mutation-script.txt": "2b0c2d6e2672f4c31c3a5783a00bcd87d926332c39d60212aa84effba97a61f0",
+    "I-r1-independent-clean-script.txt": "6210a099c74c82fc7ee055f2ace940dd7a1bf85252209bcb707ae802e48b7db6",
+    "I-r1-independent-metrics-script.txt": "cba9f1f742432d04120d101479758a7c88fbde980dd7e458b0b8322f4337d976"
+  },
+  "blocking_findings": [
+    {
+      "id": "I1-entry-root-prefix",
+      "file": "core-s/bootstrap/main.vt",
+      "line": 55,
+      "requirement": "H §2 manifest与B2相同；B2 core-s/src/main.rs runtime strips one root:: prefix.",
+      "reproducer": {
+        "source": "fn run()->u32{return 37;}",
+        "manifest": "format 1\nprofile linux-user\nentry root::run\nsource in.vt\noutput out.elf\n"
+      },
+      "observed": "C0 project compiles and generated program exits 37; C1/C2/C3 all exit 1 with E_NAME file=0 byte=0 and no output. Same issue applies root::module::entry.",
+      "required": "Normalize a single explicit root:: prefix in driver entry resolution; add root and named-module qualified-entry build/check regression across generations."
+    }
+  ],
+  "documentation_findings": [
+    {
+      "file": "core-s/README.md",
+      "line": 72,
+      "finding": "B2 historical paragraph still says B3 self-compilation is unfinished, contradicting current B3 section. Clearly mark B2 historical validation/metrics and correct status."
+    }
+  ],
+  "checks": [
+    {
+      "name": "source-only offline locked clean rebuild",
+      "result": "81 tests passed in independently created source-only temporary tree; formal C0→C1→C2→C3 manifests rerun; all file hashes, ELF memories, stats, input hashes match author and retained workspace artifacts.",
+      "test_seconds": 89.41380792500058,
+      "generation_seconds": [
+        21.99932367100064,
+        25.712742458999855
+      ],
+      "hashes": {
+        "c1": "0a07618eeb9e50aa860a8d31830bf9062a1086085c950d5d82228062361b016a",
+        "c2": "69f48b38186521759cdbe044cc26774b2c41c4fd1d21786cc91460164b110566",
+        "c3": "69f48b38186521759cdbe044cc26774b2c41c4fd1d21786cc91460164b110566"
+      }
+    },
+    {
+      "name": "final CLI semantic replay",
+      "result": "30 independent cases × C1/C2/C3 = 90 checks passed. Includes aggregate snapshots/evaluation order, defer exit paths, Result, pointer/slice permissions, static repeated string identity, zero-count initializer validation, limits for deep projections and overflowing sizes. Known seed root-shadow bug remains explicitly isolated by preceding F evidence."
+    },
+    {
+      "name": "non-template backend source mutation",
+      "result": "C2 rebuilt compiler source with rv64 panic-exit constant changed 101→103. That new compiler translated new overflow source to program exit103 and independent loop/arithmetic source to56. Guest strace opened only declared manifest/source/assembly/new output; no own ELF read or execve. Distinct mutation from author diagnostic-text test."
+    },
+    {
+      "name": "full compiler short I/O composition",
+      "result": "C0-built final compiler with deterministic assembly shim alternating EINTR and three-byte read/write completed real source parsing, ELF output and statistics; generated program exits71. Accepted L/H component proofs cover zero-progress, error-after-short-write cleanup and diagnostic failure."
+    },
+    {
+      "name": "final three-generation filesystem/limits",
+      "result": "18 checks: each C1/C2/C3 rejects missing input, >4MiB source, existing output, dangling output symlink, input hardlink/output alias, and unresolved assembly during check. Input/previous-output bytes unchanged; no incomplete new output."
+    },
+    {
+      "name": "metrics and baseline",
+      "result": "All metrics source hashes revalidated; metrics generator rerun to /tmp gives byte-identical frozen metrics.json. Entire B2 baseline unchanged except README; original regressions included in81 tests."
+    }
+  ],
+  "memory": {
+    "segments": [
+      {
+        "flags": 5,
+        "file_bytes": 851076,
+        "memory_bytes": 851076,
+        "address": 65536
+      },
+      {
+        "flags": 4,
+        "file_bytes": 1613,
+        "memory_bytes": 1613,
+        "address": 917504
+      },
+      {
+        "flags": 6,
+        "file_bytes": 198712,
+        "memory_bytes": 52553432,
+        "address": 921600
+      }
+    ],
+    "writable_memory_bytes": 52553432,
+    "image_span_bytes": 53409496,
+    "bss_bytes": 52354720
+  },
+  "remaining_boundaries": [
+    "This is Linux-user Core S/B2 subset self-compilation under RV64 QEMU, not SOS hosting or full language/R1a implementation.",
+    "The 64MiB proof counts allocated static compiler data/BSS and ELF span; it is not measured host RSS. Target stack is actually constrained to1MiB; max_frame is largest function frame, not exhaustive call-chain stack proof.",
+    "Behavioral tests and source mutation falsify the tested shortcut mechanisms; no finite test suite proves all programs correct.",
+    "I2 changes to main.vt require new generation artifacts/fixed point/statistics/metrics and targeted prefix regression. H/L/F/M acceptance remains valid if their hashes remain unchanged.",
+    "Independently copied author clean_build driver is rerun evidence, supplemented by distinct final CLI probes and backend mutation; it is not described as an independently reimplemented build system."
+  ],
+  "reproduction": "Restore each I-r1-independent-*-script.txt to matching /tmp/b3-i-*-review.py (clean: /tmp/b3-i-independent-clean.py), then run python3. Scripts use absolute repository path /home/mii/code/konOSuba/biomiya and frozen candidate sources. The CLI script intentionally records the entry regression without treating its final row as a passing assertion."
+}

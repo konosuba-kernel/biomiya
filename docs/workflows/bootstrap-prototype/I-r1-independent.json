@@ -1,0 +1,34 @@
+{
+  "reviewer": "/root/acceptance",
+  "temp": "/tmp/core-s-final-review-svosj2oq",
+  "checks": [
+    {
+      "case": "Unicode entry plus 600 checked additions, continue and long forward/backward source control flow",
+      "direct_bytes": 86017,
+      "direct_exit": 98,
+      "reference_exit": 98,
+      "PATH_during_build": ""
+    },
+    {
+      "case": "Normal entry return 101 distinct from proof of panic",
+      "exit": 101
+    },
+    {
+      "case": "asm entry and rename failure, missing input, build/asm hardlink/symlink protection",
+      "result": "all preserved source/old artifact; no temporary leftovers"
+    },
+    {
+      "case": "Independent explicit-source-only offline build without old semantic compiler or target",
+      "source_files": 23,
+      "build_exit": 0,
+      "same_large_program_elf": true,
+      "sha256": "5dbed9a2700ec871832b74f92c54e1989979d761b342f7601bcf5b714e808999"
+    },
+    {
+      "case": "Independent cloc recomputation across own/path reused/generated/tests groups",
+      "handwritten_code": 5509,
+      "generated_code": 2095,
+      "test_code": 2435
+    }
+  ]
+}

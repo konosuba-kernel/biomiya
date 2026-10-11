@@ -1,0 +1,38 @@
+{
+  "node": "B",
+  "revision": 1,
+  "status": "candidate-awaiting-independent-review",
+  "implementer": "/root/backend",
+  "dependencies": {
+    "H": {
+      "revision": 2,
+      "candidate": "docs/workflows/bootstrap-prototype/H-r2-candidate.json",
+      "sha256": "6a959c0501f501edad6ea0834ae2f1e250d4ee3ebf2dbd5bcb75ddf72cc87db1"
+    }
+  },
+  "files": {
+    "core-s/src/backend.rs": "7e775379a3dd798281933f622bf14c6fbeed1bcba18da23ca168d0eda1dcce02",
+    "core-s/tests/backend.rs": "1a7003139db103ce35549e5cce7e5370766cda464d60f87dfec8e75afdc7fe44"
+  },
+  "evidence": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features backend --test backend",
+      "working_directory": "biomiya",
+      "exit_code": 0,
+      "result": "12 passed; 0 failed; 0 ignored; completed in 1.17s",
+      "scope": "9 existing M-mode Clang/LLD/QEMU regressions plus 3 typed-machine/renderer tests"
+    }
+  ],
+  "changes": [
+    "backend::machine lowers checked CFG into Inst, preserving original validation, frame layout, ABI plans and arithmetic checks",
+    "backend::emit delegates through machine then assembly; one semantic lowering, no assembly parsing or backend subprocesses",
+    "backend::assembly renders all Inst variants, validates register/immediate/symbol forms and duplicate definitions, allows unresolved external targets",
+    "Branch and Jump render fixed AUIPC/JALR sequences through x31; all backend live temporaries t0..t5 preserved; generated relocation labels avoid source labels and references",
+    "Typed execution tests cover >4 KiB forward jump/backward conditional and Address relocation label collision"
+  ],
+  "limitations": [
+    "B tests use reference assembly/Clang/LLD plus QEMU M-mode; source-to-direct-ELF end-to-end evidence belongs to I",
+    "Reference Li remains an assembler pseudo instruction and need not use the same expansion as the direct encoder",
+    "Prototype retains previous Core S language subset, ABI and stack-slot strategy; no new language features or self-hosting"
+  ]
+}

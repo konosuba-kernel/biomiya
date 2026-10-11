@@ -1,0 +1,82 @@
+{
+  "node": "F",
+  "revision": 2,
+  "implementer": "/root/b3_frontend",
+  "contributors": [
+    "/root/b3_frontend",
+    "/root"
+  ],
+  "input_revisions": {
+    "H": 3,
+    "L": 2
+  },
+  "files": {
+    "core-s/bootstrap/types.vt": "27b3441af70d482e69114c9b98e446b05d37e4dd258d35532470af73d7131cc3",
+    "core-s/bootstrap/parse.vt": "a617258e3bbe70c9ad68e81de563c60381b8e1ce399cb45f63cb47fb65c4f814",
+    "core-s/bootstrap/check.vt": "1e0d3d24e1d30599ad3788e38190d62f16f8cd3192d2aeb3fd4caf5a25c9a007",
+    "core-s/bootstrap/ir.vt": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "core-s/tests/b3_frontend.rs": "4a3b9b603527700dd50dcc7301c30c5c7e7743616f6e0e46cc9a0cdd8ff9f118"
+  },
+  "evidence": [
+    "cargo test --all-features --test b3_frontend: all 7 persistent tests passed in 10.49s; root record F-r2-tests.txt",
+    "Additional pure-struct size-overflow fixture added to seventh persistent test; the expanded test passed separately in 3.10s; root record F-r2-layout-tests.txt",
+    "C0 builds the revised frontend and 15 separate RV64 -s1048576 adversarial source inputs passed expected diagnostics (temporary /tmp/b3-f-adversarial.py)",
+    "Pure structure size accumulation overflow independently exercised by author under 1 MiB guest stack: exit 1 with actual=288230376151711744 limit=288230376151711743 I_LIMIT file=1 byte=10800",
+    "Header/layout/static data, complete typed IR for compiler sources, B2 examples, explicit terminators, four F1 failures and same-class deep expression/statement/static walks covered"
+  ],
+  "features": [
+    "declaration registration and module/name visibility",
+    "concrete layouts/constants and bounded typed source AST",
+    "static initialized data/ABS64 and direct all-zero BSS path",
+    "slot-based IR with explicit typed memory projections",
+    "aggregate source-order argument and return snapshots",
+    "RHS-before-LHS assignment using captured typed address IR",
+    "single formal checking of defer bodies and cloned typed fragments",
+    "Result constructors/match/?; loops/branch/cleanup; pointers/slices and unsafe checks"
+  ],
+  "capacities": {
+    "ast_nodes": 32768,
+    "saved_ir_instructions": 65536,
+    "bindings": 8192,
+    "defer_fragments": 1024,
+    "loops": 256,
+    "source_struct_fields": 256,
+    "prepare_depth": 32,
+    "type_depth": 64,
+    "constant_depth": 64,
+    "expression_depth": 64,
+    "parse_block_depth": 48,
+    "place_depth": 64,
+    "parse_statement_depth": 64,
+    "constant_static_walk_depth": 64,
+    "array_count": 4294967295,
+    "array_bytes": 67108864
+  },
+  "new_metrics": [
+    "check::max_bindings",
+    "check::max_defers",
+    "check::max_loops",
+    "ir::max_saved",
+    "model::max_ast",
+    "model::max_ir"
+  ],
+  "scope": "Frontend only; actual Linux self-compilation and behavior differential are I acceptance, not yet proven by this F candidate.",
+  "limits": [
+    "Core S/B2 primary subset; unsupported modern language forms explicitly I_UNSUPPORTED",
+    "No lowering optimization; fixed arenas and max-frame limit belongs mechanical backend",
+    "Source contains compact multi-statement lines; physical LOC alone must not be presented as a semantic complexity comparison."
+  ],
+  "supersedes_revision": 1,
+  "repairs": {
+    "F1-mutable-static-array-len": "Call access(base) before generating array length constant; mutable static and nested fields retain unsafe access requirement.",
+    "F1-array-count-capacity-category": "Separate integer type validation from u32 representation limit for type array counts and repeat counts; oversized integers report I_LIMIT with source position.",
+    "F1-unbounded-place-recursion": "Make is_place iterative; bound place depth at 64; additionally bound statement nesting and constant/static AST walks at 64, including else-if and left-associative constant chains.",
+    "F1-capacity-diagnostic-overflow": "Report rejected array counts without multiplication. All struct/Result size additions and alignment padding use overflow-checked size_add and report I_LIMIT before overflowing."
+  },
+  "diagnostic_units": {
+    "array_count_representation": "actual and limit are element counts, limit 4294967295.",
+    "array_size_capacity": "actual is requested element count, limit is floor(67108864 / element_size); no rejected product is evaluated.",
+    "aggregate_size_addition_or_alignment": "actual is requested additional bytes; limit is remaining representable usize bytes (usize::MAX - current_size). No new structure-size hard cap.",
+    "recursive_walks": "actual and limit count active calls in the named recursive walk; AST walkers share the constant/static walk counter."
+  }
+}

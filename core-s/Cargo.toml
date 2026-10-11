@@ -1,0 +1,25 @@
+[package]
+name = "biomiya-core-s"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+description = "Bounded Core S compiler pilot"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "core-s"
+path = "src/main.rs"
+required-features = ["pipeline", "image"]
+
+[features]
+default = []
+frontend = []
+check = []
+backend = []
+pipeline = ["frontend", "check", "backend"]
+image = ["backend"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }

@@ -1,0 +1,6 @@
+[package]
+name="pipeline-independent-review"
+version="0.0.0"
+edition="2024"
+[dependencies]
+biomiya-core-s={path="../../../../../core-s",features=["pipeline"]}

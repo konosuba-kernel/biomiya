@@ -1,0 +1,38 @@
+{
+  "node": "F",
+  "candidate_revision": 2,
+  "record_type": "integration-followup",
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "不通过",
+  "supersedes_current_acceptance": true,
+  "history_preserved": "F-r2-review.json remains an accurate record of earlier checks; this newly discovered counterexample invalidates the current acceptance conclusion and blocks dependent I.",
+  "file_hashes_verified": {
+    "core-s/bootstrap/types.vt": "27b3441af70d482e69114c9b98e446b05d37e4dd258d35532470af73d7131cc3",
+    "core-s/bootstrap/parse.vt": "a617258e3bbe70c9ad68e81de563c60381b8e1ce399cb45f63cb47fb65c4f814",
+    "core-s/bootstrap/check.vt": "1e0d3d24e1d30599ad3788e38190d62f16f8cd3192d2aeb3fd4caf5a25c9a007",
+    "core-s/bootstrap/ir.vt": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "core-s/tests/b3_frontend.rs": "4a3b9b603527700dd50dcc7301c30c5c7e7743616f6e0e46cc9a0cdd8ff9f118"
+  },
+  "commands": [
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/f_semantics.py 2 static_repeat_string_identity > docs/workflows/bootstrap-b3/F-r2-independent-repeat.json",
+      "exit_code": 1,
+      "result": "Independent target frontend plus accepted M3 emits a program returning2; C0 emits same source returning1. Source checks whether the two repeated string descriptors share their data address."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F2-static-repeat-evaluation",
+      "severity": "blocking",
+      "file": "core-s/bootstrap/parse.vt",
+      "source": "static S:[2][]const u8=[\"x\";2];fn run()->u32{unsafe{if core::addr(S[0].data)==core::addr(S[1].data){return 1;}return 2;}}",
+      "problem": "serialize repeats evaluation for each [e;N] element. A string e allocates a new object on every iteration, so copied descriptors no longer represent the one initial value. This violates evaluate-once/copy semantics and C0 static repeat behavior.",
+      "required_change": "Serialize/evaluate the repeated element once and copy its value bytes and relevant relocations for remaining elements. Preserve nested aggregate/string repeat identities and bounds; add a regression that executes the pointer-identity observation."
+    }
+  ],
+  "impact": [
+    "F requires a new candidate revision and independent acceptance.",
+    "I must recompute artifacts based on repaired F; previously observed fixed-point or behavior results using F2 cannot certify the repaired compiler."
+  ]
+}

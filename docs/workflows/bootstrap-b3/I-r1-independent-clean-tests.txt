@@ -1,0 +1,187 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.26
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling syn v3.0.6
+   Compiling serde_derive v1.0.229
+   Compiling biomiya-core-s v0.1.0 (/tmp/core-s-b3-clean-frs85xc9/core-s)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.32s
+     Running unittests src/lib.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/biomiya_core_s-30b17f3e68e699c1)
+
+running 4 tests
+test project::tests::preserves_input_order_and_unicode_paths ... ok
+test project::tests::rejects_ambiguous_and_escaping_paths ... ok
+test project::tests::rejects_duplicates_missing_fields_and_unknowns ... ok
+test project::tests::bounds_manifest_and_input_counts ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/core_s-1bdb12d4a7b95dba)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/b2.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/b2-4d8d6098b8123986)
+
+running 4 tests
+test project_builds_without_tools_is_deterministic_and_resolves_paths_from_root ... ok
+test project_cannot_publish_over_any_input_alias ... ok
+test project_errors_keep_outputs_and_report_the_correct_source ... ok
+test cli_builds_the_target_language_manifest_scanner_and_copy_app ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/b2_language.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/b2_language-49d43371f071a7ca)
+
+running 7 tests
+test deferred_slice_checks_and_pointer_operations_remap ... ok
+test externs_are_scalar_unsafe_placeholders ... ok
+test merged_imports_prefix_modules_and_shadowing ... ok
+test modules_merge_and_private_boundaries ... ok
+test slices_pointer_builtins_and_permissions ... ok
+test data_strings_bss_and_root_relocations ... ok
+test statics_validate_arrays_records_constants_and_permissions ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/b2_runtime.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/b2_runtime-468750e8db2f489b)
+
+running 6 tests
+test scanner_reports_token_ranges_and_error_offsets ... ok
+test short_io_and_eintr_are_retried_in_target_code ... ok
+test real_program_reads_scans_and_copies_multiple_files_and_empty_input ... ok
+test direct_and_external_toolchain_execute_the_same_target_program ... ok
+test io_failures_close_files_and_remove_only_the_new_output ... ok
+test malformed_manifest_missing_source_scanner_error_and_limits_fail_cleanly ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/b3.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/b3-cde1f3126fdfbdaa)
+
+running 3 tests
+test all_generations_resolve_modules_externs_and_reject_without_output ... ok
+test compiler_reaches_full_file_fixed_point_and_compiles_changed_behavior ... ok
+test self_compiler_diagnostic_change_is_translated_and_check_creates_no_output has been running for over 60 seconds
+test self_compiler_diagnostic_change_is_translated_and_check_creates_no_output ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 70.53s
+
+     Running tests/b3_frontend.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/b3_frontend-cbee3969eb3cc4ab)
+
+running 7 tests
+test frontend_merges_module_imports_and_accepts_prefix_namespaces ... ok
+test frontend_static_layout_keeps_large_zero_arrays_in_bss ... ok
+test frontend_depth_limits_and_type_shadowing_fail_before_guest_stack_overflow ... ok
+test frontend_accepts_forward_layout_snapshots_results_and_cleanup ... ok
+test frontend_rejects_invalid_programs_with_source_diagnostics ... ok
+test frontend_reports_permission_and_capacity_errors_without_target_panics ... ok
+test frontend_checks_actual_bootstrap_sources_and_ir_block_contract ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.48s
+
+     Running tests/b3_input.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/b3_input-19003ced70ec38ae)
+
+running 4 tests
+test target_lexer_decodes_numbers_strings_ranges_and_nested_comments ... ok
+test target_manifest_limits_and_source_aliases_preserve_inputs ... ok
+test target_rejects_bad_numeric_tokens_utf8_and_unsupported_identifiers ... ok
+test target_input_keeps_manifest_snapshots_and_handles_short_io ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.89s
+
+     Running tests/b3_machine.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/b3_machine-c67f67790b4cd7c3)
+
+running 6 tests
+test target_constants_match_rust_and_independent_assembler ... ok
+test target_s0_all_operations_far_fixups_match_independent_bytes ... ok
+test target_requires_label_one_and_finite_value_layouts ... ok
+test target_ir_aggregate_abi_snapshot_abs64_bss_and_checked_panic ... ok
+test target_s0_rejects_syntax_ranges_and_unsupported_grammar ... ok
+test target_rejects_invalid_ir_and_link_data_before_output ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.14s
+
+     Running tests/backend.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/backend-dd76a859cdb41e73)
+
+running 14 tests
+test malformed_externs_slices_and_new_ir_are_rejected ... ok
+test malformed_ir_returns_diagnostics_without_source_rechecking ... ok
+test overlap_copy_large_stack_offsets_and_zero_size_values_execute ... ok
+test hidden_result_unit_omission_and_over_eight_positions_follow_lp64 ... ok
+test typed_address_rendering_and_generated_labels_execute_without_collisions ... ok
+test typed_control_flow_preserves_live_temporaries_across_far_edges ... ok
+test aggregate_parameters_are_independent_and_results_use_hidden_slots ... ok
+test typed_lowering_exposes_checks_and_renderer_rejects_malformed_operations ... ok
+test branches_loops_and_recursive_calls_preserve_frames ... ok
+test external_c_calls_symbol_addresses_bitcasts_and_dynamic_bounds_execute ... ok
+test unary_casts_unit_comparison_and_unreachable_execute ... ok
+test explicit_bounds_pointer_offset_and_raw_storage_execute ... ok
+test checked_arithmetic_and_shifts_really_stop ... ok
+test integer_widths_wrapping_comparisons_and_lp64_results_execute ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.22s
+
+     Running tests/check.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/check-03ba06de29a6f661)
+
+running 6 tests
+test normal_function_named_like_builtin_keeps_its_identity ... ok
+test literals_do_not_unify_across_comparison_operands ... ok
+test explicit_returns_and_dead_code_are_checked ... ok
+test return_snapshot_precedes_defer_and_captured_binding_is_stable ... ok
+test defer_restrictions_and_raw_permissions_are_enforced ... ok
+test cleanup_reads_exit_values_but_cannot_capture_later_bindings ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/cli-36fd4d7e30eef588)
+
+running 4 tests
+test direct_build_needs_no_external_tools_and_is_deterministic ... ok
+test output_failures_and_source_aliases_are_safe ... ok
+test rejected_inputs_never_replace_existing_output ... ok
+test real_source_direct_and_reference_paths_agree ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+
+     Running tests/image.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/image-065bd698f92f2a8c)
+
+running 8 tests
+test malformed_operands_symbols_entries_and_ranges_are_rejected ... ok
+test data_and_external_symbol_validation_rejects_malformed_images ... ok
+test elf_headers_segments_entry_and_padding_are_exact ... ok
+test arbitrary_u64_constants_execute_and_write_exact_bytes ... ok
+test far_control_flow_calls_addresses_and_scratch_contract_execute ... ok
+test instructions_match_independent_clang_lld_bytes ... ok
+test data_abs64_bss_and_segment_permissions_execute_against_reference ... ok
+test text_capacity_is_checked_before_output_allocation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s
+
+     Running tests/pipeline.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/pipeline-1a8c7db6325800ee)
+
+running 6 tests
+test source_snapshots_cleanup_and_raw_access_reach_the_checker ... ok
+test failures_preserve_stage_and_source_identity ... ok
+test unsupported_features_are_distinct_from_language_errors ... ok
+test real_source_resolves_forward_constants_layouts_and_calls ... ok
+test source_result_construction_propagation_and_match_compose ... ok
+test source_capacity_is_a_resource_diagnostic ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/s0.rs (/tmp/core-s-b3-clean-frs85xc9/core-s/target/debug/deps/s0-a5c172ec244a3e0c)
+
+running 2 tests
+test malformed_and_unsupported_inputs_have_file_and_line_spans ... ok
+test fixed_grammar_encodes_all_operations_and_localizes_labels ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests biomiya_core_s
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

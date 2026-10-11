@@ -1,0 +1,134 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (biomiya/core-s/target/debug/deps/biomiya_core_s-30b17f3e68e699c1)
+
+running 4 tests
+test project::tests::preserves_input_order_and_unicode_paths ... ok
+test project::tests::rejects_ambiguous_and_escaping_paths ... ok
+test project::tests::bounds_manifest_and_input_counts ... ok
+test project::tests::rejects_duplicates_missing_fields_and_unknowns ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (biomiya/core-s/target/debug/deps/core_s-1bdb12d4a7b95dba)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/b2.rs (biomiya/core-s/target/debug/deps/b2-4d8d6098b8123986)
+
+running 4 tests
+test project_cannot_publish_over_any_input_alias ... ok
+test project_builds_without_tools_is_deterministic_and_resolves_paths_from_root ... ok
+test project_errors_keep_outputs_and_report_the_correct_source ... ok
+test cli_builds_the_target_language_manifest_scanner_and_copy_app ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/b2_language.rs (biomiya/core-s/target/debug/deps/b2_language-49d43371f071a7ca)
+
+running 7 tests
+test deferred_slice_checks_and_pointer_operations_remap ... ok
+test externs_are_scalar_unsafe_placeholders ... ok
+test data_strings_bss_and_root_relocations ... ok
+test merged_imports_prefix_modules_and_shadowing ... ok
+test modules_merge_and_private_boundaries ... ok
+test statics_validate_arrays_records_constants_and_permissions ... ok
+test slices_pointer_builtins_and_permissions ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/b2_runtime.rs (biomiya/core-s/target/debug/deps/b2_runtime-468750e8db2f489b)
+
+running 6 tests
+test scanner_reports_token_ranges_and_error_offsets ... ok
+test short_io_and_eintr_are_retried_in_target_code ... ok
+test real_program_reads_scans_and_copies_multiple_files_and_empty_input ... ok
+test io_failures_close_files_and_remove_only_the_new_output ... ok
+test direct_and_external_toolchain_execute_the_same_target_program ... ok
+test malformed_manifest_missing_source_scanner_error_and_limits_fail_cleanly ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/backend.rs (biomiya/core-s/target/debug/deps/backend-dd76a859cdb41e73)
+
+running 14 tests
+test malformed_ir_returns_diagnostics_without_source_rechecking ... ok
+test malformed_externs_slices_and_new_ir_are_rejected ... ok
+test overlap_copy_large_stack_offsets_and_zero_size_values_execute ... ok
+test aggregate_parameters_are_independent_and_results_use_hidden_slots ... ok
+test typed_control_flow_preserves_live_temporaries_across_far_edges ... ok
+test hidden_result_unit_omission_and_over_eight_positions_follow_lp64 ... ok
+test typed_lowering_exposes_checks_and_renderer_rejects_malformed_operations ... ok
+test typed_address_rendering_and_generated_labels_execute_without_collisions ... ok
+test branches_loops_and_recursive_calls_preserve_frames ... ok
+test external_c_calls_symbol_addresses_bitcasts_and_dynamic_bounds_execute ... ok
+test unary_casts_unit_comparison_and_unreachable_execute ... ok
+test explicit_bounds_pointer_offset_and_raw_storage_execute ... ok
+test checked_arithmetic_and_shifts_really_stop ... ok
+test integer_widths_wrapping_comparisons_and_lp64_results_execute ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.52s
+
+     Running tests/check.rs (biomiya/core-s/target/debug/deps/check-03ba06de29a6f661)
+
+running 6 tests
+test normal_function_named_like_builtin_keeps_its_identity ... ok
+test literals_do_not_unify_across_comparison_operands ... ok
+test defer_restrictions_and_raw_permissions_are_enforced ... ok
+test explicit_returns_and_dead_code_are_checked ... ok
+test return_snapshot_precedes_defer_and_captured_binding_is_stable ... ok
+test cleanup_reads_exit_values_but_cannot_capture_later_bindings ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli.rs (biomiya/core-s/target/debug/deps/cli-36fd4d7e30eef588)
+
+running 4 tests
+test direct_build_needs_no_external_tools_and_is_deterministic ... ok
+test output_failures_and_source_aliases_are_safe ... ok
+test rejected_inputs_never_replace_existing_output ... ok
+test real_source_direct_and_reference_paths_agree ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.38s
+
+     Running tests/image.rs (biomiya/core-s/target/debug/deps/image-065bd698f92f2a8c)
+
+running 8 tests
+test malformed_operands_symbols_entries_and_ranges_are_rejected ... ok
+test data_and_external_symbol_validation_rejects_malformed_images ... ok
+test elf_headers_segments_entry_and_padding_are_exact ... ok
+test arbitrary_u64_constants_execute_and_write_exact_bytes ... ok
+test far_control_flow_calls_addresses_and_scratch_contract_execute ... ok
+test instructions_match_independent_clang_lld_bytes ... ok
+test data_abs64_bss_and_segment_permissions_execute_against_reference ... ok
+test text_capacity_is_checked_before_output_allocation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s
+
+     Running tests/pipeline.rs (biomiya/core-s/target/debug/deps/pipeline-1a8c7db6325800ee)
+
+running 6 tests
+test source_capacity_is_a_resource_diagnostic ... ok
+test source_result_construction_propagation_and_match_compose ... ok
+test real_source_resolves_forward_constants_layouts_and_calls ... ok
+test source_snapshots_cleanup_and_raw_access_reach_the_checker ... ok
+test unsupported_features_are_distinct_from_language_errors ... ok
+test failures_preserve_stage_and_source_identity ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/s0.rs (biomiya/core-s/target/debug/deps/s0-a5c172ec244a3e0c)
+
+running 2 tests
+test malformed_and_unsupported_inputs_have_file_and_line_spans ... ok
+test fixed_grammar_encodes_all_operations_and_localizes_labels ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests biomiya_core_s
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

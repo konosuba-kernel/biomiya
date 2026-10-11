@@ -1,0 +1,51 @@
+{
+  "node": "I",
+  "revision": 1,
+  "implementer": "/root",
+  "input_revisions": {
+    "H": 2,
+    "E": 1,
+    "B": 1,
+    "P": 1
+  },
+  "files": {
+    "core-s/src/main.rs": "5e4cb28be5bd613353bf015070f1e41762179567c215f271ab15b87e4a589694",
+    "core-s/tests/cli.rs": "69fdf2752e31c8e8bd1322becc8148187ff1a968cfd8ac91b65ab0bbbe5add8c",
+    "core-s/fixtures/bootstrap.vt": "ef2ff4f7a35f7dc4b3dffe477f86663f63331f25661536887097702300fb8096",
+    "core-s/README.md": "a5438a1a797321afda077e6d819dce84dd3300a57da6c914b30384a3f91ebfa2",
+    "docs/workflows/bootstrap-prototype/metrics-r1.json": "1f23b9feb8a026222bb1adec31dd5ac0a496b65d20d104ae96ae9911cfe5aa1c",
+    "docs/workflows/bootstrap-prototype/I-clean-build-r2.json": "b1497482da9592baead5716d4c03c1b1b3549f712b126e8665d509df721d1fd6",
+    "docs/workflows/bootstrap-prototype/I-clean-build-r2.txt": "62471dc6425ebe43dd057fe2cf071f1f1379d0b4fba1973cc6c70fd52417ce39"
+  },
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --all-features",
+      "result": "34 integration tests passed, 0 failed, 0 ignored; final CLI diagnostic change then reran CLI and final clean full suite"
+    },
+    {
+      "command": "cargo test --offline --manifest-path CLEAN/core-s/Cargo.toml --all-features",
+      "result": "34 passed; latest input hashes recorded in I-clean-build-r2.json; clean and workspace generated ELF identical"
+    }
+  ],
+  "behavior_cases": 19,
+  "behavior_paths": [
+    "direct encoding -> ELF -> qemu-riscv64",
+    "same machine Program -> assembly -> clang/ld.lld -> qemu-riscv64"
+  ],
+  "boundaries": [
+    "No PATH tools required to build ELF",
+    "No old semantic compiler copied into clean source",
+    "Compilation/output errors preserve existing output, source inode alias rejected",
+    "Deterministic direct output; clean/normal SHA256 same"
+  ],
+  "limitations": [
+    "Rust-hosted seed, existing Core S pilot syntax, full-program AST/CFG retained",
+    "No R1a, .s0 parser, source static/BSS, file runtime, SOS or self-hosting",
+    "Linux process exit only low 8 bits, panic 101 not unambiguous for arbitrary programs",
+    "No comprehensive recursion/time/memory hardening"
+  ],
+  "development_notes": [
+    "Fixtures explicitly typed comparison/cast operands to match existing Core S synth rules, rather than silently implementing R1a typing",
+    "I-clean-build-r1 predates final entry-diagnostic refinement; r2 supersedes it and contains current source hashes"
+  ]
+}

@@ -1,0 +1,808 @@
+[
+  {
+    "case": "aggregate_argument_snapshot",
+    "expected": 8,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=159 assembly=0 names=10 name_bytes=18 decls=5 types=10 fields=1 params=2 max_ast=9 max_ir=10 max_frame=80 max_bindings=2 max_defers=0 max_loops=0 max_saved=4 max_slots=9 max_args=2 max_params=2 text=676 data=4 objects=1 symbols=19 fixups=21 relocations=0 elf=12292\n",
+        "program_exit": 8,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=159 assembly=0 names=10 name_bytes=18 decls=5 types=10 fields=1 params=2 max_ast=9 max_ir=10 max_frame=80 max_bindings=2 max_defers=0 max_loops=0 max_saved=4 max_slots=9 max_args=2 max_params=2 text=676 data=4 objects=1 symbols=19 fixups=21 relocations=0 elf=12292\n",
+        "program_exit": 8,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=159 assembly=0 names=10 name_bytes=18 decls=5 types=10 fields=1 params=2 max_ast=9 max_ir=10 max_frame=80 max_bindings=2 max_defers=0 max_loops=0 max_saved=4 max_slots=9 max_args=2 max_params=2 text=676 data=4 objects=1 symbols=19 fixups=21 relocations=0 elf=12292\n",
+        "program_exit": 8,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "return_snapshot",
+    "expected": 71,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=156 assembly=0 names=7 name_bytes=10 decls=4 types=10 fields=1 params=0 max_ast=20 max_ir=25 max_frame=128 max_bindings=1 max_defers=1 max_loops=0 max_saved=22 max_slots=15 max_args=0 max_params=0 text=888 data=0 objects=1 symbols=23 fixups=33 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=156 assembly=0 names=7 name_bytes=10 decls=4 types=10 fields=1 params=0 max_ast=20 max_ir=25 max_frame=128 max_bindings=1 max_defers=1 max_loops=0 max_saved=22 max_slots=15 max_args=0 max_params=0 text=888 data=0 objects=1 symbols=23 fixups=33 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=156 assembly=0 names=7 name_bytes=10 decls=4 types=10 fields=1 params=0 max_ast=20 max_ir=25 max_frame=128 max_bindings=1 max_defers=1 max_loops=0 max_saved=22 max_slots=15 max_args=0 max_params=0 text=888 data=0 objects=1 symbols=23 fixups=33 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "rhs_before_lhs",
+    "expected": 17,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=190 assembly=0 names=9 name_bytes=19 decls=4 types=10 fields=0 params=0 max_ast=23 max_ir=42 max_frame=272 max_bindings=1 max_defers=0 max_loops=0 max_saved=8 max_slots=32 max_args=0 max_params=0 text=1304 data=0 objects=1 symbols=31 fixups=45 relocations=0 elf=12289\n",
+        "program_exit": 17,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=190 assembly=0 names=9 name_bytes=19 decls=4 types=10 fields=0 params=0 max_ast=23 max_ir=42 max_frame=272 max_bindings=1 max_defers=0 max_loops=0 max_saved=8 max_slots=32 max_args=0 max_params=0 text=1304 data=0 objects=1 symbols=31 fixups=45 relocations=0 elf=12289\n",
+        "program_exit": 17,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=190 assembly=0 names=9 name_bytes=19 decls=4 types=10 fields=0 params=0 max_ast=23 max_ir=42 max_frame=272 max_bindings=1 max_defers=0 max_loops=0 max_saved=8 max_slots=32 max_args=0 max_params=0 text=1304 data=0 objects=1 symbols=31 fixups=45 relocations=0 elf=12289\n",
+        "program_exit": 17,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "defer_lifo",
+    "expected": 21,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=155 assembly=0 names=7 name_bytes=12 decls=4 types=7 fields=0 params=1 max_ast=15 max_ir=14 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=8 max_slots=10 max_args=2 max_params=1 text=676 data=0 objects=1 symbols=21 fixups=23 relocations=0 elf=12289\n",
+        "program_exit": 21,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=155 assembly=0 names=7 name_bytes=12 decls=4 types=7 fields=0 params=1 max_ast=15 max_ir=14 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=8 max_slots=10 max_args=2 max_params=1 text=676 data=0 objects=1 symbols=21 fixups=23 relocations=0 elf=12289\n",
+        "program_exit": 21,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=155 assembly=0 names=7 name_bytes=12 decls=4 types=7 fields=0 params=1 max_ast=15 max_ir=14 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=8 max_slots=10 max_args=2 max_params=1 text=676 data=0 objects=1 symbols=21 fixups=23 relocations=0 elf=12289\n",
+        "program_exit": 21,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "loop_cleanup",
+    "expected": 103,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=208 assembly=0 names=6 name_bytes=9 decls=3 types=6 fields=0 params=0 max_ast=45 max_ir=83 max_frame=208 max_bindings=1 max_defers=2 max_loops=1 max_saved=24 max_slots=30 max_args=0 max_params=0 text=1336 data=0 objects=1 symbols=40 fixups=58 relocations=0 elf=12289\n",
+        "program_exit": 103,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=208 assembly=0 names=6 name_bytes=9 decls=3 types=6 fields=0 params=0 max_ast=45 max_ir=83 max_frame=208 max_bindings=1 max_defers=2 max_loops=1 max_saved=24 max_slots=30 max_args=0 max_params=0 text=1336 data=0 objects=1 symbols=40 fixups=58 relocations=0 elf=12289\n",
+        "program_exit": 103,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=208 assembly=0 names=6 name_bytes=9 decls=3 types=6 fields=0 params=0 max_ast=45 max_ir=83 max_frame=208 max_bindings=1 max_defers=2 max_loops=1 max_saved=24 max_slots=30 max_args=0 max_params=0 text=1336 data=0 objects=1 symbols=40 fixups=58 relocations=0 elf=12289\n",
+        "program_exit": 103,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "try_cleanup",
+    "expected": 71,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=306 assembly=0 names=10 name_bytes=20 decls=4 types=8 fields=0 params=0 max_ast=20 max_ir=48 max_frame=208 max_bindings=1 max_defers=1 max_loops=0 max_saved=11 max_slots=25 max_args=0 max_params=0 text=1504 data=0 objects=1 symbols=32 fixups=46 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=306 assembly=0 names=10 name_bytes=20 decls=4 types=8 fields=0 params=0 max_ast=20 max_ir=48 max_frame=208 max_bindings=1 max_defers=1 max_loops=0 max_saved=11 max_slots=25 max_args=0 max_params=0 text=1504 data=0 objects=1 symbols=32 fixups=46 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=306 assembly=0 names=10 name_bytes=20 decls=4 types=8 fields=0 params=0 max_ast=20 max_ir=48 max_frame=208 max_bindings=1 max_defers=1 max_loops=0 max_saved=11 max_slots=25 max_args=0 max_params=0 text=1504 data=0 objects=1 symbols=32 fixups=46 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "short_circuit",
+    "expected": 0,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=147 assembly=0 names=8 name_bytes=17 decls=3 types=6 fields=0 params=0 max_ast=15 max_ir=28 max_frame=64 max_bindings=2 max_defers=0 max_loops=0 max_saved=2 max_slots=12 max_args=0 max_params=0 text=688 data=0 objects=1 symbols=21 fixups=30 relocations=0 elf=12289\n",
+        "program_exit": 0,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=147 assembly=0 names=8 name_bytes=17 decls=3 types=6 fields=0 params=0 max_ast=15 max_ir=28 max_frame=64 max_bindings=2 max_defers=0 max_loops=0 max_saved=2 max_slots=12 max_args=0 max_params=0 text=688 data=0 objects=1 symbols=21 fixups=30 relocations=0 elf=12289\n",
+        "program_exit": 0,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=147 assembly=0 names=8 name_bytes=17 decls=3 types=6 fields=0 params=0 max_ast=15 max_ir=28 max_frame=64 max_bindings=2 max_defers=0 max_loops=0 max_saved=2 max_slots=12 max_args=0 max_params=0 text=688 data=0 objects=1 symbols=21 fixups=30 relocations=0 elf=12289\n",
+        "program_exit": 0,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "captured_lhs_call",
+    "expected": 18,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=204 assembly=0 names=9 name_bytes=19 decls=4 types=11 fields=0 params=2 max_ast=22 max_ir=46 max_frame=272 max_bindings=1 max_defers=0 max_loops=0 max_saved=9 max_slots=32 max_args=2 max_params=1 text=1348 data=0 objects=1 symbols=33 fixups=48 relocations=0 elf=12289\n",
+        "program_exit": 18,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=204 assembly=0 names=9 name_bytes=19 decls=4 types=11 fields=0 params=2 max_ast=22 max_ir=46 max_frame=272 max_bindings=1 max_defers=0 max_loops=0 max_saved=9 max_slots=32 max_args=2 max_params=1 text=1348 data=0 objects=1 symbols=33 fixups=48 relocations=0 elf=12289\n",
+        "program_exit": 18,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=204 assembly=0 names=9 name_bytes=19 decls=4 types=11 fields=0 params=2 max_ast=22 max_ir=46 max_frame=272 max_bindings=1 max_defers=0 max_loops=0 max_saved=9 max_slots=32 max_args=2 max_params=1 text=1348 data=0 objects=1 symbols=33 fixups=48 relocations=0 elf=12289\n",
+        "program_exit": 18,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "match_scrutinee_once",
+    "expected": 71,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=226 assembly=0 names=8 name_bytes=18 decls=3 types=8 fields=0 params=0 max_ast=20 max_ir=32 max_frame=160 max_bindings=1 max_defers=0 max_loops=0 max_saved=2 max_slots=22 max_args=0 max_params=0 text=972 data=0 objects=1 symbols=23 fixups=31 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=226 assembly=0 names=8 name_bytes=18 decls=3 types=8 fields=0 params=0 max_ast=20 max_ir=32 max_frame=160 max_bindings=1 max_defers=0 max_loops=0 max_saved=2 max_slots=22 max_args=0 max_params=0 text=972 data=0 objects=1 symbols=23 fixups=31 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=226 assembly=0 names=8 name_bytes=18 decls=3 types=8 fields=0 params=0 max_ast=20 max_ir=32 max_frame=160 max_bindings=1 max_defers=0 max_loops=0 max_saved=2 max_slots=22 max_args=0 max_params=0 text=972 data=0 objects=1 symbols=23 fixups=31 relocations=0 elf=12289\n",
+        "program_exit": 71,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "bounds",
+    "expected": 101,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=46 assembly=0 names=4 name_bytes=7 decls=1 types=9 fields=0 params=0 max_ast=9 max_ir=17 max_frame=128 max_bindings=1 max_defers=0 max_loops=0 max_saved=0 max_slots=13 max_args=0 max_params=0 text=436 data=0 objects=0 symbols=12 fixups=13 relocations=0 elf=12289\n",
+        "program_exit": 101,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=46 assembly=0 names=4 name_bytes=7 decls=1 types=9 fields=0 params=0 max_ast=9 max_ir=17 max_frame=128 max_bindings=1 max_defers=0 max_loops=0 max_saved=0 max_slots=13 max_args=0 max_params=0 text=436 data=0 objects=0 symbols=12 fixups=13 relocations=0 elf=12289\n",
+        "program_exit": 101,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=46 assembly=0 names=4 name_bytes=7 decls=1 types=9 fields=0 params=0 max_ast=9 max_ir=17 max_frame=128 max_bindings=1 max_defers=0 max_loops=0 max_saved=0 max_slots=13 max_args=0 max_params=0 text=436 data=0 objects=0 symbols=12 fixups=13 relocations=0 elf=12289\n",
+        "program_exit": 101,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "slice_projection",
+    "expected": 12,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=157 assembly=0 names=13 name_bytes=76 decls=1 types=19 fields=0 params=0 max_ast=30 max_ir=69 max_frame=512 max_bindings=3 max_defers=0 max_loops=0 max_saved=13 max_slots=58 max_args=0 max_params=0 text=1308 data=0 objects=0 symbols=24 fixups=39 relocations=0 elf=12289\n",
+        "program_exit": 12,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=157 assembly=0 names=13 name_bytes=76 decls=1 types=19 fields=0 params=0 max_ast=30 max_ir=69 max_frame=512 max_bindings=3 max_defers=0 max_loops=0 max_saved=13 max_slots=58 max_args=0 max_params=0 text=1308 data=0 objects=0 symbols=24 fixups=39 relocations=0 elf=12289\n",
+        "program_exit": 12,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=157 assembly=0 names=13 name_bytes=76 decls=1 types=19 fields=0 params=0 max_ast=30 max_ir=69 max_frame=512 max_bindings=3 max_defers=0 max_loops=0 max_saved=13 max_slots=58 max_args=0 max_params=0 text=1308 data=0 objects=0 symbols=24 fixups=39 relocations=0 elf=12289\n",
+        "program_exit": 12,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "const_loss",
+    "expected": "E_TYPE",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=118\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=118\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=118\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "unsafe_required",
+    "expected": "E_PERMISSION",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "E_PERMISSION file=1 byte=40\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "E_PERMISSION file=1 byte=40\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "E_PERMISSION file=1 byte=40\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "defer_return_rejected",
+    "expected": "E_TYPE",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=20\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=20\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=20\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "defer_binding_snapshot",
+    "expected": 7,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=112 assembly=0 names=6 name_bytes=9 decls=3 types=6 fields=0 params=0 max_ast=15 max_ir=18 max_frame=80 max_bindings=1 max_defers=1 max_loops=0 max_saved=11 max_slots=8 max_args=0 max_params=0 text=408 data=0 objects=1 symbols=15 fixups=13 relocations=0 elf=12289\n",
+        "program_exit": 7,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=112 assembly=0 names=6 name_bytes=9 decls=3 types=6 fields=0 params=0 max_ast=15 max_ir=18 max_frame=80 max_bindings=1 max_defers=1 max_loops=0 max_saved=11 max_slots=8 max_args=0 max_params=0 text=408 data=0 objects=1 symbols=15 fixups=13 relocations=0 elf=12289\n",
+        "program_exit": 7,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=112 assembly=0 names=6 name_bytes=9 decls=3 types=6 fields=0 params=0 max_ast=15 max_ir=18 max_frame=80 max_bindings=1 max_defers=1 max_loops=0 max_saved=11 max_slots=8 max_args=0 max_params=0 text=408 data=0 objects=1 symbols=15 fixups=13 relocations=0 elf=12289\n",
+        "program_exit": 7,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "nested_defer_branches",
+    "expected": 37,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=197 assembly=0 names=8 name_bytes=14 decls=3 types=8 fields=0 params=1 max_ast=28 max_ir=64 max_frame=144 max_bindings=2 max_defers=1 max_loops=0 max_saved=29 max_slots=17 max_args=2 max_params=1 text=1516 data=0 objects=1 symbols=41 fixups=64 relocations=0 elf=12289\n",
+        "program_exit": 37,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=197 assembly=0 names=8 name_bytes=14 decls=3 types=8 fields=0 params=1 max_ast=28 max_ir=64 max_frame=144 max_bindings=2 max_defers=1 max_loops=0 max_saved=29 max_slots=17 max_args=2 max_params=1 text=1516 data=0 objects=1 symbols=41 fixups=64 relocations=0 elf=12289\n",
+        "program_exit": 37,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=197 assembly=0 names=8 name_bytes=14 decls=3 types=8 fields=0 params=1 max_ast=28 max_ir=64 max_frame=144 max_bindings=2 max_defers=1 max_loops=0 max_saved=29 max_slots=17 max_args=2 max_params=1 text=1516 data=0 objects=1 symbols=41 fixups=64 relocations=0 elf=12289\n",
+        "program_exit": 37,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "mutable_static_array_len",
+    "expected": "E_PERMISSION",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "E_PERMISSION file=1 byte=46\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "E_PERMISSION file=1 byte=46\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "E_PERMISSION file=1 byte=46\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "aggregate_alias_snapshot",
+    "expected": 21,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=149 assembly=0 names=11 name_bytes=45 decls=2 types=9 fields=2 params=0 max_ast=33 max_ir=41 max_frame=288 max_bindings=2 max_defers=0 max_loops=0 max_saved=3 max_slots=34 max_args=0 max_params=0 text=868 data=0 objects=0 symbols=18 fixups=26 relocations=0 elf=12289\n",
+        "program_exit": 21,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=149 assembly=0 names=11 name_bytes=45 decls=2 types=9 fields=2 params=0 max_ast=33 max_ir=41 max_frame=288 max_bindings=2 max_defers=0 max_loops=0 max_saved=3 max_slots=34 max_args=0 max_params=0 text=868 data=0 objects=0 symbols=18 fixups=26 relocations=0 elf=12289\n",
+        "program_exit": 21,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=149 assembly=0 names=11 name_bytes=45 decls=2 types=9 fields=2 params=0 max_ast=33 max_ir=41 max_frame=288 max_bindings=2 max_defers=0 max_loops=0 max_saved=3 max_slots=34 max_args=0 max_params=0 text=868 data=0 objects=0 symbols=18 fixups=26 relocations=0 elf=12289\n",
+        "program_exit": 21,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "defer_nested_scope",
+    "expected": 81,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=164 assembly=0 names=8 name_bytes=20 decls=3 types=7 fields=0 params=0 max_ast=24 max_ir=36 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=22 max_slots=12 max_args=0 max_params=0 text=1020 data=0 objects=1 symbols=29 fixups=41 relocations=0 elf=12289\n",
+        "program_exit": 81,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=164 assembly=0 names=8 name_bytes=20 decls=3 types=7 fields=0 params=0 max_ast=24 max_ir=36 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=22 max_slots=12 max_args=0 max_params=0 text=1020 data=0 objects=1 symbols=29 fixups=41 relocations=0 elf=12289\n",
+        "program_exit": 81,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=164 assembly=0 names=8 name_bytes=20 decls=3 types=7 fields=0 params=0 max_ast=24 max_ir=36 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=22 max_slots=12 max_args=0 max_params=0 text=1020 data=0 objects=1 symbols=29 fixups=41 relocations=0 elf=12289\n",
+        "program_exit": 81,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "known_seed_root_shadow_bug",
+    "expected": 81,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=164 assembly=0 names=7 name_bytes=19 decls=3 types=7 fields=0 params=0 max_ast=24 max_ir=36 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=22 max_slots=12 max_args=0 max_params=0 text=1020 data=0 objects=1 symbols=29 fixups=41 relocations=0 elf=12289\n",
+        "program_exit": 81,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=164 assembly=0 names=7 name_bytes=19 decls=3 types=7 fields=0 params=0 max_ast=24 max_ir=36 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=22 max_slots=12 max_args=0 max_params=0 text=1020 data=0 objects=1 symbols=29 fixups=41 relocations=0 elf=12289\n",
+        "program_exit": 81,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=164 assembly=0 names=7 name_bytes=19 decls=3 types=7 fields=0 params=0 max_ast=24 max_ir=36 max_frame=96 max_bindings=1 max_defers=2 max_loops=0 max_saved=22 max_slots=12 max_args=0 max_params=0 text=1020 data=0 objects=1 symbols=29 fixups=41 relocations=0 elf=12289\n",
+        "program_exit": 81,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "try_return_snapshot",
+    "expected": 7,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=300 assembly=0 names=10 name_bytes=20 decls=5 types=11 fields=1 params=0 max_ast=16 max_ir=46 max_frame=208 max_bindings=1 max_defers=1 max_loops=0 max_saved=12 max_slots=24 max_args=0 max_params=0 text=1284 data=4 objects=1 symbols=27 fixups=39 relocations=0 elf=12292\n",
+        "program_exit": 7,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=300 assembly=0 names=10 name_bytes=20 decls=5 types=11 fields=1 params=0 max_ast=16 max_ir=46 max_frame=208 max_bindings=1 max_defers=1 max_loops=0 max_saved=12 max_slots=24 max_args=0 max_params=0 text=1284 data=4 objects=1 symbols=27 fixups=39 relocations=0 elf=12292\n",
+        "program_exit": 7,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=300 assembly=0 names=10 name_bytes=20 decls=5 types=11 fields=1 params=0 max_ast=16 max_ir=46 max_frame=208 max_bindings=1 max_defers=1 max_loops=0 max_saved=12 max_slots=24 max_args=0 max_params=0 text=1284 data=4 objects=1 symbols=27 fixups=39 relocations=0 elf=12292\n",
+        "program_exit": 7,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "target_only_array_capacity",
+    "expected": "I_LIMIT",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "actual=4294967296 limit=4294967295 I_LIMIT file=1 byte=31\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "actual=4294967296 limit=4294967295 I_LIMIT file=1 byte=31\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "actual=4294967296 limit=4294967295 I_LIMIT file=1 byte=31\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "target_only_deep_fields",
+    "expected": "I_LIMIT",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "actual=65 limit=64 I_LIMIT file=1 byte=33\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "actual=65 limit=64 I_LIMIT file=1 byte=33\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "actual=65 limit=64 I_LIMIT file=1 byte=33\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "target_only_deep_index",
+    "expected": "I_LIMIT",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "actual=65 limit=64 I_LIMIT file=1 byte=33\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "actual=65 limit=64 I_LIMIT file=1 byte=33\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "actual=65 limit=64 I_LIMIT file=1 byte=33\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "target_only_size_overflow",
+    "expected": "I_LIMIT",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "actual=4294967295 limit=0 I_LIMIT file=1 byte=4537\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "actual=4294967295 limit=0 I_LIMIT file=1 byte=4537\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "actual=4294967295 limit=0 I_LIMIT file=1 byte=4537\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "static_repeat_string_identity",
+    "expected": 1,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=121 assembly=0 names=10 name_bytes=32 decls=2 types=11 fields=0 params=0 max_ast=22 max_ir=33 max_frame=208 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=23 max_args=0 max_params=0 text=736 data=33 objects=2 symbols=22 fixups=27 relocations=2 elf=12289\n",
+        "program_exit": 1,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=121 assembly=0 names=10 name_bytes=32 decls=2 types=11 fields=0 params=0 max_ast=22 max_ir=33 max_frame=208 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=23 max_args=0 max_params=0 text=736 data=33 objects=2 symbols=22 fixups=27 relocations=2 elf=12289\n",
+        "program_exit": 1,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=121 assembly=0 names=10 name_bytes=32 decls=2 types=11 fields=0 params=0 max_ast=22 max_ir=33 max_frame=208 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=23 max_args=0 max_params=0 text=736 data=33 objects=2 symbols=22 fixups=27 relocations=2 elf=12289\n",
+        "program_exit": 1,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "static_repeat_nested_identity",
+    "expected": 10,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=217 assembly=0 names=14 name_bytes=44 decls=3 types=17 fields=2 params=0 max_ast=40 max_ir=78 max_frame=512 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=63 max_args=0 max_params=0 text=1816 data=123 objects=2 symbols=44 fixups=73 relocations=6 elf=12289\n",
+        "program_exit": 10,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=217 assembly=0 names=14 name_bytes=44 decls=3 types=17 fields=2 params=0 max_ast=40 max_ir=78 max_frame=512 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=63 max_args=0 max_params=0 text=1816 data=123 objects=2 symbols=44 fixups=73 relocations=6 elf=12289\n",
+        "program_exit": 10,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=217 assembly=0 names=14 name_bytes=44 decls=3 types=17 fields=2 params=0 max_ast=40 max_ir=78 max_frame=512 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=63 max_args=0 max_params=0 text=1816 data=123 objects=2 symbols=44 fixups=73 relocations=6 elf=12289\n",
+        "program_exit": 10,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "static_repeat_pointer_and_string",
+    "expected": 7,
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=234 assembly=0 names=17 name_bytes=60 decls=4 types=16 fields=2 params=0 max_ast=45 max_ir=91 max_frame=560 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=70 max_args=0 max_params=0 text=1940 data=78 objects=3 symbols=47 fixups=79 relocations=6 elf=12289\n",
+        "program_exit": 7,
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=234 assembly=0 names=17 name_bytes=60 decls=4 types=16 fields=2 params=0 max_ast=45 max_ir=91 max_frame=560 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=70 max_args=0 max_params=0 text=1940 data=78 objects=3 symbols=47 fixups=79 relocations=6 elf=12289\n",
+        "program_exit": 7,
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 0,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=234 assembly=0 names=17 name_bytes=60 decls=4 types=16 fields=2 params=0 max_ast=45 max_ir=91 max_frame=560 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=70 max_args=0 max_params=0 text=1940 data=78 objects=3 symbols=47 fixups=79 relocations=6 elf=12289\n",
+        "program_exit": 7,
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "static_repeat_zero_bad_string",
+    "expected": "E_TYPE",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=23\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=23\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=23\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "static_repeat_zero_bad_address",
+    "expected": "E_TYPE",
+    "generations": [
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=53\n",
+        "passed": true
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=53\n",
+        "passed": true
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "E_TYPE file=1 byte=53\n",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "case": "root_qualified_entry",
+    "generations": [
+      {
+        "generation": "c0",
+        "compile_exit": 0,
+        "stderr": "",
+        "program_exit": 37
+      },
+      {
+        "generation": "c1",
+        "compile_exit": 1,
+        "stderr": "E_NAME file=0 byte=0\n"
+      },
+      {
+        "generation": "c2",
+        "compile_exit": 1,
+        "stderr": "E_NAME file=0 byte=0\n"
+      },
+      {
+        "generation": "c3",
+        "compile_exit": 1,
+        "stderr": "E_NAME file=0 byte=0\n"
+      }
+    ]
+  }
+]

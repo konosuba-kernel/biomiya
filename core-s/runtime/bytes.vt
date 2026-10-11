@@ -1,0 +1,58 @@
+module runtime::bytes;
+
+pub fn equal(a:[]const u8, b:[]const u8) -> bool {
+    if a.len != b.len { return false; }
+    var i:usize = 0;
+    while i < a.len {
+        unsafe { if a[i] != b[i] { return false; } }
+        i = i +1_usize;
+    }
+    return true;
+}
+
+// Caller owns the lifetime of data; this helper only checks the subrange.
+pub unsafe fn view(data:[]const u8, start:usize, end:usize) -> []const u8 {
+    if start > end || end > data.len { let bad:u32 = 1_u32 / 0_u32; }
+    unsafe { return core::slice_from_raw_parts(core::ptr_add(data.data, start), end-start); }
+}
+
+pub fn space(c:u8) -> bool {
+    return c == 32_u8 || c == 9_u8 || c == 10_u8 || c == 13_u8 || c == 11_u8 || c == 12_u8;
+}
+
+pub unsafe fn path(data:[]const u8) -> bool {
+    if data.len == 0_usize || data.len > 96_usize { return false; }
+    var start:usize = 0;
+    var i:usize = 0;
+    while i <= data.len {
+        var separator:bool = i == data.len;
+        if !separator { unsafe { separator = data[i] == 47_u8; } }
+        if separator {
+            if i == start { return false; }
+            unsafe {
+                if i-start == 1_usize && data[start] == 46_u8 { return false; }
+                if i-start == 2_usize && data[start] == 46_u8 && data[start+1_usize] == 46_u8 { return false; }
+            }
+            start = i+1_usize;
+        } else {
+            unsafe {
+                let c:u8 = data[i];
+                if c <= 32_u8 || c == 92_u8 || c == 127_u8 { return false; }
+                // UTF-8 encodings of the remaining Unicode whitespace/control scalars.
+                if i+1_usize < data.len && c == 194_u8 {
+                    if data[i+1] >= 128_u8 && data[i+1] <= 160_u8 { return false; }
+                }
+                if i+2_usize < data.len {
+                    let b:u8 = data[i+1];
+                    let d:u8 = data[i+2];
+                    if c == 225_u8 && b == 154_u8 && d == 128_u8 { return false; }
+                    if c == 226_u8 && b == 128_u8 && (d >= 128_u8 && d <= 138_u8 || d == 168_u8 || d == 169_u8 || d == 175_u8) { return false; }
+                    if c == 226_u8 && b == 129_u8 && d == 159_u8 { return false; }
+                    if c == 227_u8 && b == 128_u8 && d == 128_u8 { return false; }
+                }
+            }
+        }
+        i = i+1_usize;
+    }
+    return true;
+}

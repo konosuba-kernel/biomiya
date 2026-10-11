@@ -1,0 +1,33 @@
+{
+  "node": "H",
+  "revision": 2,
+  "implementer": "/root/b3_frontend",
+  "contributors": [
+    "/root/b3_frontend",
+    "/root",
+    "/root/b3_machine"
+  ],
+  "input_revisions": {
+    "B2": "accepted"
+  },
+  "files": {
+    "docs/design/bootstrap-b3.md": "473c6b92f98071db77b0dfec87f49f47c9680038ad1284b5461ba617f0a16c26",
+    "core-s/bootstrap/model.vt": "9f242819c39937feacc80fb377ae2192314bb9ead3939dad612057f6e21411a8",
+    "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+    "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+  },
+  "evidence": [
+    "C0 check model.vt passed",
+    "C0 project bootstrap/tests/model.build and QEMU exit 0",
+    "Temporary deterministic .s0 shim: one EINTR followed by one-byte writes prints complete E_PARSE file=42 byte=4096, exit1",
+    "Temporary deterministic .s0 shims: zero write, errno=-5 and oversized return each exit1 without hanging or recursive error output"
+  ],
+  "scope": "Contracts and actual shared model only, not B3 self compilation",
+  "supersedes": "H-r1",
+  "changes": [
+    "model diagnostic writer handles short writes and EINTR; zero progress, oversized return, or errors abandon diagnostics without recursive fail",
+    "explicit typed IR block terminator and function-local label contract"
+  ],
+  "local_test_script": "/tmp/b3-h2-check.py",
+  "consumer_impact": "No signature or layout changes; L/M can update H input revision without API rewrite; final integration must use H2."
+}

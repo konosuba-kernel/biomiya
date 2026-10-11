@@ -1,0 +1,10 @@
+use biomiya_core_s::{pipeline,frontend,check,source::FileId,model::*};
+fn main(){
+ let bad=["const A:bool = false && B; const B:bool = A;", "struct S { x:[0]S }", "const N:usize = sizeof(S); struct S { x:[N]u8 }", "fn run()->u32 { return 0; let p:*kernel u32 = null; return *p; }", "fn run()->u32 { return 0; let x:u32 = missing; }", "fn run()->u32 { let x:u32 = 1; x = 2; return x; }", "fn run()->u32 { let r:Result<u32,u32> = Result::<u32,u32>::Ok(1); match r { Result::<u32,u32>::Ok(v:u32) => {return v;}, } }", "fn run()->u32 { defer { loop {} } return 0; }", "static VALUE:u32 = 1;", "fn run( -> u32 {}"];
+ for src in bad {let expected=frontend::parse(FileId(91),src).and_then(frontend::resolve).and_then(|r|check::check(&r)).unwrap_err();let actual=pipeline::compile(FileId(91),src).unwrap_err();assert_eq!(actual.code,expected.code);assert_eq!(actual.span,expected.span);assert_eq!(actual.message,expected.message);assert_eq!(actual.span.file,FileId(91));assert!((actual.span.end as usize)<=src.len());}
+ let boundary=" ".repeat(pipeline::MAX_SOURCE_BYTES);assert!(pipeline::compile(FileId(91),&boundary).is_ok());
+ let src="struct Pair { a:u32, b:u32 } unsafe fn change(p:*kernel Pair)->u32 { unsafe { (*p).a = 90; } return 3; } fn take(p:Pair, n:u32)->u32 { return p.a+n; } fn run()->u32 { var p:Pair=Pair{a:41,b:7}; var r:u32=0; unsafe { r=take(p,change(addr_of_mut(p))); } defer { r=9; } return r; }";
+ let c=pipeline::compile(FileId(91),src).unwrap();let f=c.functions.iter().find(|f|f.name=="run").unwrap();let mut seen_snapshot=false;let mut seen_change=false;let mut seen_take=false;
+ for i in f.blocks.iter().flat_map(|b|&b.instructions){match &i.kind {InstructionKind::Copy{..}=>{if !seen_change{seen_snapshot=true;}},InstructionKind::Call{function:FunctionId(0),..}=>{assert!(seen_snapshot);seen_change=true;},InstructionKind::Call{function:FunctionId(1),arguments,..}=>{assert!(seen_change);assert!(matches!(arguments[0],Operand::Slot(_)));seen_take=true;},_=>{}}}
+ assert!(seen_take);println!("passed: ten stage-diagnostic preservation cases, exact 4 MiB acceptance boundary, source CFG aggregate snapshot preceding mutating call");
+}

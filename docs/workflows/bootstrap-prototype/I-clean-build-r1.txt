@@ -1,0 +1,91 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 12 tests
+test malformed_ir_returns_diagnostics_without_source_rechecking ... ok
+test typed_lowering_exposes_checks_and_renderer_rejects_malformed_operations ... ok
+test aggregate_parameters_are_independent_and_results_use_hidden_slots ... ok
+test typed_control_flow_preserves_live_temporaries_across_far_edges ... ok
+test typed_address_rendering_and_generated_labels_execute_without_collisions ... ok
+test overlap_copy_large_stack_offsets_and_zero_size_values_execute ... ok
+test hidden_result_unit_omission_and_over_eight_positions_follow_lp64 ... ok
+test branches_loops_and_recursive_calls_preserve_frames ... ok
+test unary_casts_unit_comparison_and_unreachable_execute ... ok
+test explicit_bounds_pointer_offset_and_raw_storage_execute ... ok
+test checked_arithmetic_and_shifts_really_stop ... ok
+test integer_widths_wrapping_comparisons_and_lp64_results_execute ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.50s
+
+
+running 6 tests
+test normal_function_named_like_builtin_keeps_its_identity ... ok
+test literals_do_not_unify_across_comparison_operands ... ok
+test defer_restrictions_and_raw_permissions_are_enforced ... ok
+test explicit_returns_and_dead_code_are_checked ... ok
+test cleanup_reads_exit_values_but_cannot_capture_later_bindings ... ok
+test return_snapshot_precedes_defer_and_captured_binding_is_stable ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test direct_build_needs_no_external_tools_and_is_deterministic ... ok
+test output_failures_and_source_aliases_are_safe ... ok
+test rejected_inputs_never_replace_existing_output ... ok
+test real_source_direct_and_reference_paths_agree ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.78s
+
+
+running 6 tests
+test malformed_operands_symbols_entries_and_ranges_are_rejected ... ok
+test elf_headers_segments_entry_and_padding_are_exact ... ok
+test arbitrary_u64_constants_execute_and_write_exact_bytes ... ok
+test far_control_flow_calls_addresses_and_scratch_contract_execute ... ok
+test instructions_match_independent_clang_lld_bytes ... ok
+test text_capacity_is_checked_before_output_allocation ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s
+
+
+running 6 tests
+test unsupported_features_are_distinct_from_language_errors ... ok
+test source_snapshots_cleanup_and_raw_access_reach_the_checker ... ok
+test source_result_construction_propagation_and_match_compose ... ok
+test real_source_resolves_forward_constants_layouts_and_calls ... ok
+test failures_preserve_stage_and_source_identity ... ok
+test source_capacity_is_a_resource_diagnostic ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.26
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling syn v3.0.6
+   Compiling serde_derive v1.0.229
+   Compiling biomiya-core-s v0.1.0 (/tmp/core-s-clean-6xb1vka_/core-s)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.86s
+     Running unittests src/lib.rs (/tmp/core-s-clean-6xb1vka_/core-s/target/debug/deps/biomiya_core_s-30b17f3e68e699c1)
+     Running unittests src/main.rs (/tmp/core-s-clean-6xb1vka_/core-s/target/debug/deps/core_s-1bdb12d4a7b95dba)
+     Running tests/backend.rs (/tmp/core-s-clean-6xb1vka_/core-s/target/debug/deps/backend-dd76a859cdb41e73)
+     Running tests/check.rs (/tmp/core-s-clean-6xb1vka_/core-s/target/debug/deps/check-03ba06de29a6f661)
+     Running tests/cli.rs (/tmp/core-s-clean-6xb1vka_/core-s/target/debug/deps/cli-36fd4d7e30eef588)
+     Running tests/image.rs (/tmp/core-s-clean-6xb1vka_/core-s/target/debug/deps/image-065bd698f92f2a8c)
+     Running tests/pipeline.rs (/tmp/core-s-clean-6xb1vka_/core-s/target/debug/deps/pipeline-1a8c7db6325800ee)
+   Doc-tests biomiya_core_s

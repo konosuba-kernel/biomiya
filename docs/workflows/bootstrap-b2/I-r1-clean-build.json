@@ -1,0 +1,13 @@
+{
+  "node": "I",
+  "revision": 1,
+  "source_only_clean_build": true,
+  "offline_locked_tests_passed": 61,
+  "production_build_PATH": "empty",
+  "workspace_and_clean_seed_elf_identical": true,
+  "elf_sha256": "480ad21cb13ead42bed200437f9656a7039dae80f354054edfe4c036d6704f81",
+  "elf_file_bytes": 86017,
+  "actual_target_copied_bytes": 9667,
+  "copied_sha256": "e5342732e5f7fb83e4f0753f9b79f1900d6c20612ba1c07bc94f7110e5c146f2",
+  "source_input_policy": "Only core-s source/tests/fixtures/runtime/compiler/app and Cargo files plus source.rs,diagnostic.rs,lexer.rs,unicode.rs; no target or old semantic compiler copied."
+}

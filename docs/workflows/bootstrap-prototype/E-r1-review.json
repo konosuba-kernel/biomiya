@@ -1,0 +1,40 @@
+{
+  "node": "E",
+  "candidate_revision": 1,
+  "reviewer_agent_id": "/root/acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "dependency_revisions": {
+    "H": 2
+  },
+  "file_hashes_verified": {
+    "core-s/src/encode.rs": "459c705bb29cc919f0a86ea819c8d4848f5af5f470dc0556b13a0c7ea6520cf9",
+    "core-s/src/image.rs": "314a1cca58b98a9bbf5261db958fe2a4eddd2dd285fb80c9e2a35f5fc8aeb43e",
+    "core-s/tests/image.rs": "0af8b9faf0830a8a8c3bafb28f4407d4ea5029bc56c9be7bfe5a6ac4a2141d02"
+  },
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features image --test image",
+      "exit_code": 0,
+      "result": "6 tests passed; none ignored"
+    },
+    {
+      "command": "cargo run --quiet --manifest-path /tmp/core-s-independent-review-788cvdot/Cargo.toml",
+      "exit_code": 0,
+      "result": "20,000 deterministic Li bit patterns independently decoded/executed with non-destination register preservation; 26 PC-relative low-12 carry/backward/high-base address checks; six typed-CFG-to-direct-ELF QEMU cases for unsigned div/rem/wrapping arithmetic/shifts",
+      "probe_source": "/tmp/core-s-independent-review-788cvdot/src/main.rs",
+      "probe_sha256": "f74ea5d4ed1e9fea1b1c8d17609c76fcb78b7ecd54894719433663d3eb42aeb2"
+    }
+  ],
+  "findings": [],
+  "limitations": [
+    "Independent probe is a temporary local artifact, identified by path and SHA-256; product sources/tests were not modified.",
+    "Real .vt source, CLI atomic publication and complete assembled product remain I acceptance scope."
+  ],
+  "inspection": [
+    "Ordinary opcode encoding, operand validation and fixed-width layout reviewed directly. Li balanced radix recursion bounded for signed interpretation of arbitrary u64 bits.",
+    "All symbolic deltas bounded by 64 MiB text, so theoretical AUIPC signed-high overflow is unreachable for valid internal symbols; high base arithmetic checked separately.",
+    "ELF rejects empty text, missing/end labels, writes distinct RX/R/RW PT_LOAD segments with no section headers, and has bounded arithmetic.",
+    "Author independent Clang/LLD byte-oracle and QEMU constant/control tests inspected and rerun."
+  ]
+}

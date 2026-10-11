@@ -1,0 +1,19 @@
+{
+  "node": "H",
+  "revision": 2,
+  "files": {
+    "docs/design/bootstrap-prototype.md": "7724ed583f464309530a45f89f23e72cfbf6194a21fd6ad16aac3af6986f0495",
+    "core-s/src/machine.rs": "dc069d91aaf88339d5e41b49be6700d81a9215e80307eec56ee10f37dd067fb1",
+    "core-s/Cargo.toml": "c560b460d78dbd96a720e1b9b2f4a0f5e235514af5397a35b794df90b8413cba",
+    "core-s/src/lib.rs": "da62aa9cb6085f1b6a51364c15e48590cc164717ef3eb7b6c57ec284f7ea857d"
+  },
+  "evidence": [
+    "cargo check --manifest-path core-s/Cargo.toml: passed"
+  ],
+  "limitations": [
+    "H default check does not build future modules"
+  ],
+  "changes": [
+    "Register pipeline gated module in shared lib before freezing interface"
+  ]
+}

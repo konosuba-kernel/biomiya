@@ -1,0 +1,111 @@
+module compiler::scan;
+import compiler::source;
+import runtime::bytes;
+
+fn letter(c:u8) -> bool { return c >= 65_u8 && c <= 90_u8 || c >= 97_u8 && c <= 122_u8 || c == 95_u8; }
+fn digit(c:u8) -> bool { return c >= 48_u8 && c <= 57_u8; }
+fn hex(c:u8) -> bool { return digit(c) || c >= 65_u8 && c <= 70_u8 || c >= 97_u8 && c <= 102_u8; }
+fn fail(code:u32, offset:usize) -> Result<source::Token,source::Error> {
+    return Result::<source::Token,source::Error>::Err(source::Error { code:code, offset:offset });
+}
+
+// kind: EOF=0, identifier=1, number=2, string=3, punctuation=4.
+// Source storage and the cursor must stay live throughout this call.
+pub unsafe fn next(s:*source::Source) -> Result<source::Token,source::Error> {
+    unsafe {
+        let data:[]const u8 = (*s).bytes;
+        var i:usize = (*s).cursor;
+        loop {
+            while i < data.len && bytes::space(data[i]) { i = i+1_usize; }
+            if i+1_usize >= data.len { break; }
+            if data[i] == 47_u8 && data[i+1_usize] == 47_u8 {
+                i = i+2_usize;
+                while i < data.len && data[i] != 10_u8 && data[i] != 13_u8 { i = i+1_usize; }
+                continue;
+            }
+            if data[i] == 47_u8 && data[i+1_usize] == 42_u8 {
+                let start:usize = i;
+                i = i+2_usize;
+                var depth:usize = 1;
+                while depth != 0_usize {
+                    if i+1_usize >= data.len { return fail(1,start); }
+                    if data[i] == 47_u8 && data[i+1_usize] == 42_u8 { depth = depth+1_usize; i = i+2_usize; }
+                    else {
+                        if data[i] == 42_u8 && data[i+1_usize] == 47_u8 { depth = depth-1_usize; i = i+2_usize; }
+                        else { i = i+1_usize; }
+                    }
+                }
+                continue;
+            }
+            break;
+        }
+        let start:usize = i;
+        var kind:u32 = 0;
+        if i < data.len {
+            let c:u8 = data[i];
+            if c >= 128_u8 { return fail(2,i); }
+            if letter(c) {
+                kind = 1;
+                i = i+1_usize;
+                while i < data.len && (letter(data[i]) || digit(data[i])) { i = i+1_usize; }
+            } else {
+                if digit(c) {
+                    kind = 2;
+                    i = i+1_usize;
+                    while i < data.len && (letter(data[i]) || digit(data[i])) { i = i+1_usize; }
+                } else {
+                    if c == 34_u8 {
+                        kind = 3;
+                        i = i+1_usize;
+                        loop {
+                            if i >= data.len { return fail(3,start); }
+                            let b:u8 = data[i];
+                            if b == 10_u8 || b == 13_u8 { return fail(3,i); }
+                            if b == 34_u8 { i = i+1_usize; break; }
+                            if b == 92_u8 {
+                                i = i+1_usize;
+                                if i >= data.len { return fail(3,start); }
+                                let escape:u8 = data[i];
+                                if escape == 120_u8 {
+                                    if i+2_usize >= data.len { return fail(4,i); }
+                                    if !hex(data[i+1_usize]) || !hex(data[i+2_usize]) { return fail(4,i); }
+                                    i = i+2_usize;
+                                } else {
+                                    if escape != 48_u8 && escape != 110_u8 && escape != 114_u8 && escape != 116_u8 && escape != 92_u8 && escape != 34_u8 { return fail(4,i); }
+                                }
+                            }
+                            i = i+1_usize;
+                        }
+                    } else {
+                        // The punctuation alphabet is explicit; control bytes and @ are errors.
+                        let punctuation:[]const u8 = "{}()[];,:.+-*/%&|^!~=<>?";
+                        var found:bool = false;
+                        var p:usize = 0;
+                        while p < punctuation.len { if punctuation[p] == c { found = true; } p = p+1_usize; }
+                        if !found { return fail(5,i); }
+                        kind = 4;
+                        i = i+1_usize;
+                        if i < data.len {
+                            let d:u8 = data[i];
+                            if c == 58_u8 && d == 58_u8 || c == 45_u8 && d == 62_u8 || c == 61_u8 && d == 62_u8 || c == 38_u8 && d == 38_u8 || c == 124_u8 && d == 124_u8 || (c == 61_u8 || c == 33_u8 || c == 60_u8 || c == 62_u8) && d == 61_u8 || (c == 43_u8 || c == 45_u8 || c == 42_u8) && d == 37_u8 || (c == 60_u8 || c == 62_u8) && d == c { i = i+1_usize; }
+                        }
+                    }
+                }
+            }
+        }
+        (*s).cursor = i;
+        return Result::<source::Token,source::Error>::Ok(source::Token { kind:kind, start:start, end:i });
+    }
+}
+
+pub unsafe fn all(data:[]const u8) -> Result<usize,source::Error> {
+    var s:source::Source = source::begin(data);
+    var count:usize = 0;
+    unsafe {
+        loop {
+            let token:source::Token = next(core::addr_of_mut(s))?;
+            if token.kind == 0_u32 { return Result::<usize,source::Error>::Ok(count); }
+            count = count+1_usize;
+        }
+    }
+}

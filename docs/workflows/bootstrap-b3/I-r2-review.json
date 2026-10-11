@@ -1,0 +1,158 @@
+{
+  "node": "I",
+  "candidate_revision": 2,
+  "supersedes": "I-r1",
+  "input_revisions": {
+    "H": 3,
+    "L": 2,
+    "F": 3,
+    "M": 3
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/main.vt": "ccbea227c2ecc130ff808b362850405d4d45616c84cba90c563a77b3dca0c0e9",
+    "core-s/bootstrap/c1.build": "f3db937c66510ca8aedd55f59b5c0cab270eb6b61596a346c33445f47b5bce04",
+    "core-s/bootstrap/c2.build": "3f5df47ca716357e5c721c50bf0de00e08367c17b916adb21eef62636870c02b",
+    "core-s/bootstrap/c3.build": "f51d6e749cc4b00ace61e01f50218c810001c30160ff9e42e70fbf3fd032f677",
+    "core-s/tests/b3.rs": "6b0a22887bd4a56bae848c050e5b5ffd6de4754544fc30335a54c850a45af90f",
+    "core-s/README.md": "d1008422df4f1d39b021cbcb6b978161ad674a50a22a4d10e83dc4aa2ab23693",
+    "docs/workflows/bootstrap-b3/clean_build.py": "5909ab32c3d8031b6d946bea92948c9c7963120e56ca43c7f7ae69fd176a1300",
+    "docs/workflows/bootstrap-b3/metrics.py": "c8c4efdcbb32d20d546a17a95c4b262ea4fd7d4bfbc335a7334475296f6bb3d3",
+    "docs/workflows/bootstrap-b3/metrics.json": "2153cd5c69c3a98ab3594650c8abc84d579108774d6ee19321a9822f9b14b523",
+    "docs/workflows/bootstrap-b3/README.md": "fcf10b24c0cb12d4b9e3cae434b26eddc53a69a1d16732f29bd9daaa03dd8a1b"
+  },
+  "author_evidence_hashes_verified": {
+    "I-r2-tests.txt": "03249f2a6f3b499dcbc33c14f93f5a268e5b155274aa96661b649712d5b92baf",
+    "I-r2-clean/I-clean-tests.txt": "09c2afcce131c729ab9dd83d6dd410a5f6d3c303aefa9cb30f3e3cca62f0bff5",
+    "I-r2-clean/I-clean-build.json": "4cbddf02c71c3379790d6b11b3e08360c66b09ac9893e23a0af5c4073f9647f1",
+    "I-r2-workspace-build.json": "b4c121d8f1c4a7341245710e6a66bf026880af04e90418c025dcf104dcf15e9f",
+    "I-baseline-check.json": "c0f1a0959f47c32037da810632061ba73ea2e1ed8ffda9c7a314bd0d4d1f7598"
+  },
+  "dependency_candidate_hashes_verified": [
+    "H-r3",
+    "L-r2",
+    "F-r3",
+    "M-r3"
+  ],
+  "independent_evidence": {
+    "I-r2-independent.json": "27a8a727ae2dba45c89d3661a55aae6211fdb1943632a8048d09e8b5d6cf3835"
+  },
+  "closed_findings": [
+    {
+      "id": "I1-entry-root-prefix",
+      "result": "Normalization removes exactly one leading root:: before lookup; independent build/check probes verify root::run and root::app::run, unqualified forms, rejection of repeated/empty prefixes, missing function and unsafe/argument/wrong-return signatures."
+    },
+    {
+      "id": "I1-historical-readme",
+      "result": "B2 test61/metrics clearly marked historical; B2 input quotas distinguished; obsolete B3 unfinished assertion corrected; current I2 hashes/sizes/statistics documented."
+    }
+  ],
+  "independent_checks": [
+    {
+      "name": "exact production delta",
+      "result": "Removing new normalization and restoring previous entry local produces byte-for-byte I1 main.vt SHA; no other target/compiler/runtime/assembly changes. H3/L2/F3/M3 hashes all still match accepted candidates."
+    },
+    {
+      "name": "source-only target compiler regeneration",
+      "result": "Fresh temporary tree contains only13 declared VT files,1 s0,3 checked-in manifests. Existing unchanged C0 creates fresh C1; guest C1→C2→C3 build with empty environment PATH and1MiB stack. All3 independently regenerated hashes match current workspace and author clean evidence; C2/C3 full files equal. Guest syscall traces restrict open paths to declared inputs/output with no execve or executable self-read.",
+      "hashes": {
+        "c1": "c7f24a2ea419cc4fd532c2e7eecded8da9a65208c918c203449ae0d7e8c2bebd",
+        "c2": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a",
+        "c3": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a"
+      }
+    },
+    {
+      "name": "entry regression and adverse cases",
+      "result": "10 cases × C0/C1/C2/C3 =40 build checks; same10 × C1/C2/C3 =30 check invocations. Valid generated programs exit37; invalid sources/entry names rejected; check creates no output."
+    },
+    {
+      "name": "metrics completeness and reproducibility",
+      "result": "All file hashes validated; metrics.py rerun with output redirected to /tmp reproduces frozen metrics.json byte-for-byte. I1 Python script snapshots counted as separate evidence group. Target compiler181404 bytes,4040 physical lines; dense formatting caveat retained."
+    },
+    {
+      "name": "evidence preservation",
+      "result": "I1 author evidence hash set unchanged; clean_build.py --record-dir EXISTING_TMP rejects before any writes, preserving sentinel. New default/explicit fresh-directory behavior reviewed; copy/build/test/generation body unchanged."
+    },
+    {
+      "name": "baseline and current author regression audit",
+      "result": "B2 baseline files unchanged except README; both current workspace and source-clean logs contain81 passing tests. Clean evidence input hashes match current source; current binary/ELF/stats evidence checked."
+    }
+  ],
+  "inherited_evidence": [
+    {
+      "from": "H-r3/L-r2/F-r3/M-r3 independent reviews",
+      "why": "All accepted implementation and test hashes unchanged; no changed cross-component API."
+    },
+    {
+      "from": "I-r1-independent-clean.json and I-r1-independent-clean-tests.txt",
+      "why": "Unchanged C0/B2 sources, Cargo files and source-only rebuild copy policy make independent clean seed rebuild/81-test evidence still applicable to unchanged components. I2 compiler products separately rebuilt independently; current81 full tests and clean81 were run by author and verified, not falsely claimed rerun independently here."
+    },
+    {
+      "from": "I-r1-independent-cli.json",
+      "why": "90 independent semantic cases exercise unchanged F/M and the same normal entry path; exact driver delta only strips explicit root:: prefix. Current driver prefix path independently covered by70 new checks."
+    },
+    {
+      "from": "I-r1-independent-mutation.json",
+      "why": "Real backend101→103 code-generation perturbation and normal arithmetic/control-flow output depend on unchanged F/M and unchanged driver build sequencing. Author diagnostic perturbation rerun in I2 full tests; separate new no-self-read traces and new fixed point verified independently."
+    },
+    {
+      "from": "I-r1-independent-io.json",
+      "why": "Repeated EINTR/3-byte IO and18 filesystem/capacity cases cover unchanged L/runtime and unchanged driver load/save/check sequencing; entry normalization does not touch those paths."
+    }
+  ],
+  "final_artifacts": {
+    "hashes": {
+      "c1": "c7f24a2ea419cc4fd532c2e7eecded8da9a65208c918c203449ae0d7e8c2bebd",
+      "c2": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a",
+      "c3": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a"
+    },
+    "file_bytes": {
+      "c1": 768056,
+      "c2": 1062968,
+      "c3": 1062968
+    },
+    "compiler_statistics": [
+      "B3 sources=13 imports=31 assembly_files=1 source=188182 assembly=345 names=1721 name_bytes=29509 decls=411 types=176 fields=115 params=405 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=852792 data=200324 objects=529 symbols=10456 fixups=20181 relocations=8280 elf=1062968\n",
+      "B3 sources=13 imports=31 assembly_files=1 source=188182 assembly=345 names=1721 name_bytes=29509 decls=411 types=176 fields=115 params=405 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=852792 data=200324 objects=529 symbols=10456 fixups=20181 relocations=8280 elf=1062968\n"
+    ],
+    "c2_memory": {
+      "segments": [
+        {
+          "flags": 5,
+          "file_bytes": 852792,
+          "memory_bytes": 852792,
+          "address": 65536
+        },
+        {
+          "flags": 4,
+          "file_bytes": 1619,
+          "memory_bytes": 1619,
+          "address": 921600
+        },
+        {
+          "flags": 6,
+          "file_bytes": 198712,
+          "memory_bytes": 52553432,
+          "address": 925696
+        }
+      ],
+      "writable_memory_bytes": 52553432,
+      "image_span_bytes": 53413592,
+      "bss_bytes": 52354720
+    }
+  },
+  "remaining_boundaries": [
+    "Accepted B3 is actual Linux-user Core S/B2 subset self-compilation under RV64 QEMU. SOS hosting, system rebuilding and complete R1a remain outside B3.",
+    "64MiB is the static compiler data/BSS/image allocation budget, not measured RSS. Guest execution constrains stack to1MiB; largest frame26384 bytes does not prove every possible call chain fits.",
+    "Fixed point plus independent behavior, adversarial and perturbation checks are concrete evidence, not a proof of correctness for every possible source program.",
+    "C0 numeric separator/root-local-shadow defects stay explicitly disclosed; no silent redefinition of target acceptance to match those bugs."
+  ],
+  "reproduction": {
+    "command": "python3 /tmp/b3-i2-review.py > /tmp/b3-i2-review.log 2>&1",
+    "script_source": "import pathlib,tempfile,subprocess,json,hashlib,re,struct,time\nR=pathlib.Path('/home/mii/code/konOSuba/biomiya');C=R/'core-s';D=R/'docs/workflows/bootstrap-b3';q='/usr/bin/qemu-riscv64';sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();result={'hashes':{},'checks':[]}\nfor rev in ['H-r3','L-r2','F-r3','M-r3','I-r2']:\n c=json.loads((D/f'{rev}-candidate.json').read_text())\n for p,h in c['files'].items():assert sha(R/p)==h,(rev,p)\n if isinstance(c.get('evidence'),dict):\n  for p,h in c['evidence'].items():assert sha(D/p)==h,(rev,p)\n result['hashes'][rev]='matched'\nauthor=json.loads((D/'I-r2-clean/I-clean-build.json').read_text())\nwith tempfile.TemporaryDirectory(prefix='b3-i2-review-') as tmp:\n d=pathlib.Path(tmp);manifest=(C/'bootstrap/c1.build').read_text();paths=[l.split()[1]for l in manifest.splitlines()if l.startswith(('source ','assembly '))]\n for p in paths:\n  f=d/p;f.parent.mkdir(parents=True,exist_ok=True);f.write_bytes((C/p).read_bytes())\n (d/'build').mkdir()\n for i in [1,2,3]:\n  f=d/f'bootstrap/c{i}.build';f.write_bytes((C/f'bootstrap/c{i}.build').read_bytes())\n stats=[];traces=[]\n for i in [1,2,3]:\n  args=[str(C/'target/debug/core-s'),'project','bootstrap/c1.build']if i==1 else[q,'-s','1048576','-strace',f'build/c{i-1}.elf','build',f'bootstrap/c{i}.build']\n  p=subprocess.run(args,cwd=d,env={'PATH':''},capture_output=True,timeout=90);assert p.returncode==0,p.stderr.decode()[-3000:]\n  assert sha(d/f'build/c{i}.elf')==author['hashes'][f'c{i}'];assert sha(C/f'build/c{i}.elf')==author['hashes'][f'c{i}']\n  if i>1:\n   trace=p.stderr.decode();opened=re.findall(r'openat\\([^,]+,\"([^\"]+)\"',trace);assert set(opened)<=set(paths+[f'bootstrap/c{i}.build',f'build/c{i}.elf']);assert 'execve('not in trace\n   traces.append({'generation':i,'opened':opened,'stderr':trace})\n assert(d/'build/c2.elf').read_bytes()==(d/'build/c3.elf').read_bytes()\n result['rebuilt_hashes']={f'c{i}':sha(d/f'build/c{i}.elf')for i in [1,2,3]};result['traces']=traces\n cases=[('short','fn run()->u32{return 37;}','run',True),('root','fn run()->u32{return 37;}','root::run',True),('module','module app;fn run()->u32{return 37;}','app::run',True),('module_absolute','module app;fn run()->u32{return 37;}','root::app::run',True),('double_prefix','fn run()->u32{return 37;}','root::root::run',False),('empty_after_prefix','fn run()->u32{return 37;}','root::',False),('missing','fn run()->u32{return 37;}','root::missing',False),('unsafe','unsafe fn run()->u32{return 37;}','root::run',False),('arguments','fn run(x:u32)->u32{return x;}','root::run',False),('wrong_result','fn run()->usize{return 37;}','root::run',False)]\n for name,source,entry,ok in cases:\n  case=d/name;case.mkdir();(case/'in.vt').write_text(source)\n  for gen in [0,1,2,3]:\n   (case/'p.build').write_text(f'format 1\\nprofile linux-user\\nentry {entry}\\nsource in.vt\\noutput c{gen}.elf\\n')\n   args=[str(C/'target/debug/core-s'),'project','p.build']if gen==0 else[q,'-s','1048576',str(d/f'build/c{gen}.elf'),'build','p.build']\n   p=subprocess.run(args,cwd=case,env={'PATH':''},capture_output=True,timeout=10);assert(p.returncode==0)==ok,(name,gen,p.returncode,p.stderr)\n   row={'case':name,'gen':gen,'exit':p.returncode,'stderr':p.stderr.decode()}\n   if ok:\n    status=subprocess.run([q,str(case/f'c{gen}.elf')],timeout=10).returncode;assert status==37;row['program_exit']=status;(case/f'c{gen}.elf').unlink()\n   else:assert not(case/f'c{gen}.elf').exists()\n   if gen>0:\n    args[-2]='check';p=subprocess.run(args,cwd=case,env={'PATH':''},capture_output=True,timeout=10);assert(p.returncode==0)==ok;assert not(case/f'c{gen}.elf').exists();row['check_exit']=p.returncode\n   result['checks'].append(row)\nPath=pathlib.Path\nPath('/tmp/b3-i2-review.json').write_text(json.dumps(result,indent=2)+'\\n');print('Independent source-only C1/C2/C3 rebuild + 40 build/30 check entry cases passed')\n",
+    "additional_checks": "Recompute each candidate/evidence/source SHA256; redirect metrics.py record to fresh /tmp path and byte-compare metrics.json; invoke clean_build.py --record-dir with an existing temporary sentinel directory and verify rejection/no changes. These do not alter frozen product files."
+  },
+  "new_blockers": []
+}

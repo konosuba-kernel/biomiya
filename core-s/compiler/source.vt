@@ -1,0 +1,7 @@
+module compiler::source;
+
+pub struct Source { pub bytes:[]const u8, pub cursor:usize }
+pub struct Token { pub kind:u32, pub start:usize, pub end:usize }
+pub struct Error { pub code:u32, pub offset:usize }
+
+pub fn begin(bytes:[]const u8) -> Source { return Source { bytes:bytes, cursor:0 }; }

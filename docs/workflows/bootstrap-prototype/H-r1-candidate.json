@@ -1,0 +1,16 @@
+{
+  "node": "H",
+  "revision": 1,
+  "files": {
+    "docs/design/bootstrap-prototype.md": "b3d590ad71776fdac4dd939b3d61de199c94014cf5b2b8f59720b30663e6bcb6",
+    "core-s/src/machine.rs": "dc069d91aaf88339d5e41b49be6700d81a9215e80307eec56ee10f37dd067fb1",
+    "core-s/Cargo.toml": "c560b460d78dbd96a720e1b9b2f4a0f5e235514af5397a35b794df90b8413cba",
+    "core-s/src/lib.rs": "1fb8d48b044b8f05890363fad7571702dbd6d27637b9576d35fb42fbd8613003"
+  },
+  "evidence": [
+    "cargo check --manifest-path core-s/Cargo.toml: passed"
+  ],
+  "limitations": [
+    "H default check does not build future modules"
+  ]
+}

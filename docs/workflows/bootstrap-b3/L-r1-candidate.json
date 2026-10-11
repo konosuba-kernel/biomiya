@@ -1,0 +1,20 @@
+{
+  "node": "L",
+  "revision": 1,
+  "implementer": "/root",
+  "contributors": [
+    "/root"
+  ],
+  "input_revisions": {
+    "H": 2
+  },
+  "files": {
+    "core-s/bootstrap/lex.vt": "c1a589877f16c788a1c0714d5d1899ab72eaf7c114916af9aa4518fce97ab037",
+    "core-s/bootstrap/input.vt": "b39ef9e3f2e6d69ff375a0b2e3cf45bfe33584d02cd3ee6a0847b8a70ed7e89d",
+    "core-s/tests/b3_input.rs": "cddb1f9bcc3b026b2678682f5f21ea98761f7ac85851086886592e2f618f7d41"
+  },
+  "evidence": [
+    "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_input: 4 tests passed; see L-r1-tests.txt"
+  ],
+  "scope": "Real manifest loading and immutable source/assembly snapshots, stateless lexing, UTF-8 validation, bounded buffers, exclusive executable output with short-I/O handling; no parser/backend claim."
+}

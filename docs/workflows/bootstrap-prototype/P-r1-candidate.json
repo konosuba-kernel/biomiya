@@ -1,0 +1,34 @@
+{
+  "node": "P",
+  "revision": 1,
+  "implementer": "/root",
+  "input_revisions": {
+    "H": 2
+  },
+  "files": {
+    "core-s/src/pipeline.rs": "f5b5fd212e22fd6915b8547772df9c02f6cede6a9aa579d268b6634c54fdd727",
+    "core-s/src/frontend.rs": "6f3ae60bf5c5f39442562b004ef61b153f4f21b1ab2a0ada56b9e86c8fdd7daf",
+    "core-s/src/check.rs": "95a0098d95288df6e50334e4e9b4496812ea666d775af5c3b2b0bd7f2130acd1",
+    "core-s/tests/pipeline.rs": "ccaa70ef30fbaa1058723bf81c2dd6ce76089b43fd4c1e12994cdbdecd8fe27c"
+  },
+  "commands": [
+    {
+      "command": "cargo test --manifest-path core-s/Cargo.toml --features pipeline --test pipeline",
+      "result": "6 passed, 0 failed, 0 ignored"
+    }
+  ],
+  "changes": [
+    "compile connects real parse/resolve/check and preserves failures",
+    "4 MiB source cap prevents oversized inputs before lexing",
+    "cycle diagnostics now use declaration/length source spans instead of FileId(0)"
+  ],
+  "limitations": [
+    "Source-to-CFG tests, not machine execution; integration I must prove behavior",
+    "Existing Core S subset; no R1a semantic migration"
+  ],
+  "test_development_notes": [
+    "Initial invalid unsafe-fn example corrected to explicit unsafe block as required by existing contract",
+    "Initial invented E_DEFER expectation corrected to existing E_TYPE category before candidate freeze; rejection requirement unchanged",
+    "Actual cycle diagnostic FileId failure fixed in frontend; regression covers E_LAYOUT and E_CONST cycles"
+  ]
+}

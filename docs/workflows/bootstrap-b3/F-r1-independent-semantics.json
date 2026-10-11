@@ -1,0 +1,266 @@
+{
+  "revision": "1",
+  "results": [
+    {
+      "name": "aggregate_argument_snapshot",
+      "expected": 8,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 8,
+      "seed_program_exit": 8,
+      "passed": true
+    },
+    {
+      "name": "return_snapshot",
+      "expected": 71,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 71,
+      "seed_program_exit": 71,
+      "passed": true
+    },
+    {
+      "name": "rhs_before_lhs",
+      "expected": 17,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 17,
+      "seed_program_exit": 17,
+      "passed": true
+    },
+    {
+      "name": "defer_lifo",
+      "expected": 21,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 21,
+      "seed_program_exit": 21,
+      "passed": true
+    },
+    {
+      "name": "loop_cleanup",
+      "expected": 103,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 103,
+      "seed_program_exit": 103,
+      "passed": true
+    },
+    {
+      "name": "try_cleanup",
+      "expected": 71,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 71,
+      "seed_program_exit": 71,
+      "passed": true
+    },
+    {
+      "name": "short_circuit",
+      "expected": 0,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 0,
+      "seed_program_exit": 0,
+      "passed": true
+    },
+    {
+      "name": "captured_lhs_call",
+      "expected": 18,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 18,
+      "seed_program_exit": 18,
+      "passed": true
+    },
+    {
+      "name": "match_scrutinee_once",
+      "expected": 71,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 71,
+      "seed_program_exit": 71,
+      "passed": true
+    },
+    {
+      "name": "bounds",
+      "expected": 101,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 101,
+      "seed_program_exit": 101,
+      "passed": true
+    },
+    {
+      "name": "slice_projection",
+      "expected": 12,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 12,
+      "seed_program_exit": 12,
+      "passed": true
+    },
+    {
+      "name": "const_loss",
+      "expected": "E_TYPE",
+      "target_compile_exit": 1,
+      "target_stderr": "E_TYPE file=1 byte=118\n",
+      "seed_compile_exit": 1,
+      "seed_stderr": "input.vt:1:88: E_TYPE: slice pointer permission mismatch\n",
+      "passed": true
+    },
+    {
+      "name": "unsafe_required",
+      "expected": "E_PERMISSION",
+      "target_compile_exit": 1,
+      "target_stderr": "E_PERMISSION file=1 byte=40\n",
+      "seed_compile_exit": 1,
+      "seed_stderr": "input.vt:1:41: E_UNSAFE: raw access requires an unsafe block\n",
+      "passed": true
+    },
+    {
+      "name": "defer_return_rejected",
+      "expected": "E_TYPE",
+      "target_compile_exit": 1,
+      "target_stderr": "E_TYPE file=1 byte=20\n",
+      "seed_compile_exit": 1,
+      "seed_stderr": "input.vt:1:21: E_TYPE: return is forbidden in defer\n",
+      "passed": true
+    },
+    {
+      "name": "defer_binding_snapshot",
+      "expected": 7,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 7,
+      "seed_program_exit": 7,
+      "passed": true
+    },
+    {
+      "name": "nested_defer_branches",
+      "expected": 37,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 37,
+      "seed_program_exit": 37,
+      "passed": true
+    },
+    {
+      "name": "mutable_static_array_len",
+      "expected": "E_PERMISSION",
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 1,
+      "seed_stderr": "input.vt:1:47: E_UNSAFE: raw access requires an unsafe block\n",
+      "target_program_exit": 2,
+      "passed": false
+    },
+    {
+      "name": "aggregate_alias_snapshot",
+      "expected": 21,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 21,
+      "seed_program_exit": 21,
+      "passed": true
+    },
+    {
+      "name": "defer_nested_scope",
+      "expected": 81,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 81,
+      "seed_program_exit": 81,
+      "passed": true
+    },
+    {
+      "name": "known_seed_root_shadow_bug",
+      "expected": 81,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 81,
+      "seed_program_exit": 77,
+      "passed": true,
+      "known_seed_bug": "C0 incorrectly resolves explicit root::n to the same-name local n; target resolves the global correctly."
+    },
+    {
+      "name": "try_return_snapshot",
+      "expected": 7,
+      "target_compile_exit": 0,
+      "target_stderr": "",
+      "seed_compile_exit": 0,
+      "seed_stderr": "",
+      "target_program_exit": 7,
+      "seed_program_exit": 7,
+      "passed": true
+    },
+    {
+      "name": "target_only_array_capacity",
+      "expected": "I_LIMIT",
+      "target_compile_exit": 1,
+      "target_stderr": "E_TYPE file=1 byte=31\n",
+      "seed_compile_exit": 1,
+      "seed_stderr": "Not run: target-only resource-limit probe",
+      "passed": false
+    },
+    {
+      "name": "target_only_deep_fields",
+      "expected": "I_LIMIT",
+      "target_compile_exit": -11,
+      "target_stderr": "qemu: uncaught target signal 11 (Segmentation fault) - core dumped\n",
+      "seed_compile_exit": 1,
+      "seed_stderr": "Not run: target-only resource-limit probe",
+      "passed": false
+    },
+    {
+      "name": "target_only_deep_index",
+      "expected": "I_LIMIT",
+      "target_compile_exit": -11,
+      "target_stderr": "qemu: uncaught target signal 11 (Segmentation fault) - core dumped\n",
+      "seed_compile_exit": 1,
+      "seed_stderr": "Not run: target-only resource-limit probe",
+      "passed": false
+    },
+    {
+      "name": "target_only_size_overflow",
+      "expected": "I_LIMIT",
+      "target_compile_exit": 101,
+      "target_stderr": "",
+      "seed_compile_exit": 1,
+      "seed_stderr": "Not run: target-only resource-limit probe",
+      "passed": false
+    }
+  ]
+}

@@ -1,0 +1,234 @@
+{
+  "date": "2026-10-10",
+  "counter": "cloc 2.10",
+  "scope": "All core-s/src plus three path-reused handwritten files, counted once. Generated Unicode, tests and fixtures separate. Main includes Linux runtime and publishing. No old semantic compiler/runtime linked. Cargo dependencies are external and not included; not a full language or self-hosting implementation.",
+  "own": {
+    "files": [
+      {
+        "path": "core-s/src/ast.rs",
+        "physical_lines": 233,
+        "sha256": "a0846d5dd582cf64db2c39a5b7d08ae15a486911999c4375b204668c8ef6a316",
+        "code": 213,
+        "comment": 1,
+        "blank": 19
+      },
+      {
+        "path": "core-s/src/backend.rs",
+        "physical_lines": 1158,
+        "sha256": "7e775379a3dd798281933f622bf14c6fbeed1bcba18da23ca168d0eda1dcce02",
+        "code": 1109,
+        "comment": 12,
+        "blank": 37
+      },
+      {
+        "path": "core-s/src/check.rs",
+        "physical_lines": 1457,
+        "sha256": "95a0098d95288df6e50334e4e9b4496812ea666d775af5c3b2b0bd7f2130acd1",
+        "code": 1439,
+        "comment": 5,
+        "blank": 13
+      },
+      {
+        "path": "core-s/src/encode.rs",
+        "physical_lines": 273,
+        "sha256": "459c705bb29cc919f0a86ea819c8d4848f5af5f470dc0556b13a0c7ea6520cf9",
+        "code": 263,
+        "comment": 4,
+        "blank": 6
+      },
+      {
+        "path": "core-s/src/frontend.rs",
+        "physical_lines": 1545,
+        "sha256": "6f3ae60bf5c5f39442562b004ef61b153f4f21b1ab2a0ada56b9e86c8fdd7daf",
+        "code": 1522,
+        "comment": 4,
+        "blank": 19
+      },
+      {
+        "path": "core-s/src/image.rs",
+        "physical_lines": 70,
+        "sha256": "314a1cca58b98a9bbf5261db958fe2a4eddd2dd285fb80c9e2a35f5fc8aeb43e",
+        "code": 66,
+        "comment": 2,
+        "blank": 2
+      },
+      {
+        "path": "core-s/src/lib.rs",
+        "physical_lines": 35,
+        "sha256": "da62aa9cb6085f1b6a51364c15e48590cc164717ef3eb7b6c57ec284f7ea857d",
+        "code": 27,
+        "comment": 2,
+        "blank": 6
+      },
+      {
+        "path": "core-s/src/machine.rs",
+        "physical_lines": 121,
+        "sha256": "dc069d91aaf88339d5e41b49be6700d81a9215e80307eec56ee10f37dd067fb1",
+        "code": 105,
+        "comment": 8,
+        "blank": 8
+      },
+      {
+        "path": "core-s/src/main.rs",
+        "physical_lines": 218,
+        "sha256": "5e4cb28be5bd613353bf015070f1e41762179567c215f271ab15b87e4a589694",
+        "code": 208,
+        "comment": 2,
+        "blank": 8
+      },
+      {
+        "path": "core-s/src/model.rs",
+        "physical_lines": 269,
+        "sha256": "1c98d0c49a68ad16fb7b113eec8cb88dfc440bfa0e5212493d432cbc1286a052",
+        "code": 229,
+        "comment": 11,
+        "blank": 29
+      },
+      {
+        "path": "core-s/src/pipeline.rs",
+        "physical_lines": 28,
+        "sha256": "f5b5fd212e22fd6915b8547772df9c02f6cede6a9aa579d268b6634c54fdd727",
+        "code": 23,
+        "comment": 2,
+        "blank": 3
+      }
+    ],
+    "total": {
+      "physical_lines": 5407,
+      "code": 5204,
+      "comment": 53,
+      "blank": 150
+    }
+  },
+  "path_reused": {
+    "files": [
+      {
+        "path": "src/source.rs",
+        "physical_lines": 90,
+        "sha256": "5c801bbac87b4fd65de79a7815d5230c2b69a8b011a15e8d21989baec865fff1",
+        "code": 81,
+        "comment": 0,
+        "blank": 9
+      },
+      {
+        "path": "src/diagnostic.rs",
+        "physical_lines": 43,
+        "sha256": "e8abafc4086e3daeebc3c19b310f165f620a180ca5ff8116f6b7e4438718bf9c",
+        "code": 37,
+        "comment": 0,
+        "blank": 6
+      },
+      {
+        "path": "src/syntax/lexer.rs",
+        "physical_lines": 194,
+        "sha256": "ca33203662cfa337b4e662a7c7967d50e62549e6abb99f325199efb523b3b897",
+        "code": 187,
+        "comment": 7,
+        "blank": 0
+      }
+    ],
+    "total": {
+      "physical_lines": 327,
+      "code": 305,
+      "comment": 7,
+      "blank": 15
+    }
+  },
+  "generated": {
+    "files": [
+      {
+        "path": "src/syntax/unicode.rs",
+        "physical_lines": 2096,
+        "sha256": "6c1c6102c04cc4f4f8985595a209706388695baec71ba1ceec2046d3f6e27feb",
+        "code": 2095,
+        "comment": 1,
+        "blank": 0
+      }
+    ],
+    "total": {
+      "physical_lines": 2096,
+      "code": 2095,
+      "comment": 1,
+      "blank": 0
+    }
+  },
+  "tests": {
+    "files": [
+      {
+        "path": "core-s/tests/backend.rs",
+        "physical_lines": 1186,
+        "sha256": "1a7003139db103ce35549e5cce7e5370766cda464d60f87dfec8e75afdc7fe44",
+        "code": 1156,
+        "comment": 8,
+        "blank": 22
+      },
+      {
+        "path": "core-s/tests/check.rs",
+        "physical_lines": 327,
+        "sha256": "2ef323c395f8a98fae13bf8d1dfd689a2efaafef39071d3bef888bb812f0f48d",
+        "code": 314,
+        "comment": 2,
+        "blank": 11
+      },
+      {
+        "path": "core-s/tests/cli.rs",
+        "physical_lines": 240,
+        "sha256": "69fdf2752e31c8e8bd1322becc8148187ff1a968cfd8ac91b65ab0bbbe5add8c",
+        "code": 235,
+        "comment": 0,
+        "blank": 5
+      },
+      {
+        "path": "core-s/tests/image.rs",
+        "physical_lines": 620,
+        "sha256": "0af8b9faf0830a8a8c3bafb28f4407d4ea5029bc56c9be7bfe5a6ac4a2141d02",
+        "code": 613,
+        "comment": 1,
+        "blank": 6
+      },
+      {
+        "path": "core-s/tests/pipeline.rs",
+        "physical_lines": 125,
+        "sha256": "ccaa70ef30fbaa1058723bf81c2dd6ce76089b43fd4c1e12994cdbdecd8fe27c",
+        "code": 117,
+        "comment": 0,
+        "blank": 8
+      }
+    ],
+    "total": {
+      "physical_lines": 2498,
+      "code": 2435,
+      "comment": 11,
+      "blank": 52
+    }
+  },
+  "fixtures": {
+    "files": [
+      {
+        "path": "core-s/fixtures/bootstrap.vt",
+        "physical_lines": 98,
+        "sha256": "ef2ff4f7a35f7dc4b3dffe477f86663f63331f25661536887097702300fb8096"
+      }
+    ],
+    "total": {
+      "physical_lines": 98,
+      "code": 0,
+      "comment": 0,
+      "blank": 0
+    }
+  },
+  "handwritten_total": {
+    "physical_lines": 5734,
+    "code": 5509,
+    "comment": 60,
+    "blank": 165
+  },
+  "prior_audit_handwritten": {
+    "physical_lines": 4730,
+    "code": 4552
+  },
+  "delta_from_prior_audit": {
+    "physical_lines": 1004,
+    "code": 957
+  }
+}

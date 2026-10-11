@@ -1,0 +1,37 @@
+{
+  "node": "H",
+  "candidate_revision": 2,
+  "reviewer_agent_id": "/root/acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "docs/design/bootstrap-prototype.md": "7724ed583f464309530a45f89f23e72cfbf6194a21fd6ad16aac3af6986f0495",
+    "core-s/src/machine.rs": "dc069d91aaf88339d5e41b49be6700d81a9215e80307eec56ee10f37dd067fb1",
+    "core-s/Cargo.toml": "c560b460d78dbd96a720e1b9b2f4a0f5e235514af5397a35b794df90b8413cba",
+    "core-s/src/lib.rs": "da62aa9cb6085f1b6a51364c15e48590cc164717ef3eb7b6c57ec284f7ea857d"
+  },
+  "commands": [
+    {
+      "command": "cargo check --manifest-path core-s/Cargo.toml",
+      "exit_code": 0,
+      "result": "passed default-feature compilation"
+    },
+    {
+      "command": "Python SHA-256 comparison of all four candidate files",
+      "exit_code": 0,
+      "result": "all four match frozen candidate"
+    }
+  ],
+  "findings": [],
+  "verified_contracts": [
+    "Machine operations can represent existing unsigned Core S integer backend; arbitrary constants can be synthesized with Li expansion.",
+    "Fixed 12-byte branch inverse skip and 8-byte PC-relative jump/call are coherent for 64 MiB text and reserved t6 scratch.",
+    "Minimal ELF text plus placeholder R/RW segments and Linux exit adapter scope are internally consistent.",
+    "CLI entry validation, atomic output, same-file rejection, determinism and real-source integration criteria are explicit."
+  ],
+  "limitations": [
+    "Architecture acceptance only; no encode/image/pipeline implementation is present or approved by this review.",
+    "Existing backend still uses textual emission and will be replaced by B; its t6 accesses must respect scratch liveness in implementation."
+  ],
+  "revision_assessment": "H r2 adds cfg-gated pipeline module declaration; P can now expose compile without writing H-owned lib.rs. Design revision heading updated. Machine interface and Cargo features unchanged. Default cargo check independently rerun and passed."
+}

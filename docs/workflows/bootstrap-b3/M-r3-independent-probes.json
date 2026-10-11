@@ -1,0 +1,57 @@
+{
+  "revision": "3",
+  "results": [
+    {
+      "mode": "nolabel",
+      "compiler_exit": 1,
+      "stderr": "I_INTERNAL file=2 byte=17\n",
+      "elf_created": false
+    },
+    {
+      "mode": "labeltwo",
+      "compiler_exit": 1,
+      "stderr": "I_INTERNAL file=2 byte=17\n",
+      "elf_created": false
+    },
+    {
+      "mode": "valuetypecycle",
+      "compiler_exit": 1,
+      "stderr": "I_INTERNAL file=0 byte=0\n",
+      "elf_created": false
+    },
+    {
+      "mode": "wrap",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 0
+    },
+    {
+      "mode": "ir",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 97
+    },
+    {
+      "mode": "mixedcycle",
+      "compiler_exit": 1,
+      "stderr": "I_INTERNAL file=0 byte=0\n",
+      "elf_created": false
+    },
+    {
+      "mode": "deepchain",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 101
+    },
+    {
+      "mode": "pointerprojection",
+      "compiler_exit": 0,
+      "stderr": "",
+      "elf_created": true,
+      "program_exit": 101
+    }
+  ]
+}

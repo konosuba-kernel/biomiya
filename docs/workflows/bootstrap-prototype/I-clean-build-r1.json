@@ -1,0 +1,8 @@
+{
+  "command": "cargo test --offline --manifest-path CLEAN/core-s/Cargo.toml --all-features",
+  "source_copy": "only core-s/{src,tests,fixtures,Cargo.toml,Cargo.lock} and four directly reused source files; no target/build or archived compiler",
+  "exit_code": 0,
+  "clean_target_created": true,
+  "clean_and_working_elf_identical": true,
+  "elf_sha256": "b1fbf04363cc6a8b3ed19845d698b841a05eb49bf1d63aea3c1bbbf8dcfd273f"
+}

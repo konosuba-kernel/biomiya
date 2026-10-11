@@ -1,0 +1,81 @@
+module compiler::manifest;
+import runtime::bytes;
+
+pub struct Manifest {
+    pub sources:[32][]const u8,
+    pub count:usize,
+    pub output:[]const u8
+}
+
+// Views borrow the manifest buffer, which must outlive the result.
+pub unsafe fn parse(data:[]const u8) -> Result<Manifest,u32> {
+    if data.len > 16384_usize { return Result::<Manifest,u32>::Err(20); }
+    var result:Manifest = Manifest { sources:["";32], count:0, output:"" };
+    var assemblies:[8][]const u8 = ["";8];
+    var assembly_count:usize = 0;
+    var seen:u32 = 0;
+    var cursor:usize = 0;
+    unsafe {
+        while cursor < data.len {
+            let line:usize = cursor;
+            while cursor < data.len && data[cursor] != 10_u8 && data[cursor] != 13_u8 { cursor = cursor+1_usize; }
+            let end:usize = cursor;
+            if cursor < data.len { cursor = cursor+1_usize; }
+            var i:usize = line;
+            while i < end && bytes::space(data[i]) { i = i+1_usize; }
+            if i == end { continue; }
+            if data[i] == 35_u8 { continue; }
+            let key_start:usize = i;
+            while i < end && !bytes::space(data[i]) { i = i+1_usize; }
+            let key:[]const u8 = bytes::view(data,key_start,i);
+            while i < end && bytes::space(data[i]) { i = i+1_usize; }
+            let value_start:usize = i;
+            while i < end && !bytes::space(data[i]) { i = i+1_usize; }
+            let value:[]const u8 = bytes::view(data,value_start,i);
+            while i < end && bytes::space(data[i]) { i = i+1_usize; }
+            if i != end || value.len == 0_usize { return Result::<Manifest,u32>::Err(20); }
+            var bit:u32 = 0;
+            if bytes::equal(key,"format") {
+                bit = 1;
+                if !bytes::equal(value,"1") { return Result::<Manifest,u32>::Err(20); }
+            } else {
+                if bytes::equal(key,"profile") {
+                    bit = 2;
+                    if !bytes::equal(value,"linux-user") { return Result::<Manifest,u32>::Err(20); }
+                } else {
+                    if bytes::equal(key,"entry") { bit = 4; }
+                    else {
+                        if bytes::equal(key,"output") {
+                            bit = 8;
+                            if !bytes::path(value) { return Result::<Manifest,u32>::Err(20); }
+                            result.output = value;
+                        } else {
+                            let source:bool = bytes::equal(key,"source");
+                            if !source && !bytes::equal(key,"assembly") { return Result::<Manifest,u32>::Err(20); }
+                            if !bytes::path(value) { return Result::<Manifest,u32>::Err(20); }
+                            var n:usize = 0;
+                            while n < result.count { if bytes::equal(result.sources[n],value) { return Result::<Manifest,u32>::Err(20); } n = n+1_usize; }
+                            n = 0;
+                            while n < assembly_count { if bytes::equal(assemblies[n],value) { return Result::<Manifest,u32>::Err(20); } n = n+1_usize; }
+                            if source {
+                                if result.count == 32_usize { return Result::<Manifest,u32>::Err(20); }
+                                result.sources[result.count] = value;
+                                result.count = result.count+1_usize;
+                            } else {
+                                if assembly_count == 8_usize { return Result::<Manifest,u32>::Err(20); }
+                                assemblies[assembly_count] = value;
+                                assembly_count = assembly_count+1_usize;
+                            }
+                        }
+                    }
+                }
+            }
+            if bit != 0_u32 {
+                if seen & bit != 0_u32 { return Result::<Manifest,u32>::Err(20); }
+                seen = seen | bit;
+            }
+        }
+    }
+    if seen != 15_u32 || result.count == 0_usize { return Result::<Manifest,u32>::Err(20); }
+    return Result::<Manifest,u32>::Ok(result);
+}

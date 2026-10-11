@@ -1,0 +1,52 @@
+module app;
+import runtime::linux;
+import compiler::manifest;
+import compiler::scan;
+import compiler::source;
+
+static mut MANIFEST:[16385]u8 = [0;16385];
+static mut INPUT:[65537]u8 = [0;65537];
+
+fn copy(m:manifest::Manifest, fd:usize) -> Result<(),u32> {
+    var i:usize = 0;
+    unsafe {
+        while i < m.count {
+            let length:usize = linux::read_file(m.sources[i],core::slice_of_mut(INPUT))?;
+            let text:[]const u8 = core::slice_from_raw_parts(core::slice_of(INPUT).data,length);
+            match scan::all(text) {
+                Result::<usize,source::Error>::Ok(tokens:usize) => {},
+                Result::<usize,source::Error>::Err(e:source::Error) => { return Result::<(),u32>::Err(21); },
+            }
+            let written:() = linux::write_all(fd,text)?;
+            i = i+1_usize;
+        }
+    }
+    return Result::<(),u32>::Ok(());
+}
+
+fn run() -> Result<(),u32> {
+    if linux::argc() != 2_usize { return Result::<(),u32>::Err(10); }
+    let path:[]const u8 = linux::argument(1)?;
+    unsafe {
+        let length:usize = linux::read_file(path,core::slice_of_mut(MANIFEST))?;
+        let text:[]const u8 = core::slice_from_raw_parts(core::slice_of(MANIFEST).data,length);
+        let m:manifest::Manifest = manifest::parse(text)?;
+        let fd:usize = linux::create_new(m.output)?;
+        let result:Result<(),u32> = copy(m,fd);
+        let closed:u32 = linux::close(fd);
+        match result {
+            Result::<(),u32>::Ok(unit:()) => {
+                if closed != 0_u32 { let ignored:u32 = linux::remove(m.output); return Result::<(),u32>::Err(closed); }
+            },
+            Result::<(),u32>::Err(e:u32) => { let ignored:u32 = linux::remove(m.output); return Result::<(),u32>::Err(e); },
+        }
+    }
+    return Result::<(),u32>::Ok(());
+}
+
+pub fn start() -> u32 {
+    match run() {
+        Result::<(),u32>::Ok(unit:()) => { return 0; },
+        Result::<(),u32>::Err(error:u32) => { return error; },
+    }
+}

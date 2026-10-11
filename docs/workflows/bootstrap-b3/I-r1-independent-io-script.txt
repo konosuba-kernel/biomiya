@@ -1,0 +1,60 @@
+import pathlib,tempfile,subprocess,re,json
+R=pathlib.Path('/home/mii/code/konOSuba/biomiya');C=R/'core-s';q='/usr/bin/qemu-riscv64';rows=[]
+with tempfile.TemporaryDirectory(prefix='b3-i-io-') as tmp:
+ d=pathlib.Path(tmp);manifest=(C/'bootstrap/c1.build').read_text();paths=[l.split()[1] for l in manifest.splitlines() if l.startswith('source ')]
+ for p in paths:
+  f=d/p;f.parent.mkdir(exist_ok=True,parents=True);f.write_bytes((C/p).read_bytes())
+ (d/'counter.vt').write_text('module fault;static mut injected:usize=0;')
+ gi=sum(len(re.findall(r'^(?:pub )?static(?: mut)? ',(C/p).read_text(),re.M))for p in paths)
+ original=(C/'runtime/linux.s0').read_text()
+ prefix=f'''__b2_syscall6:
+addi x5,x0,63
+beq x10,x5,.Lio
+addi x5,x0,64
+bne x10,x5,.Lreal
+.Lio:
+address x5,__core_s_g{gi}
+ld x6,0(x5)
+addi x6,x6,1
+sd x6,0(x5)
+addi x7,x0,1
+and x6,x6,x7
+beq x6,x0,.Lshort
+addi x10,x0,-4
+jalr x0,0(x1)
+.Lshort:
+sltiu x5,x13,4
+bne x5,x0,.Lreal
+addi x13,x0,3
+.Lreal:
+jump __real
+'''
+ (d/'shim.s0').write_text(prefix+original.replace('__b2_syscall6:','__real:'))
+ (d/'self.build').write_text(manifest.replace('assembly runtime/linux.s0','source counter.vt\nassembly shim.s0').replace('output build/c1.elf','output compiler.elf'))
+ p=subprocess.run([str(C/'target/debug/core-s'),'project','self.build'],cwd=d,capture_output=True,timeout=30);assert p.returncode==0,p.stderr
+ (d/'in.vt').write_text('static S:[]const u8="ABCDE";fn run()->u32{unsafe{return (S[3] as u32)+3_u32;}}')
+ (d/'p.build').write_text('format 1\nprofile linux-user\nentry run\nsource in.vt\noutput program.elf\n')
+ p=subprocess.run([q,'-s','1048576','compiler.elf','build','p.build'],cwd=d,capture_output=True,timeout=30,env={'PATH':''});assert p.returncode==0,p.stderr
+ ret=subprocess.run([q,str(d/'program.elf')],timeout=10).returncode;assert ret==71,ret
+ rows.append({'name':'final_CLI_repeated_EINTR_three_byte_reads_writes','exit':p.returncode,'program_exit':ret,'statistics':p.stderr.decode(),'syscall_counter_global':gi})
+ # Normal self-hosted generations, filesystem and capacity boundaries.
+ for gen in ['c1','c2','c3']:
+  for name in ['missing_input','over_capacity','existing_output','dangling_symlink','input_alias','bad_assembly_check']:
+   case=d/(gen+'_'+name);case.mkdir();source=case/'in.vt';source.write_text('fn run()->u32{return 0;}');output=case/'out.elf';tail=''
+   if name=='missing_input':source.unlink()
+   if name=='over_capacity':source.write_bytes(b' '*(4194304+1))
+   if name=='existing_output':output.write_bytes(b'PREVIOUS')
+   if name=='dangling_symlink':output.symlink_to('absent')
+   if name=='input_alias':output.hardlink_to(source)
+   if name=='bad_assembly_check':tail='assembly bad.s0\n';(case/'bad.s0').write_text('f:\njump absent\n')
+   initial=source.read_bytes()if source.exists()else None
+   (case/'p.build').write_text('format 1\nprofile linux-user\nentry run\nsource in.vt\noutput out.elf\n'+tail)
+   p=subprocess.run([q,'-s','1048576',str(C/f'build/{gen}.elf'),'check'if name=='bad_assembly_check'else'build','p.build'],cwd=case,capture_output=True,timeout=30,env={'PATH':''})
+   expected='I_LIMIT'if name=='over_capacity'else'E_LINK'if name=='bad_assembly_check'else'E_IO'
+   assert p.returncode==1 and expected in p.stderr.decode(),(name,p.returncode,p.stderr)
+   if initial is not None:assert source.read_bytes()==initial
+   if name=='existing_output':assert output.read_bytes()==b'PREVIOUS'
+   elif name=='dangling_symlink':assert output.is_symlink()and not(case/'absent').exists()
+   elif name!='input_alias':assert not output.exists()
+   rows.append({'name':name,'generation':gen,'exit':p.returncode,'stderr':p.stderr.decode()})
+pathlib.Path('/tmp/b3-i-io-review.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))

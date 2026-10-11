@@ -1,0 +1,98 @@
+{
+  "node": "F",
+  "candidate_revision": 1,
+  "input_revisions": {
+    "H": 3,
+    "L": 2
+  },
+  "test_backend_revision": {
+    "M": 3
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "不通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/types.vt": "9d841759c1f31db14bf2ed401fcebbffd5ac7c60a9731e5b22c980847e5ada5b",
+    "core-s/bootstrap/parse.vt": "74ac61bb1e9e5e13f89e7a80bce7513867051496ebac2c2735005743ee3afda4",
+    "core-s/bootstrap/check.vt": "22dabf1e3ebb74e403179c4317a2f2663e51384b3fa99e8842ae70c377680950",
+    "core-s/bootstrap/ir.vt": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "core-s/tests/b3_frontend.rs": "1799cf4aabb582fb3dec8f76557a036e4db625a4cd87f4fa0ac02683752c31b1"
+  },
+  "dependency_hashes_revalidated": {
+    "H": {
+      "docs/design/bootstrap-b3.md": "f284c2b2af6f41d4f639006d0d6678aa730a9e06e2e583012afcd6eb63794896",
+      "core-s/bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+      "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+      "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+    },
+    "L": {
+      "core-s/bootstrap/lex.vt": "31915fb257899b833105706e42f2f2861b556cc8ef93c91b865d9b7b9062ac8c",
+      "core-s/bootstrap/input.vt": "78d23f79da810377f784b9e964031fbcf4465ec0f1dbd54d0a6f68810b2e380b",
+      "core-s/tests/b3_input.rs": "9487d019afb25333dad565946e16764f8ef4fc33882f1d8c32bee32c51c03a26"
+    },
+    "M": {
+      "core-s/bootstrap/rv64.vt": "4fcc5bea0bc960f2e91b25d695c18338341ef02d5cefb5e2ee18a54d5769895f",
+      "core-s/bootstrap/image.vt": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+      "core-s/bootstrap/s0.vt": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+      "core-s/bootstrap/tests/machine.vt": "18f37dece32a7511ac6edea7ce1bf7b05a790e885f3195e599d0c1d1fa7c6172",
+      "core-s/tests/b3_machine.rs": "acf31a105bce1ea80c2e9e7d542190fa0feeeb63fbf1503a9502a456ef8ae9bd"
+    }
+  },
+  "commands": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_frontend",
+      "exit_code": 0,
+      "result": "All six author groups pass independently, including current compiler source checking in 10.61s."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/f_semantics.py > docs/workflows/bootstrap-b3/F-r1-independent-semantics.json",
+      "exit_code": 1,
+      "result": "25 independent real-source cases through an isolated reviewer driver and accepted M3: 20 controls pass (one explicitly recorded C0 namespace defect), five failures expose four blocking F defects. Driver does not use product main or future I implementation."
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1-mutable-static-array-len",
+      "severity": "blocking",
+      "file": "core-s/bootstrap/check.vt",
+      "problem": "Reading mutable static array .len bypasses access(base). static mut A:[2]u8=[0;2]; fn run()->u32{return A.len as u32;} compiles and exits 2, while C0 correctly rejects unsafe access.",
+      "required_change": "Enforce required unsafe access on array length projection, including nested mutable-static array fields; retain safe immutable-array and explicit-unsafe controls."
+    },
+    {
+      "id": "F1-array-count-capacity-category",
+      "severity": "blocking",
+      "files": [
+        "core-s/bootstrap/types.vt",
+        "core-s/bootstrap/parse.vt"
+      ],
+      "problem": "A legal usize array count 4294967296 exceeds the chosen u32 count representation but is diagnosed E_TYPE. The repeat-expression path uses the same condition. This is an implementation limit, not a language type error.",
+      "required_change": "Separate wrong count type from count capacity. Report I_LIMIT with actual/capacity/location when integer counts exceed 4294967295, preserving true E_TYPE cases."
+    },
+    {
+      "id": "F1-unbounded-place-recursion",
+      "severity": "blocking",
+      "file": "core-s/bootstrap/check.vt",
+      "problem": "Postfix chains bypass expression depth guard through is_place/place recursion. A source returning a.x repeated 3000 times and a[0] repeated 3000 times both crash the RV64 compiler with SIGSEGV under its required 1 MiB stack, instead of a checked diagnostic. AST counts remain below the declared arena limit.",
+      "required_change": "Bound or remove recursive place/classification walks; all externally constructible expression shapes must fail with a source diagnostic/resource limit before guest stack overflow. Add both field and index-chain regressions."
+    },
+    {
+      "id": "F1-capacity-diagnostic-overflow",
+      "severity": "blocking",
+      "file": "core-s/bootstrap/types.vt",
+      "problem": "types::intern correctly detects oversized array multiplication, then recomputes the overflowing multiplication to print actual. A Big structure of 256 fields each [67108864]u8 used as [4294967295]Big triggers compiler panic exit 101 with no diagnostic.",
+      "required_change": "Make limit reporting itself overflow-safe; report an explicit lower bound/saturated observed value when exact required size is unrepresentable, with capacity and source location. Ensure aggregate size accumulation/alignment has the same bounded behavior."
+    }
+  ],
+  "verified_behavior": [
+    "Independent target execution agrees with C0 for aggregate argument and return snapshots, RHS-before-LHS assignment with captured calls, defer LIFO/late binding/nested branches and loop break/continue, Result ? and aggregate error snapshots, short circuit, bounds and slice projection.",
+    "Negative const-loss, unsafe-global reads and defer returns are rejected; actual target code generation is exercised using accepted M3.",
+    "A same-name local incorrectly shadows root::n in C0 (returns77), while F correctly reads global n (returns81). The equivalent renamed-local program returns81 on both. This known seed bug is recorded, not treated as an F blocker or hidden differential pass."
+  ],
+  "nonblocking_notes": [
+    "F compact multi-statement formatting must be disclosed in final scale comparisons.",
+    "Known C0 root-qualified name shadowing defect and numeric-separator defect need explicit treatment in final differential report; do not force F to reproduce these defects."
+  ],
+  "limitations": [
+    "F1 not accepted; downstream I formal execution must wait for accepted F revision."
+  ]
+}

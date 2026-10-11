@@ -1,0 +1,51 @@
+{
+  "node": "L",
+  "candidate_revision": 2,
+  "supersedes": "L-r1",
+  "input_revisions": {
+    "H": 3
+  },
+  "reviewer_agent_id": "/root/b3_acceptance",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/lex.vt": "31915fb257899b833105706e42f2f2861b556cc8ef93c91b865d9b7b9062ac8c",
+    "core-s/bootstrap/input.vt": "78d23f79da810377f784b9e964031fbcf4465ec0f1dbd54d0a6f68810b2e380b",
+    "core-s/tests/b3_input.rs": "9487d019afb25333dad565946e16764f8ef4fc33882f1d8c32bee32c51c03a26"
+  },
+  "dependency_hashes_revalidated": {
+    "docs/design/bootstrap-b3.md": "f284c2b2af6f41d4f639006d0d6678aa730a9e06e2e583012afcd6eb63794896",
+    "core-s/bootstrap/model.vt": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+    "core-s/bootstrap/tests/model.vt": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37",
+    "core-s/bootstrap/tests/model.build": "ccb8a7d283b5813ea9a061761b81f1209480aa07a2d1adb6ec06a5ed14f6713f"
+  },
+  "commands": [
+    {
+      "command": "cargo test --offline --manifest-path core-s/Cargo.toml --all-features --test b3_input",
+      "exit_code": 0,
+      "result": "All four tests pass independently."
+    },
+    {
+      "command": "python3 docs/workflows/bootstrap-b3/probes/l_input.py 2 > docs/workflows/bootstrap-b3/L-r2-independent-probes.json",
+      "exit_code": 0,
+      "result": "22 independent target probes pass. Seven exact limit diagnostics asserted, including cumulative two-file source overflow at FileId 2 byte 3."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "id": "L1-resource-diagnostic",
+      "result": "All manifest/source/assembly byte limits, source/assembly item limits and decoded string output limits now include observed lower-bound actual/capacity plus preserved file and byte location. Aggregate source overflow reports total observed 4194305 versus 4194304 and offset within the second input correctly."
+    }
+  ],
+  "verified_contracts": [
+    "L1 independent input/lexer/UTF-8/snapshot/short-I/O/output-safety acceptance remains valid with H3 and L2.",
+    "Exact capacity acceptance and over-limit rejection remain intact; repair did not enlarge limits or remove failures.",
+    "Snapshot bytes, manifest entry/output/assemblies and lexer APIs match current H3 contracts."
+  ],
+  "findings": [],
+  "limitations": [
+    "L is input and lexical infrastructure, not a parser/compiler self-compilation acceptance.",
+    "One-based raw IDs require F/M consumer validation; final source semantics/fixed-point/resource accounting remain I obligations.",
+    "B2 existing runtime adapters remain reused; no B2 product file changed by this L candidate."
+  ]
+}
