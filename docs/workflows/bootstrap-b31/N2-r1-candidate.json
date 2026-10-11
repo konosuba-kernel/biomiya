@@ -1,0 +1,45 @@
+{
+  "node": "N2",
+  "revision": 1,
+  "status": "awaiting_independent_review",
+  "input_revisions": {
+    "N1": 1
+  },
+  "input_hashes": {
+    "docs/workflows/bootstrap-b31/N1-r1-candidate.json": "50e510c89a71c50959a1b16d757237bf7c2dd7556016fd9c5880c5f0b6c6d09e",
+    "docs/workflows/bootstrap-b31/N1-r1-review.json": "121a1b5123296dfe59ea998aedd32560037c967b63d6850ca2341581dace3354"
+  },
+  "implementers": [
+    "/root/b31_frontend"
+  ],
+  "files": {
+    "core-s/bootstrap/types.vt": "3f3344c7b693f22d2042e5fd7093a5dafe7d68594666e3d5e927006834b13484",
+    "core-s/bootstrap/parse.vt": "b69bf591f0c75abf8324149de7b9f81e2ea97065e8144771a7eac50ed5677f75",
+    "core-s/bootstrap/check.vt": "b8431a69ad0d9831b7f46ec01baf83e6a953c8d35a35e50297fc3a14d8cbb131",
+    "core-s/bootstrap/ir.vt": "bdc4a4e46f639cb6a685d6fb2f915dc3af1438119df41a8138a2fa987e353655",
+    "core-s/bootstrap/model.vt": "3df2ae22ee55d1e3d229b79b491b68650ce4481c8398ed3b1280e2630b1e4d0b",
+    "core-s/bootstrap/main.vt": "e9b0d6bb3221350d62ddc8422201e4bfb5b1353ede5f2ef49cca9d50db035731",
+    "core-s/tests/b3_frontend.rs": "9884702683fdb9c8af68c3fc384435d295d214b75701beb476be41ef63ef547a",
+    "docs/workflows/bootstrap-b31/N2-c0-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/workflows/bootstrap-b31/N2-diagnostic-tests.log": "a4507906f357f1347bf5076e4eb7c8339b6b5b2ae8b1c5264f582371e1d4e9a3",
+    "docs/workflows/bootstrap-b31/N2-final-frontend-tests.log": "abd119fb298e0b74772d1921e9696b3d9dc95f70c343bb22ba4dbd2565fd7faa",
+    "docs/workflows/bootstrap-b31/N2-final-probe-evidence.json": "6d1a8c881707fbac0b785322795f0cd378f79fdc407ca73d313a2436c0e88ace",
+    "docs/workflows/bootstrap-b31/N2-focused-tests.log": "f5ce6a8e687c61cf4ab42b09176b4d182b1f68892a37ae326f62f34d0ee4c342",
+    "docs/workflows/bootstrap-b31/N2-frontend-tests.log": "db05c973912a8ddd6bde89e9e393629d331dccedf7269c0b81ca41ac5b14736d",
+    "docs/workflows/bootstrap-b31/N2-probe-evidence.json": "021eb0604fe40a01872f11caf2e7d0cbcbae572234a5f626e8246515ddc12e1c",
+    "docs/workflows/bootstrap-b31/N2-probes.py": "c570d75c8aef885c7ebbdcaee1d956776709c4dd738796fbf2dbdb280d354f04",
+    "docs/workflows/bootstrap-b31/N2-report.md": "a306be72858121a05fc8cd60c15ff618db7792a26d148794eafc080214f31052",
+    "docs/workflows/bootstrap-b31/N2-validation.json": "aeb57e0910f7d216be2138f86c1801ae76a58f8f088ba0a5f4fc28ce53027e2c"
+  },
+  "changed_product_files": [
+    "core-s/bootstrap/types.vt",
+    "core-s/bootstrap/parse.vt",
+    "core-s/bootstrap/check.vt",
+    "core-s/bootstrap/ir.vt",
+    "core-s/bootstrap/model.vt",
+    "core-s/bootstrap/main.vt",
+    "core-s/tests/b3_frontend.rs"
+  ],
+  "report": "N2-report.md",
+  "validation": "N2-validation.json"
+}

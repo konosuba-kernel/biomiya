@@ -1,0 +1,130 @@
+Evidence directory: /home/mii/code/konOSuba/biomiya/docs/workflows/bootstrap-b31/N5-clean
+{
+  "node": "N5",
+  "source_only_clean_build": true,
+  "offline_locked_tests_passed": 91,
+  "baseline_passed_test_labels_retained": 81,
+  "added_tests": 10,
+  "test_seconds": 125.06204201100081,
+  "target_build_PATH": "empty",
+  "guest_stack_bytes": 1048576,
+  "c2_c3_byte_equal": true,
+  "hashes": {
+    "c1": "ee6a343fa78b0ed69b0dbeceda07fc645e95d37b4cf83b1e2d5b24f697cb1248",
+    "c2": "0793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc",
+    "c3": "0793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc"
+  },
+  "elf_file_bytes": {
+    "c1": 813128,
+    "c2": 1108040,
+    "c3": 1108040
+  },
+  "generation_seconds": [
+    30.160237596001025,
+    35.33280231900062
+  ],
+  "compiler_statistics": [
+    "B3 sources=15 imports=38 assembly_files=1 source=276684 assembly=345 names=2631 name_bytes=52015 decls=595 types=191 fields=120 params=460 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=898252 data=200667 objects=568 symbols=11217 fixups=21625 relocations=8281 elf=1108040\n",
+    "B3 sources=15 imports=38 assembly_files=1 source=276684 assembly=345 names=2631 name_bytes=52015 decls=595 types=191 fields=120 params=460 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=898252 data=200667 objects=568 symbols=11217 fixups=21625 relocations=8281 elf=1108040\n"
+  ],
+  "elf_memory": {
+    "c1": {
+      "segments": [
+        {
+          "flags": 5,
+          "file_bytes": 603504,
+          "memory_bytes": 603504,
+          "address": 65536
+        },
+        {
+          "flags": 4,
+          "file_bytes": 1946,
+          "memory_bytes": 1946,
+          "address": 671744
+        },
+        {
+          "flags": 6,
+          "file_bytes": 198728,
+          "memory_bytes": 53118748,
+          "address": 675840
+        }
+      ],
+      "writable_memory_bytes": 53118748,
+      "image_span_bytes": 53729052,
+      "bss_bytes": 52920020
+    },
+    "c2": {
+      "segments": [
+        {
+          "flags": 5,
+          "file_bytes": 898252,
+          "memory_bytes": 898252,
+          "address": 65536
+        },
+        {
+          "flags": 4,
+          "file_bytes": 1946,
+          "memory_bytes": 1946,
+          "address": 966656
+        },
+        {
+          "flags": 6,
+          "file_bytes": 198728,
+          "memory_bytes": 53118748,
+          "address": 970752
+        }
+      ],
+      "writable_memory_bytes": 53118748,
+      "image_span_bytes": 54023964,
+      "bss_bytes": 52920020
+    },
+    "c3": {
+      "segments": [
+        {
+          "flags": 5,
+          "file_bytes": 898252,
+          "memory_bytes": 898252,
+          "address": 65536
+        },
+        {
+          "flags": 4,
+          "file_bytes": 1946,
+          "memory_bytes": 1946,
+          "address": 966656
+        },
+        {
+          "flags": 6,
+          "file_bytes": 198728,
+          "memory_bytes": 53118748,
+          "address": 970752
+        }
+      ],
+      "writable_memory_bytes": 53118748,
+      "image_span_bytes": 54023964,
+      "bss_bytes": 52920020
+    }
+  },
+  "source_sha256": {
+    "bootstrap/blocking.vt": "dece54849d272fafbc3a35cda78ec743ef41ca59f32d66ca8a5059c9c772721b",
+    "bootstrap/c1.build": "1658006df1e2a02df807629a8f3c7ffb60ad693ab09b09862571f28091d9abf8",
+    "bootstrap/c2.build": "88dfe7e21fa76639ffe0352e2df6671c9052f3b562817283c2bdcf626dfc0907",
+    "bootstrap/c3.build": "50d9f69c1b7f901c787efd9d96af6c4dd3658545234e096de9b08791707f0ad9",
+    "bootstrap/check.vt": "6b5a7a9ead5f7e168a78f9e8c8804326a9819407a8e010a0ec7925cc395b6b01",
+    "bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+    "bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "bootstrap/ir.vt": "044e884a2dcbebf9e8733277b0c65b3856f2f8346fe09c1d6b2995e338d1ac88",
+    "bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "bootstrap/main.vt": "6f69a5fa8953b3ef0db6738b68054ce2e07f37a949f6a467425d89024385bf29",
+    "bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+    "bootstrap/parse.vt": "8cf832c5f459ef80b333d37e285abb8168b6e9420d7c9128eea3b69dcc142361",
+    "bootstrap/pure.blocking": "65c422bf7700f3f449208b288c4ad5594a7e6c6896e90704180238dacedee77f",
+    "bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+    "bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "bootstrap/types.vt": "d44cf08d052d458d7927ebb9acc9b70492858be0142ae89584a1ed2fc3c3c176",
+    "runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+    "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78"
+  },
+  "source_input_policy": "Only core-s source/tests/fixtures/runtime/compiler/app/bootstrap and Cargo files plus source.rs,diagnostic.rs,lexer.rs,unicode.rs; no target or old semantic compiler copied."
+}

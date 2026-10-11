@@ -1,0 +1,156 @@
+{
+  "scope": "author machine probes only; independent N3 acceptance remains pending",
+  "input_hashes": {
+    "bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+    "bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+    "bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+    "bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "bootstrap/tests/machine.vt": "820459ac38941613d9ba9c24e77a6c9b9d849ddb33b7dc11f1872f3e71789890",
+    "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+    "runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+  },
+  "baseline_hashes": {
+    "bootstrap/model.vt": "3df2ae22ee55d1e3d229b79b491b68650ce4481c8398ed3b1280e2630b1e4d0b",
+    "bootstrap/image.vt": "c97a9422f740745f491787511d3aab16706fe04e812f6f02d78ac361cbd58fa6",
+    "bootstrap/rv64.vt": "ed90050458b09474589eed80a241d328d0b05329929d5f1c966c5a1850218658",
+    "bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "bootstrap/tests/machine.vt": "18f37dece32a7511ac6edea7ce1bf7b05a790e885f3195e599d0c1d1fa7c6172",
+    "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+    "runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+  },
+  "stack_bytes": 1048576,
+  "same_ELF_as_N2_machine": [
+    "ir",
+    "wrap",
+    "constants"
+  ],
+  "measured_slot_bytes": {
+    "N2": 32,
+    "N3": 20
+  },
+  "production_table_payload_delta": -131072,
+  "results": {
+    "current": {
+      "ir": {
+        "exit": 0,
+        "stderr": "",
+        "new_output": true,
+        "elf_sha256": "8e04f71ac5ea81edd3dd86b7024c2fa0303a205858c95bceaa07400284164758"
+      },
+      "wrap": {
+        "exit": 0,
+        "stderr": "",
+        "new_output": true,
+        "elf_sha256": "626079ca32145401ce3dd9b3063ab8c8b5372eacefe67979b568ea6a15737b69"
+      },
+      "constants": {
+        "exit": 0,
+        "stderr": "",
+        "new_output": true,
+        "elf_sha256": "8b9cd106df5f2c96758b779f35424076229afb1c4dc8b1b8613aff5913f883d8"
+      },
+      "slot_size": {
+        "exit": 20,
+        "stderr": "",
+        "new_output": false
+      },
+      "labels_reuse": {
+        "exit": 0,
+        "stderr": "",
+        "new_output": true,
+        "elf_sha256": "8882a835231b4671c50332cebc6854088ed6c436f5e1530887fc579a62337219"
+      },
+      "labels_yes_missing": {
+        "exit": 1,
+        "stderr": "I_INTERNAL file=2 byte=17\n",
+        "new_output": false
+      },
+      "labels_no_missing": {
+        "exit": 1,
+        "stderr": "I_INTERNAL file=2 byte=17\n",
+        "new_output": false
+      }
+    },
+    "slot_mutation": {
+      "ir": {
+        "exit": 1,
+        "stderr": "I_INTERNAL file=2 byte=9001\n",
+        "new_output": false
+      }
+    },
+    "inst_mutation": {
+      "ir": {
+        "exit": 1,
+        "stderr": "I_INTERNAL file=2 byte=9001\n",
+        "new_output": false
+      }
+    },
+    "arg_mutation": {
+      "ir": {
+        "exit": 1,
+        "stderr": "I_INTERNAL file=2 byte=9001\n",
+        "new_output": false
+      }
+    },
+    "parameter_mutation": {
+      "ir": {
+        "exit": 1,
+        "stderr": "I_INTERNAL file=2 byte=9001\n",
+        "new_output": false
+      }
+    },
+    "count_mutation": {
+      "ir": {
+        "exit": 1,
+        "stderr": "I_INTERNAL file=2 byte=9001\n",
+        "new_output": false
+      }
+    },
+    "missing_high_reference": {
+      "labels_yes_missing": {
+        "exit": 1,
+        "stderr": "E_LINK file=0 byte=0\n",
+        "new_output": false
+      },
+      "labels_no_missing": {
+        "exit": 1,
+        "stderr": "E_LINK file=0 byte=0\n",
+        "new_output": false
+      }
+    },
+    "stale_definition": {
+      "labels_reuse": {
+        "exit": 1,
+        "stderr": "I_INTERNAL file=2 byte=17\n",
+        "new_output": false
+      }
+    },
+    "N2_machine_baseline": {
+      "ir": {
+        "exit": 0,
+        "stderr": "",
+        "new_output": true,
+        "elf_sha256": "8e04f71ac5ea81edd3dd86b7024c2fa0303a205858c95bceaa07400284164758"
+      },
+      "wrap": {
+        "exit": 0,
+        "stderr": "",
+        "new_output": true,
+        "elf_sha256": "626079ca32145401ce3dd9b3063ab8c8b5372eacefe67979b568ea6a15737b69"
+      },
+      "constants": {
+        "exit": 0,
+        "stderr": "",
+        "new_output": true,
+        "elf_sha256": "8b9cd106df5f2c96758b779f35424076229afb1c4dc8b1b8613aff5913f883d8"
+      },
+      "slot_size": {
+        "exit": 32,
+        "stderr": "",
+        "new_output": false
+      }
+    }
+  },
+  "mutants_discriminated": true
+}

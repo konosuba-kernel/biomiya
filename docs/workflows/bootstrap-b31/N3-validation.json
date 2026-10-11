@@ -1,0 +1,17 @@
+{
+  "node": "N3",
+  "revision": 1,
+  "frontend_tests": 12,
+  "machine_tests": 7,
+  "last_rule_contract_test": 1,
+  "failed": 0,
+  "final_source_hashes_match_integration_snapshot": true,
+  "integration": "N3-integration-evidence.json",
+  "machine_report": "N3-machine-report.json",
+  "metrics": {
+    "elf_bytes": 1062968,
+    "rw_memory_bytes": 52422368,
+    "image_span": 53282528
+  },
+  "scope": "Focused suites, C0 and one target self-compile; N5 remains responsible for complete suite and fixed point/clean migration."
+}

@@ -5,6 +5,11 @@ import bootstrap::image;
 static mut panic_symbol:u32 = 0;
 static mut copy_symbol:u32 = 0;
 static mut labels:[65537]u32 = [0; 65537];
+// Only this target owns frame offsets; semantic Slots remain unchanged.
+// Every active slot is assigned before emission, so old entries need no clearing.
+static mut frame_offsets:[32769]usize = [0; 32769];
+// Includes definitions and references, including sparse labels in malformed IR.
+static mut label_high:u32 = 0;
 // Explicit DFS storage bounds type validation independently of machine call depth.
 static mut type_state:[8193]u8 = [0; 8193];
 static mut type_stack:[8193]u32 = [0; 8193];
@@ -16,12 +21,14 @@ static mut frame_size:usize = 0;
 static mut frame_align:usize = 16;
 static mut current:u32 = 0;
 static mut here:model::Span = model::Span {
-    file:0,start:0,end:0
+    file:0,
+    start:0,
+    end:0
 };
 
 fn bad() -> () {
     unsafe {
-        model::fail(7,here.file,here.start as usize);
+        model::fail(model::ERROR_INTERNAL, here.file, here.start as usize);
     }
     return ();
 }
@@ -33,7 +40,7 @@ fn reg(n:u32) -> () {
     return ();
 }
 
-pub fn r(f7:u32,f3:u32,rd:u32,a:u32,b:u32) -> () {
+pub fn r(f7:u32, f3:u32, rd:u32, a:u32, b:u32) -> () {
     reg(rd);
     reg(a);
     reg(b);
@@ -41,14 +48,14 @@ pub fn r(f7:u32,f3:u32,rd:u32,a:u32,b:u32) -> () {
     return ();
 }
 
-pub fn i(opcode:u32,f3:u32,rd:u32,a:u32,n:usize) -> () {
+pub fn i(opcode:u32, f3:u32, rd:u32, a:u32, n:usize) -> () {
     reg(rd);
     reg(a);
     image::word((((n & 4095_usize) as u32) << 20_u32) | (a << 15_u32) | (f3 << 12_u32) | (rd << 7_u32) | opcode);
     return ();
 }
 
-pub fn s(f3:u32,rs:u32,base:u32,n:usize) -> () {
+pub fn s(f3:u32, rs:u32, base:u32, n:usize) -> () {
     reg(rs);
     reg(base);
     let v:u32 = (n & 4095_usize) as u32;
@@ -56,9 +63,9 @@ pub fn s(f3:u32,rs:u32,base:u32,n:usize) -> () {
     return ();
 }
 
-pub fn constant(rd:u32,n:usize) -> () {
+pub fn constant(rd:u32, n:usize) -> () {
     if n <= 2047_usize || n >= 18446744073709549568_usize {
-        i(19,0,rd,0,n);
+        i(19, 0, rd, 0, n);
         return ();
     }
     let lo:usize = n & 4095_usize;
@@ -69,15 +76,15 @@ pub fn constant(rd:u32,n:usize) -> () {
     if lo >= 2048_usize {
         high = high+%1_usize;
     }
-    constant(rd,high);
-    i(19,1,rd,rd,12);
+    constant(rd, high);
+    i(19, 1, rd, rd, 12);
     if lo != 0_usize {
-        i(19,0,rd,rd,lo);
+        i(19, 0, rd, rd, lo);
     }
     return ();
 }
 
-pub fn transfer(rd:u32,target:u32,jump:bool) -> () {
+pub fn transfer(rd:u32, target:u32, jump:bool) -> () {
     reg(rd);
     if !jump && rd == 0_u32 {
         bad();
@@ -85,49 +92,49 @@ pub fn transfer(rd:u32,target:u32,jump:bool) -> () {
     if jump && rd != 0_u32 && rd != 1_u32 {
         bad();
     }
-    image::fixup(image::text_position(),target,rd,jump);
+    image::fixup(image::text_position(), target, rd, jump);
     return ();
 }
 
-pub fn branch(f3:u32,a:u32,b:u32,target:u32) -> () {
+pub fn branch(f3:u32, a:u32, b:u32, target:u32) -> () {
     reg(a);
     reg(b);
     if f3 != 0_u32 && f3 != 1_u32 && f3 != 6_u32 && f3 != 7_u32 {
         bad();
     }
     image::word((b << 20_u32) | (a << 15_u32) | ((f3 ^ 1_u32) << 12_u32) | 1536_u32 | 99_u32);
-    transfer(0,target,true);
+    transfer(0, target, true);
     return ();
 }
 
 fn mark(id:u32) -> () {
-    image::define(id,1,image::text_position());
+    image::define(id, 1, image::text_position());
     return ();
 }
 
-fn mov(dst:u32,src:u32) -> () {
-    i(19,0,dst,src,0);
+fn mov(dst:u32, src:u32) -> () {
+    i(19, 0, dst, src, 0);
     return ();
 }
 
-fn address(rd:u32,base:u32,off:usize) -> () {
+fn address(rd:u32, base:u32, off:usize) -> () {
     if off <= 2047_usize {
-        i(19,0,rd,base,off);
+        i(19, 0, rd, base, off);
     }
     else {
         var temp:u32 = rd;
         if rd == base {
             temp = 29;
         }
-        constant(temp,off);
-        r(0,0,rd,base,temp);
+        constant(temp, off);
+        r(0, 0, rd, base, temp);
     }
     return ();
 }
 
-fn load(rd:u32,base:u32,off:usize,size:usize) -> () {
+fn load(rd:u32, base:u32, off:usize, size:usize) -> () {
     if size == 0_usize {
-        constant(rd,0);
+        constant(rd, 0);
         return ();
     }
     var f3:u32 = 3;
@@ -145,16 +152,16 @@ fn load(rd:u32,base:u32,off:usize,size:usize) -> () {
         }
     }
     if off <= 2047_usize {
-        i(3,f3,rd,base,off);
+        i(3, f3, rd, base, off);
     }
     else {
-        address(31,base,off);
-        i(3,f3,rd,31,0);
+        address(31, base, off);
+        i(3, f3, rd, 31, 0);
     }
     return ();
 }
 
-fn store(rs:u32,base:u32,off:usize,size:usize) -> () {
+fn store(rs:u32, base:u32, off:usize, size:usize) -> () {
     if size == 0_usize {
         return ();
     }
@@ -173,11 +180,11 @@ fn store(rs:u32,base:u32,off:usize,size:usize) -> () {
         }
     }
     if off <= 2047_usize {
-        s(f3,rs,base,off);
+        s(f3, rs, base, off);
     }
     else {
-        address(31,base,off);
-        s(f3,rs,31,0);
+        address(31, base, off);
+        s(f3, rs, 31, 0);
     }
     return ();
 }
@@ -188,34 +195,34 @@ fn info(id:u32) -> model::Type {
             bad();
         }
         let ty:model::Type = model::types[id as usize];
-        if ty.kind == 0_u32 || ty.kind > 10_u32 || ty.align == 0_usize || ty.align > 4096_usize || (ty.align & (ty.align-1_usize)) != 0_usize {
+        if ty.kind == model::TYPE_INVALID || ty.kind > model::TYPE_RESULT || ty.align == 0_usize || ty.align > 4096_usize || (ty.align & (ty.align-1_usize)) != 0_usize {
             bad();
         }
         var expected:usize = ty.size;
-        if ty.kind == 1_u32 {
+        if ty.kind == model::TYPE_UNIT {
             expected = 0;
         }
-        if ty.kind == 2_u32 || ty.kind == 3_u32 {
+        if ty.kind == model::TYPE_BOOL || ty.kind == model::TYPE_U8 {
             expected = 1;
         }
-        if ty.kind == 4_u32 {
+        if ty.kind == model::TYPE_U32 {
             expected = 4;
         }
-        if ty.kind == 5_u32 || ty.kind == 6_u32 {
+        if ty.kind == model::TYPE_USIZE || ty.kind == model::TYPE_POINTER {
             expected = 8;
         }
-        if ty.kind == 8_u32 {
+        if ty.kind == model::TYPE_SLICE {
             expected = 16;
         }
         if ty.size != expected {
             bad();
         }
-        if ty.kind == 6_u32 || ty.kind == 7_u32 || ty.kind == 8_u32 || ty.kind == 10_u32 {
+        if ty.kind == model::TYPE_POINTER || ty.kind == model::TYPE_ARRAY || ty.kind == model::TYPE_SLICE || ty.kind == model::TYPE_RESULT {
             if ty.a == 0_u32 || ty.a > model::type_count {
                 bad();
             }
         }
-        if ty.kind == 10_u32 {
+        if ty.kind == model::TYPE_RESULT {
             if ty.b == 0_u32 || ty.b > model::type_count {
                 bad();
             }
@@ -225,11 +232,11 @@ fn info(id:u32) -> model::Type {
 }
 // Only value edges require completed child layout. Pointers and slices terminate.
 
-fn layout_child(ty:model::Type,edge:u32) -> u32 {
-    if ty.kind == 7_u32 && edge == 0_u32 {
+fn layout_child(ty:model::Type, edge:u32) -> u32 {
+    if ty.kind == model::TYPE_ARRAY && edge == 0_u32 {
         return ty.a;
     }
-    if ty.kind == 10_u32 {
+    if ty.kind == model::TYPE_RESULT {
         if edge == 0_u32 {
             return ty.a;
         }
@@ -237,7 +244,7 @@ fn layout_child(ty:model::Type,edge:u32) -> u32 {
             return ty.b;
         }
     }
-    if ty.kind == 9_u32 {
+    if ty.kind == model::TYPE_STRUCT {
         unsafe {
             if ty.count != 0_u32 && (ty.first == 0_u32 || ty.first > model::field_count || ty.count > model::field_count-ty.first+1_u32) {
                 bad();
@@ -252,7 +259,9 @@ fn layout_child(ty:model::Type,edge:u32) -> u32 {
 
 fn finite_layouts() -> () {
     unsafe {
-        if model::type_count == 0_u32 || model::type_count > 8192_u32 || model::field_count > 32768_u32 { bad(); }
+        if model::type_count == 0_u32 || model::type_count > 8192_u32 || model::field_count > 32768_u32 {
+            bad();
+        }
         var root:u32 = 1;
         while root <= model::type_count {
             type_state[root as usize] = 0;
@@ -267,7 +276,7 @@ fn finite_layouts() -> () {
                 type_state[root as usize] = 1;
                 while depth != 0_usize {
                     let id:u32 = type_stack[depth];
-                    let child:u32 = layout_child(info(id),type_edge[depth]);
+                    let child:u32 = layout_child(info(id), type_edge[depth]);
                     if child == 0_u32 {
                         type_state[id as usize] = 2;
                         depth = depth-1_usize;
@@ -304,21 +313,21 @@ fn layouts() -> () {
             let ty:model::Type = info(id);
             var size:usize = ty.size;
             var alignment:usize = ty.align;
-            if ty.kind <= 6_u32 {
+            if ty.kind <= model::TYPE_POINTER {
                 alignment = ty.size;
                 if alignment == 0_usize {
                     alignment = 1;
                 }
             }
-            if ty.kind == 6_u32 || ty.kind == 8_u32 {
-                if ty.flags > 1_u32 {
+            if ty.kind == model::TYPE_POINTER || ty.kind == model::TYPE_SLICE {
+                if ty.flags > model::TYPE_CONST {
                     bad();
                 }
             }
-            if ty.kind == 8_u32 {
+            if ty.kind == model::TYPE_SLICE {
                 alignment = 8;
             }
-            if ty.kind == 7_u32 {
+            if ty.kind == model::TYPE_ARRAY {
                 let element:model::Type = info(ty.a);
                 alignment = element.align;
                 if ty.b != 0_u32 && element.size > 67108864_usize/(ty.b as usize) {
@@ -326,7 +335,7 @@ fn layouts() -> () {
                 }
                 size = element.size*(ty.b as usize);
             }
-            if ty.kind == 9_u32 {
+            if ty.kind == model::TYPE_STRUCT {
                 if ty.count != 0_u32 && (ty.first == 0_u32 || ty.first > model::field_count || ty.count > model::field_count-ty.first+1_u32) {
                     bad();
                 }
@@ -336,7 +345,7 @@ fn layouts() -> () {
                 while field < ty.count {
                     let item:model::Field = model::fields[(ty.first+field) as usize];
                     let ft:model::Type = info(item.ty);
-                    size = image::aligned(size,ft.align);
+                    size = image::aligned(size, ft.align);
                     if item.offset != size || ft.size > 67108864_usize-size {
                         bad();
                     }
@@ -346,16 +355,16 @@ fn layouts() -> () {
                     }
                     field = field+1_u32;
                 }
-                size = image::aligned(size,alignment);
+                size = image::aligned(size, alignment);
             }
-            if ty.kind == 10_u32 {
+            if ty.kind == model::TYPE_RESULT {
                 let ok:model::Type = info(ty.a);
                 let error:model::Type = info(ty.b);
                 alignment = ok.align;
                 if error.align > alignment {
                     alignment = error.align;
                 }
-                let payload:usize = image::aligned(4,alignment);
+                let payload:usize = image::aligned(4, alignment);
                 if (ty.first as usize) != payload {
                     bad();
                 }
@@ -369,7 +378,7 @@ fn layouts() -> () {
                 if size > 67108864_usize-payload {
                     bad();
                 }
-                size = image::aligned(size+payload,alignment);
+                size = image::aligned(size+payload, alignment);
             }
             if ty.size != size || ty.align != alignment {
                 bad();
@@ -389,70 +398,77 @@ fn slot(id:u32) -> model::Slot {
     }
 }
 
+fn frame_offset(id:u32) -> usize {
+    let checked:model::Slot = slot(id);
+    unsafe {
+        return frame_offsets[id as usize];
+    }
+}
+
 fn scalar(ty:model::Type) -> bool {
-    return ty.kind <= 6_u32;
+    return ty.kind <= model::TYPE_POINTER;
 }
 
 fn integer(ty:model::Type) -> bool {
-    return ty.kind >= 3_u32 && ty.kind <= 5_u32;
+    return ty.kind >= model::TYPE_U8 && ty.kind <= model::TYPE_USIZE;
 }
 
 fn stype(id:u32) -> model::Type {
     return info(slot(id).ty);
 }
 
-fn same(a:u32,b:u32) -> () {
+fn same(a:u32, b:u32) -> () {
     if slot(a).ty != slot(b).ty {
         bad();
     }
     return ();
 }
 
-fn value(id:u32,rd:u32) -> () {
+fn value(id:u32, rd:u32) -> () {
     let item:model::Slot = slot(id);
     let ty:model::Type = info(item.ty);
     if !scalar(ty) {
         bad();
     }
-    load(rd,2,item.offset,ty.size);
+    load(rd, 2, frame_offset(id), ty.size);
     return ();
 }
 
-fn destination(id:u32,rd:u32) -> () {
-    address(rd,2,slot(id).offset);
+fn destination(id:u32, rd:u32) -> () {
+    address(rd, 2, frame_offset(id));
     return ();
 }
 
-fn normalize(rd:u32,ty:model::Type) -> () {
-    if ty.kind == 3_u32 {
-        i(19,1,rd,rd,56);
-        i(19,5,rd,rd,56);
+fn normalize(rd:u32, ty:model::Type) -> () {
+    if ty.kind == model::TYPE_U8 {
+        i(19, 1, rd, rd, 56);
+        i(19, 5, rd, rd, 56);
     }
-    if ty.kind == 4_u32 {
-        i(19,1,rd,rd,32);
-        i(19,5,rd,rd,32);
+    if ty.kind == model::TYPE_U32 {
+        i(19, 1, rd, rd, 32);
+        i(19, 5, rd, rd, 32);
     }
     return ();
 }
 
-fn extension(rd:u32,ty:model::Type) -> () {
-    if ty.kind >= 2_u32 && ty.kind <= 4_u32 {
-        i(27,0,rd,rd,0);
+fn extension(rd:u32, ty:model::Type) -> () {
+    if ty.kind >= model::TYPE_BOOL && ty.kind <= model::TYPE_U32 {
+        i(27, 0, rd, rd, 0);
     }
     return ();
 }
 
 fn panic() -> () {
     unsafe {
-        transfer(1,panic_symbol,true);
+        transfer(1, panic_symbol, true);
     }
     image::word(3221229683);
     return ();
 }
 
-fn guard(f3:u32,a:u32,b:u32) -> () {
+fn guard(f3:u32, a:u32, b:u32) -> () {
     let good:u32 = image::fresh();
-    branch(f3,a,b,good);
+    branch(f3, a, b, good);
     panic();
     mark(good);
     return ();
@@ -463,9 +479,9 @@ fn copy(size:usize) -> () {
     if size == 0_usize {
         return ();
     }
-    constant(7,size);
+    constant(7, size);
     unsafe {
-        transfer(1,copy_symbol,true);
+        transfer(1, copy_symbol, true);
     }
     return ();
 }
@@ -475,28 +491,28 @@ fn copy_body() -> () {
     let forward:u32 = image::fresh();
     let reverse:u32 = image::fresh();
     let done:u32 = image::fresh();
-    branch(0,5,6,done);
-    branch(6,6,5,backward);
+    branch(0, 5, 6, done);
+    branch(6, 6, 5, backward);
     mark(forward);
-    load(28,6,0,1);
-    store(28,5,0,1);
-    i(19,0,5,5,1);
-    i(19,0,6,6,1);
-    i(19,0,7,7,18446744073709551615);
-    branch(1,7,0,forward);
-    transfer(0,done,true);
+    load(28, 6, 0, 1);
+    store(28, 5, 0, 1);
+    i(19, 0, 5, 5, 1);
+    i(19, 0, 6, 6, 1);
+    i(19, 0, 7, 7, 18446744073709551615);
+    branch(1, 7, 0, forward);
+    transfer(0, done, true);
     mark(backward);
-    r(0,0,5,5,7);
-    r(0,0,6,6,7);
+    r(0, 0, 5, 5, 7);
+    r(0, 0, 6, 6, 7);
     mark(reverse);
-    i(19,0,5,5,18446744073709551615);
-    i(19,0,6,6,18446744073709551615);
-    load(28,6,0,1);
-    store(28,5,0,1);
-    i(19,0,7,7,18446744073709551615);
-    branch(1,7,0,reverse);
+    i(19, 0, 5, 5, 18446744073709551615);
+    i(19, 0, 6, 6, 18446744073709551615);
+    load(28, 6, 0, 1);
+    store(28, 5, 0, 1);
+    i(19, 0, 7, 7, 18446744073709551615);
+    branch(1, 7, 0, reverse);
     mark(done);
-    i(103,0,0,1,0);
+    i(103, 0, 0, 1, 0);
     return ();
 }
 
@@ -506,7 +522,7 @@ fn declaration(id:u32) -> model::Decl {
             bad();
         }
         let decl:model::Decl = model::decls[id as usize];
-        if decl.kind != 2_u32 && decl.kind != 3_u32 {
+        if decl.kind != model::DECL_FUNCTION && decl.kind != model::DECL_EXTERN {
             bad();
         }
         if decl.count > 256_u32 || (decl.count != 0_u32 && (decl.first == 0_u32 || decl.first > model::param_count || decl.count > model::param_count-decl.first+1_u32)) {
@@ -516,12 +532,12 @@ fn declaration(id:u32) -> model::Decl {
         var p:u32 = 0;
         while p < decl.count {
             let ty:model::Type = info(model::params[(decl.first+p) as usize].ty);
-            if decl.kind == 3_u32 && (!scalar(ty) || ty.kind == 1_u32) {
+            if decl.kind == model::DECL_EXTERN && (!scalar(ty) || ty.kind == model::TYPE_UNIT) {
                 bad();
             }
             p = p+1_u32;
         }
-        if decl.kind == 3_u32 && (!scalar(result) || (decl.flags & 2_u32) == 0_u32) {
+        if decl.kind == model::DECL_EXTERN && (!scalar(result) || (decl.flags & model::FLAG_UNSAFE) == 0_u32) {
             bad();
         }
         if decl.symbol == 0_u32 || decl.symbol > model::symbol_count {
@@ -554,25 +570,25 @@ fn outgoing_size(decl:model::Decl) -> usize {
     if n <= 8_usize {
         return 0;
     }
-    return image::aligned((n-8_usize)*8_usize,16);
+    return image::aligned((n-8_usize)*8_usize, 16);
 }
 
-fn incoming(position:usize,rd:u32) -> () {
+fn incoming(position:usize, rd:u32) -> () {
     if position < 8_usize {
-        mov(rd,10_u32+(position as u32));
+        mov(rd, 10_u32+(position as u32));
     }
     else {
-        load(rd,8,(position-8_usize)*8_usize,8);
+        load(rd, 8, (position-8_usize)*8_usize, 8);
     }
     return ();
 }
 
-fn outgoing(position:usize,rs:u32) -> () {
+fn outgoing(position:usize, rs:u32) -> () {
     if position < 8_usize {
-        mov(10_u32+(position as u32),rs);
+        mov(10_u32+(position as u32), rs);
     }
     else {
-        store(rs,2,(position-8_usize)*8_usize,8);
+        store(rs, 2, (position-8_usize)*8_usize, 8);
     }
     return ();
 }
@@ -582,6 +598,9 @@ fn label(id:u32) -> u32 {
         if id == 0_u32 || id > 65536_u32 {
             bad();
         }
+        if id > label_high {
+            label_high = id;
+        }
         if labels[id as usize] == 0_u32 {
             labels[id as usize] = image::fresh();
         }
@@ -589,39 +608,39 @@ fn label(id:u32) -> u32 {
     }
 }
 
-fn validate(item:model::Inst,decl:model::Decl) -> () {
+fn validate(item:model::Inst, decl:model::Decl) -> () {
     unsafe {
         here = item.span;
     }
-    if item.op == 1_u32 {
+    if item.op == model::IR_VALUE {
         let ty:model::Type = stype(item.dst);
         if !scalar(ty) {
             bad();
         }
-        if ty.kind == 1_u32 || ty.kind == 6_u32 {
+        if ty.kind == model::TYPE_UNIT || ty.kind == model::TYPE_POINTER {
             if item.bits != 0_usize {
                 bad();
             }
         }
-        if ty.kind == 2_u32 && item.bits > 1_usize {
+        if ty.kind == model::TYPE_BOOL && item.bits > 1_usize {
             bad();
         }
-        if ty.kind == 3_u32 && item.bits > 255_usize {
+        if ty.kind == model::TYPE_U8 && item.bits > 255_usize {
             bad();
         }
-        if ty.kind == 4_u32 && item.bits > 4294967295_usize {
+        if ty.kind == model::TYPE_U32 && item.bits > 4294967295_usize {
             bad();
         }
     }
     else {
-        if item.op == 2_u32 {
-            same(item.dst,item.a);
+        if item.op == model::IR_COPY {
+            same(item.dst, item.a);
         }
         else {
-            if item.op == 3_u32 {
+            if item.op == model::IR_LOCAL_ADDRESS {
                 let ty:model::Type = stype(item.dst);
                 let source:model::Type = stype(item.a);
-                if ty.kind != 6_u32 {
+                if ty.kind != model::TYPE_POINTER {
                     bad();
                 }
                 let size:usize = info(ty.a).size;
@@ -630,8 +649,8 @@ fn validate(item:model::Inst,decl:model::Decl) -> () {
                 }
             }
             else {
-                if item.op == 4_u32 {
-                    if stype(item.dst).kind != 6_u32 {
+                if item.op == model::IR_SYMBOL_ADDRESS {
+                    if stype(item.dst).kind != model::TYPE_POINTER {
                         bad();
                     }
                     unsafe {
@@ -641,92 +660,92 @@ fn validate(item:model::Inst,decl:model::Decl) -> () {
                     }
                 }
                 else {
-                    if item.op == 5_u32 || item.op == 6_u32 {
+                    if item.op == model::IR_LOAD || item.op == model::IR_STORE {
                         let ptr:model::Type = stype(item.a);
                         var v:u32 = item.dst;
-                        if item.op == 6_u32 {
+                        if item.op == model::IR_STORE {
                             v = item.b;
-                            if (ptr.flags & 1_u32) != 0_u32 {
+                            if (ptr.flags & model::TYPE_CONST) != 0_u32 {
                                 bad();
                             }
                         }
-                        if ptr.kind != 6_u32 || ptr.a != slot(v).ty {
+                        if ptr.kind != model::TYPE_POINTER || ptr.a != slot(v).ty {
                             bad();
                         }
                     }
                     else {
-                        if item.op == 7_u32 {
+                        if item.op == model::IR_OFFSET {
                             // Internal layout projection may change pointee, never permission.
-                            if stype(item.dst).kind != 6_u32 || stype(item.a).kind != 6_u32 || stype(item.b).kind != 5_u32 || stype(item.dst).flags != stype(item.a).flags {
+                            if stype(item.dst).kind != model::TYPE_POINTER || stype(item.a).kind != model::TYPE_POINTER || stype(item.b).kind != model::TYPE_USIZE || stype(item.dst).flags != stype(item.a).flags {
                                 bad();
                             }
                         }
                         else {
-                            if item.op == 8_u32 {
-                                same(item.a,item.b);
+                            if item.op == model::IR_BINARY {
+                                same(item.a, item.b);
                                 let ty:model::Type = stype(item.a);
-                                if item.aux == 0_u32 || item.aux > 19_u32 {
+                                if item.aux == model::BIN_INVALID || item.aux > model::BIN_GE {
                                     bad();
                                 }
-                                if item.aux >= 14_u32 {
-                                    if stype(item.dst).kind != 2_u32 || (!integer(ty) && ty.kind != 2_u32 && ty.kind != 6_u32) {
+                                if item.aux >= model::BIN_EQ {
+                                    if stype(item.dst).kind != model::TYPE_BOOL || (!integer(ty) && ty.kind != model::TYPE_BOOL && ty.kind != model::TYPE_POINTER) {
                                         bad();
                                     }
-                                    if item.aux >= 16_u32 && !integer(ty) {
+                                    if item.aux >= model::BIN_LT && !integer(ty) {
                                         bad();
                                     }
                                 }
                                 else {
-                                    same(item.dst,item.a);
+                                    same(item.dst, item.a);
                                     if !integer(ty) {
                                         bad();
                                     }
                                 }
                             }
                             else {
-                                if item.op == 9_u32 {
-                                    same(item.dst,item.a);
+                                if item.op == model::IR_UNARY {
+                                    same(item.dst, item.a);
                                     let ty:model::Type = stype(item.a);
-                                    if item.aux == 1_u32 {
-                                        if ty.kind != 2_u32 {
+                                    if item.aux == model::UNARY_NOT {
+                                        if ty.kind != model::TYPE_BOOL {
                                             bad();
                                         }
                                     }
                                     else {
-                                        if (item.aux != 2_u32 && item.aux != 3_u32) || !integer(ty) {
+                                        if (item.aux != model::UNARY_BIT_NOT && item.aux != model::UNARY_NEG) || !integer(ty) {
                                             bad();
                                         }
                                     }
                                 }
                                 else {
-                                    if item.op == 10_u32 {
+                                    if item.op == model::IR_CAST {
                                         if !integer(stype(item.dst)) || !integer(stype(item.a)) {
                                             bad();
                                         }
                                     }
                                     else {
-                                        if item.op == 11_u32 {
+                                        if item.op == model::IR_BITCAST {
                                             let a:model::Type = stype(item.a);
                                             let b:model::Type = stype(item.dst);
-                                            if a.kind == 6_u32 && b.kind == 6_u32 {
-                                                if a.a != b.a || (a.flags & 1_u32) > (b.flags & 1_u32) {
+                                            if a.kind == model::TYPE_POINTER && b.kind == model::TYPE_POINTER {
+                                                if a.a != b.a || (a.flags & model::TYPE_CONST) > (b.flags & model::TYPE_CONST) {
                                                     bad();
                                                 }
                                             }
                                             else {
-                                                if !((a.kind == 6_u32 && b.kind == 5_u32) || (a.kind == 5_u32 && b.kind == 6_u32)) {
+                                                if !((a.kind == model::TYPE_POINTER && b.kind == model::TYPE_USIZE) || (a.kind == model::TYPE_USIZE && b.kind == model::TYPE_POINTER)) {
                                                     bad();
                                                 }
                                             }
                                         }
                                         else {
-                                            if item.op == 12_u32 {
-                                                if stype(item.a).kind != 5_u32 || stype(item.b).kind != 5_u32 {
+                                            if item.op == model::IR_BOUNDS {
+                                                if stype(item.a).kind != model::TYPE_USIZE || stype(item.b).kind != model::TYPE_USIZE {
                                                     bad();
                                                 }
                                             }
                                             else {
-                                                if item.op == 13_u32 {
+                                                if item.op == model::IR_CALL {
                                                     let target:model::Decl = declaration(item.a);
                                                     if target.count != item.c {
                                                         bad();
@@ -750,19 +769,19 @@ fn validate(item:model::Inst,decl:model::Decl) -> () {
                                                     }
                                                 }
                                                 else {
-                                                    if item.op == 14_u32 || item.op == 15_u32 {
+                                                    if item.op == model::IR_LABEL || item.op == model::IR_JUMP {
                                                         let ignored:u32 = label(item.a);
                                                     }
                                                     else {
-                                                        if item.op == 16_u32 {
-                                                            if stype(item.a).kind != 2_u32 {
+                                                        if item.op == model::IR_BRANCH {
+                                                            if stype(item.a).kind != model::TYPE_BOOL {
                                                                 bad();
                                                             }
                                                             let yes:u32 = label(item.b);
                                                             let no:u32 = label(item.c);
                                                         }
                                                         else {
-                                                            if item.op == 17_u32 {
+                                                            if item.op == model::IR_RETURN {
                                                                 if info(decl.ty).size != 0_usize || item.a != 0_u32 {
                                                                     if slot(item.a).ty != decl.ty {
                                                                         bad();
@@ -770,7 +789,7 @@ fn validate(item:model::Inst,decl:model::Decl) -> () {
                                                                 }
                                                             }
                                                             else {
-                                                                if item.op != 18_u32 {
+                                                                if item.op != model::IR_PANIC {
                                                                     bad();
                                                                 }
                                                             }
@@ -794,81 +813,81 @@ fn validate(item:model::Inst,decl:model::Decl) -> () {
 fn binary(item:model::Inst) -> () {
     let ty:model::Type = stype(item.a);
     let op:u32 = item.aux;
-    value(item.a,6);
-    value(item.b,7);
-    if op == 1_u32 || op == 6_u32 {
-        r(0,0,5,6,7);
-        if op == 1_u32 {
-            guard(7,5,6);
+    value(item.a, 6);
+    value(item.b, 7);
+    if op == model::BIN_ADD || op == model::BIN_WRAP_ADD {
+        r(0, 0, 5, 6, 7);
+        if op == model::BIN_ADD {
+            guard(7, 5, 6);
         }
     }
     else {
-        if op == 2_u32 || op == 7_u32 {
-            if op == 2_u32 {
-                guard(7,6,7);
+        if op == model::BIN_SUB || op == model::BIN_WRAP_SUB {
+            if op == model::BIN_SUB {
+                guard(7, 6, 7);
             }
-            r(32,0,5,6,7);
+            r(32, 0, 5, 6, 7);
         }
         else {
-            if op == 3_u32 || op == 8_u32 {
-                r(1,0,5,6,7);
-                if op == 3_u32 {
-                    r(1,3,28,6,7);
-                    guard(0,28,0);
+            if op == model::BIN_MUL || op == model::BIN_WRAP_MUL {
+                r(1, 0, 5, 6, 7);
+                if op == model::BIN_MUL {
+                    r(1, 3, 28, 6, 7);
+                    guard(0, 28, 0);
                 }
             }
             else {
-                if op == 4_u32 || op == 5_u32 {
-                    guard(1,7,0);
+                if op == model::BIN_DIV || op == model::BIN_REM {
+                    guard(1, 7, 0);
                     var f:u32 = 5;
-                    if op == 5_u32 {
+                    if op == model::BIN_REM {
                         f = 7;
                     }
-                    r(1,f,5,6,7);
+                    r(1, f, 5, 6, 7);
                 }
                 else {
-                    if op == 9_u32 || op == 10_u32 {
-                        constant(28,ty.size*8_usize);
-                        guard(6,7,28);
+                    if op == model::BIN_SHL || op == model::BIN_SHR {
+                        constant(28, ty.size*8_usize);
+                        guard(6, 7, 28);
                         var f:u32 = 1;
-                        if op == 10_u32 {
+                        if op == model::BIN_SHR {
                             f = 5;
                         }
-                        r(0,f,5,6,7);
+                        r(0, f, 5, 6, 7);
                     }
                     else {
-                        if op == 11_u32 {
-                            r(0,7,5,6,7);
+                        if op == model::BIN_BIT_AND {
+                            r(0, 7, 5, 6, 7);
                         }
                         else {
-                            if op == 12_u32 {
-                                r(0,6,5,6,7);
+                            if op == model::BIN_BIT_OR {
+                                r(0, 6, 5, 6, 7);
                             }
                             else {
-                                if op == 13_u32 {
-                                    r(0,4,5,6,7);
+                                if op == model::BIN_BIT_XOR {
+                                    r(0, 4, 5, 6, 7);
                                 }
                                 else {
-                                    if op == 14_u32 || op == 15_u32 {
-                                        r(0,4,5,6,7);
-                                        if op == 14_u32 {
-                                            i(19,3,5,5,1);
+                                    if op == model::BIN_EQ || op == model::BIN_NE {
+                                        r(0, 4, 5, 6, 7);
+                                        if op == model::BIN_EQ {
+                                            i(19, 3, 5, 5, 1);
                                         }
                                         else {
-                                            r(0,3,5,0,5);
+                                            r(0, 3, 5, 0, 5);
                                         }
                                     }
                                     else {
-                                        if op == 16_u32 || op == 19_u32 {
-                                            r(0,3,5,6,7);
-                                            if op == 19_u32 {
-                                                i(19,4,5,5,1);
+                                        if op == model::BIN_LT || op == model::BIN_GE {
+                                            r(0, 3, 5, 6, 7);
+                                            if op == model::BIN_GE {
+                                                i(19, 4, 5, 5, 1);
                                             }
                                         }
                                         else {
-                                            r(0,3,5,7,6);
-                                            if op == 17_u32 {
-                                                i(19,4,5,5,1);
+                                            r(0, 3, 5, 7, 6);
+                                            if op == model::BIN_LE {
+                                                i(19, 4, 5, 5, 1);
                                             }
                                         }
                                     }
@@ -880,13 +899,13 @@ fn binary(item:model::Inst) -> () {
             }
         }
     }
-    if op <= 3_u32 && ty.size < 8_usize {
-        mov(28,5);
-        normalize(28,ty);
-        guard(0,5,28);
+    if op <= model::BIN_MUL && ty.size < 8_usize {
+        mov(28, 5);
+        normalize(28, ty);
+        guard(0, 5, 28);
     }
-    if op < 14_u32 {
-        normalize(5,ty);
+    if op < model::BIN_EQ {
+        normalize(5, ty);
     }
     return ();
 }
@@ -896,7 +915,7 @@ fn call(item:model::Inst) -> () {
     let result:model::Type = info(target.ty);
     var position:usize = 0;
     if result.size != 0_usize && !scalar(result) {
-        destination(item.dst,10);
+        destination(item.dst, 10);
         position = 1;
     }
     unsafe {
@@ -906,159 +925,159 @@ fn call(item:model::Inst) -> () {
             if ty.size != 0_usize {
                 let arg:u32 = model::args[(item.b+p) as usize];
                 if scalar(ty) {
-                    value(arg,5);
-                    extension(5,ty);
+                    value(arg, 5);
+                    extension(5, ty);
                 }
                 else {
-                    destination(arg,5);
+                    destination(arg, 5);
                 }
-                outgoing(position,5);
+                outgoing(position, 5);
                 position = position+1_usize;
             }
             p = p+1_u32;
         }
     }
-    transfer(1,target.symbol,true);
+    transfer(1, target.symbol, true);
     if result.size != 0_usize && scalar(result) {
-        store(10,2,slot(item.dst).offset,result.size);
+        store(10, 2, frame_offset(item.dst), result.size);
     }
     return ();
 }
 
-fn instruction(item:model::Inst,decl:model::Decl) -> () {
-    if item.op == 1_u32 {
-        constant(5,item.bits);
+fn instruction(item:model::Inst, decl:model::Decl) -> () {
+    if item.op == model::IR_VALUE {
+        constant(5, item.bits);
     }
     else {
-        if item.op == 2_u32 {
-            destination(item.dst,5);
-            destination(item.a,6);
+        if item.op == model::IR_COPY {
+            destination(item.dst, 5);
+            destination(item.a, 6);
             copy(stype(item.dst).size);
             return ();
         }
         else {
-            if item.op == 3_u32 {
-                address(5,2,slot(item.a).offset+item.bits);
+            if item.op == model::IR_LOCAL_ADDRESS {
+                address(5, 2, frame_offset(item.a)+item.bits);
             }
             else {
-                if item.op == 4_u32 {
-                    transfer(5,item.a,false);
+                if item.op == model::IR_SYMBOL_ADDRESS {
+                    transfer(5, item.a, false);
                 }
                 else {
-                    if item.op == 5_u32 {
+                    if item.op == model::IR_LOAD {
                         let ty:model::Type = stype(item.dst);
                         if scalar(ty) {
-                            value(item.a,6);
-                            load(5,6,0,ty.size);
+                            value(item.a, 6);
+                            load(5, 6, 0, ty.size);
                         }
                         else {
-                            destination(item.dst,5);
-                            value(item.a,6);
+                            destination(item.dst, 5);
+                            value(item.a, 6);
                             copy(ty.size);
                             return ();
                         }
                     }
                     else {
-                        if item.op == 6_u32 {
+                        if item.op == model::IR_STORE {
                             let ty:model::Type = stype(item.b);
                             if scalar(ty) {
-                                value(item.b,5);
-                                value(item.a,6);
-                                store(5,6,0,ty.size);
+                                value(item.b, 5);
+                                value(item.a, 6);
+                                store(5, 6, 0, ty.size);
                             }
                             else {
-                                value(item.a,5);
-                                destination(item.b,6);
+                                value(item.a, 5);
+                                destination(item.b, 6);
                                 copy(ty.size);
                             }
                             return ();
                         }
                         else {
-                            if item.op == 7_u32 {
-                                value(item.a,6);
-                                value(item.b,7);
-                                r(0,0,5,6,7);
-                                guard(7,5,6);
+                            if item.op == model::IR_OFFSET {
+                                value(item.a, 6);
+                                value(item.b, 7);
+                                r(0, 0, 5, 6, 7);
+                                guard(7, 5, 6);
                             }
                             else {
-                                if item.op == 8_u32 {
+                                if item.op == model::IR_BINARY {
                                     binary(item);
                                 }
                                 else {
-                                    if item.op == 9_u32 {
-                                        value(item.a,5);
-                                        if item.aux == 1_u32 {
-                                            i(19,3,5,5,1);
+                                    if item.op == model::IR_UNARY {
+                                        value(item.a, 5);
+                                        if item.aux == model::UNARY_NOT {
+                                            i(19, 3, 5, 5, 1);
                                         }
-                                        if item.aux == 2_u32 {
-                                            i(19,4,5,5,18446744073709551615);
-                                            normalize(5,stype(item.dst));
+                                        if item.aux == model::UNARY_BIT_NOT {
+                                            i(19, 4, 5, 5, 18446744073709551615);
+                                            normalize(5, stype(item.dst));
                                         }
-                                        if item.aux == 3_u32 {
-                                            guard(0,5,0);
+                                        if item.aux == model::UNARY_NEG {
+                                            guard(0, 5, 0);
                                         }
                                     }
                                     else {
-                                        if item.op == 10_u32 {
-                                            value(item.a,5);
-                                            normalize(5,stype(item.dst));
+                                        if item.op == model::IR_CAST {
+                                            value(item.a, 5);
+                                            normalize(5, stype(item.dst));
                                         }
                                         else {
-                                            if item.op == 11_u32 {
-                                                value(item.a,5);
+                                            if item.op == model::IR_BITCAST {
+                                                value(item.a, 5);
                                             }
                                             else {
-                                                if item.op == 12_u32 {
-                                                    value(item.a,5);
-                                                    value(item.b,6);
-                                                    guard(6,5,6);
+                                                if item.op == model::IR_BOUNDS {
+                                                    value(item.a, 5);
+                                                    value(item.b, 6);
+                                                    guard(6, 5, 6);
                                                     return ();
                                                 }
                                                 else {
-                                                    if item.op == 13_u32 {
+                                                    if item.op == model::IR_CALL {
                                                         call(item);
                                                         return ();
                                                     }
                                                     else {
-                                                        if item.op == 14_u32 {
+                                                        if item.op == model::IR_LABEL {
                                                             mark(label(item.a));
                                                             return ();
                                                         }
                                                         else {
-                                                            if item.op == 15_u32 {
-                                                                transfer(0,label(item.a),true);
+                                                            if item.op == model::IR_JUMP {
+                                                                transfer(0, label(item.a), true);
                                                                 return ();
                                                             }
                                                             else {
-                                                                if item.op == 16_u32 {
-                                                                    value(item.a,5);
-                                                                    branch(1,5,0,label(item.b));
-                                                                    transfer(0,label(item.c),true);
+                                                                if item.op == model::IR_BRANCH {
+                                                                    value(item.a, 5);
+                                                                    branch(1, 5, 0, label(item.b));
+                                                                    transfer(0, label(item.c), true);
                                                                     return ();
                                                                 }
                                                                 else {
-                                                                    if item.op == 17_u32 {
+                                                                    if item.op == model::IR_RETURN {
                                                                         let result:model::Type = info(decl.ty);
                                                                         if result.size != 0_usize {
                                                                             if scalar(result) {
-                                                                                value(item.a,10);
-                                                                                extension(10,result);
+                                                                                value(item.a, 10);
+                                                                                extension(10, result);
                                                                             }
                                                                             else {
                                                                                 unsafe {
-                                                                                    load(5,2,result_pointer,8);
+                                                                                    load(5, 2, result_pointer, 8);
                                                                                 }
-                                                                                destination(item.a,6);
+                                                                                destination(item.a, 6);
                                                                                 copy(result.size);
                                                                             }
                                                                         }
                                                                         unsafe {
-                                                                            mov(30,8);
-                                                                            load(1,2,save,8);
-                                                                            load(8,2,save+8_usize,8);
-                                                                            mov(2,30);
+                                                                            mov(30, 8);
+                                                                            load(1, 2, save, 8);
+                                                                            load(8, 2, save+8_usize, 8);
+                                                                            mov(2, 30);
                                                                         }
-                                                                        i(103,0,0,1,0);
+                                                                        i(103, 0, 0, 1, 0);
                                                                         return ();
                                                                     }
                                                                     else {
@@ -1081,14 +1100,14 @@ fn instruction(item:model::Inst,decl:model::Decl) -> () {
             }
         }
     }
-    store(5,2,slot(item.dst).offset,stype(item.dst).size);
+    store(5, 2, frame_offset(item.dst), stype(item.dst).size);
     return ();
 }
 
 pub fn function(id:u32) -> () {
     layouts();
     let decl:model::Decl = declaration(id);
-    if decl.kind != 2_u32 {
+    if decl.kind != model::DECL_FUNCTION {
         bad();
     }
     unsafe {
@@ -1097,23 +1116,26 @@ pub fn function(id:u32) -> () {
             bad();
         }
         here = model::insts[1].span;
-        if model::insts[1].op != 14_u32 || model::insts[1].a != 1_u32 {
+        if model::insts[1].op != model::IR_LABEL || model::insts[1].a != 1_u32 {
             bad();
         }
-        var j:usize = 0;
-        while j < 65537_usize {
+        // Clear the previous function's entire touched range before resetting it.
+        // Entries above that range are zero by induction from static initialization.
+        var j:usize = 1;
+        while j <= (label_high as usize) {
             labels[j] = 0;
             label_defs[j] = 0;
             j = j+1_usize;
         }
+        label_high = 0;
         var outgoing:usize = 0;
         var at:u32 = 1;
         var terminated:bool = true;
         while at <= model::inst_count {
             let inst:model::Inst = model::insts[at as usize];
             here = inst.span;
-            validate(inst,decl);
-            if inst.op == 14_u32 {
+            validate(inst, decl);
+            if inst.op == model::IR_LABEL {
                 if !terminated || label_defs[inst.a as usize] != 0_u8 {
                     bad();
                 }
@@ -1124,9 +1146,9 @@ pub fn function(id:u32) -> () {
                 if terminated {
                     bad();
                 }
-                terminated = inst.op >= 15_u32;
+                terminated = inst.op >= model::IR_JUMP;
             }
-            if inst.op == 13_u32 {
+            if inst.op == model::IR_CALL {
                 let amount:usize = outgoing_size(declaration(inst.a));
                 if amount > outgoing {
                     outgoing = amount;
@@ -1138,7 +1160,7 @@ pub fn function(id:u32) -> () {
             bad();
         }
         j = 1;
-        while j < 65537_usize {
+        while j <= (label_high as usize) {
             if labels[j] != 0_u32 && label_defs[j] == 0_u8 {
                 bad();
             }
@@ -1154,40 +1176,40 @@ pub fn function(id:u32) -> () {
             if ty.align > frame_align {
                 frame_align = ty.align;
             }
-            frame_size = image::aligned(frame_size,ty.align);
-            model::slots[at as usize].offset = frame_size;
+            frame_size = image::aligned(frame_size, ty.align);
+            frame_offsets[at as usize] = frame_size;
             var size:usize = ty.size;
             if size == 0_usize {
                 size = 1;
             }
             if size > 262144_usize || frame_size > 262144_usize-size {
-                model::limit(frame_size+size,262144);
+                model::limit(frame_size+size, 262144);
             }
             frame_size = frame_size+size;
             at = at+1_u32;
         }
-        frame_size = image::aligned(frame_size,16);
+        frame_size = image::aligned(frame_size, 16);
         if frame_size+frame_align-16_usize > 262144_usize {
-            model::limit(frame_size+frame_align-16_usize,262144);
+            model::limit(frame_size+frame_align-16_usize, 262144);
         }
         if frame_size+frame_align-16_usize > model::max_frame {
             model::max_frame = frame_size+frame_align-16_usize;
         }
         mark(decl.symbol);
-        mov(30,2);
-        constant(31,frame_size);
-        r(32,0,2,2,31);
+        mov(30, 2);
+        constant(31, frame_size);
+        r(32, 0, 2, 2, 31);
         if frame_align > 16_usize {
-            constant(31,0_usize-%frame_align);
-            r(0,7,2,2,31);
+            constant(31, 0_usize-%frame_align);
+            r(0, 7, 2, 2, 31);
         }
-        store(1,2,save,8);
-        store(8,2,save+8_usize,8);
-        mov(8,30);
+        store(1, 2, save, 8);
+        store(8, 2, save+8_usize, 8);
+        mov(8, 30);
         let result:model::Type = info(decl.ty);
         var position:usize = 0;
         if result.size != 0_usize && !scalar(result) {
-            store(10,2,result_pointer,8);
+            store(10, 2, result_pointer, 8);
             position = 1;
         }
         var p:u32 = 0;
@@ -1207,12 +1229,12 @@ pub fn function(id:u32) -> () {
             let ty:model::Type = info(param.ty);
             if ty.size != 0_usize {
                 if scalar(ty) {
-                    incoming(position,5);
-                    store(5,2,slot(arg).offset,ty.size);
+                    incoming(position, 5);
+                    store(5, 2, frame_offset(arg), ty.size);
                 }
                 else {
-                    incoming(position,6);
-                    destination(arg,5);
+                    incoming(position, 6);
+                    destination(arg, 5);
                     copy(ty.size);
                 }
                 position = position+1_usize;
@@ -1221,7 +1243,7 @@ pub fn function(id:u32) -> () {
         }
         at = 1;
         while at <= model::inst_count {
-            instruction(model::insts[at as usize],decl);
+            instruction(model::insts[at as usize], decl);
             at = at+1_u32;
         }
     }
@@ -1231,17 +1253,17 @@ pub fn function(id:u32) -> () {
 pub fn start(entry:u32) -> u32 {
     let first:u32 = image::fresh();
     mark(first);
-    mov(27,2);
-    transfer(1,entry,true);
-    constant(17,93);
+    mov(27, 2);
+    transfer(1, entry, true);
+    constant(17, 93);
     image::word(115);
     image::word(3221229683);
     unsafe {
         panic_symbol = image::fresh();
         mark(panic_symbol);
     }
-    constant(10,101);
-    constant(17,93);
+    constant(10, 101);
+    constant(17, 93);
     image::word(115);
     image::word(3221229683);
     unsafe {

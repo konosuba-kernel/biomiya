@@ -1,0 +1,12 @@
+{
+  "core-s/bootstrap/main.vt": {
+    "before_sha256": "0bf47eb6ebec793460433fcdab99b8ce4152210e80dd168909079aea376209f5",
+    "after_sha256": "feeaa003804374a2a9909cb0ccef6dd91132c60e262cc7d85d2b8fe54b31c18c",
+    "token_sequence_equal": true
+  },
+  "core-s/bootstrap/input.vt": {
+    "before_sha256": "473cd7c4b57891b6bb794bcb7520ef8f49e048a951f9385a3758f1a4187e8bae",
+    "after_sha256": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "token_sequence_equal": true
+  }
+}

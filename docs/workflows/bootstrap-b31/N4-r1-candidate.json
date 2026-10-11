@@ -1,0 +1,41 @@
+{
+  "node": "N4",
+  "revision": 1,
+  "status": "awaiting_independent_review",
+  "input_revisions": {
+    "N3": 1
+  },
+  "input_hashes": {
+    "docs/workflows/bootstrap-b31/N3-r1-candidate.json": "ed77d0dec957acc843c1554df339f729a7e2fec5736c4d4c6e4c12c6fbdf2a8d",
+    "docs/workflows/bootstrap-b31/N3-r1-review.json": "557fdb2f8ac1b91a7f702acaf1a038f7cdaca8d43f7c483317909c99501f8d80"
+  },
+  "implementers": [
+    "/root"
+  ],
+  "files": {
+    "core-s/bootstrap/blocking.vt": "dece54849d272fafbc3a35cda78ec743ef41ca59f32d66ca8a5059c9c772721b",
+    "core-s/bootstrap/check.vt": "6b5a7a9ead5f7e168a78f9e8c8804326a9819407a8e010a0ec7925cc395b6b01",
+    "core-s/bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+    "core-s/bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "core-s/bootstrap/ir.vt": "044e884a2dcbebf9e8733277b0c65b3856f2f8346fe09c1d6b2995e338d1ac88",
+    "core-s/bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "core-s/bootstrap/main.vt": "6f69a5fa8953b3ef0db6738b68054ce2e07f37a949f6a467425d89024385bf29",
+    "core-s/bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+    "core-s/bootstrap/parse.vt": "8cf832c5f459ef80b333d37e285abb8168b6e9420d7c9128eea3b69dcc142361",
+    "core-s/bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+    "core-s/bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "core-s/bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "core-s/bootstrap/types.vt": "d44cf08d052d458d7927ebb9acc9b70492858be0142ae89584a1ed2fc3c3c176",
+    "core-s/bootstrap/c1.build": "1658006df1e2a02df807629a8f3c7ffb60ad693ab09b09862571f28091d9abf8",
+    "core-s/bootstrap/c2.build": "88dfe7e21fa76639ffe0352e2df6671c9052f3b562817283c2bdcf626dfc0907",
+    "core-s/bootstrap/c3.build": "50d9f69c1b7f901c787efd9d96af6c4dd3658545234e096de9b08791707f0ad9",
+    "core-s/bootstrap/blocking.md": "54c1d734f24d92f4991c2e12900f3acceaccfad5f4532df704ca04c93c7e9ffa",
+    "core-s/bootstrap/pure.blocking": "65c422bf7700f3f449208b288c4ad5594a7e6c6896e90704180238dacedee77f",
+    "core-s/tests/b3.rs": "81b74a0f09f5a478395a0784a800759da3ff62f7e32d25ce320a24c8abb86122",
+    "docs/workflows/bootstrap-b31/N4-validation.json": "eb36d960371ac03b136abe9204d43e47e2217a2c65a5ee56664f37514a63441f",
+    "docs/workflows/bootstrap-b31/N4-report.md": "a351f612845c093d72157135b0356600758c9675e4094bedb372a09745b7820c",
+    "docs/workflows/bootstrap-b31/N4-b3-tests.log": "4622eaa519017388ae863dffbdeaa949dacfc8529a28ce2f8afaf1d40c752e6b"
+  },
+  "validation": "N4-validation.json",
+  "report": "N4-report.md"
+}

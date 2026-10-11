@@ -1,0 +1,183 @@
+{
+  "scope": "B3.1 readable self-hosting compiler with one optional Blocking analysis",
+  "baseline_commit": "1c0f1431f4e6a67455fe0f95a74de6991396b729",
+  "status": "complete",
+  "nodes": [
+    {
+      "id": "N0",
+      "deliverable": "baseline",
+      "dependencies": [],
+      "input_revisions": {},
+      "write_scope": [
+        "docs/design/bootstrap-b31.md",
+        "docs/workflows/bootstrap-b31/"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b31_review"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "reviews": [
+        "N0-r1-review.json"
+      ]
+    },
+    {
+      "id": "N1",
+      "deliverable": "representation",
+      "dependencies": [
+        "N0"
+      ],
+      "input_revisions": {
+        "N0": 1
+      },
+      "write_scope": [
+        "core-s/bootstrap/*.vt",
+        "docs/workflows/bootstrap-b31/"
+      ],
+      "implementers": [
+        "/root/b31_frontend"
+      ],
+      "contributors": [
+        "/root/b31_frontend"
+      ],
+      "reviewers": [
+        "/root/b31_review"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "reviews": [
+        "N1-r1-review.json"
+      ],
+      "candidate": "N1-r1-candidate.json"
+    },
+    {
+      "id": "N2",
+      "deliverable": "state",
+      "dependencies": [
+        "N1"
+      ],
+      "input_revisions": {
+        "N1": 1
+      },
+      "write_scope": [
+        "core-s/bootstrap/{types,parse,check,ir,model,main}.vt",
+        "core-s/tests/",
+        "docs/workflows/bootstrap-b31/"
+      ],
+      "implementers": [
+        "/root/b31_frontend"
+      ],
+      "contributors": [
+        "/root/b31_frontend"
+      ],
+      "reviewers": [
+        "/root/b31_review"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "reviews": [
+        "N2-r1-review.json"
+      ],
+      "candidate": "N2-r1-candidate.json"
+    },
+    {
+      "id": "N3",
+      "deliverable": "semantics",
+      "dependencies": [
+        "N2"
+      ],
+      "input_revisions": {
+        "N2": 1
+      },
+      "write_scope": [
+        "core-s/bootstrap/*.vt",
+        "core-s/tests/",
+        "docs/workflows/bootstrap-b31/"
+      ],
+      "implementers": [
+        "/root/b31_frontend",
+        "/root/b31_machine"
+      ],
+      "contributors": [
+        "/root/b31_frontend",
+        "/root/b31_machine"
+      ],
+      "reviewers": [
+        "/root/b31_review"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "reviews": [
+        "N3-r1-review.json"
+      ],
+      "candidate": "N3-r1-candidate.json"
+    },
+    {
+      "id": "N4",
+      "deliverable": "blocking",
+      "dependencies": [
+        "N3"
+      ],
+      "input_revisions": {
+        "N3": 1
+      },
+      "write_scope": [
+        "core-s/bootstrap/",
+        "core-s/tests/",
+        "docs/workflows/bootstrap-b31/"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b31_review"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "reviews": [
+        "N4-r1-review.json"
+      ],
+      "candidate": "N4-r1-candidate.json"
+    },
+    {
+      "id": "N5",
+      "deliverable": "integration",
+      "dependencies": [
+        "N4"
+      ],
+      "input_revisions": {
+        "N4": 1
+      },
+      "write_scope": [
+        "core-s/README.md",
+        "core-s/tests/",
+        "core-s/bootstrap/*.build",
+        "docs/workflows/bootstrap-b31/"
+      ],
+      "implementers": [
+        "/root"
+      ],
+      "contributors": [
+        "/root"
+      ],
+      "reviewers": [
+        "/root/b31_review"
+      ],
+      "status": "accepted",
+      "revision": 1,
+      "reviews": [
+        "N5-r1-review.json"
+      ],
+      "candidate": "N5-r1-candidate.json"
+    }
+  ]
+}

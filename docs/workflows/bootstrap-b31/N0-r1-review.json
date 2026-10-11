@@ -1,0 +1,51 @@
+{
+  "node": "N0",
+  "candidate_revision": 1,
+  "candidate_sha256": "64422e59241e5258af217b81d9c843f05c1f02f576f593bee355fb9ae7cb15c7",
+  "reviewer_agent_id": "/root/b31_review",
+  "independent": true,
+  "verdict": "通过",
+  "input_revisions": {
+    "B3": "I2 accepted; 1c0f143"
+  },
+  "file_hashes_verified": {
+    "docs/design/bootstrap-b31.md": "c6886848e884d227015c585e621af79f6c1ba38c00611bc284b9fbb5951b7f97",
+    "docs/workflows/bootstrap-b31/baseline.json": "78c3966d5b17a04af52a22cbef907802366f2e7aad27c04b448554ca125f1b28"
+  },
+  "checks": [
+    {
+      "name": "baseline committed source preservation",
+      "result": "HEAD is exact baseline 1c0f1431f4e6a67455fe0f95a74de6991396b729; all 63 frozen files match worktree and Git blobs; every tracked core-s file covered."
+    },
+    {
+      "name": "accepted C2 seed preservation",
+      "result": "core-s/build/b31-seed.elf SHA256 8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a matches independently accepted B3 I2 C2."
+    },
+    {
+      "name": "prior evidence retention",
+      "result": "All I2 review-listed author evidence, implementation hashes and independent JSON hashes match; both original current and source-clean logs retain 81 passed results. No product changes since accepted B3."
+    },
+    {
+      "name": "restore path",
+      "result": "git archive baseline exported into fresh temporary directory; all frozen source hashes and original independent review match. Archived Cargo files, source-only clean_build.py and c1/c2/c3 manifests retain the accepted regeneration path."
+    },
+    {
+      "name": "scope and DAG",
+      "result": "N0 through N5 form valid acyclic serial dependency chain. Frozen design supplies observable per-node criteria and explicit language/non-framework boundaries; mutable workflow records scheduling."
+    }
+  ],
+  "recovery": {
+    "fast_path": "Use the preserved core-s/build/b31-seed.elf after verifying frozen SHA256; this build-directory artifact is ignored and must be copied before cleaning build outputs.",
+    "source_path": "Export commit 1c0f1431f4e6a67455fe0f95a74de6991396b729 into a new tree with git archive; run archived docs/workflows/bootstrap-b3/clean_build.py with a fresh --record-dir to recreate and verify accepted C1/C2/C3, or build C0 then apply archived c1/c2 manifests for a retained C2.",
+    "expected_c2_sha256": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a"
+  },
+  "reproduction": {
+    "command": "python3 /tmp/b31-n0-review.py",
+    "script_source": "import json,hashlib,pathlib,subprocess,re,tempfile,tarfile,io\nR=pathlib.Path('/home/mii/code/konOSuba/biomiya');D=R/'docs/workflows/bootstrap-b31';old=R/'docs/workflows/bootstrap-b3'\nh=lambda b:hashlib.sha256(b).hexdigest()\nrun=lambda *a:subprocess.check_output(a,cwd=R)\nb=json.loads((D/'baseline.json').read_text());c=json.loads((D/'N0-r1-candidate.json').read_text());prior=json.loads((old/'I-r2-review.json').read_text())\nassert run('git','rev-parse','HEAD').decode().strip()==b['commit']\nfor p,s in c['files'].items():assert h((R/p).read_bytes())==s,p\nfor p,s in b['files'].items():\n assert h((R/p).read_bytes())==s,p\n assert h(run('git','show',b['commit']+':'+p))==s,p\ntracked=set(run('git','ls-tree','-r','--name-only',b['commit'],'core-s').decode().splitlines());assert tracked<=set(b['files']),tracked-set(b['files'])\nassert h((R/b['seed_path']).read_bytes())==b['seed_sha256']==prior['final_artifacts']['hashes']['c2']\nfor p,s in prior['author_evidence_hashes_verified'].items():assert h((old/p).read_bytes())==s,p\nfor p,s in prior['file_hashes_verified'].items():assert h((R/p).read_bytes())==s,p\nfor p,s in prior['independent_evidence'].items():assert h((old/p).read_bytes())==s,p\ncounts={}\nfor p in ['I-r2-tests.txt','I-r2-clean/I-clean-tests.txt']:\n counts[p]=sum(map(int,re.findall(r'test result: ok\\. (\\d+) passed',(old/p).read_text())))\n assert counts[p]==81\narchive=run('git','archive',b['commit'])\nwith tempfile.TemporaryDirectory(prefix='b31-n0-restore-') as t:\n root=pathlib.Path(t)\n with tarfile.open(fileobj=io.BytesIO(archive)) as f:f.extractall(root,filter='data')\n for p,s in b['files'].items():assert h((root/p).read_bytes())==s,p\n assert (root/'docs/workflows/bootstrap-b3/clean_build.py').exists()\n assert (root/'docs/workflows/bootstrap-b3/I-r2-review.json').read_bytes()==(old/'I-r2-review.json').read_bytes()\n assert (root/'core-s/bootstrap/c1.build').exists() and (root/'core-s/Cargo.lock').exists()\nworkflow=json.loads((D/'workflow.json').read_text());nodes={x['id']:x for x in workflow['nodes']};seen=set()\nfor n in workflow['nodes']:\n assert set(n['dependencies'])<=seen\n seen.add(n['id'])\nassert [x['id'] for x in workflow['nodes']]==['N0','N1','N2','N3','N4','N5']\n"
+  },
+  "limitations": [
+    "N0 verifies frozen preservation and availability of the previously executed recovery recipe; unchanged full81 and compiler bootstrap were not rerun.",
+    "Preserved seed is a local ignored artifact; source commit is durable recovery authority."
+  ],
+  "new_blockers": []
+}

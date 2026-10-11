@@ -1,0 +1,91 @@
+{
+  "node": "N3",
+  "revision": 1,
+  "branch": "machine",
+  "author": "/root/b31_machine",
+  "status": "machine_complete_pending_combined_candidate_and_independent_review",
+  "input_revisions": {
+    "N2": 1
+  },
+  "input_review_sha256": "c75aacf601512655e4862737a6cb15e52d2f5d2fe33fb9c3bc6847f5111ad8c8",
+  "files": {
+    "core-s/bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "core-s/bootstrap/tests/machine.vt": "820459ac38941613d9ba9c24e77a6c9b9d849ddb33b7dc11f1872f3e71789890",
+    "core-s/tests/b3_machine.rs": "3247dbd44e253a6fd5a807bb232e51c4d627a1b8d403ea1ad6259d75fb06f4a1"
+  },
+  "evidence": {
+    "docs/workflows/bootstrap-b31/N3-machine-tests.log": "2fe061315dc562720662038a68d30d7a520e2c7fcafaf4d0ec93d085b77fe543",
+    "docs/workflows/bootstrap-b31/N3-machine-probes.py": "862bb5c72544e6b4acacaf1a46a2aeb3ae9fd5d714dad2e13275386931f9bc24",
+    "docs/workflows/bootstrap-b31/N3-machine-baseline.tar.gz": "5d2802b87fdd44db66f85b2e8f4f642c56fb5742c489eec68a41585e6802c3f6",
+    "docs/workflows/bootstrap-b31/N3-machine-probe-evidence.json": "58a4bad0aff03fb2faa836f816179d5e99da1225e6c3657aafdab8316d7186b4",
+    "docs/workflows/bootstrap-b31/N3-machine-final-probe-evidence.json": "f29ed4829bcb53202a94919edf207fff7054500ed63b3624faa6b9ea369daead"
+  },
+  "dependency_hashes": {
+    "bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+    "bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+    "bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+    "bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "bootstrap/tests/machine.vt": "820459ac38941613d9ba9c24e77a6c9b9d849ddb33b7dc11f1872f3e71789890",
+    "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+    "runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+  },
+  "implementation": [
+    "Private frame_offsets[32769]usize replaces all Slot frame-offset reads and writes; checked accessor preserves SlotId validation. Active offsets are overwritten before emission.",
+    "label_high includes definitions and references through existing validated label() calls. Entry clears previous 1..high and resets high; final undefined-reference validation scans current 1..high. Sparse label65536 remains legal.",
+    "Frontend coordinated removal of Slot.offset is reflected in machine fixtures. No dead target field or sentinel compatibility remains.",
+    "Target snapshot compares every active Slot type/flags/span, Inst operand/bits/span, Arg and parameter_slots entry, and slot/inst/arg/parameter counts plus function_decl."
+  ],
+  "validation": {
+    "command": "cargo test --offline --locked --all-features --test b3_machine",
+    "passed": 7,
+    "failed": 0,
+    "ignored": 0,
+    "qemu_stack_bytes": 1048576,
+    "runtime": "Aggregate ABI fixture returns97; large65536\u2192small2\u2192large65536 with two scalar calls returns42. Constants and s0 retain independent assembler comparisons.",
+    "rejections": [
+      "label0",
+      "label65537",
+      "undefined65536 after earlier definition in another function",
+      "undefined branch yes65536",
+      "undefined branch no65536",
+      "duplicate65536",
+      "missing terminator",
+      "instruction after terminator",
+      "fallthrough into label",
+      "existing malformed IR/layout/frame/link cases"
+    ],
+    "read_only_mutants": [
+      "Slot.flags",
+      "Inst.span.end",
+      "args[1]",
+      "parameter_slots[1]",
+      "function_decl"
+    ],
+    "label_mutants": [
+      "scan excludes high reference",
+      "old label definition survives clear"
+    ],
+    "N2_machine_ELF_identical": [
+      "ir",
+      "wrap",
+      "constants"
+    ],
+    "probe_reproducibility": "Final script reads frozen N3-machine-baseline.tar.gz, verifies prior candidate hashes and old test fixture against git. Initial/final runtime results exactly match; final evidence records updated shared rules.vt hash. No dependence on prior temporary checkouts.",
+    "diff_check": "git diff --check passed for three owned product/test files"
+  },
+  "memory": {
+    "measured_target_slot_bytes_before": 32,
+    "measured_target_slot_bytes_after": 20,
+    "slot_table_byte_delta": -393228,
+    "frame_offsets_added_bytes": 262152,
+    "label_high_added_bytes": 4,
+    "combined_table_payload_delta_bytes": -131072,
+    "boundary": "Payload arithmetic uses target-executed sizeof probes. Overall static/image size and self-compile are measured by combined N3/N5 workflow; this branch does not claim them."
+  },
+  "boundaries": [
+    "No Rust seed or existing B3/N0-N2 evidence modified.",
+    "No independent acceptance claim; frontend owns final N3 candidate and reviewer owns acceptance.",
+    "No full81 or separate full self-compilation run by this branch."
+  ]
+}

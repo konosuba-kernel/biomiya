@@ -2,6 +2,7 @@ format 1
 profile linux-user
 entry bootstrap::main::run
 source bootstrap/model.vt
+source bootstrap/rules.vt
 source bootstrap/lex.vt
 source bootstrap/input.vt
 source bootstrap/types.vt
@@ -11,6 +12,7 @@ source bootstrap/check.vt
 source bootstrap/image.vt
 source bootstrap/rv64.vt
 source bootstrap/s0.vt
+source bootstrap/blocking.vt
 source bootstrap/main.vt
 source runtime/bytes.vt
 source runtime/linux.vt

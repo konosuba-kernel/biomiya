@@ -1,0 +1,101 @@
+{
+  "core-s/bootstrap/check.vt": {
+    "before_sha256": "1e0d3d24e1d30599ad3788e38190d62f16f8cd3192d2aeb3fd4caf5a25c9a007",
+    "formatted_sha256": "311f797510d88875f16426e9a846b4e363cbcf3a0e38759dac0d3857bfcf17aa",
+    "token_sha256": "8446bf122b0270d533bc4e40720e03386748b99c41baa0ca1da22f57021b95e3",
+    "token_count": 8898,
+    "token_sequence_equal": true,
+    "before_lines": 385,
+    "formatted_lines": 1224
+  },
+  "core-s/bootstrap/image.vt": {
+    "before_sha256": "f0756417977a0fe276886b5aac374b450af983ac033240782a9be8e28d2ae76f",
+    "formatted_sha256": "e8e1f67a18abbdec07ceb6d58bc3e32fbb8b3f48508d92f66f99c00dec3dfc4e",
+    "token_sha256": "9e4ed019b272399029565f0ec0c739918317109d32bfef8ea7754619ed40dab9",
+    "token_count": 2929,
+    "token_sequence_equal": true,
+    "before_lines": 424,
+    "formatted_lines": 417
+  },
+  "core-s/bootstrap/input.vt": {
+    "before_sha256": "78d23f79da810377f784b9e964031fbcf4465ec0f1dbd54d0a6f68810b2e380b",
+    "formatted_sha256": "9554609b389e12048be3b9b16677ee9ea87e97e6b6aabbbb43e719970ceb01e9",
+    "token_sha256": "6e2710bbfe94eb822181d3239a177fe1a1cfcb6bd7ac3e5effad1effcd53de17",
+    "token_count": 2012,
+    "token_sequence_equal": true,
+    "before_lines": 155,
+    "formatted_lines": 265
+  },
+  "core-s/bootstrap/ir.vt": {
+    "before_sha256": "81e9dd8ed95642e5651fae5606e7205dc214a347631a4cd362a77c108ae4ee12",
+    "formatted_sha256": "8e982dc5c6af917c4cee0e58e3b28540c50deb6399369c6354cfee373c3b0abd",
+    "token_sha256": "5a072db1a9b7c5184cc7798e20dea68e3269d33daa3db3f54a883827ac3e9f87",
+    "token_count": 1651,
+    "token_sequence_equal": true,
+    "before_lines": 69,
+    "formatted_lines": 252
+  },
+  "core-s/bootstrap/lex.vt": {
+    "before_sha256": "31915fb257899b833105706e42f2f2861b556cc8ef93c91b865d9b7b9062ac8c",
+    "formatted_sha256": "43f6bfbc27fe164fb377ff2399efd79fc301d8528c44cc0f9fbd3e2800e6392f",
+    "token_sha256": "8e20059d6f70dfcc727f340c89c459e15efe763259a7a9f8a45692bfc6b2df80",
+    "token_count": 2040,
+    "token_sequence_equal": true,
+    "before_lines": 165,
+    "formatted_lines": 330
+  },
+  "core-s/bootstrap/main.vt": {
+    "before_sha256": "ccbea227c2ecc130ff808b362850405d4d45616c84cba90c563a77b3dca0c0e9",
+    "formatted_sha256": "b51dd20a777a1745bcf9fb67056baac710e42555f9c25bef11d0dabff3a5991b",
+    "token_sha256": "04080a8e67d1d97a120b01bed32d92df34a14e2631eeb8f65f11bf0a7a0b2279",
+    "token_count": 1368,
+    "token_sequence_equal": true,
+    "before_lines": 119,
+    "formatted_lines": 179
+  },
+  "core-s/bootstrap/model.vt": {
+    "before_sha256": "44e3361cb7c7b7bda4db094203a99ecc1ead2b7ed795b56227f3d6a1ca50b814",
+    "formatted_sha256": "6c5bcf93422e5e651e552fb25cabd91b7e7fe21fdc301b306b4adc3425584371",
+    "token_sha256": "7e440b0e0a252fcbd2dec5ee47df63cc774cac978a6858046dc5ae2e168bb8df",
+    "token_count": 3729,
+    "token_sequence_equal": true,
+    "before_lines": 353,
+    "formatted_lines": 714
+  },
+  "core-s/bootstrap/parse.vt": {
+    "before_sha256": "14855b13c5b0f4c1e97860f4fa864adc8407fe931fdb8c8b2a2b9a544388544d",
+    "formatted_sha256": "eba233fa0919765ea010a8023ddf8cf9a99fe09522b03403907497ffe04545dd",
+    "token_sha256": "c77edb7e428556babf3e12dedd4b11dca535263fd44d448d7eed117592752ab2",
+    "token_count": 6729,
+    "token_sequence_equal": true,
+    "before_lines": 281,
+    "formatted_lines": 981
+  },
+  "core-s/bootstrap/rv64.vt": {
+    "before_sha256": "4fcc5bea0bc960f2e91b25d695c18338341ef02d5cefb5e2ee18a54d5769895f",
+    "formatted_sha256": "908317d5de5088a99a024be00e5f2092803d3c53bdd68285cfea9a310ed807e2",
+    "token_sha256": "41d9b3593c6fb5a73b87a864a2c1ad154cab34362a744bc3e7ae202e809c5e14",
+    "token_count": 7835,
+    "token_sequence_equal": true,
+    "before_lines": 1253,
+    "formatted_lines": 1215
+  },
+  "core-s/bootstrap/s0.vt": {
+    "before_sha256": "32a28caea5555427e25c709014d1c0a86851bbef0565b9bc9ea663e3c4b26636",
+    "formatted_sha256": "349e48610a5a4756dd4458bbcc5d086c2010cb6cf98c89b1505964a622228f78",
+    "token_sha256": "7f978a7a1383056b1ad78f524846710594c95db0de515c21d3bd89a7737e07c0",
+    "token_count": 2497,
+    "token_sequence_equal": true,
+    "before_lines": 447,
+    "formatted_lines": 436
+  },
+  "core-s/bootstrap/types.vt": {
+    "before_sha256": "27b3441af70d482e69114c9b98e446b05d37e4dd258d35532470af73d7131cc3",
+    "formatted_sha256": "36ad81e76ba6bed6c5dfe8999cfa425c9713dc668a3d34fcc3d2e26d0b47f3c9",
+    "token_sha256": "5970edf9009de4ce524b0685f93ba481bf9a4598a9490e581107021113c19d6e",
+    "token_count": 7386,
+    "token_sequence_equal": true,
+    "before_lines": 389,
+    "formatted_lines": 1184
+  }
+}

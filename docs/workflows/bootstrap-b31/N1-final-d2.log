@@ -1,0 +1,1 @@
+B3 sources=13 imports=31 assembly_files=1 source=258555 assembly=345 names=2416 name_bytes=46954 decls=544 types=176 fields=115 params=417 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=851536 data=200324 objects=529 symbols=10468 fixups=20188 relocations=8280 elf=1058872

@@ -1,0 +1,54 @@
+{
+  "node": "N3",
+  "revision": 1,
+  "status": "awaiting_independent_review",
+  "input_revisions": {
+    "N2": 1
+  },
+  "input_hashes": {
+    "docs/workflows/bootstrap-b31/N2-r1-candidate.json": "28c3606196f39b0d8685c0988efedad59b902d14074b201ddaf41ab99a1358c2",
+    "docs/workflows/bootstrap-b31/N2-r1-review.json": "c75aacf601512655e4862737a6cb15e52d2f5d2fe33fb9c3bc6847f5111ad8c8"
+  },
+  "implementers": [
+    "/root/b31_frontend",
+    "/root/b31_machine"
+  ],
+  "files": {
+    "core-s/bootstrap/c1.build": "609fe27ab882cbe2ee3392d627acef45993700cd0d72b714c51ddda45c25cf22",
+    "core-s/bootstrap/c2.build": "2f4a65139033a7ca0b502a673d4b666d40ca07e3d5f7dd0f8f9ce6d73260743e",
+    "core-s/bootstrap/c3.build": "7a798ca673c2ac044580f12e6056e407ca6c7cdd7ef78ae71dd717a2189d2f3e",
+    "core-s/bootstrap/check.vt": "6b5a7a9ead5f7e168a78f9e8c8804326a9819407a8e010a0ec7925cc395b6b01",
+    "core-s/bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+    "core-s/bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "core-s/bootstrap/ir.vt": "044e884a2dcbebf9e8733277b0c65b3856f2f8346fe09c1d6b2995e338d1ac88",
+    "core-s/bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "core-s/bootstrap/main.vt": "e9b0d6bb3221350d62ddc8422201e4bfb5b1353ede5f2ef49cca9d50db035731",
+    "core-s/bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+    "core-s/bootstrap/parse.vt": "8cf832c5f459ef80b333d37e285abb8168b6e9420d7c9128eea3b69dcc142361",
+    "core-s/bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+    "core-s/bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "core-s/bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "core-s/bootstrap/tests/machine.vt": "820459ac38941613d9ba9c24e77a6c9b9d849ddb33b7dc11f1872f3e71789890",
+    "core-s/bootstrap/types.vt": "d44cf08d052d458d7927ebb9acc9b70492858be0142ae89584a1ed2fc3c3c176",
+    "core-s/tests/b3.rs": "b9bea55c6283a00a03210651f5ba2e8ce03d4c429c53acbf49bd1d81527d132a",
+    "core-s/tests/b3_frontend.rs": "fa342ac49706b8ce4c89dd4822ebcd8d2136e25b99fbb6130d39ef38bb1672d4",
+    "core-s/tests/b3_machine.rs": "3247dbd44e253a6fd5a807bb232e51c4d627a1b8d403ea1ad6259d75fb06f4a1",
+    "docs/workflows/bootstrap-b31/N3-final-frontend-tests.log": "3a1a57e482362ad3ad381f019903442892e1433b117594b7901ed095e203c741",
+    "docs/workflows/bootstrap-b31/N3-final-pure-tests.log": "4ca229715d04e767870c74eb875b1d6d73ef3cb22dbf5f1887f852293702d734",
+    "docs/workflows/bootstrap-b31/N3-frontend-tests.log": "a68af22565e316e4527c8b91cc97a42b42a0b7530da5525ad945ae06d22feb76",
+    "docs/workflows/bootstrap-b31/N3-integration-evidence.json": "e681d8e95b739a86157cf25794a14bdccd3bb8fdee305e5937b03790e2d31abc",
+    "docs/workflows/bootstrap-b31/N3-integration.py": "fa52ad9e19d100499975a4b3fdd1ce73ccff096a6249a7859c88a4508ab5e744",
+    "docs/workflows/bootstrap-b31/N3-machine-baseline.tar.gz": "5d2802b87fdd44db66f85b2e8f4f642c56fb5742c489eec68a41585e6802c3f6",
+    "docs/workflows/bootstrap-b31/N3-machine-final-probe-evidence.json": "f29ed4829bcb53202a94919edf207fff7054500ed63b3624faa6b9ea369daead",
+    "docs/workflows/bootstrap-b31/N3-machine-probe-evidence.json": "58a4bad0aff03fb2faa836f816179d5e99da1225e6c3657aafdab8316d7186b4",
+    "docs/workflows/bootstrap-b31/N3-machine-probes.py": "862bb5c72544e6b4acacaf1a46a2aeb3ae9fd5d714dad2e13275386931f9bc24",
+    "docs/workflows/bootstrap-b31/N3-machine-report.json": "d3a7a6e986c38fbde51d32387f5ec69b43672cdc4c97a5da13945de65c5e9dd2",
+    "docs/workflows/bootstrap-b31/N3-machine-tests.log": "2fe061315dc562720662038a68d30d7a520e2c7fcafaf4d0ec93d085b77fe543",
+    "docs/workflows/bootstrap-b31/N3-report.md": "99c1ab539178ac6a9357496b60dcf91bb510e7789f240e01a1a7bf3476f76328",
+    "docs/workflows/bootstrap-b31/N3-rule-purity.json": "27838c42c30aa013de606013e4633c6bdb062d1804a978fc524b40332db00388",
+    "docs/workflows/bootstrap-b31/N3-validation.json": "ee6840c2175f398693035b69f26545af2c989c4b47ab8e65767c15edece58419"
+  },
+  "report": "N3-report.md",
+  "validation": "N3-validation.json",
+  "scope_adjustment": "Slot.offset removed from internal semantic record; no external stable API obligation, target offsets private to rv64."
+}

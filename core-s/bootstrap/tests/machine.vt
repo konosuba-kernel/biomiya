@@ -5,6 +5,82 @@ import bootstrap::rv64;
 import bootstrap::s0;
 import runtime::linux;
 static mut assembly:[1048577]u8 = [0; 1048577];
+// Test-only static snapshots avoid consuming the guest's bounded stack.
+static mut saved_slots:[257]model::Slot = [model::Slot { ty:0, flags:0, span:model::Span { file:0, start:0, end:0 } };257];
+static mut saved_insts:[1025]model::Inst = [model::Inst { op:0, dst:0, a:0, b:0, c:0, aux:0, bits:0, span:model::Span { file:0, start:0, end:0 } };1025];
+static mut saved_args:[1025]u32 = [0;1025];
+static mut saved_parameters:[257]u32 = [0;257];
+
+fn unchanged(ok:bool) -> () {
+    if !ok {
+        // Distinguish a test snapshot failure from malformed IR at byte 17.
+        model::fail(model::ERROR_INTERNAL, 2, 9001);
+    }
+    return ();
+}
+
+fn same_span(a:model::Span, b:model::Span) -> bool {
+    return a.file == b.file && a.start == b.start && a.end == b.end;
+}
+
+fn emit_function(id:u32) -> () {
+    unsafe {
+        let slots:u32 = model::slot_count;
+        let insts:u32 = model::inst_count;
+        let args:u32 = model::arg_count;
+        let parameters:u32 = model::parameter_slot_count;
+        let function:u32 = model::function_decl;
+        unchanged(slots <= 256_u32 && insts <= 1024_u32 && args <= 1024_u32 && parameters <= 256_u32);
+        var at:u32 = 1;
+        while at <= slots {
+            saved_slots[at as usize] = model::slots[at as usize];
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= insts {
+            saved_insts[at as usize] = model::insts[at as usize];
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= args {
+            saved_args[at as usize] = model::args[at as usize];
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= parameters {
+            saved_parameters[at as usize] = model::parameter_slots[at as usize];
+            at = at+1_u32;
+        }
+        rv64::function(id);
+        unchanged(model::slot_count == slots && model::inst_count == insts && model::arg_count == args);
+        unchanged(model::parameter_slot_count == parameters && model::function_decl == function);
+        at = 1;
+        while at <= slots {
+            let before:model::Slot = saved_slots[at as usize];
+            let after:model::Slot = model::slots[at as usize];
+            unchanged(before.ty == after.ty && before.flags == after.flags && same_span(before.span, after.span));
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= insts {
+            let before:model::Inst = saved_insts[at as usize];
+            let after:model::Inst = model::insts[at as usize];
+            unchanged(before.op == after.op && before.dst == after.dst && before.a == after.a && before.b == after.b && before.c == after.c && before.aux == after.aux && before.bits == after.bits && same_span(before.span, after.span));
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= args {
+            unchanged(saved_args[at as usize] == model::args[at as usize]);
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= parameters {
+            unchanged(saved_parameters[at as usize] == model::parameter_slots[at as usize]);
+            at = at+1_u32;
+        }
+    }
+    return ();
+}
 
 fn emit(op:u32,dst:u32,a:u32,b:u32,c:u32,aux:u32,bits:usize) -> () {
     let ignored:u32 = model::add_inst(model::Inst {
@@ -17,7 +93,7 @@ fn emit(op:u32,dst:u32,a:u32,b:u32,c:u32,aux:u32,bits:usize) -> () {
 
 fn slot(ty:u32) -> u32 {
     return model::add_slot(model::Slot {
-        ty:ty,flags:0,offset:0,span:model::Span {
+        ty:ty,flags:0,span:model::Span {
             file:2,start:17,end:18
         }
     });
@@ -189,7 +265,7 @@ fn simple(mode:[]const u8) -> u32 {
         }
     }
     emit(17,0,result,0,0,0,0);
-    rv64::function(f);
+    emit_function(f);
     return start;
 }
 
@@ -250,7 +326,7 @@ fn program() -> u32 {
     }
     emit(6,0,dest,sum,0,0,0);
     emit(17,0,result,0,0,0,0);
-    rv64::function(callee);
+    emit_function(callee);
     model::reset_function();
     unsafe {
         model::function_decl = caller;
@@ -330,8 +406,91 @@ fn program() -> u32 {
     emit(10,v,byte,0,0,0,0);
     emit(8,total,total,v,0,1,0);
     emit(17,0,total,0,0,0,0);
-    rv64::function(caller);
+    emit_function(caller);
     return start;
+}
+
+fn label_body(id:u32, last:u32, value:usize, mode:[]const u8, first:u32, second:u32) -> () {
+    model::reset_function();
+    unsafe {
+        model::function_decl = id;
+    }
+    let condition:u32 = slot(model::TYPE_BOOL);
+    let a:u32 = slot(model::TYPE_U32);
+    let b:u32 = slot(model::TYPE_U32);
+    let result:u32 = slot(model::TYPE_U32);
+    emit(model::IR_LABEL, 0, 1, 0, 0, 0, 0);
+    emit(model::IR_VALUE, condition, 0, 0, 0, 0, 1);
+    emit(model::IR_VALUE, result, 0, 0, 0, 0, value);
+    if model::equal(mode, "labels_zero") {
+        emit(model::IR_JUMP, 0, 0, 0, 0, 0, 0);
+    } else {
+        if model::equal(mode, "labels_over") {
+            emit(model::IR_JUMP, 0, 65537, 0, 0, 0, 0);
+        } else {
+            if model::equal(mode, "labels_missing") {
+                emit(model::IR_JUMP, 0, 65536, 0, 0, 0, 0);
+            } else {
+                if !model::equal(mode, "labels_unterminated") {
+                    if model::equal(mode, "labels_afterterm") {
+                        emit(model::IR_RETURN, 0, result, 0, 0, 0, 0);
+                        emit(model::IR_VALUE, result, 0, 0, 0, 0, value);
+                    } else {
+                        var yes:u32 = last;
+                        var no:u32 = last;
+                        if model::equal(mode, "labels_yes_missing") {
+                            yes = 65536;
+                        }
+                        if model::equal(mode, "labels_no_missing") {
+                            no = 65536;
+                        }
+                        if !model::equal(mode, "labels_fallthrough") {
+                            emit(model::IR_BRANCH, 0, condition, yes, no, 0, 0);
+                        }
+                        emit(model::IR_LABEL, 0, last, 0, 0, 0, 0);
+                        if first != 0_u32 {
+                            emit(model::IR_CALL, a, first, 0, 0, 0, 0);
+                            emit(model::IR_CALL, b, second, 0, 0, 0, 0);
+                            emit(model::IR_BINARY, result, a, b, 0, model::BIN_ADD, 0);
+                        }
+                        emit(model::IR_RETURN, 0, result, 0, 0, 0, 0);
+                        if model::equal(mode, "labels_duplicate") {
+                            emit(model::IR_LABEL, 0, last, 0, 0, 0, 0);
+                            emit(model::IR_RETURN, 0, result, 0, 0, 0, 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    emit_function(id);
+    return ();
+}
+
+// Exercise all three functions in one backend instance. The third function's
+// missing references must never be satisfied by the first function's definitions.
+fn label_program(mode:[]const u8) -> u32 {
+    let first:u32 = decl(model::TYPE_U32, 0, 0);
+    let second:u32 = decl(model::TYPE_U32, 0, 0);
+    let third:u32 = decl(model::TYPE_U32, 0, 0);
+    let start:u32 = rv64::start(unsafe_symbol(third));
+    label_body(first, 65536, 41, "", 0, 0);
+    label_body(second, 2, 1, "", 0, 0);
+    var last:u32 = 65536;
+    if model::equal(mode, "labels_yes_missing") || model::equal(mode, "labels_no_missing") {
+        last = 2;
+    }
+    label_body(third, last, 0, mode, first, second);
+    return start;
+}
+
+fn label_mode(mode:[]const u8) -> bool {
+    if mode.len < 7_usize {
+        return false;
+    }
+    unsafe {
+        return model::equal(core::slice_from_raw_parts(mode.data, 7), "labels_");
+    }
 }
 
 fn constants() -> u32 {
@@ -421,11 +580,15 @@ pub fn run() -> u32 {
                 entry = constants();
             }
             else {
-                if !model::equal(mode,"duplicate") && !model::equal(mode,"absout") && !model::equal(mode,"absunder") && !model::equal(mode,"overlap") && !model::equal(mode,"jumpdata") && !model::equal(mode,"undefined") {
-                    entry = simple(mode);
-                }
-                else {
-                    entry = invalid_data(mode);
+                if label_mode(mode) {
+                    entry = label_program(mode);
+                } else {
+                    if !model::equal(mode,"duplicate") && !model::equal(mode,"absout") && !model::equal(mode,"absunder") && !model::equal(mode,"overlap") && !model::equal(mode,"jumpdata") && !model::equal(mode,"undefined") {
+                        entry = simple(mode);
+                    }
+                    else {
+                        entry = invalid_data(mode);
+                    }
                 }
             }
         }

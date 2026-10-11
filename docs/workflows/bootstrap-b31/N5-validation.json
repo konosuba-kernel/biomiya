@@ -1,0 +1,27 @@
+{
+  "node": "N5",
+  "revision": 1,
+  "input_revisions": {
+    "N4": 1
+  },
+  "tests": {
+    "passed": 91,
+    "failed": 0,
+    "ignored": 0,
+    "retained_baseline": 81,
+    "added": 10
+  },
+  "clean_build": "N5-clean/N5-clean-build.json",
+  "migration": "N5-migration/N5-migration.json",
+  "metrics": "metrics.json",
+  "two_bootstrap_paths_same_fixed_point": true,
+  "fixed_point_sha256": "0793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc",
+  "blocking_self_policy_verified_roots": 6,
+  "analysis_on_off_same_elf": true,
+  "guest_stack_bytes": 1048576,
+  "rw_bytes": 53118748,
+  "image_span_bytes": 54023964,
+  "max_frame_bytes": 26384,
+  "resource_budget_bytes": 67108864,
+  "production_hashes_match_N4": true
+}

@@ -1,0 +1,58 @@
+{
+  "input_hashes": {
+    "bootstrap/model.vt": "3df2ae22ee55d1e3d229b79b491b68650ce4481c8398ed3b1280e2630b1e4d0b",
+    "bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "bootstrap/types.vt": "71849f56aa752f8c14c836dd2a8a49a397e2ee78a8de038f8501aa99960cdb79",
+    "bootstrap/parse.vt": "d3b576954f58715247bd4d6b2fb1dd2d8c4a4546dedec28c944b6a12f3895e64",
+    "bootstrap/ir.vt": "d81c6df2d1ab37c3394f34a593c38541363338440bd5f197ff0898b51f9cb562",
+    "bootstrap/check.vt": "b8431a69ad0d9831b7f46ec01baf83e6a953c8d35a35e50297fc3a14d8cbb131",
+    "runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78"
+  },
+  "results": {
+    "current": {
+      "cursor": {
+        "exit": 0,
+        "stderr": ""
+      },
+      "layout": {
+        "exit": 1,
+        "stderr": "actual=67108865 limit=67108864 I_LIMIT file=1 byte=32\n"
+      },
+      "constant": {
+        "exit": 1,
+        "stderr": "E_TYPE file=1 byte=13\n"
+      }
+    },
+    "missing_diagnostic_restore": {
+      "cursor": {
+        "exit": 0,
+        "stderr": ""
+      },
+      "layout": {
+        "exit": 1,
+        "stderr": "actual=67108865 limit=67108864 I_LIMIT file=1 byte=51\n"
+      },
+      "constant": {
+        "exit": 1,
+        "stderr": "E_TYPE file=1 byte=33\n"
+      }
+    },
+    "checker_moves_token": {
+      "cursor": {
+        "exit": 9,
+        "stderr": ""
+      },
+      "layout": {
+        "exit": 1,
+        "stderr": "actual=67108865 limit=67108864 I_LIMIT file=1 byte=32\n"
+      },
+      "constant": {
+        "exit": 1,
+        "stderr": "E_TYPE file=1 byte=13\n"
+      }
+    }
+  },
+  "mutants_discriminated": true
+}

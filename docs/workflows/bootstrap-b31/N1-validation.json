@@ -1,0 +1,39 @@
+{
+  "node": "N1",
+  "revision": 1,
+  "test_command": "cargo test --offline --locked --all-features",
+  "test_log": "N1-final-cargo-tests.log",
+  "passed": 81,
+  "failed": 0,
+  "ignored": 0,
+  "after_test_change": "Result generic whitespace only; N1-generic-format-evidence.json + final compiler byte equality verify this change",
+  "binaries": {
+    "core-s/build/b31-seed.elf": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a",
+    "core-s/build/n1-seed-executable.elf": "8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a",
+    "core-s/build/n1-d1.elf": "be1ebbe32faf6310cebdf5c985b28748b5b31d4bd8c92e3cf76c6762aa8096b4",
+    "core-s/build/n1-d2.elf": "be1ebbe32faf6310cebdf5c985b28748b5b31d4bd8c92e3cf76c6762aa8096b4",
+    "core-s/build/n1-formatted.elf": "be1ebbe32faf6310cebdf5c985b28748b5b31d4bd8c92e3cf76c6762aa8096b4"
+  },
+  "old_seed_to_d1": true,
+  "d1_d2_final_format_all_bytes_equal": true,
+  "guest_stack_bytes": 1048576,
+  "metrics": {
+    "elf_bytes": 1058872,
+    "image_span": 53409496,
+    "rw_memory_bytes": 52553432
+  },
+  "sources": {
+    "core-s/bootstrap/check.vt": "85a20d745bfb4ba6db20e139212ed2b25dba0b41e18f51fa4d7486d5f58c50a4",
+    "core-s/bootstrap/image.vt": "c97a9422f740745f491787511d3aab16706fe04e812f6f02d78ac361cbd58fa6",
+    "core-s/bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "core-s/bootstrap/ir.vt": "10945f878792f4944c9b7b68fd491827b65262dd6ba51d3f8d0f0e3c0a813b22",
+    "core-s/bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "core-s/bootstrap/main.vt": "feeaa003804374a2a9909cb0ccef6dd91132c60e262cc7d85d2b8fe54b31c18c",
+    "core-s/bootstrap/model.vt": "43ec573af1e67b39d863e85603fc2b7953612ba709a18c4b0daddaa5e70e7a08",
+    "core-s/bootstrap/parse.vt": "91e122ddfb07fb29c9a73fa2e2361ba834e9a9ce50dda67836e6cd1cc5355a60",
+    "core-s/bootstrap/rv64.vt": "ed90050458b09474589eed80a241d328d0b05329929d5f1c966c5a1850218658",
+    "core-s/bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "core-s/bootstrap/types.vt": "38079f63ddcf9d736653b966beb40b2cb3e7f8aaa83bb82ccd24aeb865ccf50f"
+  },
+  "limits": "No full clean in N1; N5 integration remains pending."
+}

@@ -1,0 +1,21 @@
+   Compiling biomiya-core-s v0.1.0 (/home/mii/code/konOSuba/biomiya/core-s)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/b3.rs (core-s/target/debug/deps/b3-cde1f3126fdfbdaa)
+
+running 7 tests
+test blocking_missing_capture_invalid_ir_and_summary_capacity_fail_closed ... ok
+test all_generations_resolve_modules_externs_and_reject_without_output has been running for over 60 seconds
+test blocking_contracts_propagate_without_changing_generated_elf has been running for over 60 seconds
+test blocking_long_chains_are_order_independent_and_do_not_skip_core_errors has been running for over 60 seconds
+test blocking_policy_is_strict_and_failure_preserves_existing_files has been running for over 60 seconds
+test compiler_reaches_full_file_fixed_point_and_compiles_changed_behavior has been running for over 60 seconds
+test self_compiler_diagnostic_change_is_translated_and_check_creates_no_output has been running for over 60 seconds
+test blocking_policy_is_strict_and_failure_preserves_existing_files ... ok
+test all_generations_resolve_modules_externs_and_reject_without_output ... ok
+test blocking_long_chains_are_order_independent_and_do_not_skip_core_errors ... ok
+test compiler_reaches_full_file_fixed_point_and_compiles_changed_behavior ... ok
+test blocking_contracts_propagate_without_changing_generated_elf ... ok
+test self_compiler_diagnostic_change_is_translated_and_check_creates_no_output ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 95.64s
+

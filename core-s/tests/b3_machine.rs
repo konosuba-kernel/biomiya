@@ -63,9 +63,9 @@ fn driver() -> &'static Path {
     static DRIVER: OnceLock<Dir> = OnceLock::new();
     &DRIVER.get_or_init(||{
         let dir=Dir::new();let root=Path::new(env!("CARGO_MANIFEST_DIR"));
-        let manifest="format 1\nprofile linux-user\nentry machine_test::run\nsource bootstrap/model.vt\nsource bootstrap/image.vt\nsource bootstrap/rv64.vt\nsource bootstrap/s0.vt\nsource bootstrap/tests/machine.vt\nsource runtime/linux.vt\nassembly runtime/linux.s0\noutput driver.elf\n";
+        let manifest="format 1\nprofile linux-user\nentry machine_test::run\nsource bootstrap/model.vt\nsource bootstrap/rules.vt\nsource bootstrap/image.vt\nsource bootstrap/rv64.vt\nsource bootstrap/s0.vt\nsource bootstrap/tests/machine.vt\nsource runtime/linux.vt\nassembly runtime/linux.s0\noutput driver.elf\n";
         // All declared inputs are copied into a clean project; no legacy compiler files.
-        for path in ["bootstrap/model.vt","bootstrap/image.vt","bootstrap/rv64.vt","bootstrap/s0.vt","bootstrap/tests/machine.vt","runtime/linux.vt","runtime/linux.s0"] {let dest=dir.0.join(path);fs::create_dir_all(dest.parent().unwrap()).unwrap();fs::copy(root.join(path),dest).unwrap();}
+        for path in ["bootstrap/model.vt","bootstrap/rules.vt","bootstrap/image.vt","bootstrap/rv64.vt","bootstrap/s0.vt","bootstrap/tests/machine.vt","runtime/linux.vt","runtime/linux.s0"] {let dest=dir.0.join(path);fs::create_dir_all(dest.parent().unwrap()).unwrap();fs::copy(root.join(path),dest).unwrap();}
         fs::write(dir.0.join("driver.build"),manifest).unwrap();
         good(Command::new(env!("CARGO_BIN_EXE_core-s")).arg("project").arg(dir.0.join("driver.build")).arg("--root").arg(&dir.0));dir
     }).0
@@ -76,6 +76,7 @@ fn generate(mode: &str, source: Option<&str>) -> (Dir, Output) {
         fs::write(dir.0.join("input.s0"), source).unwrap();
     }
     let output = run(Command::new("/usr/bin/qemu-riscv64")
+        .args(["-s", "1048576"])
         .arg(driver().join("driver.elf"))
         .arg(mode)
         .current_dir(&dir.0)
@@ -89,6 +90,7 @@ fn target(dir: &Dir) -> Output {
     let path = dir.0.join("out.elf");
     fs::set_permissions(&path, fs::Permissions::from_mode(0o755)).unwrap();
     run(Command::new("/usr/bin/qemu-riscv64")
+        .args(["-s", "1048576"])
         .arg(path)
         .env("PATH", ""))
 }
@@ -349,6 +351,39 @@ fn target_requires_label_one_and_finite_value_layouts() {
             String::from_utf8_lossy(&out.stderr)
         );
         assert_eq!(target(&dir).status.code(), Some(0), "{mode}");
+    }
+}
+
+#[test]
+fn target_preserves_semantic_ir_and_reuses_sparse_label_ranges() {
+    // emit_function snapshots every active Slot/Inst/Arg/parameter-slot field
+    // and all function IR counts around each backend invocation.
+    let (dir, out) = generate("labels_reuse", None);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert_eq!(target(&dir).status.code(), Some(42));
+    for mode in [
+        "labels_zero",
+        "labels_over",
+        "labels_missing",
+        "labels_yes_missing",
+        "labels_no_missing",
+        "labels_duplicate",
+        "labels_unterminated",
+        "labels_afterterm",
+        "labels_fallthrough",
+    ] {
+        let (dir, out) = generate(mode, None);
+        assert_eq!(out.status.code(), Some(1), "{mode}");
+        let text = String::from_utf8_lossy(&out.stderr);
+        assert!(
+            text.contains("I_INTERNAL") && text.contains("file=2 byte=17"),
+            "{mode}: {text}"
+        );
+        assert!(!dir.0.join("out.elf").exists(), "{mode}");
     }
 }
 

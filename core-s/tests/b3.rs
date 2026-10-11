@@ -14,6 +14,7 @@ use std::{
 const BIN: &str = env!("CARGO_BIN_EXE_core-s");
 const SOURCES: &[&str] = &[
     "bootstrap/model.vt",
+    "bootstrap/rules.vt",
     "bootstrap/lex.vt",
     "bootstrap/input.vt",
     "bootstrap/types.vt",
@@ -23,6 +24,7 @@ const SOURCES: &[&str] = &[
     "bootstrap/image.vt",
     "bootstrap/rv64.vt",
     "bootstrap/s0.vt",
+    "bootstrap/blocking.vt",
     "bootstrap/main.vt",
     "runtime/bytes.vt",
     "runtime/linux.vt",
@@ -429,5 +431,394 @@ fn all_generations_resolve_modules_externs_and_reject_without_output() {
         assert_eq!(o.status.code(), Some(1));
         assert!(String::from_utf8_lossy(&o.stderr).contains("E_IO"));
         assert_eq!(fs::read(t.file("main.vt")).unwrap(), before);
+    }
+}
+
+fn target_blocking(t: &Scratch, mode: &str) -> Output {
+    run(Command::new(qemu())
+        .args(["-s", "1048576"])
+        .arg(t.file("compiler.elf"))
+        .args([mode, "case.build", "--blocking", "policy.txt"])
+        .current_dir(&t.0)
+        .env_clear()
+        .env("PATH", ""))
+}
+#[test]
+fn blocking_contracts_propagate_without_changing_generated_elf() {
+    let all = generations();
+    // Both external declarations have real assembly implementations. No contract is inferred from that.
+    let externs = "extern abi(C) fn poll()->u32;extern abi(C) fn wait()->u32;";
+    let cases = [
+        ("pub fn run()->u32{return 7;}", "", "Verified"),
+        (
+            "fn a()->u32{return b();}fn b()->u32{return a();}pub fn run()->u32{return a();}",
+            "",
+            "Verified",
+        ),
+        ("pub fn run()->u32{unsafe{return poll();}}", "", "Unknown"),
+        (
+            "pub fn run()->u32{unsafe{return poll();}}",
+            "nonblocking app::poll\n",
+            "Verified",
+        ),
+        (
+            "pub fn run()->u32{unsafe{return poll();}}",
+            "may_block app::poll\n",
+            "Violation",
+        ),
+        (
+            "pub fn run()->u32{unsafe{return poll()+wait();}}",
+            "may_block app::wait\n",
+            "Violation",
+        ),
+        (
+            "pub fn run()->u32{unsafe{return wait()+poll();}}",
+            "may_block app::wait\n",
+            "Violation",
+        ),
+        (
+            "fn a()->u32{return b();}fn b()->u32{unsafe{let x:u32=poll();}return a();}pub fn run()->u32{return a();}",
+            "",
+            "Unknown",
+        ),
+        (
+            "fn a()->u32{return b();}fn b()->u32{unsafe{let x:u32=poll();}return a();}pub fn run()->u32{return a();}",
+            "may_block app::poll\n",
+            "Violation",
+        ),
+        (
+            "pub fn run()->u32{return 7;}",
+            "may_block app::poll\n",
+            "Verified",
+        ),
+        (
+            "pub fn run()->u32{if false{unsafe{return poll();}}return 7;}",
+            "may_block app::poll\n",
+            "Violation",
+        ),
+        (
+            "pub fn run()->u32{defer{unsafe{let n:u32=poll();}}return 7;}",
+            "may_block app::poll\n",
+            "Violation",
+        ),
+        (
+            "pub fn run()->u32{var n:u32=0;while n<2_u32{defer{unsafe{let x:u32=poll();}}n=n+1_u32;if n==1_u32{continue;}break;}return 7;}",
+            "may_block app::poll\n",
+            "Violation",
+        ),
+    ];
+    for image in &all.images {
+        let t = Scratch::new();
+        executable(&t.file("compiler.elf"), image);
+        fs::write(
+            t.file("provider.s0"),
+            "poll:\naddi x10,x0,7\njalr x0,0(x1)\nwait:\naddi x10,x0,9\njalr x0,0(x1)\n",
+        )
+        .unwrap();
+        manifest(
+            &t,
+            "case.build",
+            "app::run",
+            &["main.vt"],
+            &["provider.s0"],
+            "out.elf",
+        );
+        for (source, contracts, expected) in cases {
+            let source = format!("module app;{externs}{source}");
+            let policy = format!("format 1\nrequire root::app::run\n{contracts}");
+            fs::write(t.file("main.vt"), &source).unwrap();
+            fs::write(t.file("policy.txt"), &policy).unwrap();
+            let disabled = target(&t, "compiler.elf", "build", "case.build", false);
+            assert!(
+                disabled.status.success(),
+                "{}",
+                String::from_utf8_lossy(&disabled.stderr)
+            );
+            let elf = fs::read(t.file("out.elf")).unwrap();
+            fs::remove_file(t.file("out.elf")).unwrap();
+            for mode in ["check", "build"] {
+                let output = target_blocking(&t, mode);
+                let report = String::from_utf8_lossy(&output.stderr);
+                assert!(
+                    report.contains(&format!("Blocking app::run: {expected}")),
+                    "{source}: {report}"
+                );
+                assert_eq!(
+                    output.status.code(),
+                    Some(if expected == "Verified" { 0 } else { 1 }),
+                    "{report}"
+                );
+                if mode == "build" && expected == "Verified" {
+                    assert_eq!(
+                        fs::read(t.file("out.elf")).unwrap(),
+                        elf,
+                        "analysis changed ELF"
+                    );
+                    fs::remove_file(t.file("out.elf")).unwrap();
+                } else {
+                    assert!(!t.file("out.elf").exists());
+                }
+                assert_eq!(fs::read_to_string(t.file("main.vt")).unwrap(), source);
+                assert_eq!(fs::read_to_string(t.file("policy.txt")).unwrap(), policy);
+            }
+        }
+    }
+}
+#[test]
+fn blocking_policy_is_strict_and_failure_preserves_existing_files() {
+    let all = generations();
+    let t = Scratch::new();
+    executable(&t.file("compiler.elf"), &all.images[1]);
+    let source = "module app;extern abi(C) fn poll()->u32;const n:u32=1;pub fn safe()->u32{return 7;}pub fn run()->u32{unsafe{return poll();}}";
+    fs::write(t.file("main.vt"), source).unwrap();
+    fs::write(
+        t.file("alias.vt"),
+        "module alias;extern abi(C) fn poll()->u32;",
+    )
+    .unwrap();
+    fs::write(
+        t.file("provider.s0"),
+        "poll:\naddi x10,x0,7\njalr x0,0(x1)\n",
+    )
+    .unwrap();
+    manifest(
+        &t,
+        "case.build",
+        "app::run",
+        &["main.vt", "alias.vt"],
+        &["provider.s0"],
+        "out.elf",
+    );
+    let invalid = [
+        "",
+        "format 2\nrequire app::run\n",
+        "format 1\n",
+        "require app::run\nformat 1\n",
+        "format 1\nformat 1\nrequire app::run\n",
+        "format 1\nrequire app::missing\n",
+        "format 1\nrequire app::n\n",
+        "format 1\nrequire app::poll\n",
+        "format 1\nrequire app::run\nrequire root::app::run\n",
+        "format 1\nrequire app::run\nnonblocking app::run\n",
+        "format 1\nrequire app::run\nnonblocking app::missing\n",
+        "format 1\nrequire app::run\nnonblocking app::poll\nnonblocking app::poll\n",
+        "format 1\nrequire app::run\nnonblocking app::poll\nmay_block alias::poll\n",
+        "format 1\nrequire app::run\nnonblocking app::poll\nnonblocking alias::poll\n",
+        "format 1\nrequire app::run extra\n",
+        "format 1\nrequire\n",
+        "format 1\nrequire app::run\nmagic app::poll\n",
+    ];
+    for policy in invalid {
+        fs::write(t.file("policy.txt"), policy).unwrap();
+        let o = target_blocking(&t, "build");
+        assert_eq!(o.status.code(), Some(1), "{policy}");
+        assert!(String::from_utf8_lossy(&o.stderr).contains("E_BLOCKING_CONFIG"));
+        assert!(!t.file("out.elf").exists());
+    }
+    fs::write(
+        t.file("policy.txt"),
+        format!("#{}\nformat 1\nrequire app::safe\n", "x".repeat(16384)),
+    )
+    .unwrap();
+    let o = target_blocking(&t, "build");
+    assert_eq!(o.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&o.stderr).contains("E_BLOCKING_CONFIG"));
+    fs::remove_file(t.file("policy.txt")).unwrap();
+    assert_eq!(target_blocking(&t, "build").status.code(), Some(1));
+    for requirements in [
+        "require app::safe\nrequire app::run\n",
+        "require app::run\nrequire app::safe\n",
+    ] {
+        fs::write(t.file("policy.txt"), format!("format 1\n{requirements}")).unwrap();
+        let o = target_blocking(&t, "build");
+        let report = String::from_utf8_lossy(&o.stderr);
+        assert_eq!(o.status.code(), Some(1));
+        assert!(report.contains("Blocking app::safe: Verified"));
+        assert!(report.contains("Blocking app::run: Unknown"));
+        assert!(!t.file("out.elf").exists());
+    }
+    // One linker-symbol contract covers its declarations in both modules.
+    fs::write(
+        t.file("policy.txt"),
+        "# policy\r\nformat 1\r\nrequire root::app::run\r\nnonblocking alias::poll\r\n",
+    )
+    .unwrap();
+    assert!(target_blocking(&t, "check").status.success());
+    assert!(!t.file("out.elf").exists());
+    for policy in [
+        "format 1\nrequire app::run\n",
+        "format 1\nrequire app::run\nnonblocking app::poll\n",
+    ] {
+        fs::write(t.file("policy.txt"), policy).unwrap();
+        fs::write(t.file("out.elf"), b"existing output").unwrap();
+        assert_eq!(target_blocking(&t, "build").status.code(), Some(1));
+        assert_eq!(fs::read(t.file("out.elf")).unwrap(), b"existing output");
+        fs::remove_file(t.file("out.elf")).unwrap();
+        for output in ["main.vt", "policy.txt"] {
+            manifest(
+                &t,
+                "case.build",
+                "app::run",
+                &["main.vt", "alias.vt"],
+                &["provider.s0"],
+                output,
+            );
+            assert_eq!(target_blocking(&t, "build").status.code(), Some(1));
+            assert_eq!(fs::read_to_string(t.file("main.vt")).unwrap(), source);
+            assert_eq!(fs::read_to_string(t.file("policy.txt")).unwrap(), policy);
+        }
+        manifest(
+            &t,
+            "case.build",
+            "app::run",
+            &["main.vt", "alias.vt"],
+            &["provider.s0"],
+            "out.elf",
+        );
+    }
+}
+#[test]
+fn blocking_long_chains_are_order_independent_and_do_not_skip_core_errors() {
+    let all = generations();
+    let t = Scratch::new();
+    executable(&t.file("compiler.elf"), &all.images[1]);
+    fs::write(
+        t.file("provider.s0"),
+        "poll:\naddi x10,x0,7\njalr x0,0(x1)\n",
+    )
+    .unwrap();
+    manifest(
+        &t,
+        "case.build",
+        "app::run",
+        &["main.vt"],
+        &["provider.s0"],
+        "out.elf",
+    );
+    let mut functions = Vec::new();
+    for i in 0..300 {
+        functions.push(format!("fn f{i}()->u32{{return f{}();}}", i + 1));
+    }
+    functions.push("fn f300()->u32{unsafe{return poll();}}".to_owned());
+    fs::write(
+        t.file("policy.txt"),
+        "format 1\nrequire app::run\nmay_block app::poll\n",
+    )
+    .unwrap();
+    for _ in 0..2 {
+        let source = format!(
+            "module app;extern abi(C) fn poll()->u32;pub fn run()->u32{{return f0();}}{}",
+            functions.join("\n")
+        );
+        fs::write(t.file("main.vt"), source).unwrap();
+        let o = target_blocking(&t, "check");
+        assert_eq!(o.status.code(), Some(1));
+        assert!(String::from_utf8_lossy(&o.stderr).contains("Blocking app::run: Violation"));
+        functions.reverse();
+    }
+    for (source, error) in [
+        ("module app;pub fn run()->u32{return true;}", "E_TYPE"),
+        (
+            "module app;extern abi(C) fn missing()->u32;pub fn run()->u32{return 0;}",
+            "E_LINK",
+        ),
+    ] {
+        fs::write(t.file("main.vt"), source).unwrap();
+        fs::write(t.file("policy.txt"), "format 1\nrequire app::run\n").unwrap();
+        manifest(&t, "case.build", "app::run", &["main.vt"], &[], "out.elf");
+        let o = target_blocking(&t, "build");
+        assert_eq!(o.status.code(), Some(1));
+        assert!(String::from_utf8_lossy(&o.stderr).contains(error));
+        assert!(!t.file("out.elf").exists());
+    }
+}
+#[test]
+fn blocking_missing_capture_invalid_ir_and_summary_capacity_fail_closed() {
+    let t = Scratch::new();
+    stage(&t);
+    fs::write(t.file("driver.vt"),r#"
+module probe;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::parse;
+import bootstrap::blocking;
+import runtime::linux;
+import runtime::bytes;
+pub fn run()->u32 {
+    var mode:[]const u8="";
+    match linux::argument(1) {
+        Result::<[]const u8,u32>::Ok(value:[]const u8)=>{mode=value;},
+        Result::<[]const u8,u32>::Err(error:u32)=>{return 99;},
+    }
+    model::reset_all();
+    input::load("sample.build");
+    parse::collect();
+    if !blocking::load("sample.policy") {return 98;}
+    if bytes::equal(mode,"missing") {
+        if blocking::finish() {return 97;}
+        return 0;
+    }
+    unsafe {
+        var target:u32=3;
+        if bytes::equal(mode,"bad") {target=4;}
+        let call:model::Inst=model::Inst{op:model::IR_CALL,dst:0,a:target,b:0,c:0,aux:0,bits:0,span:model::Span{file:1,start:0,end:0}};
+        model::inst_count=1;
+        model::insts[1]=call;
+        if bytes::equal(mode,"edges") {
+            var i:u32=1;
+            while i<=65536_u32 {model::insts[i as usize]=call;i=i+1_u32;}
+            model::inst_count=65536;
+        }
+        blocking::capture(1);
+        model::inst_count=1;
+        blocking::capture(2);
+    }
+    return 96;
+}
+"#).unwrap();
+    fs::write(t.file("sample.vt"),"pub fn run()->(){return ();}fn other()->(){return ();}fn sink()->(){return ();}const n:u32=7;").unwrap();
+    fs::write(t.file("sample.policy"), "format 1\nrequire run\n").unwrap();
+    manifest(
+        &t,
+        "sample.build",
+        "run",
+        &["sample.vt"],
+        &[],
+        "should-not-exist.elf",
+    );
+    let mut sources = SOURCES.to_vec();
+    sources.push("driver.vt");
+    manifest(
+        &t,
+        "driver.build",
+        "probe::run",
+        &sources,
+        &["runtime/linux.s0"],
+        "driver.elf",
+    );
+    success(
+        Command::new(BIN)
+            .args(["project", "driver.build"])
+            .current_dir(&t.0)
+            .env("PATH", ""),
+    );
+    for (mode, code, message) in [
+        ("missing", 0, "Blocking run: Unknown"),
+        ("bad", 1, "I_INTERNAL"),
+        ("edges", 1, "I_LIMIT"),
+    ] {
+        let output = run(Command::new(qemu())
+            .args(["-s", "1048576"])
+            .arg(t.file("driver.elf"))
+            .arg(mode)
+            .current_dir(&t.0)
+            .env_clear());
+        let report = String::from_utf8_lossy(&output.stderr);
+        assert_eq!(output.status.code(), Some(code), "{mode}: {report}");
+        assert!(report.contains(message), "{mode}: {report}");
+        if mode == "edges" {
+            assert!(report.contains("actual=65537 limit=65536"), "{report}");
+        }
+        assert!(!t.file("should-not-exist.elf").exists());
     }
 }

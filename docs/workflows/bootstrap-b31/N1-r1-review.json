@@ -1,0 +1,56 @@
+{
+  "node": "N1",
+  "candidate_revision": 1,
+  "candidate_sha256": "50e510c89a71c50959a1b16d757237bf7c2dd7556016fd9c5880c5f0b6c6d09e",
+  "input_revisions": {
+    "N0": 1
+  },
+  "reviewer_agent_id": "/root/b31_review",
+  "independent": true,
+  "verdict": "通过",
+  "candidate_and_input_hashes": "All candidate files and all three N0 input hashes verified before review; candidate files reverified after independent execution. Unchanged baseline paths outside N1 exactly match N0 hashes.",
+  "independent_evidence": {
+    "N1-r1-independent.json": "003023f083aeebdd0af4de0c95026cdf9ba85bc9db454c4dc49a549b21138e2f"
+  },
+  "checks": [
+    {
+      "name": "phase-isolated reproducibility",
+      "result": "Formatting baseline, symbolic archive inverse expansion and final inverse expansion reproduce each frozen author JSON exactly."
+    },
+    {
+      "name": "independent lexical delta restriction",
+      "result": "A separately written scanner preserves quoted strings and expands only identifier tokens. After checking all six wrapper bodies and restoring their call sites, all 11 modules match baseline tokens exactly; numeric differences permit only original decimal _u32 suffix removal. No u8/usize suffix weakening accepted. 127 added u32 constants checked."
+    },
+    {
+      "name": "readability and field contracts",
+      "result": "Statement/block/record expansion, Type/Decl/Token/AST/IR/operator/error domains and ordered ranges inspected. Type/Decl/Slot/Inst and AST tag field contracts agree with producers/consumers; 6 wrappers preserve operand fields, destination allocation, spans and terminator behavior. Current backend ownership of Slot.offset remains explicitly documented for later N3."
+    },
+    {
+      "name": "independent old-seed source build",
+      "result": "Copied exactly the 13 VT and one s0 manifest inputs into a fresh temporary tree, plus SHA-verified accepted old C2 seed. Empty PATH, 1MiB guest stack and syscall trace produce fresh compiler SHA256 be1ebbe32faf6310cebdf5c985b28748b5b31d4bd8c92e3cf76c6762aa8096b4, matching all author D1/D2/final products. Open paths restricted to manifest inputs/output; no execve."
+    },
+    {
+      "name": "independent constructor probe",
+      "result": "Freshly rebuilt target compiler compiles a separate probe that compares actual wrapper-emitted Inst fields against direct emit, checks diagnostic Span propagation, unary SlotId/type allocation and closed state. Guest probe exits 0 under 1MiB stack."
+    },
+    {
+      "name": "author regression and fixed-point audit",
+      "result": "Both preserved regression logs contain 81 passed/0 failed/0 ignored; original tests unchanged. Old seed, executable seed copy and all D1/D2/final binaries match frozen hashes; all three new compiler files equal. These full81 and multigeneration author runs were audited, not falsely claimed rerun independently."
+    },
+    {
+      "name": "resource and scope audit",
+      "result": "ELF headers independently yield 1,058,872 file bytes, 53,409,496 image-span bytes and 52,553,432 writable-memory bytes, within 64MiB. Bootstrap manifests, Rust seed sources, runtime, tests and old frozen evidence unchanged; git diff --check passes."
+    }
+  ],
+  "production_counts": {
+    "files": 11,
+    "bytes": 251657,
+    "physical_lines": 7681
+  },
+  "remaining_boundaries": [
+    "N1 does not establish N2 ownership/diagnostic separation, N3 shared rules/read-only semantic IR or N4 Blocking.",
+    "Full clean rebuild and final complete integration remain N5; full81 was verified from frozen current author logs rather than rerun here.",
+    "One independent old-seed rebuild and constructor probe supplement equivalence audit; this is concrete regression evidence, not proof for every possible program."
+  ],
+  "new_blockers": []
+}

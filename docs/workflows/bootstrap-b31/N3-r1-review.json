@@ -1,0 +1,73 @@
+{
+  "node": "N3",
+  "candidate_revision": 1,
+  "candidate_sha256": "ed77d0dec957acc843c1554df339f729a7e2fec5736c4d4c6e4c12c6fbdf2a8d",
+  "input_revisions": {
+    "N2": 1
+  },
+  "reviewer_agent_id": "/root/b31_review",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/c1.build": "609fe27ab882cbe2ee3392d627acef45993700cd0d72b714c51ddda45c25cf22",
+    "core-s/bootstrap/c2.build": "2f4a65139033a7ca0b502a673d4b666d40ca07e3d5f7dd0f8f9ce6d73260743e",
+    "core-s/bootstrap/c3.build": "7a798ca673c2ac044580f12e6056e407ca6c7cdd7ef78ae71dd717a2189d2f3e",
+    "core-s/bootstrap/check.vt": "6b5a7a9ead5f7e168a78f9e8c8804326a9819407a8e010a0ec7925cc395b6b01",
+    "core-s/bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+    "core-s/bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "core-s/bootstrap/ir.vt": "044e884a2dcbebf9e8733277b0c65b3856f2f8346fe09c1d6b2995e338d1ac88",
+    "core-s/bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "core-s/bootstrap/main.vt": "e9b0d6bb3221350d62ddc8422201e4bfb5b1353ede5f2ef49cca9d50db035731",
+    "core-s/bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+    "core-s/bootstrap/parse.vt": "8cf832c5f459ef80b333d37e285abb8168b6e9420d7c9128eea3b69dcc142361",
+    "core-s/bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+    "core-s/bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "core-s/bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "core-s/bootstrap/tests/machine.vt": "820459ac38941613d9ba9c24e77a6c9b9d849ddb33b7dc11f1872f3e71789890",
+    "core-s/bootstrap/types.vt": "d44cf08d052d458d7927ebb9acc9b70492858be0142ae89584a1ed2fc3c3c176",
+    "core-s/tests/b3.rs": "b9bea55c6283a00a03210651f5ba2e8ce03d4c429c53acbf49bd1d81527d132a",
+    "core-s/tests/b3_frontend.rs": "fa342ac49706b8ce4c89dd4822ebcd8d2136e25b99fbb6130d39ef38bb1672d4",
+    "core-s/tests/b3_machine.rs": "3247dbd44e253a6fd5a807bb232e51c4d627a1b8d403ea1ad6259d75fb06f4a1"
+  },
+  "independent_evidence": {
+    "N3-r1-independent.json": "89402b2096477ca93783bada9b1821256c28b08a9b3693894670ca312554e618"
+  },
+  "checks": [
+    {
+      "name": "freeze, integration and scope",
+      "result": "All candidate/input/evidence hashes match; inherited production files outside candidate unchanged against N2/N1/N0. Integration and machine final evidence input hashes match exact final code. Three manifests add only rules source. Slot.offset removed consistently from semantic record, constructors and test consumers. Final hashes rechecked after probes; git diff --check passes."
+    },
+    {
+      "name": "shared pure rules audit and runtime isolation",
+      "result": "All model references in rules resolve to pub constants; only model import, no unsafe/static/table/diagnostic/allocation. Direct probes cover invalid op/kind/BOOL and UNIT representation, checked size/alignment overflow and exact wide masks. All run before initialization and after deliberate type/decl/slot table pollution, with identical expected results."
+    },
+    {
+      "name": "85 independent constant/static boundary builds",
+      "result": "Fresh C0-built current target compiler executes 85 independent compile scenarios over u8/u32/usize: checked and wrapping add/sub/mul, division/rem remainder and zero rejection, shifts width-1/width, complement/negation, narrowing/widening cast and booleans. Successful CONST+STATIC values checked by generated program against Python-derived expectations. Invalid expressions checked separately through each walker and leave no output."
+    },
+    {
+      "name": "complete static initialization gate",
+      "result": "Nine adverse aggregates reject with E_TYPE/E_NAME and no output, including nonzero prefixes followed by wrong types, nested structs/arrays/Result payloads, zero-length repetitions of wrong-type/divide-by-zero expressions and duplicate fields. Reviewed conservative all-zero contract and full recursive traversal; serializer relies on completed validation."
+    },
+    {
+      "name": "target-owned frame layout and semantic read-only audit",
+      "result": "rv64 has private frame_offsets; active offsets overwritten before emission and checked accessor bounds SlotIds. Semantic Type/Field/Decl/Slot/Inst/Arg/parameter accesses remain reads; model::max_frame is an allowed metric write. Active semantic field/count snapshots remain unchanged. Five deliberate Slot/Inst/arg/parameter/function identity writes are detected at distinct test byte9001."
+    },
+    {
+      "name": "sparse labels and adversarial clearing",
+      "result": "Independent execution of the 65536→2→65536 sequence returns42 and aggregate ABI fixture returns97 under1MiB stack with semantic snapshots enabled. Full machine mutation script reproduced frozen results exactly: undefined branch references rejected, excluding high boundary shifts detection to linker and stale definition mutant rejected. Prior N2 machine ELF equality and target sizeof32→20 evidence reproduced."
+    },
+    {
+      "name": "build and retained regressions",
+      "result": "Independent fresh source C0 build SHA256 b957b6b325e2f56de213350b72ef0be74efeab209dc5a3c969d7b504b64c8b14 equals final integration C0 artifact. Frozen12 frontend/7 machine/1 final UNIT rule test logs checked for passed/failed/ignored counts; author one target self-build and resource evidence audited against final input hashes rather than falsely claimed independently rerun."
+    }
+  ],
+  "remaining_boundaries": [
+    "N3 does not establish N4 Blocking or complete N5 migration/fixed point/full clean/full suite.",
+    "Standalone UNIT source comparison is outside current declaration-constant grammar; UNIT representation is tested through direct pure-function calls without extending the language.",
+    "Pure max is a documented width helper with default usize bound; checked rule entry points enforce permitted kinds/representations.",
+    "Source changes improve ownership and factor rules; no claim of universal correctness or dynamic memory/RSS bounds beyond measured static integration evidence."
+  ],
+  "temporary_accepted_product_snapshot": "/tmp/b31-n3-frozen-s9_vut8b",
+  "new_blockers": []
+}

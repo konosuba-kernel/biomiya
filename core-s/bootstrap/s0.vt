@@ -11,7 +11,7 @@ static mut line_start:usize = 0;
 
 fn bad() -> () {
     unsafe {
-        model::fail(1,file_id,line_start);
+        model::fail(model::ERROR_PARSE, file_id, line_start);
     }
     return ();
 }
@@ -39,7 +39,7 @@ fn token() -> []const u8 {
         if at == first {
             bad();
         }
-        return core::slice_from_raw_parts(core::ptr_add(input.data,first),at-first);
+        return core::slice_from_raw_parts(core::ptr_add(input.data, first), at-first);
     }
 }
 
@@ -163,7 +163,7 @@ fn named(text:[]const u8) -> u32 {
         if text.len >= 2_usize && text[0] == 46_u8 && text[1] == 76_u8 {
             let first:usize = model::name_byte_count;
             if text.len+9_usize > 2097152_usize-first {
-                model::limit(first+text.len+9_usize,2097152);
+                model::limit(first+text.len+9_usize, 2097152);
             }
             model::name_bytes[first] = 46;
             model::name_bytes[first+1_usize] = 76;
@@ -183,7 +183,7 @@ fn named(text:[]const u8) -> u32 {
                 model::name_bytes[first+9_usize+j] = text[j];
                 j = j+1_usize;
             }
-            let saved:[]const u8 = core::slice_from_raw_parts(core::ptr_add(core::slice_of(model::name_bytes).data,first),text.len+9_usize);
+            let saved:[]const u8 = core::slice_from_raw_parts(core::ptr_add(core::slice_of(model::name_bytes).data, first), text.len+9_usize);
             return image::symbol(saved);
         }
         return image::symbol(text);
@@ -198,53 +198,53 @@ fn operation(op:[]const u8) -> () {
     var f3:u32 = 0;
     var f7:u32 = 0;
     var kind:u32 = 0;
-    if model::equal(op,"add") {
+    if model::equal(op, "add") {
         kind = 1;
     }
-    if model::equal(op,"sub") {
+    if model::equal(op, "sub") {
         kind = 1;
         f7 = 32;
     }
-    if model::equal(op,"mul") {
+    if model::equal(op, "mul") {
         kind = 1;
         f7 = 1;
     }
-    if model::equal(op,"mulhu") {
+    if model::equal(op, "mulhu") {
         kind = 1;
         f7 = 1;
         f3 = 3;
     }
-    if model::equal(op,"divu") {
+    if model::equal(op, "divu") {
         kind = 1;
         f7 = 1;
         f3 = 5;
     }
-    if model::equal(op,"remu") {
+    if model::equal(op, "remu") {
         kind = 1;
         f7 = 1;
         f3 = 7;
     }
-    if model::equal(op,"and") {
+    if model::equal(op, "and") {
         kind = 1;
         f3 = 7;
     }
-    if model::equal(op,"or") {
+    if model::equal(op, "or") {
         kind = 1;
         f3 = 6;
     }
-    if model::equal(op,"xor") {
+    if model::equal(op, "xor") {
         kind = 1;
         f3 = 4;
     }
-    if model::equal(op,"sltu") {
+    if model::equal(op, "sltu") {
         kind = 1;
         f3 = 3;
     }
-    if model::equal(op,"sll") {
+    if model::equal(op, "sll") {
         kind = 1;
         f3 = 1;
     }
-    if model::equal(op,"srl") {
+    if model::equal(op, "srl") {
         kind = 1;
         f3 = 5;
     }
@@ -255,32 +255,32 @@ fn operation(op:[]const u8) -> () {
         punct(44);
         let b:u32 = register();
         done();
-        rv64::r(f7,f3,rd,a,b);
+        rv64::r(f7, f3, rd, a, b);
         return ();
     }
     var opcode:u32 = 19;
     var shift:bool = false;
-    if model::equal(op,"addi") {
+    if model::equal(op, "addi") {
         kind = 2;
     }
-    if model::equal(op,"addiw") {
+    if model::equal(op, "addiw") {
         kind = 2;
         opcode = 27;
     }
-    if model::equal(op,"xori") {
+    if model::equal(op, "xori") {
         kind = 2;
         f3 = 4;
     }
-    if model::equal(op,"sltiu") {
+    if model::equal(op, "sltiu") {
         kind = 2;
         f3 = 3;
     }
-    if model::equal(op,"slli") {
+    if model::equal(op, "slli") {
         kind = 2;
         f3 = 1;
         shift = true;
     }
-    if model::equal(op,"srli") {
+    if model::equal(op, "srli") {
         kind = 2;
         f3 = 5;
         shift = true;
@@ -292,38 +292,38 @@ fn operation(op:[]const u8) -> () {
         punct(44);
         let n:usize = immediate(shift);
         done();
-        rv64::i(opcode,f3,rd,a,n);
+        rv64::i(opcode, f3, rd, a, n);
         return ();
     }
-    if model::equal(op,"lbu") {
+    if model::equal(op, "lbu") {
         kind = 3;
         f3 = 4;
         opcode = 3;
     }
-    if model::equal(op,"lwu") {
+    if model::equal(op, "lwu") {
         kind = 3;
         f3 = 6;
         opcode = 3;
     }
-    if model::equal(op,"ld") {
+    if model::equal(op, "ld") {
         kind = 3;
         f3 = 3;
         opcode = 3;
     }
-    if model::equal(op,"jalr") {
+    if model::equal(op, "jalr") {
         kind = 3;
         f3 = 0;
         opcode = 103;
     }
-    if model::equal(op,"sb") {
+    if model::equal(op, "sb") {
         kind = 4;
         f3 = 0;
     }
-    if model::equal(op,"sw") {
+    if model::equal(op, "sw") {
         kind = 4;
         f3 = 2;
     }
-    if model::equal(op,"sd") {
+    if model::equal(op, "sd") {
         kind = 4;
         f3 = 3;
     }
@@ -336,26 +336,26 @@ fn operation(op:[]const u8) -> () {
         punct(41);
         done();
         if kind == 3_u32 {
-            rv64::i(opcode,f3,rd,base,n);
+            rv64::i(opcode, f3, rd, base, n);
         }
         else {
-            rv64::s(f3,rd,base,n);
+            rv64::s(f3, rd, base, n);
         }
         return ();
     }
-    if model::equal(op,"beq") {
+    if model::equal(op, "beq") {
         kind = 5;
         f3 = 0;
     }
-    if model::equal(op,"bne") {
+    if model::equal(op, "bne") {
         kind = 5;
         f3 = 1;
     }
-    if model::equal(op,"bltu") {
+    if model::equal(op, "bltu") {
         kind = 5;
         f3 = 6;
     }
-    if model::equal(op,"bgeu") {
+    if model::equal(op, "bgeu") {
         kind = 5;
         f3 = 7;
     }
@@ -366,10 +366,10 @@ fn operation(op:[]const u8) -> () {
         punct(44);
         let id:u32 = target();
         done();
-        rv64::branch(f3,a,b,id);
+        rv64::branch(f3, a, b, id);
         return ();
     }
-    if model::equal(op,"address") {
+    if model::equal(op, "address") {
         let rd:u32 = register();
         punct(44);
         let id:u32 = target();
@@ -377,36 +377,36 @@ fn operation(op:[]const u8) -> () {
         if rd == 0_u32 {
             bad();
         }
-        rv64::transfer(rd,id,false);
+        rv64::transfer(rd, id, false);
         return ();
     }
-    if model::equal(op,"call") || model::equal(op,"jump") {
+    if model::equal(op, "call") || model::equal(op, "jump") {
         let id:u32 = target();
         done();
         var rd:u32 = 0;
-        if model::equal(op,"call") {
+        if model::equal(op, "call") {
             rd = 1;
         }
-        rv64::transfer(rd,id,true);
+        rv64::transfer(rd, id, true);
         return ();
     }
-    if model::equal(op,"ecall") {
+    if model::equal(op, "ecall") {
         done();
         image::word(115);
         return ();
     }
-    if model::equal(op,"unimp") {
+    if model::equal(op, "unimp") {
         done();
         image::word(3221229683);
         return ();
     }
     unsafe {
-        model::fail(5,file_id,line_start);
+        model::fail(model::ERROR_UNSUPPORTED, file_id, line_start);
     }
     return ();
 }
 
-pub fn parse(file:u32,bytes:[]const u8) -> () {
+pub fn parse(file:u32, bytes:[]const u8) -> () {
     unsafe {
         input = bytes;
         file_id = file;
@@ -430,8 +430,10 @@ pub fn parse(file:u32,bytes:[]const u8) -> () {
                     at = at+1_usize;
                     done();
                     let id:u32 = named(op);
-                    if model::symbols[id as usize].defined != 0_u32 { bad(); }
-                    image::define(id,1,image::text_position());
+                    if model::symbols[id as usize].defined != 0_u32 {
+                        bad();
+                    }
+                    image::define(id, 1, image::text_position());
                 }
                 else {
                     operation(op);

@@ -1,0 +1,166 @@
+{
+  "candidate_sha256": "28c3606196f39b0d8685c0988efedad59b902d14074b201ddaf41ab99a1358c2",
+  "input_hashes_verified": true,
+  "probe_source": "module probe;\nimport bootstrap::model; import bootstrap::input; import bootstrap::parse; import bootstrap::check; import bootstrap::types; import bootstrap::lex; import bootstrap::ir; import runtime::linux;\nfn mix(h:usize,v:usize)->usize{return (h*%131_usize)+%v;}\nfn digest()->usize{unsafe{var h:usize=0;h=mix(h,model::slot_count as usize);h=mix(h,model::inst_count as usize);h=mix(h,model::arg_count as usize);h=mix(h,ir::labels as usize);h=mix(h,model::parameter_slot_count as usize);var i:u32=1;while i<=model::inst_count{let n:model::Inst=model::insts[i as usize];h=mix(h,n.op as usize);h=mix(h,n.dst as usize);h=mix(h,n.a as usize);h=mix(h,n.b as usize);h=mix(h,n.c as usize);h=mix(h,n.aux as usize);h=mix(h,n.bits);h=mix(h,n.span.file as usize);h=mix(h,n.span.start as usize);h=mix(h,n.span.end as usize);i=i+1_u32;}i=1;while i<=model::slot_count{let s:model::Slot=model::slots[i as usize];h=mix(h,s.ty as usize);h=mix(h,s.flags as usize);h=mix(h,s.offset);h=mix(h,s.span.file as usize);h=mix(h,s.span.start as usize);h=mix(h,s.span.end as usize);i=i+1_u32;}i=1;while i<=model::arg_count{h=mix(h,model::args[i as usize] as usize);i=i+1_u32;}return h;}}\nfn cursor(d:model::Decl)->bool{unsafe{let a:model::Token=types::token;let b:model::Token=lex::next(d.file,d.end as usize);return a.file==b.file&&a.start==b.start&&a.end==b.end&&a.kind==b.kind&&a.number==b.number&&a.suffix==b.suffix;}}\npub fn run()->u32{model::reset_all();input::load(\"test.build\");parse::collect();unsafe{\nvar hashes:[128]usize=[0;128];var id:u32=1;while id<=model::decl_count{if model::decls[id as usize].kind==model::DECL_FUNCTION{check::function(id);hashes[id as usize]=digest();if !cursor(model::decls[id as usize]){return 11;}}id=id+1_u32;}\nid=model::decl_count;while id>0_u32{if model::decls[id as usize].kind==model::DECL_FUNCTION{check::function(id);if digest()!=hashes[id as usize] || !cursor(model::decls[id as usize]){return 12;}}id=id-1_u32;}\nparse::reset(1);types::seek(1,243);let node:u32=parse::expression(0,false);types::seek(2,0);let saved:model::Token=types::token;let value:types::Constant=parse::constant_value(node,model::TYPE_U32);if value.bits!=17_usize || value.ty!=model::TYPE_U32{ return 21; }if types::token.file!=saved.file||types::token.start!=saved.start||types::token.end!=saved.end{ return 22; }if types::diagnostic.file!=1_u32||types::diagnostic.start!=243_u32{return 23;}\nif linux::argc()>1_usize{let bad:u32=parse::add(model::AST_NAME,model::name(\"missing\"),0,0,0,0,41);types::seek(2,0);let ignored:types::Constant=parse::constant_value(bad,model::TYPE_U32);return 24;}\n}return 0;}\n",
+  "input_sources": {
+    "a.vt": "module a; const N:u32=17; fn heavy(x:u32)->u32{var n:u32=x;defer{n=n+1_u32;}while n<4_u32{n=n+1_u32;if n==3_u32{continue;}if n==4_u32{break;}}return n;} pub fn start()->u32{let a:[2]u32=[N,3_u32];return heavy(a[0]);} pub fn leaf()->u32{return N;}",
+    "b.vt": "module b; const N:u32=29;pub fn tiny()->u32{return N;} pub fn args(x:u32,y:u32)->u32{return x+y;}"
+  },
+  "variants": {
+    "current": {
+      "temporary_directory": "/tmp/b31-n2-independent-mji_9p1z",
+      "probe_sha256": "5f34e1c58edaa66d573fd033bf704a8fd6a4e0b48976b70ab58e2ec1c6b271ba",
+      "runs": [
+        {
+          "argv": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "probe.elf"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "probe.elf",
+            "missing"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=1 byte=41\n"
+        }
+      ]
+    },
+    "scanner_name_lookup": {
+      "temporary_directory": "/tmp/b31-n2-independent-n1ptvgtk",
+      "probe_sha256": "20f6fddc15499cad2399426a0bc40a2591d7185b8f14a2d9fa3e20e267ba9a8d",
+      "runs": [
+        {
+          "argv": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "probe.elf"
+          ],
+          "exit": 21,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "probe.elf",
+            "missing"
+          ],
+          "exit": 21,
+          "stdout": "",
+          "stderr": ""
+        }
+      ]
+    },
+    "scanner_error_file": {
+      "temporary_directory": "/tmp/b31-n2-independent-f12ca4nv",
+      "probe_sha256": "2db4d444f74bd929a7f2d031990d637d43f2e41cfc6a6d1eccc0db31be27c988",
+      "runs": [
+        {
+          "argv": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "probe.elf"
+          ],
+          "exit": 23,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "probe.elf",
+            "missing"
+          ],
+          "exit": 23,
+          "stdout": "",
+          "stderr": ""
+        }
+      ]
+    }
+  },
+  "author_mutants_reproduced": {
+    "input_hashes": {
+      "bootstrap/model.vt": "3df2ae22ee55d1e3d229b79b491b68650ce4481c8398ed3b1280e2630b1e4d0b",
+      "bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+      "bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+      "bootstrap/types.vt": "3f3344c7b693f22d2042e5fd7093a5dafe7d68594666e3d5e927006834b13484",
+      "bootstrap/parse.vt": "b69bf591f0c75abf8324149de7b9f81e2ea97065e8144771a7eac50ed5677f75",
+      "bootstrap/ir.vt": "bdc4a4e46f639cb6a685d6fb2f915dc3af1438119df41a8138a2fa987e353655",
+      "bootstrap/check.vt": "b8431a69ad0d9831b7f46ec01baf83e6a953c8d35a35e50297fc3a14d8cbb131",
+      "runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+      "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78"
+    },
+    "results": {
+      "current": {
+        "cursor": {
+          "exit": 0,
+          "stderr": ""
+        },
+        "layout": {
+          "exit": 1,
+          "stderr": "actual=67108865 limit=67108864 I_LIMIT file=1 byte=32\n"
+        },
+        "constant": {
+          "exit": 1,
+          "stderr": "E_TYPE file=1 byte=13\n"
+        }
+      },
+      "missing_diagnostic_restore": {
+        "cursor": {
+          "exit": 0,
+          "stderr": ""
+        },
+        "layout": {
+          "exit": 1,
+          "stderr": "actual=67108865 limit=67108864 I_LIMIT file=1 byte=51\n"
+        },
+        "constant": {
+          "exit": 1,
+          "stderr": "E_TYPE file=1 byte=33\n"
+        }
+      },
+      "checker_moves_token": {
+        "cursor": {
+          "exit": 9,
+          "stderr": ""
+        },
+        "layout": {
+          "exit": 1,
+          "stderr": "actual=67108865 limit=67108864 I_LIMIT file=1 byte=32\n"
+        },
+        "constant": {
+          "exit": 1,
+          "stderr": "E_TYPE file=1 byte=13\n"
+        }
+      }
+    },
+    "mutants_discriminated": true
+  },
+  "reproduction": {
+    "command": "python3 /tmp/b31-n2-independent.py",
+    "script_source": "import pathlib,subprocess,hashlib,json,shutil,tempfile,re\nR=pathlib.Path('/home/mii/code/konOSuba/biomiya');C=R/'core-s';D=R/'docs/workflows/bootstrap-b31';sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()\nc=json.loads((D/'N2-r1-candidate.json').read_text());assert sha(D/'N2-r1-candidate.json')=='28c3606196f39b0d8685c0988efedad59b902d14074b201ddaf41ab99a1358c2'\nfor p,h in dict(c['files'],**c['input_hashes']).items():assert sha(R/p)==h,p\nn1=json.loads((D/'N1-r1-candidate.json').read_text());baseline=json.loads((D/'baseline.json').read_text());unchanged={**baseline['files'],**{p:h for p,h in n1['files'].items() if p.startswith('core-s/')}}\nfor p,h in unchanged.items():\n if p not in c['files']:assert sha(R/p)==h,p\nfiles=['bootstrap/'+n+'.vt' for n in ['model','lex','input','types','parse','ir','check']]+['runtime/bytes.vt','runtime/linux.vt']\nprograms={'a.vt':'module a; const N:u32=17; fn heavy(x:u32)->u32{var n:u32=x;defer{n=n+1_u32;}while n<4_u32{n=n+1_u32;if n==3_u32{continue;}if n==4_u32{break;}}return n;} pub fn start()->u32{let a:[2]u32=[N,3_u32];return heavy(a[0]);} pub fn leaf()->u32{return N;}','b.vt':'module b; const N:u32=29;pub fn tiny()->u32{return N;} pub fn args(x:u32,y:u32)->u32{return x+y;}'}\noffset=programs['a.vt'].rindex('return N')+7\nprobe='''module probe;\nimport bootstrap::model; import bootstrap::input; import bootstrap::parse; import bootstrap::check; import bootstrap::types; import bootstrap::lex; import bootstrap::ir; import runtime::linux;\nfn mix(h:usize,v:usize)->usize{return (h*%131_usize)+%v;}\nfn digest()->usize{unsafe{var h:usize=0;h=mix(h,model::slot_count as usize);h=mix(h,model::inst_count as usize);h=mix(h,model::arg_count as usize);h=mix(h,ir::labels as usize);h=mix(h,model::parameter_slot_count as usize);var i:u32=1;while i<=model::inst_count{let n:model::Inst=model::insts[i as usize];h=mix(h,n.op as usize);h=mix(h,n.dst as usize);h=mix(h,n.a as usize);h=mix(h,n.b as usize);h=mix(h,n.c as usize);h=mix(h,n.aux as usize);h=mix(h,n.bits);h=mix(h,n.span.file as usize);h=mix(h,n.span.start as usize);h=mix(h,n.span.end as usize);i=i+1_u32;}i=1;while i<=model::slot_count{let s:model::Slot=model::slots[i as usize];h=mix(h,s.ty as usize);h=mix(h,s.flags as usize);h=mix(h,s.offset);h=mix(h,s.span.file as usize);h=mix(h,s.span.start as usize);h=mix(h,s.span.end as usize);i=i+1_u32;}i=1;while i<=model::arg_count{h=mix(h,model::args[i as usize] as usize);i=i+1_u32;}return h;}}\nfn cursor(d:model::Decl)->bool{unsafe{let a:model::Token=types::token;let b:model::Token=lex::next(d.file,d.end as usize);return a.file==b.file&&a.start==b.start&&a.end==b.end&&a.kind==b.kind&&a.number==b.number&&a.suffix==b.suffix;}}\npub fn run()->u32{model::reset_all();input::load(\"test.build\");parse::collect();unsafe{\nvar hashes:[128]usize=[0;128];var id:u32=1;while id<=model::decl_count{if model::decls[id as usize].kind==model::DECL_FUNCTION{check::function(id);hashes[id as usize]=digest();if !cursor(model::decls[id as usize]){return 11;}}id=id+1_u32;}\nid=model::decl_count;while id>0_u32{if model::decls[id as usize].kind==model::DECL_FUNCTION{check::function(id);if digest()!=hashes[id as usize] || !cursor(model::decls[id as usize]){return 12;}}id=id-1_u32;}\nparse::reset(1);types::seek(1,OFFSET);let node:u32=parse::expression(0,false);types::seek(2,0);let saved:model::Token=types::token;let value:types::Constant=parse::constant_value(node,model::TYPE_U32);if value.bits!=17_usize || value.ty!=model::TYPE_U32{ return 21; }if types::token.file!=saved.file||types::token.start!=saved.start||types::token.end!=saved.end{ return 22; }if types::diagnostic.file!=1_u32||types::diagnostic.start!=OFFSET_u32{return 23;}\nif linux::argc()>1_usize{let bad:u32=parse::add(model::AST_NAME,model::name(\"missing\"),0,0,0,0,41);types::seek(2,0);let ignored:types::Constant=parse::constant_value(bad,model::TYPE_U32);return 24;}\n}return 0;}\n'''.replace('OFFSET_u32',str(offset)+'_u32').replace('OFFSET',str(offset))\nresult={'candidate_sha256':sha(D/'N2-r1-candidate.json'),'input_hashes_verified':True,'probe_source':probe,'input_sources':programs,'variants':{}}\nfor variant in ['current','scanner_name_lookup','scanner_error_file']:\n tmp=pathlib.Path(tempfile.mkdtemp(prefix='b31-n2-independent-'))\n for f in files+['runtime/linux.s0']:\n  q=tmp/f;q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes((C/f).read_bytes())\n p=tmp/'bootstrap/parse.vt';s=p.read_text()\n if variant=='scanner_name_lookup':s=s.replace('types::resolve(arena_file, n.a, false)','types::resolve(types::token.file, n.a, false)')\n if variant=='scanner_error_file':s=s.replace('file:arena_file,','file:types::token.file,')\n p.write_text(s);(tmp/'probe.vt').write_text(probe)\n (tmp/'probe.build').write_text('format 1\\nprofile linux-user\\nentry probe::run\\noutput probe.elf\\n'+''.join('source '+f+'\\n' for f in files+['probe.vt'])+'assembly runtime/linux.s0\\n')\n for f,s in programs.items():(tmp/f).write_text(s)\n (tmp/'test.build').write_text('format 1\\nprofile linux-user\\nentry a::start\\nsource a.vt\\nsource b.vt\\noutput unused.elf\\n')\n build=subprocess.run([str(C/'target/debug/core-s'),'project','probe.build'],cwd=tmp,capture_output=True,text=True,timeout=45);assert build.returncode==0,build.stderr\n runs=[]\n for args in [[],['missing']]:\n  argv=['/usr/bin/qemu-riscv64','-s','1048576','probe.elf']+args;p=subprocess.run(argv,cwd=tmp,env={'PATH':''},capture_output=True,text=True,timeout=30);runs.append({'argv':argv,'exit':p.returncode,'stdout':p.stdout,'stderr':p.stderr});assert not(tmp/'unused.elf').exists()\n result['variants'][variant]={'temporary_directory':str(tmp),'probe_sha256':sha(tmp/'probe.elf'),'runs':runs}\npathlib.Path('/tmp/b31-n2-independent-result.json').write_text(json.dumps(result,indent=2))\nassert result['variants']['current']['runs'][0]['exit']==0\nassert result['variants']['current']['runs'][1]['exit']==1\nassert 'E_NAME file=1 byte=41' in result['variants']['current']['runs'][1]['stderr']\nassert result['variants']['scanner_name_lookup']['runs'][0]['exit']==21\nassert result['variants']['scanner_error_file']['runs'][0]['exit']==23\n# Verify the author's narrowly scoped diagnostic/cursor mutants by actual rerun.\nauthor=json.loads(subprocess.check_output(['python3','-B',str(D/'N2-probes.py')],cwd=R,timeout=120));assert author==json.loads((D/'N2-final-probe-evidence.json').read_text());result['author_mutants_reproduced']=author\npathlib.Path('/tmp/b31-n2-independent-result.json').write_text(json.dumps(result,indent=2));print(json.dumps({v:d['runs'] for v,d in result['variants'].items()},indent=2))\n"
+  },
+  "independent_frontend_tests": {
+    "command": "cargo test --offline --locked --all-features --test b3_frontend",
+    "cwd": "/home/mii/code/konOSuba/biomiya/core-s",
+    "exit": 0,
+    "output": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s\n     Running tests/b3_frontend.rs (target/debug/deps/b3_frontend-cbee3969eb3cc4ab)\n\nrunning 9 tests\ntest frontend_merges_module_imports_and_accepts_prefix_namespaces ... ok\ntest frontend_static_layout_keeps_large_zero_arrays_in_bss ... ok\ntest frontend_separates_cursor_diagnostics_and_reuses_function_arenas ... ok\ntest frontend_depth_limits_and_type_shadowing_fail_before_guest_stack_overflow ... ok\ntest frontend_reports_exact_ast_and_recursive_header_locations ... ok\ntest frontend_accepts_forward_layout_snapshots_results_and_cleanup ... ok\ntest frontend_rejects_invalid_programs_with_source_diagnostics ... ok\ntest frontend_reports_permission_and_capacity_errors_without_target_panics ... ok\ntest frontend_checks_actual_bootstrap_sources_and_ir_block_contract ... ok\n\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.57s\n\n"
+  }
+}

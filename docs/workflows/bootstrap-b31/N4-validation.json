@@ -1,0 +1,18 @@
+{
+  "node": "N4",
+  "revision": 1,
+  "command": "cargo test --offline --locked --manifest-path core-s/Cargo.toml --all-features --test b3",
+  "exit": 0,
+  "passed": 7,
+  "failed": 0,
+  "log": "N4-b3-tests.log",
+  "target_stack": 1048576,
+  "coverage": [
+    "C0 -> C1 -> C2 -> C3 full-file fixed point and existing behavior/mutation tests",
+    "three target generations: recursion, external contracts, unknown, mixed effects, unreachable IR calls, defer, on/off identical ELF",
+    "malformed/duplicate/conflicting policy, external aliases, missing/oversized input, multiple roots, existing output and input path preservation",
+    "forward/reverse 300-call chains; Core typing/link failures still enforced",
+    "uncaptured function Unknown, CALL to non-function I_INTERNAL, 65537 global edges I_LIMIT"
+  ],
+  "pending": "Old B3 migration, full source-only regression, actual self-analysis policy and final metrics are N5."
+}

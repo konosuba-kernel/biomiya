@@ -1,0 +1,14 @@
+{
+  "node": "N0",
+  "revision": 1,
+  "input_revisions": {
+    "B3": "I2 accepted; 1c0f143"
+  },
+  "implementers": [
+    "/root"
+  ],
+  "files": {
+    "docs/design/bootstrap-b31.md": "c6886848e884d227015c585e621af79f6c1ba38c00611bc284b9fbb5951b7f97",
+    "docs/workflows/bootstrap-b31/baseline.json": "78c3966d5b17a04af52a22cbef907802366f2e7aad27c04b448554ca125f1b28"
+  }
+}

@@ -1,0 +1,8 @@
+# The scalar and layout rules must have no uncontracted or blocking external calls.
+format 1
+require bootstrap::rules::literal
+require bootstrap::rules::unary
+require bootstrap::rules::cast
+require bootstrap::rules::binary
+require bootstrap::rules::add_size
+require bootstrap::rules::align_up

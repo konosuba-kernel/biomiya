@@ -1,0 +1,77 @@
+{
+  "node": "N4",
+  "candidate_revision": 1,
+  "candidate_sha256": "9821432dc4a3e94dff7a2de99f83a11e53856ebf2b0520437a602fc23c75d6c2",
+  "input_revisions": {
+    "N3": 1
+  },
+  "reviewer_agent_id": "/root/b31_review",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/blocking.vt": "dece54849d272fafbc3a35cda78ec743ef41ca59f32d66ca8a5059c9c772721b",
+    "core-s/bootstrap/check.vt": "6b5a7a9ead5f7e168a78f9e8c8804326a9819407a8e010a0ec7925cc395b6b01",
+    "core-s/bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+    "core-s/bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "core-s/bootstrap/ir.vt": "044e884a2dcbebf9e8733277b0c65b3856f2f8346fe09c1d6b2995e338d1ac88",
+    "core-s/bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "core-s/bootstrap/main.vt": "6f69a5fa8953b3ef0db6738b68054ce2e07f37a949f6a467425d89024385bf29",
+    "core-s/bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+    "core-s/bootstrap/parse.vt": "8cf832c5f459ef80b333d37e285abb8168b6e9420d7c9128eea3b69dcc142361",
+    "core-s/bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+    "core-s/bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "core-s/bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "core-s/bootstrap/types.vt": "d44cf08d052d458d7927ebb9acc9b70492858be0142ae89584a1ed2fc3c3c176",
+    "core-s/bootstrap/c1.build": "1658006df1e2a02df807629a8f3c7ffb60ad693ab09b09862571f28091d9abf8",
+    "core-s/bootstrap/c2.build": "88dfe7e21fa76639ffe0352e2df6671c9052f3b562817283c2bdcf626dfc0907",
+    "core-s/bootstrap/c3.build": "50d9f69c1b7f901c787efd9d96af6c4dd3658545234e096de9b08791707f0ad9",
+    "core-s/bootstrap/blocking.md": "54c1d734f24d92f4991c2e12900f3acceaccfad5f4532df704ca04c93c7e9ffa",
+    "core-s/bootstrap/pure.blocking": "65c422bf7700f3f449208b288c4ad5594a7e6c6896e90704180238dacedee77f",
+    "core-s/tests/b3.rs": "81b74a0f09f5a478395a0784a800759da3ff62f7e32d25ce320a24c8abb86122"
+  },
+  "independent_evidence": {
+    "N4-r1-independent.json": "977f6b150080ef76b92b3e65756005b69a61b7c04a0df91eda1104c9c15c1388"
+  },
+  "checks": [
+    {
+      "name": "freeze and scope",
+      "result": "All candidate and N3 input hashes match before review and candidate files rechecked afterward. Every prior product file outside N4 candidate matches N3/N2/N1/N0; all existing VT modules except main equal accepted N3. Each production manifest adds only blocking source. Frozen b3 log contains7 passed/0failed/0ignored; no old evidence rewritten. git diff --check passes."
+    },
+    {
+      "name": "independent graph reachability oracle",
+      "result": "60 seeded random directed graphs with recursion, duplicate edges, captured and uncaptured internal functions and all three extern contract states compared against independent Python per-root reachable-set classification. Plus8192-node chains ending in pure/Unknown/may-block and exact65536 repeated-edge positive boundary. All64 graphs,479 required-root outcomes match.",
+      "root_outcomes": {
+        "Verified": 70,
+        "Violation": 344,
+        "Unknown": 65
+      }
+    },
+    {
+      "name": "stable summaries, finite queue and read-only isolation",
+      "result": "Direct analyzer harness overwrites the shared instruction arena per caller; stable DeclIds still propagate correctly. It compares every injected Inst field/span immediately after capture and declaration identity/content after finish. Deliberate capture-time Inst.bits mutation is caught with exit90 despite unchanged call graph. Source audit finds no semantic table writes. Each initial seed consumes at least one of two bits; subsequent enqueue requires a new bit, bounding enqueue count by2V. Reverse adjacency only stores stable caller DeclId/next edge index."
+    },
+    {
+      "name": "configuration boundaries and strict names",
+      "result": "Independent CLI accepts exact16384-byte policy and rejects16385 bytes. Bare CR and supported ASCII whitespace accepted; embedded NUL in format/name, double root prefix, inline trailing comments and non-ASCII word separator reject as config errors without output. External contract through another module declaration of same linker symbol works."
+    },
+    {
+      "name": "publication gate and file protection",
+      "result": "Independent tests cover Verified and Unknown with output hardlinks to source/policy, symlink to source, dangling symlink and existing output during check. Input bytes, existing output and link targets preserved; no dangling-link target created. Both requirement orders containing one Verified and one Unknown reject globally without output. Main gate inspected after image::finish/link validation and before input::save."
+    },
+    {
+      "name": "analysis off/on generated ELF",
+      "result": "Fresh C0-built current target compiler builds actual extern-linked program with analysis off and with alias nonblocking contract. Complete ELF files identical, SHA256922b918ec1e386dd2a86d1b62edbb1cc5df50e7583ad48efd02db3c95b16dfa5. Other Verified configurations yield same bytes; check never creates output."
+    },
+    {
+      "name": "retained integration coverage",
+      "result": "Reviewed new4 tests plus unchanged3 integration tests and frozen7-pass log: three target generations, recursive and mixed effects, defer/continue/break expansion, unused and unreachable calls, malformed/duplicate/alias contracts,300-call ordering, Core typing/link failures, missing capture, nonfunction CALL and65537-edge rejection. These author multigeneration runs were audited, not rerun or falsely claimed independent here."
+    }
+  ],
+  "remaining_boundaries": [
+    "Verified is the documented direct-call may-block property under declared external contracts; it does not prove termination, real-time, IRQ, concurrency or external implementation truthfulness.",
+    "Graph oracle isolates analyzer API using stable CALL records; ordinary source/IR validity remains compiler/backend responsibility and is separately retained in CLI integration.",
+    "Old B3 migration, final complete source-clean regressions, actual self-policy run, fixed point and final resource accounting remain N5; N4 does not claim those completed."
+  ],
+  "temporary_accepted_product_snapshot": "/tmp/b31-n4-frozen-qmz9zkpa",
+  "new_blockers": []
+}

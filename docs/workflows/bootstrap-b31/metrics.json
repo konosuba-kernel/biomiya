@@ -1,0 +1,672 @@
+{
+  "cloc_version": "2.10",
+  "method": "VT uses C comment/string recognition. Raw bytes supplement format-sensitive physical/cloc counts; dense VT lines can contain several statements, so line counts do not prove a proportional complexity reduction. Target compiler includes parser, types, checker, IR, lexer, model/containers, IO/manifest, RV64, s0, ELF and CLI. Platform and runtime are separate. Seed and B2 retained prototype are not removed. Tests, generated Unicode and workflow Python tools are separately disclosed. I1 independent Python probe snapshots saved as .txt are counted separately, including copied driver content; they are evidence snapshots, not additional production compiler implementation. No generated product source in B3.",
+  "groups": {
+    "host_compiler": {
+      "physical_lines": 7681,
+      "cloc": {
+        "blank": 181,
+        "comment": 67,
+        "code": 7433,
+        "nFiles": 17
+      },
+      "files": [
+        {
+          "path": "core-s/src/ast.rs",
+          "first_line": 1,
+          "last_line": 263,
+          "source_sha256": "8fa75c5360a01d7ff55194e88939e1e9f6b94869c247c7dc8ac7e6c5a4d8e415"
+        },
+        {
+          "path": "core-s/src/backend.rs",
+          "first_line": 1,
+          "last_line": 1328,
+          "source_sha256": "eccf7b3d4e7241ed1442cd4ca554f8cd55d7c2f96cf654c61ab549f9e676bea9"
+        },
+        {
+          "path": "core-s/src/check.rs",
+          "first_line": 1,
+          "last_line": 2046,
+          "source_sha256": "e13e5326f87624e1389893699b34ee0b103e83dd570ea1f517b7b2cf0815e8a8"
+        },
+        {
+          "path": "core-s/src/encode.rs",
+          "first_line": 1,
+          "last_line": 306,
+          "source_sha256": "e07e4ec9ee72482e7aee01eda5c60fdae4d69c2af85e9295b82166533f958888"
+        },
+        {
+          "path": "core-s/src/frontend.rs",
+          "first_line": 1,
+          "last_line": 1713,
+          "source_sha256": "e510cb24e5f877de41d11a8655657f293d60b72b0b1615f1a320c73b3bca43eb"
+        },
+        {
+          "path": "core-s/src/image.rs",
+          "first_line": 1,
+          "last_line": 151,
+          "source_sha256": "425e76681c53a5f2bbc6c908fc41b1539930a5623b96e6dba527dcaf40540460"
+        },
+        {
+          "path": "core-s/src/lib.rs",
+          "first_line": 1,
+          "last_line": 39,
+          "source_sha256": "b072149da1620ccd8e4bbfbe5b9803dc1bfb7611e0ae40689e99734f84e2c980"
+        },
+        {
+          "path": "core-s/src/machine.rs",
+          "first_line": 1,
+          "last_line": 182,
+          "source_sha256": "2e0b7c588091e703d65b83bda8c7b12c93075dd656f06e2f3064cca866e54395"
+        },
+        {
+          "path": "core-s/src/main.rs",
+          "first_line": 1,
+          "last_line": 283,
+          "source_sha256": "897484a44381d1ef6327e9dfea869019d36e60af048ae95c553d7c35ec2680d4"
+        },
+        {
+          "path": "core-s/src/model.rs",
+          "first_line": 1,
+          "last_line": 293,
+          "source_sha256": "a7fa2f9b416deb31828f201a90850ce261926c6116b3051cd1754547f2beeeaf"
+        },
+        {
+          "path": "core-s/src/modules.rs",
+          "first_line": 1,
+          "last_line": 345,
+          "source_sha256": "1ecb59270bab632a0b07d0cba27bfd538ec12b62cbffe5f5921348a2db2d783c"
+        },
+        {
+          "path": "core-s/src/pipeline.rs",
+          "first_line": 1,
+          "last_line": 30,
+          "source_sha256": "24b21978a45bd66c2db12ff175c13b07c6af6ea7b312812798b75884722c1a6e"
+        },
+        {
+          "path": "core-s/src/project.rs",
+          "first_line": 1,
+          "last_line": 109,
+          "source_sha256": "38126095d58cab5e8ee61f2f7c0974707fd323a64afd6b72b0a9e983a5e60a14"
+        },
+        {
+          "path": "core-s/src/s0.rs",
+          "first_line": 1,
+          "last_line": 266,
+          "source_sha256": "0d391b3f73431fc4ecb13c16c69bff8cb437cdcffdfab167af3c55b606d8fdf1"
+        },
+        {
+          "path": "src/source.rs",
+          "first_line": 1,
+          "last_line": 90,
+          "source_sha256": "5c801bbac87b4fd65de79a7815d5230c2b69a8b011a15e8d21989baec865fff1"
+        },
+        {
+          "path": "src/diagnostic.rs",
+          "first_line": 1,
+          "last_line": 43,
+          "source_sha256": "e8abafc4086e3daeebc3c19b310f165f620a180ca5ff8116f6b7e4438718bf9c"
+        },
+        {
+          "path": "src/syntax/lexer.rs",
+          "first_line": 1,
+          "last_line": 194,
+          "source_sha256": "ca33203662cfa337b4e662a7c7967d50e62549e6abb99f325199efb523b3b897"
+        }
+      ]
+    },
+    "generated_unicode": {
+      "physical_lines": 2096,
+      "cloc": {
+        "blank": 0,
+        "comment": 1,
+        "code": 2095,
+        "nFiles": 1
+      },
+      "files": [
+        {
+          "path": "src/syntax/unicode.rs",
+          "first_line": 1,
+          "last_line": 2096,
+          "source_sha256": "6c1c6102c04cc4f4f8985595a209706388695baec71ba1ceec2046d3f6e27feb"
+        }
+      ]
+    },
+    "tests": {
+      "physical_lines": 3963,
+      "cloc": {
+        "blank": 60,
+        "comment": 53,
+        "code": 3850,
+        "nFiles": 10
+      },
+      "files": [
+        {
+          "path": "core-s/src/project.rs",
+          "first_line": 110,
+          "last_line": 191,
+          "source_sha256": "38126095d58cab5e8ee61f2f7c0974707fd323a64afd6b72b0a9e983a5e60a14"
+        },
+        {
+          "path": "core-s/tests/b2.rs",
+          "first_line": 1,
+          "last_line": 235,
+          "source_sha256": "7001220ba9438a7d0bdb66d580e231da4080c147ff4a253a48e44f22ffc13ef0"
+        },
+        {
+          "path": "core-s/tests/b2_language.rs",
+          "first_line": 1,
+          "last_line": 231,
+          "source_sha256": "7c163ee882c75e762cab45a6f9c2da6a663ab514f9d6e7b12d39ea95f3e269ce"
+        },
+        {
+          "path": "core-s/tests/b2_runtime.rs",
+          "first_line": 1,
+          "last_line": 416,
+          "source_sha256": "a1c6241aec218f58020bc1695f85b41b5a1868892ec2a98efd02944b29e6ca55"
+        },
+        {
+          "path": "core-s/tests/backend.rs",
+          "first_line": 1,
+          "last_line": 1393,
+          "source_sha256": "b2c936c3bf16fcc0e0a9c9da0b425c2648c051b654b64e07353708b85ed6613a"
+        },
+        {
+          "path": "core-s/tests/check.rs",
+          "first_line": 1,
+          "last_line": 329,
+          "source_sha256": "109541c41d9d05bbdf016294bdc8420b666c5badd44970d188fbc1ceb4ba1d71"
+        },
+        {
+          "path": "core-s/tests/cli.rs",
+          "first_line": 1,
+          "last_line": 240,
+          "source_sha256": "b9c87eef1b711807c0f2c40c76f1ffc3356a548dd9732b44b590bd8a440f2295"
+        },
+        {
+          "path": "core-s/tests/image.rs",
+          "first_line": 1,
+          "last_line": 846,
+          "source_sha256": "3a40e069d6849ece1abf4f5a239566b197545af2e5e65454c2fe53ffa23ff455"
+        },
+        {
+          "path": "core-s/tests/pipeline.rs",
+          "first_line": 1,
+          "last_line": 127,
+          "source_sha256": "e402ed7e9b4403fba2e760125d5fc918f6f62d2d08a6a2aec12023a2a743298d"
+        },
+        {
+          "path": "core-s/tests/s0.rs",
+          "first_line": 1,
+          "last_line": 64,
+          "source_sha256": "93738cfb9bbb83672c7e5881ef10fa1ee65a5f9563bcda67898b158ddd4fb452"
+        }
+      ]
+    },
+    "behavior_inputs": {
+      "physical_lines": 98,
+      "cloc": {
+        "blank": 1,
+        "comment": 1,
+        "code": 96,
+        "nFiles": 1
+      },
+      "files": [
+        {
+          "path": "core-s/fixtures/bootstrap.vt",
+          "first_line": 1,
+          "last_line": 98,
+          "source_sha256": "ef2ff4f7a35f7dc4b3dffe477f86663f63331f25661536887097702300fb8096"
+        }
+      ]
+    },
+    "target_compiler": {
+      "physical_lines": 8249,
+      "source_bytes": 269906,
+      "cloc": {
+        "blank": 298,
+        "comment": 108,
+        "code": 7843,
+        "nFiles": 13
+      },
+      "files": [
+        {
+          "path": "core-s/bootstrap/blocking.vt",
+          "first_line": 1,
+          "last_line": 354,
+          "source_bytes": 12182,
+          "sha256": "dece54849d272fafbc3a35cda78ec743ef41ca59f32d66ca8a5059c9c772721b"
+        },
+        {
+          "path": "core-s/bootstrap/check.vt",
+          "first_line": 1,
+          "last_line": 1253,
+          "source_bytes": 46563,
+          "sha256": "6b5a7a9ead5f7e168a78f9e8c8804326a9819407a8e010a0ec7925cc395b6b01"
+        },
+        {
+          "path": "core-s/bootstrap/image.vt",
+          "first_line": 1,
+          "last_line": 441,
+          "source_bytes": 12804,
+          "sha256": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f"
+        },
+        {
+          "path": "core-s/bootstrap/input.vt",
+          "first_line": 1,
+          "last_line": 270,
+          "source_bytes": 10412,
+          "sha256": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040"
+        },
+        {
+          "path": "core-s/bootstrap/ir.vt",
+          "first_line": 1,
+          "last_line": 315,
+          "source_bytes": 7818,
+          "sha256": "044e884a2dcbebf9e8733277b0c65b3856f2f8346fe09c1d6b2995e338d1ac88"
+        },
+        {
+          "path": "core-s/bootstrap/lex.vt",
+          "first_line": 1,
+          "last_line": 339,
+          "source_bytes": 11201,
+          "sha256": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5"
+        },
+        {
+          "path": "core-s/bootstrap/main.vt",
+          "first_line": 1,
+          "last_line": 201,
+          "source_bytes": 7013,
+          "sha256": "6f69a5fa8953b3ef0db6738b68054ce2e07f37a949f6a467425d89024385bf29"
+        },
+        {
+          "path": "core-s/bootstrap/model.vt",
+          "first_line": 1,
+          "last_line": 931,
+          "source_bytes": 24554,
+          "sha256": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38"
+        },
+        {
+          "path": "core-s/bootstrap/parse.vt",
+          "first_line": 1,
+          "last_line": 1027,
+          "source_bytes": 37461,
+          "sha256": "8cf832c5f459ef80b333d37e285abb8168b6e9420d7c9128eea3b69dcc142361"
+        },
+        {
+          "path": "core-s/bootstrap/rules.vt",
+          "first_line": 1,
+          "last_line": 226,
+          "source_bytes": 5615,
+          "sha256": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103"
+        },
+        {
+          "path": "core-s/bootstrap/rv64.vt",
+          "first_line": 1,
+          "last_line": 1275,
+          "source_bytes": 46823,
+          "sha256": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a"
+        },
+        {
+          "path": "core-s/bootstrap/s0.vt",
+          "first_line": 1,
+          "last_line": 449,
+          "source_bytes": 10599,
+          "sha256": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46"
+        },
+        {
+          "path": "core-s/bootstrap/types.vt",
+          "first_line": 1,
+          "last_line": 1168,
+          "source_bytes": 36861,
+          "sha256": "d44cf08d052d458d7927ebb9acc9b70492858be0142ae89584a1ed2fc3c3c176"
+        }
+      ]
+    },
+    "target_runtime": {
+      "physical_lines": 189,
+      "source_bytes": 6778,
+      "cloc": {
+        "blank": 18,
+        "comment": 4,
+        "code": 167,
+        "nFiles": 2
+      },
+      "files": [
+        {
+          "path": "core-s/runtime/bytes.vt",
+          "first_line": 1,
+          "last_line": 58,
+          "source_bytes": 2333,
+          "sha256": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5"
+        },
+        {
+          "path": "core-s/runtime/linux.vt",
+          "first_line": 1,
+          "last_line": 131,
+          "source_bytes": 4445,
+          "sha256": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78"
+        }
+      ]
+    },
+    "platform_s0": {
+      "physical_lines": 19,
+      "source_bytes": 345,
+      "cloc": {
+        "blank": 0,
+        "comment": 1,
+        "code": 18,
+        "nFiles": 1
+      },
+      "files": [
+        {
+          "path": "core-s/runtime/linux.s0",
+          "first_line": 1,
+          "last_line": 19,
+          "source_bytes": 345,
+          "sha256": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+        }
+      ]
+    },
+    "b2_input_application": {
+      "physical_lines": 251,
+      "source_bytes": 11636,
+      "cloc": {
+        "blank": 11,
+        "comment": 4,
+        "code": 236,
+        "nFiles": 4
+      },
+      "files": [
+        {
+          "path": "core-s/app/copy.vt",
+          "first_line": 1,
+          "last_line": 52,
+          "source_bytes": 1969,
+          "sha256": "a672ea6235291d797e037e8b5a671a9f2d75842f62ccaa665f8ea4a58f5a79ed"
+        },
+        {
+          "path": "core-s/compiler/manifest.vt",
+          "first_line": 1,
+          "last_line": 81,
+          "source_bytes": 4067,
+          "sha256": "e9540994fb36717315f65abb6859e8cdf79b11c77d7774add64156955443a139"
+        },
+        {
+          "path": "core-s/compiler/scan.vt",
+          "first_line": 1,
+          "last_line": 111,
+          "source_bytes": 5308,
+          "sha256": "c897e7dd554d935cb0a06d2c29ae6a0ea644718c1d6fa9b02e060e1278006c90"
+        },
+        {
+          "path": "core-s/compiler/source.vt",
+          "first_line": 1,
+          "last_line": 7,
+          "source_bytes": 292,
+          "sha256": "ccdccaedd001bd8924a07cfd3cb8bbdfb3ecb45353b4dde923ccfcb2cd0b0110"
+        }
+      ]
+    },
+    "new_rust_tests": {
+      "physical_lines": 2254,
+      "source_bytes": 80365,
+      "cloc": {
+        "blank": 10,
+        "comment": 11,
+        "code": 2233,
+        "nFiles": 4
+      },
+      "files": [
+        {
+          "path": "core-s/tests/b3.rs",
+          "first_line": 1,
+          "last_line": 824,
+          "source_bytes": 30392,
+          "sha256": "81b74a0f09f5a478395a0784a800759da3ff62f7e32d25ce320a24c8abb86122"
+        },
+        {
+          "path": "core-s/tests/b3_frontend.rs",
+          "first_line": 1,
+          "last_line": 737,
+          "source_bytes": 26984,
+          "sha256": "fa342ac49706b8ce4c89dd4822ebcd8d2136e25b99fbb6130d39ef38bb1672d4"
+        },
+        {
+          "path": "core-s/tests/b3_input.rs",
+          "first_line": 1,
+          "last_line": 266,
+          "source_bytes": 9312,
+          "sha256": "9487d019afb25333dad565946e16764f8ef4fc33882f1d8c32bee32c51c03a26"
+        },
+        {
+          "path": "core-s/tests/b3_machine.rs",
+          "first_line": 1,
+          "last_line": 427,
+          "source_bytes": 13677,
+          "sha256": "3247dbd44e253a6fd5a807bb232e51c4d627a1b8d403ea1ad6259d75fb06f4a1"
+        }
+      ]
+    },
+    "new_target_fixtures": {
+      "physical_lines": 630,
+      "source_bytes": 21846,
+      "cloc": {
+        "blank": 19,
+        "comment": 5,
+        "code": 606,
+        "nFiles": 2
+      },
+      "files": [
+        {
+          "path": "core-s/bootstrap/tests/machine.vt",
+          "first_line": 1,
+          "last_line": 615,
+          "source_bytes": 21405,
+          "sha256": "820459ac38941613d9ba9c24e77a6c9b9d849ddb33b7dc11f1872f3e71789890"
+        },
+        {
+          "path": "core-s/bootstrap/tests/model.vt",
+          "first_line": 1,
+          "last_line": 15,
+          "source_bytes": 441,
+          "sha256": "6b312c939f96f0eebf963c16d4fa41422e61372f3eca9d3a79175aadcdd37f37"
+        }
+      ]
+    },
+    "b3_validation_tools": {
+      "physical_lines": 514,
+      "source_bytes": 35714,
+      "cloc": {
+        "blank": 2,
+        "comment": 179,
+        "code": 333,
+        "nFiles": 7
+      },
+      "files": [
+        {
+          "path": "docs/workflows/bootstrap-b3/clean_build.py",
+          "first_line": 1,
+          "last_line": 57,
+          "source_bytes": 4502,
+          "sha256": "5909ab32c3d8031b6d946bea92948c9c7963120e56ca43c7f7ae69fd176a1300"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/metrics.py",
+          "first_line": 1,
+          "last_line": 30,
+          "source_bytes": 3111,
+          "sha256": "c8c4efdcbb32d20d546a17a95c4b262ea4fd7d4bfbc335a7334475296f6bb3d3"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/probes/f_semantics.py",
+          "first_line": 1,
+          "last_line": 88,
+          "source_bytes": 9851,
+          "sha256": "6a804677c84c5c3ac9f023d9286a908f6a22973bd1a3140dbb4d4dcfd5e9066d"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/probes/h_diagnostics.py",
+          "first_line": 1,
+          "last_line": 54,
+          "source_bytes": 2192,
+          "sha256": "8a0b64a05f2f40c180f384a0da5f77e654215e86a8baf04483401ad6a6e61390"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/probes/h_model.py",
+          "first_line": 1,
+          "last_line": 83,
+          "source_bytes": 4394,
+          "sha256": "f2a0e155030d7804757aefcb68aa2afc31edf3ca8139f217f2bf23755961f4ba"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/probes/l_input.py",
+          "first_line": 1,
+          "last_line": 121,
+          "source_bytes": 7072,
+          "sha256": "6061c57ed9a8d173c36542269ef81e151e47759cc82c32f2ccff08ebcb3fc10a"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/probes/m_machine.py",
+          "first_line": 1,
+          "last_line": 81,
+          "source_bytes": 4592,
+          "sha256": "ef1414aeb089b4efe15ba4120b7d101f7e75be7f27985d97edab295c274ec81d"
+        }
+      ]
+    },
+    "b31_validation_tools": {
+      "physical_lines": 538,
+      "source_bytes": 34496,
+      "cloc": {
+        "blank": 2,
+        "comment": 55,
+        "code": 481,
+        "nFiles": 9
+      },
+      "files": [
+        {
+          "path": "docs/workflows/bootstrap-b31/N1-final-check.py",
+          "first_line": 1,
+          "last_line": 64,
+          "source_bytes": 3473,
+          "sha256": "d5b3f3ed2c320fc12965eb47752b0cf854ec1ac6a02217ce95d660dd137f642c"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b31/N1-format.py",
+          "first_line": 1,
+          "last_line": 76,
+          "source_bytes": 3608,
+          "sha256": "5f93620b0d4158ae5d3810ad5d22d0710314b47af6a76605771200570982515a"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b31/N1-symbol-check.py",
+          "first_line": 1,
+          "last_line": 35,
+          "source_bytes": 2002,
+          "sha256": "278130423851f2bd762b172ac511566460d3588425073153782129548f64be15"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b31/N2-probes.py",
+          "first_line": 1,
+          "last_line": 43,
+          "source_bytes": 2803,
+          "sha256": "c570d75c8aef885c7ebbdcaee1d956776709c4dd738796fbf2dbdb280d354f04"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b31/N3-integration.py",
+          "first_line": 1,
+          "last_line": 44,
+          "source_bytes": 3217,
+          "sha256": "fa52ad9e19d100499975a4b3fdd1ce73ccff096a6249a7859c88a4508ab5e744"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b31/N3-machine-probes.py",
+          "first_line": 1,
+          "last_line": 121,
+          "source_bytes": 6718,
+          "sha256": "862bb5c72544e6b4acacaf1a46a2aeb3ae9fd5d714dad2e13275386931f9bc24"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b31/clean_build.py",
+          "first_line": 1,
+          "last_line": 62,
+          "source_bytes": 4955,
+          "sha256": "be329dce30033e3f9db845ed8e7d179550aa07deabbb88fdfb671dd16bc0af6b"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b31/metrics.py",
+          "first_line": 1,
+          "last_line": 37,
+          "source_bytes": 3953,
+          "sha256": "2b65c9fa4b1c1d093617e970803a693b96ad4cf49fc0c036b0a25b6e694836fe"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b31/migration.py",
+          "first_line": 1,
+          "last_line": 56,
+          "source_bytes": 3767,
+          "sha256": "e7a98ed0ba8ff3d83ee0d19475055fe43cf7d82973318f11e5059ff0082a6bb7"
+        }
+      ]
+    },
+    "I1_independent_probe_snapshots": {
+      "physical_lines": 187,
+      "source_bytes": 15462,
+      "cloc": {
+        "blank": 0,
+        "comment": 28,
+        "code": 159,
+        "nFiles": 5
+      },
+      "files": [
+        {
+          "path": "docs/workflows/bootstrap-b3/I-r1-independent-clean-script.txt",
+          "first_line": 1,
+          "last_line": 50,
+          "source_bytes": 4153,
+          "sha256": "6210a099c74c82fc7ee055f2ace940dd7a1bf85252209bcb707ae802e48b7db6"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/I-r1-independent-cli-script.txt",
+          "first_line": 1,
+          "last_line": 30,
+          "source_bytes": 2496,
+          "sha256": "7425f37af7442d9cb9964e758699cf03e490dbcf41047f4e3b6d1e881bf9de24"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/I-r1-independent-io-script.txt",
+          "first_line": 1,
+          "last_line": 60,
+          "source_bytes": 3753,
+          "sha256": "8ceeca0611661e658d1427bb88c6a60dc00eaa272b7745bb2f472a19d9d8fbfa"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/I-r1-independent-metrics-script.txt",
+          "first_line": 1,
+          "last_line": 29,
+          "source_bytes": 2799,
+          "sha256": "cba9f1f742432d04120d101479758a7c88fbde980dd7e458b0b8322f4337d976"
+        },
+        {
+          "path": "docs/workflows/bootstrap-b3/I-r1-independent-mutation-script.txt",
+          "first_line": 1,
+          "last_line": 18,
+          "source_bytes": 2261,
+          "sha256": "2b0c2d6e2672f4c31c3a5783a00bcd87d926332c39d60212aa84effba97a61f0"
+        }
+      ]
+    }
+  },
+  "b31_note": "N1 expanded dense statements without changing tokens, then replaced numeric tags with names and verified inverse expansion. Increased physical lines are mainly presentation; Blocking and state/pure-rule/backend changes are actual additions. target_compiler includes ALL current production bootstrap VT modules, including rules and Blocking.",
+  "blocking_subset": {
+    "physical_lines": 354,
+    "source_bytes": 12182,
+    "cloc": {
+      "blank": 0,
+      "comment": 8,
+      "code": 346,
+      "nFiles": 1
+    }
+  }
+}

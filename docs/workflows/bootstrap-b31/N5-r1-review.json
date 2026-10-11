@@ -1,0 +1,90 @@
+{
+  "node": "N5",
+  "candidate_revision": 1,
+  "candidate_sha256": "7a2e1b9a4ad12009295cd42c5f8be3a31ac1ece2adf9668ad3c9fb73a4d3ec89",
+  "input_revisions": {
+    "N4": 1
+  },
+  "input_hashes_verified": {
+    "docs/workflows/bootstrap-b31/N4-r1-candidate.json": "9821432dc4a3e94dff7a2de99f83a11e53856ebf2b0520437a602fc23c75d6c2",
+    "docs/workflows/bootstrap-b31/N4-r1-review.json": "42e22c5824534241b158084f1b91eb978ab639531274c1157d6654e4bb0f7b4d"
+  },
+  "reviewer_agent_id": "/root/b31_review",
+  "independent": true,
+  "verdict": "通过",
+  "independent_evidence": {
+    "N5-r1-independent.json": "c910911f2cb88c861bb4a79477d6179e89eedc76d53ad6c10ecd78005cfeb878"
+  },
+  "candidate_integrity": {
+    "frozen_files": 134,
+    "verified_before_and_after": true,
+    "N4_products_unchanged": true,
+    "old_B3_workflow_diff_from_baseline": "none"
+  },
+  "independently_executed": [
+    {
+      "name": "old accepted B3 seed builds exact final source",
+      "result": "Fresh directory contains only15 declared VT inputs,1 s0,manifest and SHA-verified old B3 C2 executable. Empty PATH,1MiB guest stack and strace. Produced complete final ELF SHA2560793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc."
+    },
+    {
+      "name": "actual self-policy fixed point",
+      "result": "First independently generated compiler builds same declared source in another fresh directory with actual pure.blocking. Exactly literal/unary/cast/add_size/align_up/binary Verified. New full ELF equals preceding analysis-off ELF and both author bootstrap paths byte-for-byte by SHA. No Unknown/Violation. This independently executes2 stages, not a claimed rerun of all author D1/D2/D3."
+    },
+    {
+      "name": "independent isolation and memory parsing",
+      "result": "Both new traces open only declared sources/manifest/policy/output and have only openat/read/write/close/fchmod/exit guest syscalls; no external process/network/syscall delegation or executable self-read. Parsed ELF load segments yield1,108,040 file bytes,53,118,748 writable bytes,54,023,964 image-span bytes; both budgets<67,108,864. Guest stack constrained to1,048,576; max_frame26384 is a per-frame statistic."
+    },
+    {
+      "name": "new source behavior after final bootstrap",
+      "result": "Final independently bootstrapped compiler with Blocking enabled compiles two fresh scalar/defer programs differing in source literal19→23. Both root reports Verified, generated ELFs differ, and execution returns41→49 as predicted."
+    },
+    {
+      "name": "metrics reproducibility and coverage",
+      "result": "Executed frozen metrics.py with only output directory redirected to fresh/tmp; resulting metrics.json exactly equals frozen bytes. Every group file hash/line range and summed physical/cloc totals verified. All production bootstrap VT, runtime VT/s0, retained Rust files and test files covered.13 modules/269906 bytes/8249 physical lines/7843 code lines; Blocking354 lines is a subset, not double-counted."
+    },
+    {
+      "name": "evidence preservation",
+      "result": "Both clean_build.py and migration.py invoked with an existing sentinel evidence directory reject before writes. Sentinel and existing final executable unchanged. Original B3 evidence matches baseline Git tree; final134 candidate hashes rechecked after all work."
+    },
+    {
+      "name": "whitespace distinction",
+      "result": "git diff --cached --check -- . ':!*.log' exits0. Whole staged check exits2 solely for12 raw Cargo .log files with new blank line at EOF; frozen raw logs deliberately preserved. No claim that the unfiltered staged check is clean."
+    }
+  ],
+  "audited_author_evidence": [
+    {
+      "name": "source-only clean C0 path and full regression",
+      "result": "Reviewed copying/build script: copies only declared source/test/fixture/runtime/compiler/app/bootstrap/Cargo files and four reused Rust source files, no target artifacts. Frozen source hashes match candidate. Parsed fresh-tree log91 passed/0failed/0ignored; Counter comparison retains all81 original test labels with10 added. Current tests retain source/static/compiler diagnostic mutation, behavior, module/extern, IO and Blocking checks. Did not rerun full91 independently in N5."
+    },
+    {
+      "name": "three-stage old-seed migration and clean fixed point",
+      "result": "All recorded D1/D2/D3 hashes equal final expected hash; clean C2/C3 match it. Every migration source hash verified; raw3 traces decoded by actual stderr write lengths and matched recorded statistics/read-open sets. D3 has precisely6Verified self-policy roots. Author full chain was audited and independently corroborated by the2-stage old-seed/policy rebuild above."
+    },
+    {
+      "name": "prior independent node acceptance",
+      "result": "N0-r1 through N4-r1 reviews and exact N4 outputs remain frozen. Prior independent lexical equivalence, cursor/file state, arithmetic/static/readonly backend, graph oracle479roots, configuration/file protection and capacity checks remain applicable to unchanged products. No implementation role was performed by /root/b31_review."
+    },
+    {
+      "name": "README and proof boundaries",
+      "result": "README reports actual commands, old-seed recovery, ownership/pure rules/read-only IR and all-zero validation, external assumptions and Unknown/Violation distinction, historical vs current metrics, and Linux-user Core subset. It retains known C0 numeric separator/root shadow defects and explicitly avoids fullR1a/SOS, RSS, termination, IRQ or concurrency proof claims."
+    }
+  ],
+  "final_artifacts": {
+    "sha256": "0793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc",
+    "elf_bytes": 1108040,
+    "rw_memory_bytes": 53118748,
+    "image_span_bytes": 54023964,
+    "budget_bytes": 67108864,
+    "guest_stack_bytes": 1048576,
+    "verified_self_policy_roots": 6,
+    "full_regression_passed": 91,
+    "baseline_tests_retained": 81
+  },
+  "remaining_boundaries": [
+    "Accepted result is actual Linux-user Core subset self-compilation and one concrete direct-call Blocking analysis, not complete R1a or SOS self-hosting.",
+    "Verified relies on stated extern contracts and is not a proof of termination, real-time, IRQ or concurrency safety.",
+    "Static ELF budget and tested1MiB stack configuration do not establish peak RSS or every possible call-chain bound.",
+    "N5 full91/source-clean C0 rebuilding and author3-stage chain are audited author evidence; independent execution here is precisely the two source-only target stages, actual self-policy, fresh behavior, metrics and preservation checks listed above."
+  ],
+  "new_blockers": []
+}

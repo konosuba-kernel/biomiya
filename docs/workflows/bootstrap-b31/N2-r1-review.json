@@ -1,0 +1,56 @@
+{
+  "node": "N2",
+  "candidate_revision": 1,
+  "candidate_sha256": "28c3606196f39b0d8685c0988efedad59b902d14074b201ddaf41ab99a1358c2",
+  "input_revisions": {
+    "N1": 1
+  },
+  "reviewer_agent_id": "/root/b31_review",
+  "independent": true,
+  "verdict": "通过",
+  "file_hashes_verified": {
+    "core-s/bootstrap/types.vt": "3f3344c7b693f22d2042e5fd7093a5dafe7d68594666e3d5e927006834b13484",
+    "core-s/bootstrap/parse.vt": "b69bf591f0c75abf8324149de7b9f81e2ea97065e8144771a7eac50ed5677f75",
+    "core-s/bootstrap/check.vt": "b8431a69ad0d9831b7f46ec01baf83e6a953c8d35a35e50297fc3a14d8cbb131",
+    "core-s/bootstrap/ir.vt": "bdc4a4e46f639cb6a685d6fb2f915dc3af1438119df41a8138a2fa987e353655",
+    "core-s/bootstrap/model.vt": "3df2ae22ee55d1e3d229b79b491b68650ce4481c8398ed3b1280e2630b1e4d0b",
+    "core-s/bootstrap/main.vt": "e9b0d6bb3221350d62ddc8422201e4bfb5b1353ede5f2ef49cca9d50db035731",
+    "core-s/tests/b3_frontend.rs": "9884702683fdb9c8af68c3fc384435d295d214b75701beb476be41ef63ef547a"
+  },
+  "independent_evidence": {
+    "N2-r1-independent.json": "da81d5c94cd752c2d120d54fff0eaf7f9735dd7c69283f9dce55bc9f5936adce"
+  },
+  "checks": [
+    {
+      "name": "candidate, input and scope audit",
+      "result": "All candidate/evidence/input hashes checked; unchanged product paths match N1 or N0 as applicable; current C0 build artifact matches frozen validation. Final candidate rechecked after execution. Reviewed exact N1→N2 changes using N1 independent source snapshot; git diff --check passes."
+    },
+    {
+      "name": "state ownership and lifecycle",
+      "result": "types scanner token writes confined to scan/prepare handling; checker has no token references. Diagnostic Span is separate and restored with Token on declaration preparation. parse owns arena FileId and depth counters; check::function uniquely initializes per-function model/parse/IR/check state. Driver cleanup at source-phase end remains distinct. Compilation-wide tables and RV64 working tables retain their owners and no large arrays are passed by value."
+    },
+    {
+      "name": "actual independent frontend regression",
+      "result": "cargo test --offline --locked --all-features --test b3_frontend: 9 passed, 0 failed, 0 ignored. Covers prior frontend cases plus exact second-file AST/recursive-declaration locations, forward references, recursive-layout rejection and repeated function preparation."
+    },
+    {
+      "name": "independent cross-file AST isolation",
+      "result": "Build AST referencing a private const N=17 in file1, then move scanner to file2 containing its own private const N=29. Evaluation returns17, preserves scanner and records file1 provenance. Missing name reports E_NAME file=1 byte=41. Temporary mutant using scanner FileId resolves29 and is caught with exit21; mutant diagnostic FileId is caught with exit23."
+    },
+    {
+      "name": "independent function reuse order",
+      "result": "Probe checks several functions with parameters, calls, arrays, defer, while, continue and break across two modules, then checks them in reverse order without external reset. Digest of every Inst operand/span, Slot type/flags/offset/span, counts, argument values and labels stays equal; scanner Token still equals next actual lexeme after each body."
+    },
+    {
+      "name": "author mutant reproduction",
+      "result": "Actually reran N2-probes.py and reproduced frozen final JSON exactly. Deleting prepare diagnostic restoration changes layout byte32→51 and const error byte13→33; checker token-write mutant returns9 while current returns0."
+    }
+  ],
+  "remaining_boundaries": [
+    "Focused N2 acceptance does not repeat the full81 or N1 multigeneration fixed point; full clean/old-seed migration/final comprehensive regressions remain N5.",
+    "N3 must still implement shared rules and target-owned frame offsets; current semantic Slot.offset backend mutation is not claimed solved by N2.",
+    "AST spans retain one-byte node anchors; this node establishes file/byte provenance and scanner separation, not complete source-range diagnostics."
+  ],
+  "temporary_accepted_product_snapshot": "/tmp/b31-n2-frozen-1ys0w51u",
+  "new_blockers": []
+}

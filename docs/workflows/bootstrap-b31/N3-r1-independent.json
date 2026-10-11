@@ -1,0 +1,2421 @@
+{
+  "candidate_sha256": "ed77d0dec957acc843c1554df339f729a7e2fec5736c4d4c6e4c12c6fbdf2a8d",
+  "directory": "/tmp/b31-n3-independent-5i5h1_po",
+  "rules_model_references": [
+    "BIN_ADD",
+    "BIN_AND",
+    "BIN_BIT_AND",
+    "BIN_BIT_OR",
+    "BIN_BIT_XOR",
+    "BIN_DIV",
+    "BIN_EQ",
+    "BIN_GE",
+    "BIN_GT",
+    "BIN_LE",
+    "BIN_LT",
+    "BIN_MUL",
+    "BIN_NE",
+    "BIN_OR",
+    "BIN_REM",
+    "BIN_SHL",
+    "BIN_SHR",
+    "BIN_SUB",
+    "BIN_WRAP_ADD",
+    "BIN_WRAP_MUL",
+    "BIN_WRAP_SUB",
+    "TYPE_BOOL",
+    "TYPE_POINTER",
+    "TYPE_U32",
+    "TYPE_U8",
+    "TYPE_UNIT",
+    "TYPE_USIZE",
+    "UNARY_BIT_NOT",
+    "UNARY_NEG",
+    "UNARY_NOT"
+  ],
+  "cases": [
+    {
+      "type": "u8",
+      "expression": "255_u8+%1_u8",
+      "expected": 0,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=111 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "0_u8-%1_u8",
+      "expected": 255,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=111 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "255_u8*%255_u8",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=115 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8<<7_u8",
+      "expected": 128,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=111 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "255_u8>>7_u8",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=111 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "255_u8/ 2_u8",
+      "expected": 127,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=115 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "255_u8%2_u8",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=109 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "~0_u8",
+      "expected": 255,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=101 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "-0_u8",
+      "expected": 0,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=97 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "255_u8+ 1_u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=23\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "255_u8+ 1_u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=20\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "0_u8- 1_u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=21\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "0_u8- 1_u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=18\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "255_u8* 2_u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=23\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "255_u8* 2_u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=20\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8<<8_u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=21\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8<<8_u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=18\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8>>8_u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=21\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8>>8_u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=18\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8/ 0_u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=21\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8/ 0_u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=18\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8%0_u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=20\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "1_u8%0_u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=17\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "-1_u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=16\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "-1_u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=13\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32+%1_u32",
+      "expected": 0,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=133 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "0_u32-%1_u32",
+      "expected": 4294967295,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=133 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=488 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32*%4294967295_u32",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=151 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32<<31_u32",
+      "expected": 2147483648,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=135 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=476 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32>>31_u32",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=135 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32/ 2_u32",
+      "expected": 2147483647,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=151 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=488 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32%2_u32",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=131 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "~0_u32",
+      "expected": 4294967295,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=121 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=488 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "-0_u32",
+      "expected": 0,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=103 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32+ 1_u32",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=33\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32+ 1_u32",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=29\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "0_u32- 1_u32",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=24\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "0_u32- 1_u32",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=20\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32* 2_u32",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=33\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "4294967295_u32* 2_u32",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=29\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32<<32_u32",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=25\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32<<32_u32",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=20\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32>>32_u32",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=25\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32>>32_u32",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=20\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32/ 0_u32",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=24\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32/ 0_u32",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=20\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32%0_u32",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=23\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "1_u32%0_u32",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=19\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "-1_u32",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=18\n"
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "-1_u32",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=14\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize+%1_usize",
+      "expected": 0,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=169 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "0_usize-%1_usize",
+      "expected": 18446744073709551615,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=169 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize*%18446744073709551615_usize",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=207 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize<<63_usize",
+      "expected": 9223372036854775808,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=169 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=512 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize>>63_usize",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=171 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize/ 2_usize",
+      "expected": 9223372036854775807,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=205 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=524 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize%2_usize",
+      "expected": 1,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=167 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "~0_usize",
+      "expected": 18446744073709551615,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=153 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "-0_usize",
+      "expected": 0,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=115 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize+ 1_usize",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=49\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize+ 1_usize",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=43\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "0_usize- 1_usize",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=30\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "0_usize- 1_usize",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=24\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize* 2_usize",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=49\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "18446744073709551615_usize* 2_usize",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=43\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize<<64_usize",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=31\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize<<64_usize",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=24\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize>>64_usize",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=31\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize>>64_usize",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=24\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize/ 0_usize",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=30\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize/ 0_usize",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=24\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize%0_usize",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=29\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "1_usize%0_usize",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=23\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "-1_usize",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=22\n"
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "-1_usize",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=16\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "4294967295_u32 as u8",
+      "expected": 255,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=131 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u32",
+      "expression": "18446744073709551615_usize as u32",
+      "expected": 4294967295,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=175 assembly=0 names=5 name_bytes=8 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=80 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=488 data=4 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "usize",
+      "expression": "255_u8 as usize",
+      "expected": 255,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=133 assembly=0 names=6 name_bytes=13 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=96 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=8 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "bool",
+      "expression": "!false",
+      "expected": true,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=103 assembly=0 names=6 name_bytes=12 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "bool",
+      "expression": "true&&false",
+      "expected": false,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=115 assembly=0 names=6 name_bytes=12 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "bool",
+      "expression": "false||true",
+      "expected": true,
+      "walker": "both",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=113 assembly=0 names=6 name_bytes=12 decls=3 types=6 fields=0 params=0 max_ast=14 max_ir=26 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=11 max_args=0 max_params=0 text=452 data=1 objects=1 symbols=16 fixups=16 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "out.elf"
+        ],
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "true as u8",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=21\n"
+      }
+    },
+    {
+      "type": "u8",
+      "expression": "true as u8",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=12\n"
+      }
+    },
+    {
+      "type": "bool",
+      "expression": "1_u8 as bool",
+      "expected": null,
+      "walker": "const",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=25\n"
+      }
+    },
+    {
+      "type": "bool",
+      "expression": "1_u8 as bool",
+      "expected": null,
+      "walker": "static",
+      "compile": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=14\n"
+      }
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/home/mii/code/konOSuba/biomiya/core-s/target/debug/core-s",
+        "project",
+        "compiler.build"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "compiler_sha256": "b957b6b325e2f56de213350b72ef0be74efeab209dc5a3c969d7b504b64c8b14",
+  "static_rejections": [
+    {
+      "source": "static S:[2]u32=[1_u32,true];",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=23\n"
+      }
+    },
+    {
+      "source": "struct P{a:u32,b:u32}static S:P=P{a:1,b:true};",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=40\n"
+      }
+    },
+    {
+      "source": "struct P{a:u32,b:[2]u32}static S:P=P{a:1,b:[0_u32,true]};",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=50\n"
+      }
+    },
+    {
+      "source": "static S:[0]u32=[true;0];",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=17\n"
+      }
+    },
+    {
+      "source": "static S:[0]u32=[1_u32/0_u32;0];",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=23\n"
+      }
+    },
+    {
+      "source": "static S:[2][0]u32=[[0_u32;0],[true;0]];",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=31\n"
+      }
+    },
+    {
+      "source": "static S:Result<u32,u32>=Result::<u32,u32>::Err(true);",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=48\n"
+      }
+    },
+    {
+      "source": "static S:[2]Result<u32,u32>=[Result::<u32,u32>::Ok(1),Result::<u32,u32>::Err(true)];",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_TYPE file=1 byte=77\n"
+      }
+    },
+    {
+      "source": "struct P{a:u32,b:u32}static S:P=P{a:1,b:0,a:2};",
+      "result": {
+        "argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n3-independent-5i5h1_po/build/compiler.elf",
+          "build",
+          "main.build"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "E_NAME file=1 byte=32\n"
+      }
+    }
+  ],
+  "pure_probe": {
+    "source": "module pure;import bootstrap::model;import bootstrap::rules;fn test()->u32{let r0:rules::ScalarRule=rules::literal(256,model::TYPE_U8);if r0.ok!=false || r0.bits!=0_usize{return 1;}let r1:rules::ScalarRule=rules::binary(model::BIN_EQ,0,0,model::TYPE_UNIT);if r1.ok!=true || r1.bits!=1_usize{return 2;}let r2:rules::ScalarRule=rules::binary(model::BIN_EQ,1,0,model::TYPE_UNIT);if r2.ok!=false || r2.bits!=0_usize{return 3;}let r3:rules::ScalarRule=rules::binary(model::BIN_OR,2,0,model::TYPE_BOOL);if r3.ok!=false || r3.bits!=0_usize{return 4;}let r4:rules::ScalarRule=rules::binary(22,0,0,model::TYPE_U8);if r4.ok!=false || r4.bits!=0_usize{return 5;}let r5:rules::ScalarRule=rules::binary(model::BIN_ADD,1,1,0);if r5.ok!=false || r5.bits!=0_usize{return 6;}let r6:rules::ScalarRule=rules::binary(model::BIN_WRAP_MUL,4294967295,4294967295,model::TYPE_U32);if r6.ok!=true || r6.bits!=1_usize{return 7;}let r7:rules::ScalarRule=rules::cast(18446744073709551615,model::TYPE_USIZE,model::TYPE_U8);if r7.ok!=true || r7.bits!=255_usize{return 8;}let r8:rules::ScalarRule=rules::unary(model::UNARY_NOT,2,model::TYPE_BOOL);if r8.ok!=false || r8.bits!=0_usize{return 9;}if rules::add_size(18446744073709551615,1).ok||rules::align_up(1,3).ok||rules::align_up(18446744073709551615,8).ok{return 20;}if rules::align_up(67108865,4096).size!=67112960_usize||rules::align_up(18446744073709551615,1).size!=18446744073709551615_usize{return 21;}return 0;}pub fn run()->u32{let before:u32=test();if before!=0_u32{return before;}unsafe{model::type_count=0;model::types[3].kind=model::TYPE_STRUCT;model::types[3].size=123;model::slots[1].ty=999;model::decl_count=777;}return test();}",
+    "build": {
+      "argv": [
+        "/home/mii/code/konOSuba/biomiya/core-s/target/debug/core-s",
+        "project",
+        "pure.build"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "execute": {
+      "argv": [
+        "/usr/bin/qemu-riscv64",
+        "-s",
+        "1048576",
+        "build/pure.elf"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "machine_mutants": {
+    "scope": "author machine probes only; independent N3 acceptance remains pending",
+    "input_hashes": {
+      "bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+      "bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+      "bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+      "bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+      "bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+      "bootstrap/tests/machine.vt": "820459ac38941613d9ba9c24e77a6c9b9d849ddb33b7dc11f1872f3e71789890",
+      "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+      "runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+    },
+    "baseline_hashes": {
+      "bootstrap/model.vt": "3df2ae22ee55d1e3d229b79b491b68650ce4481c8398ed3b1280e2630b1e4d0b",
+      "bootstrap/image.vt": "c97a9422f740745f491787511d3aab16706fe04e812f6f02d78ac361cbd58fa6",
+      "bootstrap/rv64.vt": "ed90050458b09474589eed80a241d328d0b05329929d5f1c966c5a1850218658",
+      "bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+      "bootstrap/tests/machine.vt": "18f37dece32a7511ac6edea7ce1bf7b05a790e885f3195e599d0c1d1fa7c6172",
+      "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+      "runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+    },
+    "stack_bytes": 1048576,
+    "same_ELF_as_N2_machine": [
+      "ir",
+      "wrap",
+      "constants"
+    ],
+    "measured_slot_bytes": {
+      "N2": 32,
+      "N3": 20
+    },
+    "production_table_payload_delta": -131072,
+    "results": {
+      "current": {
+        "ir": {
+          "exit": 0,
+          "stderr": "",
+          "new_output": true,
+          "elf_sha256": "8e04f71ac5ea81edd3dd86b7024c2fa0303a205858c95bceaa07400284164758"
+        },
+        "wrap": {
+          "exit": 0,
+          "stderr": "",
+          "new_output": true,
+          "elf_sha256": "626079ca32145401ce3dd9b3063ab8c8b5372eacefe67979b568ea6a15737b69"
+        },
+        "constants": {
+          "exit": 0,
+          "stderr": "",
+          "new_output": true,
+          "elf_sha256": "8b9cd106df5f2c96758b779f35424076229afb1c4dc8b1b8613aff5913f883d8"
+        },
+        "slot_size": {
+          "exit": 20,
+          "stderr": "",
+          "new_output": false
+        },
+        "labels_reuse": {
+          "exit": 0,
+          "stderr": "",
+          "new_output": true,
+          "elf_sha256": "8882a835231b4671c50332cebc6854088ed6c436f5e1530887fc579a62337219"
+        },
+        "labels_yes_missing": {
+          "exit": 1,
+          "stderr": "I_INTERNAL file=2 byte=17\n",
+          "new_output": false
+        },
+        "labels_no_missing": {
+          "exit": 1,
+          "stderr": "I_INTERNAL file=2 byte=17\n",
+          "new_output": false
+        }
+      },
+      "slot_mutation": {
+        "ir": {
+          "exit": 1,
+          "stderr": "I_INTERNAL file=2 byte=9001\n",
+          "new_output": false
+        }
+      },
+      "inst_mutation": {
+        "ir": {
+          "exit": 1,
+          "stderr": "I_INTERNAL file=2 byte=9001\n",
+          "new_output": false
+        }
+      },
+      "arg_mutation": {
+        "ir": {
+          "exit": 1,
+          "stderr": "I_INTERNAL file=2 byte=9001\n",
+          "new_output": false
+        }
+      },
+      "parameter_mutation": {
+        "ir": {
+          "exit": 1,
+          "stderr": "I_INTERNAL file=2 byte=9001\n",
+          "new_output": false
+        }
+      },
+      "count_mutation": {
+        "ir": {
+          "exit": 1,
+          "stderr": "I_INTERNAL file=2 byte=9001\n",
+          "new_output": false
+        }
+      },
+      "missing_high_reference": {
+        "labels_yes_missing": {
+          "exit": 1,
+          "stderr": "E_LINK file=0 byte=0\n",
+          "new_output": false
+        },
+        "labels_no_missing": {
+          "exit": 1,
+          "stderr": "E_LINK file=0 byte=0\n",
+          "new_output": false
+        }
+      },
+      "stale_definition": {
+        "labels_reuse": {
+          "exit": 1,
+          "stderr": "I_INTERNAL file=2 byte=17\n",
+          "new_output": false
+        }
+      },
+      "N2_machine_baseline": {
+        "ir": {
+          "exit": 0,
+          "stderr": "",
+          "new_output": true,
+          "elf_sha256": "8e04f71ac5ea81edd3dd86b7024c2fa0303a205858c95bceaa07400284164758"
+        },
+        "wrap": {
+          "exit": 0,
+          "stderr": "",
+          "new_output": true,
+          "elf_sha256": "626079ca32145401ce3dd9b3063ab8c8b5372eacefe67979b568ea6a15737b69"
+        },
+        "constants": {
+          "exit": 0,
+          "stderr": "",
+          "new_output": true,
+          "elf_sha256": "8b9cd106df5f2c96758b779f35424076229afb1c4dc8b1b8613aff5913f883d8"
+        },
+        "slot_size": {
+          "exit": 32,
+          "stderr": "",
+          "new_output": false
+        }
+      }
+    },
+    "mutants_discriminated": true
+  },
+  "machine_execution": {
+    "build": {
+      "args": [
+        "/home/mii/code/konOSuba/biomiya/core-s/target/debug/core-s",
+        "project",
+        "driver.build"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    "runs": {
+      "labels_reuse": {
+        "generate": {
+          "args": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/tmp/b31-n3-machine-runtime-jq68koje/driver.elf",
+            "labels_reuse"
+          ],
+          "exit": 0,
+          "stderr": ""
+        },
+        "execute": {
+          "args": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "out.elf"
+          ],
+          "exit": 42,
+          "stderr": ""
+        },
+        "expected": 42
+      },
+      "ir": {
+        "generate": {
+          "args": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/tmp/b31-n3-machine-runtime-jq68koje/driver.elf",
+            "ir"
+          ],
+          "exit": 0,
+          "stderr": ""
+        },
+        "execute": {
+          "args": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "out.elf"
+          ],
+          "exit": 97,
+          "stderr": ""
+        },
+        "expected": 97
+      }
+    }
+  },
+  "scripts": {
+    "scalar_static_purity": "import pathlib,subprocess,json,hashlib,re,tempfile,shutil\nR=pathlib.Path('/home/mii/code/konOSuba/biomiya');C=R/'core-s';D=R/'docs/workflows/bootstrap-b31';sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();c=json.loads((D/'N3-r1-candidate.json').read_text());assert sha(D/'N3-r1-candidate.json')=='ed77d0dec957acc843c1554df339f729a7e2fec5736c4d4c6e4c12c6fbdf2a8d'\nfor p,h in dict(c['files'],**c['input_hashes']).items():assert sha(R/p)==h,p\nbase=json.loads((D/'baseline.json').read_text())['files']\nfor phase in ['N1','N2']:base.update({p:h for p,h in json.loads((D/f'{phase}-r1-candidate.json').read_text())['files'].items() if p.startswith('core-s/')})\nfor p,h in base.items():\n if p not in c['files']:assert sha(R/p)==h,p\nfor evidence in ['N3-integration-evidence.json','N3-machine-final-probe-evidence.json']:\n e=json.loads((D/evidence).read_text())\n for p,h in e['input_hashes'].items():assert sha(C/p)==h,(evidence,p)\nrules=(C/'bootstrap/rules.vt').read_text();refs=set(re.findall(r'model::([A-Za-z_0-9]+)',rules));constant_names=set(re.findall(r'pub const (\\w+):',(C/'bootstrap/model.vt').read_text()));assert refs<=constant_names;assert not re.search(r'\\b(unsafe|static)\\b',re.sub(r'//[^\\n]*','',rules));assert re.findall(r'^import (.*);',rules,re.M)==['bootstrap::model']\ntmp=pathlib.Path(tempfile.mkdtemp(prefix='b31-n3-independent-'));(tmp/'build').mkdir();manifest=(C/'bootstrap/c1.build').read_text();paths=[x.split()[1] for x in manifest.splitlines() if x.startswith(('source ','assembly '))]\nfor f in paths:\n q=tmp/f;q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes((C/f).read_bytes())\n(tmp/'compiler.build').write_text(manifest.replace('output build/c1.elf','output build/compiler.elf'))\nresult={'candidate_sha256':sha(D/'N3-r1-candidate.json'),'directory':str(tmp),'rules_model_references':sorted(refs),'cases':[],'commands':[]}\ndef run(args,cwd=tmp):\n p=subprocess.run(args,cwd=cwd,env={'PATH':''},capture_output=True,text=True,timeout=90);return {'argv':args,'exit':p.returncode,'stdout':p.stdout,'stderr':p.stderr}\np=run([str(C/'target/debug/core-s'),'project','compiler.build']);assert p['exit']==0,p;result['commands'].append(p);compiler=tmp/'build/compiler.elf';compiler.chmod(0o755);result['compiler_sha256']=sha(compiler)\nassert result['compiler_sha256']==json.loads((D/'N3-integration-evidence.json').read_text())['binaries']['c1']\ncases=[]\nfor ty,w in [('u8',8),('u32',32),('usize',64)]:\n maxn=(1<<w)-1;v=lambda n:f'{n}_{ty}'\n rows=[(v(maxn)+'+%'+v(1),0),(v(0)+'-%'+v(1),maxn),(v(maxn)+'*%'+v(maxn),(maxn*maxn)&maxn),(v(1)+'<<'+v(w-1),1<<(w-1)),(v(maxn)+'>>'+v(w-1),1),(v(maxn)+'/ '+v(2),maxn//2),(v(maxn)+'%'+v(2),maxn%2),('~'+v(0),maxn),('-'+v(0),0),(v(maxn)+'+ '+v(1),None),(v(0)+'- '+v(1),None),(v(maxn)+'* '+v(2),None),(v(1)+'<<'+v(w),None),(v(1)+'>>'+v(w),None),(v(1)+'/ '+v(0),None),(v(1)+'%'+v(0),None),('-'+v(1),None)]\n cases += [(ty,e,want) for e,want in rows]\ncases += [('u8','4294967295_u32 as u8',255),('u32','18446744073709551615_usize as u32',4294967295),('usize','255_u8 as usize',255),('bool','!false',True),('bool','true&&false',False),('bool','false||true',True),('u8','true as u8',None),('bool','1_u8 as bool',None)]\nfor num,(ty,expr,want) in enumerate(cases):\n for walker in ['both'] if want is not None else ['const','static']:\n  if want is not None:\n   expected=('true' if want else 'false') if ty=='bool' else f'{want}_{ty}'\n   source=f'const C:{ty}={expr}; static S:{ty}={expr}; pub fn run()->u32{{if C=={expected} && S=={expected}{{return 0;}}return 9;}}'\n  else:source=f'{walker} X:{ty}={expr};pub fn run()->u32{{return 0;}}'\n  case=tmp/f'case-{num}-{walker}';case.mkdir();(case/'main.vt').write_text(source);(case/'main.build').write_text('format 1\\nprofile linux-user\\nentry run\\nsource main.vt\\noutput out.elf\\n')\n  p=run(['/usr/bin/qemu-riscv64','-s','1048576',str(compiler),'build','main.build'],case);row={'type':ty,'expression':expr,'expected':want,'walker':walker,'compile':p}\n  if want is None:assert p['exit']==1 and 'E_TYPE' in p['stderr'] and not(case/'out.elf').exists(),row\n  else:\n   assert p['exit']==0,row;(case/'out.elf').chmod(0o755);row['execute']=run(['/usr/bin/qemu-riscv64','-s','1048576','out.elf'],case);assert row['execute']['exit']==0,row\n  result['cases'].append(row)\n# Full static validation must not skip tails, empty repetitions, or nested payloads.\ninvalid=[\n'static S:[2]u32=[1_u32,true];',\n'struct P{a:u32,b:u32}static S:P=P{a:1,b:true};',\n'struct P{a:u32,b:[2]u32}static S:P=P{a:1,b:[0_u32,true]};',\n'static S:[0]u32=[true;0];',\n'static S:[0]u32=[1_u32/0_u32;0];',\n'static S:[2][0]u32=[[0_u32;0],[true;0]];',\n'static S:Result<u32,u32>=Result::<u32,u32>::Err(true);',\n'static S:[2]Result<u32,u32>=[Result::<u32,u32>::Ok(1),Result::<u32,u32>::Err(true)];',\n'struct P{a:u32,b:u32}static S:P=P{a:1,b:0,a:2};']\nresult['static_rejections']=[]\nfor i,s in enumerate(invalid):\n case=tmp/f'aggregate-{i}';case.mkdir();(case/'main.vt').write_text(s+'pub fn run()->u32{return 0;}');(case/'main.build').write_text('format 1\\nprofile linux-user\\nentry run\\nsource main.vt\\noutput out.elf\\n');p=run(['/usr/bin/qemu-riscv64','-s','1048576',str(compiler),'build','main.build'],case);assert p['exit']==1 and not(case/'out.elf').exists(),(s,p);assert 'E_TYPE' in p['stderr'] or 'E_NAME' in p['stderr'],(s,p);result['static_rejections'].append({'source':s,'result':p})\n# Pure rules run before initialization and again after deliberate global-table pollution.\nchecks=[('rules::literal(256,model::TYPE_U8)',False,0),('rules::binary(model::BIN_EQ,0,0,model::TYPE_UNIT)',True,1),('rules::binary(model::BIN_EQ,1,0,model::TYPE_UNIT)',False,0),('rules::binary(model::BIN_OR,2,0,model::TYPE_BOOL)',False,0),('rules::binary(22,0,0,model::TYPE_U8)',False,0),('rules::binary(model::BIN_ADD,1,1,0)',False,0),('rules::binary(model::BIN_WRAP_MUL,4294967295,4294967295,model::TYPE_U32)',True,1),('rules::cast(18446744073709551615,model::TYPE_USIZE,model::TYPE_U8)',True,255),('rules::unary(model::UNARY_NOT,2,model::TYPE_BOOL)',False,0)]\nbody=''.join(f'let r{i}:rules::ScalarRule={expr};if r{i}.ok!={str(ok).lower()} || r{i}.bits!={bits}_usize{{return {i+1};}}' for i,(expr,ok,bits) in enumerate(checks))\nbody+='if rules::add_size(18446744073709551615,1).ok||rules::align_up(1,3).ok||rules::align_up(18446744073709551615,8).ok{return 20;}if rules::align_up(67108865,4096).size!=67112960_usize||rules::align_up(18446744073709551615,1).size!=18446744073709551615_usize{return 21;}return 0;'\nsource='module pure;import bootstrap::model;import bootstrap::rules;fn test()->u32{'+body+'}pub fn run()->u32{let before:u32=test();if before!=0_u32{return before;}unsafe{model::type_count=0;model::types[3].kind=model::TYPE_STRUCT;model::types[3].size=123;model::slots[1].ty=999;model::decl_count=777;}return test();}'\n(tmp/'pure.vt').write_text(source);(tmp/'pure.build').write_text('format 1\\nprofile linux-user\\nentry pure::run\\nsource bootstrap/model.vt\\nsource bootstrap/rules.vt\\nsource pure.vt\\nassembly runtime/linux.s0\\noutput build/pure.elf\\n');p=run([str(C/'target/debug/core-s'),'project','pure.build']);assert p['exit']==0,p;(tmp/'build/pure.elf').chmod(0o755);q=run(['/usr/bin/qemu-riscv64','-s','1048576','build/pure.elf']);assert q['exit']==0,q;result['pure_probe']={'source':source,'build':p,'execute':q}\npathlib.Path('/tmp/b31-n3-independent-result.json').write_text(json.dumps(result,indent=2));print(json.dumps({'compiler_hash':result['compiler_sha256'],'scalar_walker_cases':len(result['cases']),'static_rejections':len(invalid),'pure_probe_exit':q['exit'],'directory':str(tmp)},indent=2))\n",
+    "machine_execution": "import pathlib,json,subprocess,tempfile\nR=pathlib.Path('/home/mii/code/konOSuba/biomiya');C=R/'core-s';t=pathlib.Path(tempfile.mkdtemp(prefix='b31-n3-machine-runtime-'));files=['bootstrap/model.vt','bootstrap/rules.vt','bootstrap/image.vt','bootstrap/rv64.vt','bootstrap/s0.vt','bootstrap/tests/machine.vt','runtime/linux.vt']\nfor p in files+['runtime/linux.s0']:\n q=t/p;q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes((C/p).read_bytes())\n(t/'driver.build').write_text('format 1\\nprofile linux-user\\nentry machine_test::run\\n'+''.join('source '+p+'\\n' for p in files)+'assembly runtime/linux.s0\\noutput driver.elf\\n')\ndef run(args,cwd):\n p=subprocess.run(args,cwd=cwd,env={'PATH':''},capture_output=True,text=True,timeout=60);return {'args':args,'exit':p.returncode,'stderr':p.stderr}\nb=run([str(C/'target/debug/core-s'),'project','driver.build'],t);assert b['exit']==0,b;(t/'driver.elf').chmod(0o755);results={'build':b,'runs':{}}\nfor mode,expected in [('labels_reuse',42),('ir',97)]:\n d=t/mode;d.mkdir();g=run(['/usr/bin/qemu-riscv64','-s','1048576',str(t/'driver.elf'),mode],d);assert g['exit']==0,g;(d/'out.elf').chmod(0o755);p=run(['/usr/bin/qemu-riscv64','-s','1048576','out.elf'],d);assert p['exit']==expected,p;results['runs'][mode]={'generate':g,'execute':p,'expected':expected}\npathlib.Path('/tmp/b31-n3-machine-runtime.json').write_text(json.dumps(results,indent=2));print('Executed sparse labels reuse→42 and aggregate ABI→97, with active semantic table snapshots')\n"
+  },
+  "machine_mutant_reproduction": "python3 docs/workflows/bootstrap-b31/N3-machine-probes.py > /tmp/b31-n3-machine-probes.json; parsed JSON exactly equals frozen N3-machine-final-probe-evidence.json"
+}

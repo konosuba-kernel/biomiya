@@ -1,8 +1,8 @@
 # Core S：源码到直接 RV64 ELF 的原型
 
-本目录完成 B0/B1/B2/B3：Rust 种子编译器（C0）生成目标语言编译器 C1；C1、C2 继续编译同一份 VT 源码，得到全文件字节一致的 C2/C3。目标编译器自行读取源码、检查类型并生成 RV64 Linux ELF。
+本目录完成 B0/B1/B2/B3，并继续完成 B3.1 整理与可选分析：Rust 种子编译器（C0）生成目标语言编译器 C1；C1、C2 继续编译同一份 VT 源码，得到全文件字节一致的 C2/C3。目标编译器自行读取源码、检查类型并生成 RV64 Linux ELF。
 
-这是 Linux-user 下的实际自编译，尚不覆盖完整 R1a 或 SOS 内自举。下面保留种子与 B2 输入试点说明；B3 构建步骤和边界见本文后半部分。
+这是 Linux-user 下的实际自编译，尚不覆盖完整 R1a 或 SOS 内自举。下面保留种子与 B2 输入试点说明；B3 构建步骤和边界见本文后半部分；当前 B3.1 的架构、验证和规模见末节。
 
 ## Rust seed 与 B2 输入试点的构建和运行
 
@@ -45,7 +45,7 @@ cargo test --all-features
 python3 ../docs/workflows/bootstrap-b2/clean_build.py
 ```
 
-B2 交付时 **61 项测试通过**（当前完整 81 项见 B3 节）：清单单元 4、B2 CLI 4、B2 语言 7、目标运行库 6、后端 14、检查器 6、旧 CLI 4、映像 8、源码管线 6、`.s0` 2。测试需要 Clang、LLD、用户态及系统态 RISC-V QEMU；缺失或超时不会算通过。旧 CLI 测试继续对 19 个入口各执行直接编码和外部工具链两条路径。
+B2 交付时 **61 项测试通过**（B3 历史基线为 81 项，当前 B3.1 为 91 项）：清单单元 4、B2 CLI 4、B2 语言 7、目标运行库 6、后端 14、检查器 6、旧 CLI 4、映像 8、源码管线 6、`.s0` 2。测试需要 Clang、LLD、用户态及系统态 RISC-V QEMU；缺失或超时不会算通过。旧 CLI 测试继续对 19 个入口各执行直接编码和外部工具链两条路径。
 
 新增覆盖实际清单／多源／空源、跨 4096 字节读边界、每次最多 7 字节的短读写及 EINTR、读写和关闭失败清理、扫描字节位置、静态数据权限、切片权限／边界、模块私有泄露、未调用 extern 缺符号、路径／inode 保护。运行库独立验收另测部分输出回收、悬空符号链接输出及最终关闭错误。
 
@@ -100,16 +100,16 @@ B3 的语言诊断保留 FileId 和字节位置。与旧 C0 有两处已发现�
 
 ```sh
 cargo test --offline --locked --all-features
-python3 ../docs/workflows/bootstrap-b3/clean_build.py
+python3 ../docs/workflows/bootstrap-b31/clean_build.py
 ```
 
-干净构建脚本默认将证据保存在新建的 `/tmp/core-s-b3-evidence-*` 目录，打印其位置；也可用 `--record-dir NEW_DIRECTORY` 指定新的目录。它不覆盖历史验收记录。
+干净构建脚本默认将证据保存在新建的 `/tmp/core-s-b31-evidence-*` 目录，打印其位置；也可用 `--record-dir NEW_DIRECTORY` 指定新的目录。它不覆盖历史验收记录。
 
 B3 集成测试从独立临时树只复制声明输入，逐代运行 C1/C2/C3；运行环境 PATH 为空，通过 syscall trace 检查读取路径和禁止自读/外部代编译。还要实际编译新的行为程序、修改源运算和静态字节，以及由 C1 编译修改过诊断文本的编译器，验证新编译器行为确实改变。
 
 最终实测、源文件哈希、分项规模、独立验收和历次返工见 `docs/workflows/bootstrap-b3/`。VT 部分文件一行包含多个语句，行数受排版影响，须同时阅读 source bytes、完整模块范围及行为边界，不能直接把与 Rust 的行数比当作复杂度缩减比例。目标编译器、保留的 Rust seed、运行库、汇编适配、生成 Unicode、测试与验收工具分开记账。
 
-### B3 本次实测（H3 / L2 / F3 / M3）
+### B3 历史基线实测（H3 / L2 / F3 / M3）
 
 完整回归共 81 项。C2/C3 均为 1,062,968 字节，完整文件 SHA-256 均为 `8444edaad7dd0911dc9c0363965067c13e3b02209fbe6f8f70e0f1457296b33a`。
 
@@ -125,3 +125,51 @@ B3 集成测试从独立临时树只复制声明输入，逐代运行 C1/C2/C3�
 | QEMU guest 栈配置 | 1,048,576 字节 | 固定点与扰动测试在此配置下运行 |
 
 这里的 RW 段内存和映像跨度是 ELF 静态布局，不能等同于进程峰值 RSS；单函数 frame 也不是整个调用链的栈峰值。保留的 Rust seed 另有 7,681 物理行，生成 Unicode 表、测试与验收工具不混入目标编译器数字。分项文件及哈希见 [metrics.json](../docs/workflows/bootstrap-b3/metrics.json)，干净构建见 [I-r2-clean/I-clean-build.json](../docs/workflows/bootstrap-b3/I-r2-clean/I-clean-build.json)，独立验收状态见 [workflow.json](../docs/workflows/bootstrap-b3/workflow.json)。
+
+## B3.1：状态边界、纯规则与 Blocking 试点
+
+当前生产编译器采用“显式构造、完成后只读”的边界：
+
+| 阶段 | 所有者与可变内容 | 交出的结果 |
+| --- | --- | --- |
+| 输入 | input / lex | 只读源码快照与 Token |
+| 声明和布局 | types；rules 只接收参数做计算 | 已完成的类型/声明条目；后续可以追加新类型 |
+| 当前函数 | parse / check / ir；check 唯一初始化函数状态 | 带类型的 Slot/Inst/Arg 与源位置 |
+| 可选分析 | blocking 的私有效果、调用摘要和队列 | 稳定 DeclId 上的分析结果 |
+| RV64 | rv64 的私有帧偏移、标签和回填工作表 | 机器码；不改语义 Slot/Inst/Arg |
+| 输出 | image / s0 / main | 全部 Core 检查与可选严格门禁通过后发布 ELF |
+
+读源码时可先看 `model.vt` 中记录字段合同和命名判别值，再看 `rules.vt` 的整数/布局规则、`main.vt` 的阶段顺序，最后沿 `parse → check/ir → rv64/image` 阅读。`types` 的扫描游标和诊断 Span 已分离；AST 自己保留所属文件，不依赖检查器改写 token。具体固定表与逐函数复用继续让内存和所有权容易检查。
+
+规则模块返回小结果，错误位置、名字解析、容量政策由调用层处理。静态初始化的 `validate_static_zero` 必须完整验证所有子项，包括 `[expr;0]` 中的 expr；其返回值只决定能否选择零填充路径。两个常量语法遍历器保留各自结构，共用这些计算规则。
+
+目标命令新增可选 `--blocking POLICY`，用于严格检查指定函数的直接调用闭包。结果区分 `Verified`、`Violation`、`Unknown`；缺失外部合同不能通过。外部假设、配置格式、递归处理和证明边界见 [blocking.md](bootstrap/blocking.md)。只有具体的 Blocking 分析已实现，其他扩展分析仍未实现。
+
+```sh
+cargo test --offline --locked --all-features
+python3 ../docs/workflows/bootstrap-b31/clean_build.py
+```
+
+旧 B3→新 D1→D2→D3 的迁移另有 [migration.py](../docs/workflows/bootstrap-b31/migration.py)。它接受 core-s 路径、旧 B3 C2 文件和新的证据目录；验证旧 seed 哈希，在隔离源码目录、空 PATH、1 MiB guest 栈下构建，并检查完整固定点和目标读取路径。保留的旧 seed 位于 `build/b31-seed.elf`；也可从 Git `1c0f143` 的源码重建旧 C2。
+
+```sh
+python3 ../docs/workflows/bootstrap-b31/migration.py . build/b31-seed.elf /tmp/b31-migration-evidence-new
+```
+
+B3.1 实测和逐文件规模见 [metrics.json](../docs/workflows/bootstrap-b31/metrics.json)，节点输入、候选和独立验收见 [workflow.json](../docs/workflows/bootstrap-b31/workflow.json)。N1 将密集语句展开并逐 token 验证，再验证命名与辅助函数的逆展开等价；因此物理行数增加不能直接解释为同等规模的语义增加。全部生产 VT（包括 rules 和 blocking）、运行库、平台适配、保留的 Rust seed、旧输入试点、测试与验证脚本分别记账。
+
+### B3.1 规模与资源
+
+| 项目 | 实测 | 说明 |
+| --- | ---: | --- |
+| 目标编译器 | 269,906 字节 / 8,249 物理行 / 7,843 code 行 | 13 个 VT 模块，包含全部编译阶段与分析 |
+| 其中 Blocking | 12,182 字节 / 354 物理行 | 上一行的子集，不重复相加 |
+| 目标运行库 | 6,778 字节 / 189 物理行 | 2 个 VT 模块 |
+| Linux 汇编适配 | 345 字节 / 19 物理行 | 1 个 `.s0` |
+| 保留 Rust seed | 7,681 物理行 | 与目标编译器分列；生成 Unicode 另计 2,096 行 |
+
+B3.1 没有扩大 Core 语言子集。新增的是可选的具体分析；函数式风格落实为小型纯计算规则、清楚的状态所有权，以及构造结束后只读的语义记录。完成类型条目仍可被引用，新类型仍可追加；逐函数 arena 仍会在处理下一函数时重用。
+
+旧 B3→D1→D2→D3 迁移中，三代完整 ELF 都为 1,108,040 字节，SHA-256 为 `0793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc`。D3 开启 `pure.blocking` 后六个根全部 `Verified`，产物与关闭分析的 D2 完全相同。ELF RW 为 53,118,748 字节，映像跨度为 54,023,964 字节，均小于 64 MiB；自编译最大单函数 frame 为 26,384 字节，运行使用 1 MiB guest 栈。以上仍是 ELF 布局与单帧数据，不代表峰值 RSS 或整个调用链栈峰值。完整 syscall trace 与源文件哈希见 [N5-migration.json](../docs/workflows/bootstrap-b31/N5-migration/N5-migration.json)。
+
+从仅源码的临时树重新构建 Rust seed 后，完整 **91 项通过、0 失败、0 忽略**，原 B3 的 81 项全部保留，新增 10 项。独立执行仓库清单得到 C2/C3 全文件一致，且与上述旧 seed 迁移所得 D2/D3 哈希相同；详见 [N5-clean-build.json](../docs/workflows/bootstrap-b31/N5-clean/N5-clean-build.json)。

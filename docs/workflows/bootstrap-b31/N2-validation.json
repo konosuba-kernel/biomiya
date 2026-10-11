@@ -1,0 +1,19 @@
+{
+  "node": "N2",
+  "revision": 1,
+  "frontend_tests": {
+    "passed": 9,
+    "failed": 0,
+    "ignored": 0,
+    "log": "N2-focused-tests.log"
+  },
+  "c0_build": {
+    "exit": 0,
+    "manifest": "core-s/build/n2-final-c0.build",
+    "binary": "core-s/build/n2-final-c0.elf",
+    "sha256": "287c0fbd5811709c27602ea3cf9728f265abaf162c1d7db21460639dfc270d85"
+  },
+  "mutation_probes": "N2-final-probe-evidence.json",
+  "guest_stack_bytes": 1048576,
+  "scope": "Focused frontend regressions and C0 build; full81/old-seed/full clean deferred to N5"
+}

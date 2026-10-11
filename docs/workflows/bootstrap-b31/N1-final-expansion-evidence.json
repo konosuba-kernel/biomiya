@@ -1,0 +1,60 @@
+{
+  "helper_bodies_verified": true,
+  "files": {
+    "core-s/bootstrap/check.vt": {
+      "final_sha256": "85a20d745bfb4ba6db20e139212ed2b25dba0b41e18f51fa4d7486d5f58c50a4",
+      "expanded_tokens_equal": true,
+      "token_count": 8897
+    },
+    "core-s/bootstrap/image.vt": {
+      "final_sha256": "c97a9422f740745f491787511d3aab16706fe04e812f6f02d78ac361cbd58fa6",
+      "expanded_tokens_equal": true,
+      "token_count": 2928
+    },
+    "core-s/bootstrap/input.vt": {
+      "final_sha256": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+      "expanded_tokens_equal": true,
+      "token_count": 2012
+    },
+    "core-s/bootstrap/ir.vt": {
+      "final_sha256": "10945f878792f4944c9b7b68fd491827b65262dd6ba51d3f8d0f0e3c0a813b22",
+      "expanded_tokens_equal": true,
+      "token_count": 1651
+    },
+    "core-s/bootstrap/lex.vt": {
+      "final_sha256": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+      "expanded_tokens_equal": true,
+      "token_count": 2040
+    },
+    "core-s/bootstrap/main.vt": {
+      "final_sha256": "feeaa003804374a2a9909cb0ccef6dd91132c60e262cc7d85d2b8fe54b31c18c",
+      "expanded_tokens_equal": true,
+      "token_count": 1367
+    },
+    "core-s/bootstrap/model.vt": {
+      "final_sha256": "43ec573af1e67b39d863e85603fc2b7953612ba709a18c4b0daddaa5e70e7a08",
+      "expanded_tokens_equal": true,
+      "token_count": 3727
+    },
+    "core-s/bootstrap/parse.vt": {
+      "final_sha256": "91e122ddfb07fb29c9a73fa2e2361ba834e9a9ce50dda67836e6cd1cc5355a60",
+      "expanded_tokens_equal": true,
+      "token_count": 6729
+    },
+    "core-s/bootstrap/rv64.vt": {
+      "final_sha256": "ed90050458b09474589eed80a241d328d0b05329929d5f1c966c5a1850218658",
+      "expanded_tokens_equal": true,
+      "token_count": 7830
+    },
+    "core-s/bootstrap/s0.vt": {
+      "final_sha256": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+      "expanded_tokens_equal": true,
+      "token_count": 2496
+    },
+    "core-s/bootstrap/types.vt": {
+      "final_sha256": "38079f63ddcf9d736653b966beb40b2cb3e7f8aaa83bb82ccd24aeb865ccf50f",
+      "expanded_tokens_equal": true,
+      "token_count": 7385
+    }
+  }
+}

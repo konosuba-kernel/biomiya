@@ -1,0 +1,156 @@
+{
+  "input_hashes": {
+    "bootstrap/model.vt": "ebeed52fd751ce05927e5fea11ac46c1ee9d409b834c527b8706eb5ec0371d38",
+    "bootstrap/rules.vt": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+    "bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "bootstrap/types.vt": "d44cf08d052d458d7927ebb9acc9b70492858be0142ae89584a1ed2fc3c3c176",
+    "bootstrap/parse.vt": "8cf832c5f459ef80b333d37e285abb8168b6e9420d7c9128eea3b69dcc142361",
+    "bootstrap/ir.vt": "044e884a2dcbebf9e8733277b0c65b3856f2f8346fe09c1d6b2995e338d1ac88",
+    "bootstrap/check.vt": "6b5a7a9ead5f7e168a78f9e8c8804326a9819407a8e010a0ec7925cc395b6b01",
+    "bootstrap/image.vt": "88085e4e426a681f3db9eb8137fea426b98828e16cef558823deb88cd0a8e77f",
+    "bootstrap/rv64.vt": "b438232ad84107db603ad090fc4dc4d8891ebd025017280ac58754be0e2e381a",
+    "bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "bootstrap/main.vt": "e9b0d6bb3221350d62ddc8422201e4bfb5b1353ede5f2ef49cca9d50db035731",
+    "runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "runtime/linux.vt": "5c51d33ec7e61939238dd36a856a8dfa72247dabd4373e7df9d09af2134b6d78",
+    "runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+  },
+  "c0": {
+    "args": [
+      "/home/mii/code/konOSuba/biomiya/core-s/target/debug/core-s",
+      "project",
+      "c1.build"
+    ],
+    "exit": 0,
+    "seconds": 0.838,
+    "stderr": ""
+  },
+  "target_self_compile": {
+    "args": [
+      "/usr/bin/qemu-riscv64",
+      "-s",
+      "1048576",
+      "c1.elf",
+      "build",
+      "c2.build"
+    ],
+    "exit": 0,
+    "seconds": 27.891,
+    "stderr": "B3 sources=14 imports=34 assembly_files=1 source=263962 assembly=345 names=2530 name_bytes=49781 decls=569 types=182 fields=118 params=450 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=853264 data=200324 objects=533 symbols=10532 fixups=20308 relocations=8280 elf=1062968\n"
+  },
+  "binaries": {
+    "c1": "b957b6b325e2f56de213350b72ef0be74efeab209dc5a3c969d7b504b64c8b14",
+    "c2": "ed73e4aab4c725faeacfd8d63bc170c314d132ea4e735bd7af8016b2825a2d60"
+  },
+  "metrics": {
+    "elf_bytes": 1062968,
+    "rw_memory_bytes": 52422368,
+    "image_span": 53282528
+  },
+  "probes": {
+    "cleanup": {
+      "compile": {
+        "args": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "c2.elf",
+          "build",
+          "cleanup.build"
+        ],
+        "exit": 0,
+        "seconds": 0.05,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=130 assembly=0 names=6 name_bytes=9 decls=3 types=7 fields=0 params=0 max_ast=15 max_ir=18 max_frame=80 max_bindings=1 max_defers=1 max_loops=0 max_saved=15 max_slots=8 max_args=0 max_params=0 text=544 data=0 objects=1 symbols=17 fixups=18 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "args": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "cleanup.elf"
+        ],
+        "exit": 18,
+        "seconds": 0.006,
+        "stderr": ""
+      },
+      "expected": 18
+    },
+    "rules": {
+      "compile": {
+        "args": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "c2.elf",
+          "build",
+          "rules.build"
+        ],
+        "exit": 0,
+        "seconds": 0.046,
+        "stderr": "B3 sources=1 imports=0 assembly_files=0 source=92 assembly=0 names=6 name_bytes=10 decls=3 types=6 fields=0 params=0 max_ast=7 max_ir=8 max_frame=64 max_bindings=0 max_defers=0 max_loops=0 max_saved=0 max_slots=6 max_args=0 max_params=0 text=348 data=1 objects=1 symbols=12 fixups=11 relocations=0 elf=12289\n"
+      },
+      "execute": {
+        "args": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "rules.elf"
+        ],
+        "exit": 128,
+        "seconds": 0.007,
+        "stderr": ""
+      },
+      "expected": 128
+    },
+    "invalid_defer": {
+      "compile": {
+        "args": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "c2.elf",
+          "build",
+          "invalid_defer.build"
+        ],
+        "exit": 1,
+        "seconds": 0.025,
+        "stderr": "E_TYPE file=1 byte=24\n"
+      },
+      "no_output": true
+    },
+    "invalid_static_tail": {
+      "compile": {
+        "args": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "c2.elf",
+          "build",
+          "invalid_static_tail.build"
+        ],
+        "exit": 1,
+        "seconds": 0.023,
+        "stderr": "E_TYPE file=1 byte=23\n"
+      },
+      "no_output": true
+    },
+    "invalid_zero_repeat": {
+      "compile": {
+        "args": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "c2.elf",
+          "build",
+          "invalid_zero_repeat.build"
+        ],
+        "exit": 1,
+        "seconds": 0.026,
+        "stderr": "E_TYPE file=1 byte=23\n"
+      },
+      "no_output": true
+    }
+  },
+  "scope": "One target generation only; full fixed point/old seed/clean build are N5."
+}

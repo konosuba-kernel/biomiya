@@ -1,0 +1,57 @@
+{
+  "node": "N1",
+  "revision": 1,
+  "status": "awaiting_independent_review",
+  "input_revisions": {
+    "N0": 1
+  },
+  "input_hashes": {
+    "docs/workflows/bootstrap-b31/N0-r1-candidate.json": "64422e59241e5258af217b81d9c843f05c1f02f576f593bee355fb9ae7cb15c7",
+    "docs/workflows/bootstrap-b31/N0-r1-review.json": "5eb09378c7a6402aa835f2c891ffc35c1c0fcc5415c528818033f7f9d0ffb604",
+    "docs/workflows/bootstrap-b31/baseline.json": "78c3966d5b17a04af52a22cbef907802366f2e7aad27c04b448554ca125f1b28"
+  },
+  "implementers": [
+    "/root/b31_frontend"
+  ],
+  "files": {
+    "core-s/bootstrap/check.vt": "85a20d745bfb4ba6db20e139212ed2b25dba0b41e18f51fa4d7486d5f58c50a4",
+    "core-s/bootstrap/image.vt": "c97a9422f740745f491787511d3aab16706fe04e812f6f02d78ac361cbd58fa6",
+    "core-s/bootstrap/input.vt": "d398b295f926686a7c9023e0fe12152ea7b7520df4a565387b8dde385a752040",
+    "core-s/bootstrap/ir.vt": "10945f878792f4944c9b7b68fd491827b65262dd6ba51d3f8d0f0e3c0a813b22",
+    "core-s/bootstrap/lex.vt": "244290aef0b5c97ebbd11742db0a811122f10664b8d509b2c8ff00f1071d1ba5",
+    "core-s/bootstrap/main.vt": "feeaa003804374a2a9909cb0ccef6dd91132c60e262cc7d85d2b8fe54b31c18c",
+    "core-s/bootstrap/model.vt": "43ec573af1e67b39d863e85603fc2b7953612ba709a18c4b0daddaa5e70e7a08",
+    "core-s/bootstrap/parse.vt": "91e122ddfb07fb29c9a73fa2e2361ba834e9a9ce50dda67836e6cd1cc5355a60",
+    "core-s/bootstrap/rv64.vt": "ed90050458b09474589eed80a241d328d0b05329929d5f1c966c5a1850218658",
+    "core-s/bootstrap/s0.vt": "4aad6871fb5851f4979f3d1ed2b2f9d082171f48d048b8fbebe2d7bffccfef46",
+    "core-s/bootstrap/types.vt": "38079f63ddcf9d736653b966beb40b2cb3e7f8aaa83bb82ccd24aeb865ccf50f",
+    "docs/workflows/bootstrap-b31/N1-cargo-tests.log": "dee6dd8a2b9fec1bf33a7959c3e338e4e550d43139d94d228fa79acd9c74be30",
+    "docs/workflows/bootstrap-b31/N1-final-cargo-tests.log": "b2c12d93feb150c3f3433a228bfd3e864525d766820dd35503e4ebf378e7f46f",
+    "docs/workflows/bootstrap-b31/N1-final-check.py": "d5b3f3ed2c320fc12965eb47752b0cf854ec1ac6a02217ce95d660dd137f642c",
+    "docs/workflows/bootstrap-b31/N1-final-d2.log": "da4c54c927a6ab0d93b3709c53a438ff917f06ba08b150e7c88eb8a69f6ca87d",
+    "docs/workflows/bootstrap-b31/N1-final-expansion-evidence.json": "ea6232b187a9623ef798e703006cc0505257d1dfa3325993db1230f6c79c3864",
+    "docs/workflows/bootstrap-b31/N1-final-format-build.log": "34549fbc58fca3c6898252bf45e3422ca11f0c78080eefeeac6d6c12d228e1bc",
+    "docs/workflows/bootstrap-b31/N1-final-old-seed.log": "da4c54c927a6ab0d93b3709c53a438ff917f06ba08b150e7c88eb8a69f6ca87d",
+    "docs/workflows/bootstrap-b31/N1-final-source-hashes.txt": "0d762eace02a0539fa7af81df9970ed89d3fbda1db6d895244cb4fa57e338288",
+    "docs/workflows/bootstrap-b31/N1-format-evidence.json": "1c33a11587a9bf796d44a5e1997c1f940119f6f394ac888ec460d668abb4b00e",
+    "docs/workflows/bootstrap-b31/N1-format.py": "5f93620b0d4158ae5d3810ad5d22d0710314b47af6a76605771200570982515a",
+    "docs/workflows/bootstrap-b31/N1-generic-format-evidence.json": "99f560ebe91c9db37fae60f315d95444ce7e7503647d3c963701001f58d122e2",
+    "docs/workflows/bootstrap-b31/N1-old-seed-retry.log": "439df0a9a19e71f53867257086c6e6351f0a952665cf7c84bd17a7c3fce0497f",
+    "docs/workflows/bootstrap-b31/N1-old-seed.log": "9bd026ffe1ed21b23ae9740e730c40d76c64c0711f7cd9310f8599339bf2514c",
+    "docs/workflows/bootstrap-b31/N1-report.md": "dd9b6788168e98c631d9a898d36bdeb4f772ab35cd38b8aa66b5dddfea8f48c2",
+    "docs/workflows/bootstrap-b31/N1-symbol-check.py": "278130423851f2bd762b172ac511566460d3588425073153782129548f64be15",
+    "docs/workflows/bootstrap-b31/N1-symbol-evidence.json": "e9f866efd0f55b862445f8eaf11ed95f1fd7566f66d71ddb14b746db8a371660",
+    "docs/workflows/bootstrap-b31/N1-symbolic-snapshot.tar.gz": "816b7ccc9f944ac52fd3f87355f27bf5b9ff70958ed122c296381d37f02670cd",
+    "docs/workflows/bootstrap-b31/N1-validation.json": "335dd6e324582c8f0e2a1ae6d3a54468090a557463b7c2cebc79d1036db07d46"
+  },
+  "validation": "N1-validation.json",
+  "report": "N1-report.md",
+  "unchanged_scope": [
+    "Rust seed",
+    "bootstrap manifests",
+    "runtime",
+    "tests",
+    "old B3 evidence"
+  ],
+  "production_modules": 11
+}

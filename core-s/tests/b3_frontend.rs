@@ -72,6 +72,7 @@ fn executable(path: &Path, data: &[u8]) {
 }
 const FRONTEND: &[&str] = &[
     "bootstrap/model.vt",
+    "bootstrap/rules.vt",
     "bootstrap/lex.vt",
     "bootstrap/input.vt",
     "bootstrap/types.vt",
@@ -86,6 +87,9 @@ import bootstrap::model;
 import bootstrap::input;
 import bootstrap::parse;
 import bootstrap::check;
+import bootstrap::types;
+import bootstrap::lex;
+import bootstrap::ir;
 import runtime::linux;
 pub fn run()->u32 {
  model::reset_all();
@@ -101,7 +105,20 @@ pub fn run()->u32 {
   var i:u32=1;
   while i<=model::decl_count {
    if model::decls[i as usize].kind==2_u32 {
-    model::reset_function();check::function(i);
+    let d:model::Decl=model::decls[i as usize];
+    let expected:model::Token=lex::next(d.file,d.end as usize);
+    check::function(i);
+    let actual:model::Token=types::token;
+    if actual.file!=expected.file || actual.start!=expected.start || actual.end!=expected.end || actual.kind!=expected.kind || actual.number!=expected.number || actual.suffix!=expected.suffix {return 9;}
+    if types::diagnostic.file!=d.file {return 10;}
+    if linux::argc()==3_usize {
+    let slots:u32=model::slot_count;
+    let insts:u32=model::inst_count;
+    let args:u32=model::arg_count;
+    let labels:u32=ir::labels;
+    check::function(i);
+    if model::slot_count!=slots || model::inst_count!=insts || model::arg_count!=args || ir::labels!=labels || model::parameter_slot_count!=d.count {return 11;}
+    }
     if model::function_decl!=i || model::inst_count==0_u32 {return 4;}
     if model::insts[1].op!=14_u32 || model::insts[1].a!=1_u32 {return 5;}
     var n:u32=1;var terminated:bool=true;
@@ -154,6 +171,9 @@ fn image() -> &'static [u8] {
     })
 }
 fn check(files: &[(&str, &str)]) -> Output {
+    check_with_repeat(files, false)
+}
+fn check_with_repeat(files: &[(&str, &str)], repeat: bool) -> Output {
     let t = Scratch::new();
     stage(&t);
     let mut names = Vec::new();
@@ -163,11 +183,16 @@ fn check(files: &[(&str, &str)]) -> Output {
     }
     manifest(&t, "test.build", &names);
     executable(&t.file("probe.elf"), image());
-    let o = run(Command::new("qemu-riscv64")
+    let mut command = Command::new("qemu-riscv64");
+    command
         .args(["-s", "1048576"])
         .arg(t.file("probe.elf"))
         .arg("test.build")
-        .current_dir(&t.0));
+        .current_dir(&t.0);
+    if repeat {
+        command.arg("repeat");
+    }
+    let o = run(&mut command);
     assert!(!t.file("ignored.elf").exists());
     o
 }
@@ -296,6 +321,7 @@ fn frontend_static_layout_keeps_large_zero_arrays_in_bss() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
     let sources = [
         "bootstrap/model.vt",
+        "bootstrap/rules.vt",
         "bootstrap/lex.vt",
         "bootstrap/input.vt",
         "bootstrap/types.vt",
@@ -488,5 +514,224 @@ fn frontend_reports_permission_and_capacity_errors_without_target_panics() {
             error.contains("I_LIMIT") || error.contains("E_TYPE"),
             "{error}"
         );
+    }
+}
+
+#[test]
+fn frontend_separates_cursor_diagnostics_and_reuses_function_arenas() {
+    let source = "struct Outer{inner:Inner,tail:u32} struct Inner{leaf:Leaf} struct Leaf{value:u32} const N:usize=M; const M:usize=K; const K:usize=2; fn heavy(x:u32)->u32{var a:[N]u32=[x;N];var n:u32=0;defer{n=n+1_u32;}while n<1_u32{unsafe{let p:*u32=core::addr_of_mut(n);*p=*p+1_u32;}if n==1_u32{break;}}return a[0]+n;} fn tiny()->u32{return 7;} pub fn run()->u32{let v:Outer=Outer{inner:Inner{leaf:Leaf{value:3}},tail:4};return heavy(v.inner.leaf.value)+tiny();}";
+    let o = check_with_repeat(&[("main.vt", source)], true);
+    assert_eq!(
+        o.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&o.stderr)
+    );
+}
+
+#[test]
+fn frontend_reports_exact_ast_and_recursive_header_locations() {
+    let cases = [
+        ("pub fn run()->u32{return missing;}", "E_NAME", "missing"),
+        ("pub fn run()->u32{return true;}", "E_TYPE", "true"),
+        (
+            "pub fn run()->u32{let n:u32=0;return *core::addr_of(n);}",
+            "E_PERMISSION",
+            "*core",
+        ),
+        (
+            "static bad:[2]u32=[1_u32,true];pub fn run()->u32{return 0;}",
+            "E_TYPE",
+            "true",
+        ),
+        (
+            "struct A{b:B} struct B{a:A} pub fn run()->u32{return 0;}",
+            "E_TYPE",
+            "} pub",
+        ),
+        (
+            "struct Outer{bad:[67108865]Inner}struct Inner{v:u8}pub fn run()->u32{return 0;}",
+            "I_LIMIT",
+            "}struct",
+        ),
+        (
+            "const A:u32=B; const B:bool=true;pub fn run()->u32{return 0;}",
+            "E_TYPE",
+            "; const B",
+        ),
+    ];
+    for (source, code, marker) in cases {
+        let o = check(&[
+            ("prefix.vt", "module prefix;pub const N:u32=0;"),
+            ("main.vt", source),
+        ]);
+        assert_eq!(o.status.code(), Some(1));
+        let diagnostic = String::from_utf8_lossy(&o.stderr);
+        let expected = format!("{code} file=2 byte={}", source.find(marker).unwrap());
+        assert!(
+            diagnostic.contains(&expected),
+            "expected {expected}: {diagnostic}"
+        );
+    }
+}
+
+#[test]
+fn pure_rules_use_only_explicit_scalar_and_layout_inputs() {
+    let t = Scratch::new();
+    stage(&t);
+    let probe = r#"module probe;
+import bootstrap::model;
+import bootstrap::rules;
+pub fn run()->u32 {
+ if !rules::literal(255,model::TYPE_U8).ok || rules::literal(256,model::TYPE_U8).ok {return 1;}
+ if rules::literal(1,model::TYPE_BOOL).ok {return 2;}
+ if rules::unary(model::UNARY_NOT,1,model::TYPE_BOOL).bits!=0_usize {return 3;}
+ if rules::unary(model::UNARY_BIT_NOT,0,model::TYPE_U8).bits!=255_usize {return 4;}
+ if !rules::unary(model::UNARY_NEG,0,model::TYPE_U8).ok || rules::unary(model::UNARY_NEG,1,model::TYPE_U8).ok {return 5;}
+ if rules::cast(256,model::TYPE_U32,model::TYPE_U8).bits!=0_usize || rules::cast(1,model::TYPE_BOOL,model::TYPE_U8).ok {return 6;}
+ if rules::binary(model::BIN_ADD,255,1,model::TYPE_U8).ok || rules::binary(model::BIN_WRAP_ADD,255,1,model::TYPE_U8).bits!=0_usize {return 7;}
+ if rules::binary(model::BIN_SUB,0,1,model::TYPE_U8).ok || rules::binary(model::BIN_WRAP_SUB,0,1,model::TYPE_U8).bits!=255_usize {return 8;}
+ if rules::binary(model::BIN_MUL,128,2,model::TYPE_U8).ok || rules::binary(model::BIN_WRAP_MUL,128,2,model::TYPE_U8).bits!=0_usize {return 9;}
+ if rules::binary(model::BIN_DIV,1,0,model::TYPE_U8).ok || rules::binary(model::BIN_REM,1,0,model::TYPE_U8).ok {return 10;}
+ if rules::binary(model::BIN_DIV,7,2,model::TYPE_U8).bits!=3_usize || rules::binary(model::BIN_REM,7,2,model::TYPE_U8).bits!=1_usize {return 11;}
+ if rules::binary(model::BIN_SHL,1,8,model::TYPE_U8).ok || rules::binary(model::BIN_SHR,128,7,model::TYPE_U8).bits!=1_usize {return 12;}
+ if rules::binary(model::BIN_BIT_AND,3,1,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_BIT_OR,2,1,model::TYPE_U8).bits!=3_usize || rules::binary(model::BIN_BIT_XOR,3,1,model::TYPE_U8).bits!=2_usize {return 13;}
+ if rules::binary(model::BIN_EQ,1,1,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_NE,1,2,model::TYPE_U8).bits!=1_usize {return 14;}
+ if rules::binary(model::BIN_LT,1,2,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_LE,1,1,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_GT,2,1,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_GE,2,2,model::TYPE_U8).bits!=1_usize {return 15;}
+ if rules::binary(model::BIN_AND,1,0,model::TYPE_BOOL).bits!=0_usize || rules::binary(model::BIN_OR,1,0,model::TYPE_BOOL).bits!=1_usize {return 16;}
+ if rules::binary(model::BIN_INVALID,1,1,model::TYPE_U8).ok {return 17;}
+ if rules::binary(model::BIN_EQ,1,0,model::TYPE_UNIT).ok || !rules::binary(model::BIN_EQ,0,0,model::TYPE_UNIT).ok {return 21;}
+ if !rules::add_size(0xffffffffffffffff,0).ok || rules::add_size(0xffffffffffffffff,1).ok {return 18;}
+ if rules::align_up(1,0).ok || rules::align_up(1,3).ok || rules::align_up(0xffffffffffffffff,8).ok {return 19;}
+ if rules::align_up(67108865,4096).size!=67112960_usize || rules::align_up(0xffffffffffffffff,1).size!=0xffffffffffffffff_usize {return 20;}
+ return 0;
+}"#;
+    fs::write(t.file("probe.vt"), probe).unwrap();
+    manifest(
+        &t,
+        "probe.build",
+        &["bootstrap/model.vt", "bootstrap/rules.vt", "probe.vt"],
+    );
+    success(
+        Command::new(BIN)
+            .args(["project", "probe.build"])
+            .current_dir(&t.0),
+    );
+    let o = run(Command::new("qemu-riscv64")
+        .args(["-s", "1048576"])
+        .arg(t.file("ignored.elf")));
+    assert_eq!(
+        o.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&o.stderr)
+    );
+}
+
+#[test]
+fn constant_walkers_agree_on_values_and_reject_boundaries() {
+    let t = Scratch::new();
+    stage(&t);
+    let probe = r#"module probe;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::parse;
+import runtime::linux;
+pub fn run()->u32 {
+ model::reset_all();
+ match linux::argument(1) {
+  Result::<[]const u8,u32>::Ok(path:[]const u8)=>{input::load(path);},
+  Result::<[]const u8,u32>::Err(e:u32)=>{return 2;},
+ }
+ parse::collect();
+ unsafe {
+  var c:usize=0;var expected:usize=0;var symbol:u32=0;var size:usize=0;var i:u32=1;
+  while i<=model::decl_count {
+   let d:model::Decl=model::decls[i as usize];
+   if d.name==model::name("C") {c=d.bits;}
+   if d.name==model::name("EXPECTED") {expected=d.bits;}
+   if d.name==model::name("S") {symbol=d.symbol;size=model::types[d.ty as usize].size;}
+   i=i+1_u32;
+  }
+  if c!=expected || symbol==0_u32 {return 3;}
+  i=1;
+  while i<=model::data_count {
+   let d:model::Data=model::data_objs[i as usize];
+   if d.symbol==symbol {
+    var bits:usize=0;var n:usize=0;
+    while n<size {bits=bits|((model::data_bytes[d.first+n] as usize)<<(n*8_usize));n=n+1_usize;}
+    if bits!=expected {return 4;}return 0;
+   }
+   i=i+1_u32;
+  }
+ }
+ return 5;
+}"#;
+    fs::write(t.file("probe.vt"), probe).unwrap();
+    let mut files = FRONTEND.to_vec();
+    files.push("probe.vt");
+    manifest(&t, "probe.build", &files);
+    success(
+        Command::new(BIN)
+            .args(["project", "probe.build"])
+            .current_dir(&t.0),
+    );
+    let cases = [
+        ("u8", "255_u8+%1_u8", Some(0u64)),
+        ("u8", "~0_u8", Some(255)),
+        ("u8", "-0_u8", Some(0)),
+        ("u8", "256_u32 as u8", Some(0)),
+        ("u8", "1_u8<<7_u8", Some(128)),
+        ("bool", "1_u8==1_u8", Some(1)),
+        ("bool", "!false", Some(1)),
+        ("usize", "18446744073709551615_usize+%1_usize", Some(0)),
+        ("u8", "255_u8+1_u8", None),
+        ("u8", "-1_u8", None),
+        ("u8", "1_u8<<8_u8", None),
+        ("u8", "1_u8/0_u8", None),
+        ("u8", "true as u8", None),
+        ("usize", "18446744073709551615_usize+1_usize", None),
+    ];
+    for (ty, expression, expected) in cases {
+        for walker in 0..if expected.is_some() { 1 } else { 2 } {
+            let (constant, static_) = if expected.is_some() {
+                (expression, expression)
+            } else if walker == 0 {
+                (expression, "0")
+            } else {
+                ("0", expression)
+            };
+            fs::write(t.file("values.vt"), format!("const C:{ty}={constant};static S:{ty}={static_};const EXPECTED:usize={};pub fn run()->u32{{return 0;}}", expected.unwrap_or(0))).unwrap();
+            manifest(&t, "values.build", &["values.vt"]);
+            let o = run(Command::new("qemu-riscv64")
+                .args(["-s", "1048576"])
+                .arg(t.file("ignored.elf"))
+                .arg("values.build")
+                .current_dir(&t.0));
+            assert_eq!(
+                o.status.code(),
+                Some(if expected.is_some() { 0 } else { 1 }),
+                "{ty} {expression} walker {walker}: {}",
+                String::from_utf8_lossy(&o.stderr)
+            );
+            if expected.is_none() {
+                assert!(String::from_utf8_lossy(&o.stderr).contains("E_TYPE"));
+            }
+        }
+    }
+}
+
+#[test]
+fn static_validation_visits_invalid_tails_and_empty_repeats() {
+    for source in [
+        "static S:[2]u32=[1_u32,true];pub fn run()->u32{return 0;}",
+        "struct P{a:u32,b:u32}static S:P=P{a:1,b:true};pub fn run()->u32{return 0;}",
+        "static S:[0]u32=[true;0];pub fn run()->u32{return 0;}",
+        "static S:[0]u32=[1_u32/0_u32;0];pub fn run()->u32{return 0;}",
+        "pub fn run()->u32{return -0_u32;}",
+    ] {
+        let o = check(&[("main.vt", source)]);
+        assert_eq!(o.status.code(), Some(1), "{source}");
+        assert!(String::from_utf8_lossy(&o.stderr).contains("E_TYPE"));
     }
 }

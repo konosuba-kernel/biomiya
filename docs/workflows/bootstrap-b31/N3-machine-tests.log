@@ -1,0 +1,14 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running tests/b3_machine.rs (target/debug/deps/b3_machine-c67f67790b4cd7c3)
+
+running 7 tests
+test target_constants_match_rust_and_independent_assembler ... ok
+test target_s0_all_operations_far_fixups_match_independent_bytes ... ok
+test target_requires_label_one_and_finite_value_layouts ... ok
+test target_ir_aggregate_abi_snapshot_abs64_bss_and_checked_panic ... ok
+test target_rejects_invalid_ir_and_link_data_before_output ... ok
+test target_s0_rejects_syntax_ranges_and_unsupported_grammar ... ok
+test target_preserves_semantic_ir_and_reuses_sparse_label_ranges ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+

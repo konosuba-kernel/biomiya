@@ -1,0 +1,341 @@
+{
+  "candidate_sha256": "7a2e1b9a4ad12009295cd42c5f8be3a31ac1ece2adf9668ad3c9fb73a4d3ec89",
+  "candidate_files": 134,
+  "all_inherited_product_hashes_unchanged": true,
+  "clean_test_labels": {
+    "retained": 81,
+    "current": 91,
+    "added": [
+      "blocking_missing_capture_invalid_ir_and_summary_capacity_fail_closed",
+      "blocking_policy_is_strict_and_failure_preserves_existing_files",
+      "blocking_long_chains_are_order_independent_and_do_not_skip_core_errors",
+      "blocking_contracts_propagate_without_changing_generated_elf",
+      "pure_rules_use_only_explicit_scalar_and_layout_inputs",
+      "frontend_separates_cursor_diagnostics_and_reuses_function_arenas",
+      "static_validation_visits_invalid_tails_and_empty_repeats",
+      "frontend_reports_exact_ast_and_recursive_header_locations",
+      "constant_walkers_agree_on_values_and_reject_boundaries",
+      "target_preserves_semantic_ir_and_reuses_sparse_label_ranges"
+    ]
+  },
+  "author_trace_audit": [
+    {
+      "opened": [
+        "self.build",
+        "bootstrap/model.vt",
+        "bootstrap/rules.vt",
+        "bootstrap/lex.vt",
+        "bootstrap/input.vt",
+        "bootstrap/types.vt",
+        "bootstrap/parse.vt",
+        "bootstrap/ir.vt",
+        "bootstrap/check.vt",
+        "bootstrap/image.vt",
+        "bootstrap/rv64.vt",
+        "bootstrap/s0.vt",
+        "bootstrap/blocking.vt",
+        "bootstrap/main.vt",
+        "runtime/bytes.vt",
+        "runtime/linux.vt",
+        "runtime/linux.s0",
+        "next.elf"
+      ],
+      "stderr_payloads": "B3 sources=15 imports=38 assembly_files=1 source=276684 assembly=345 names=2631 name_bytes=52015 decls=595 types=191 fields=120 params=460 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=898252 data=200667 objects=568 symbols=11217 fixups=21625 relocations=8281 elf=1108040\n"
+    },
+    {
+      "opened": [
+        "self.build",
+        "bootstrap/model.vt",
+        "bootstrap/rules.vt",
+        "bootstrap/lex.vt",
+        "bootstrap/input.vt",
+        "bootstrap/types.vt",
+        "bootstrap/parse.vt",
+        "bootstrap/ir.vt",
+        "bootstrap/check.vt",
+        "bootstrap/image.vt",
+        "bootstrap/rv64.vt",
+        "bootstrap/s0.vt",
+        "bootstrap/blocking.vt",
+        "bootstrap/main.vt",
+        "runtime/bytes.vt",
+        "runtime/linux.vt",
+        "runtime/linux.s0",
+        "next.elf"
+      ],
+      "stderr_payloads": "B3 sources=15 imports=38 assembly_files=1 source=276684 assembly=345 names=2631 name_bytes=52015 decls=595 types=191 fields=120 params=460 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=898252 data=200667 objects=568 symbols=11217 fixups=21625 relocations=8281 elf=1108040\n"
+    },
+    {
+      "opened": [
+        "self.build",
+        "bootstrap/model.vt",
+        "bootstrap/rules.vt",
+        "bootstrap/lex.vt",
+        "bootstrap/input.vt",
+        "bootstrap/types.vt",
+        "bootstrap/parse.vt",
+        "bootstrap/ir.vt",
+        "bootstrap/check.vt",
+        "bootstrap/image.vt",
+        "bootstrap/rv64.vt",
+        "bootstrap/s0.vt",
+        "bootstrap/blocking.vt",
+        "bootstrap/main.vt",
+        "runtime/bytes.vt",
+        "runtime/linux.vt",
+        "runtime/linux.s0",
+        "bootstrap/pure.blocking",
+        "next.elf"
+      ],
+      "stderr_payloads": "Blocking scope: direct-call may-block analysis; not termination or IRQ safety\nBlocking bootstrap::rules::literal: Verified\nBlocking bootstrap::rules::unary: Verified\nBlocking bootstrap::rules::cast: Verified\nBlocking bootstrap::rules::add_size: Verified\nBlocking bootstrap::rules::align_up: Verified\nBlocking bootstrap::rules::binary: Verified\nB3 sources=15 imports=38 assembly_files=1 source=276684 assembly=345 names=2631 name_bytes=52015 decls=595 types=191 fields=120 params=460 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=898252 data=200667 objects=568 symbols=11217 fixups=21625 relocations=8281 elf=1108040\n"
+    }
+  ],
+  "independent_builds": [
+    {
+      "stage": 1,
+      "argv": [
+        "/usr/bin/qemu-riscv64",
+        "-s",
+        "1048576",
+        "-strace",
+        "compiler.elf",
+        "build",
+        "self.build"
+      ],
+      "environment": {
+        "PATH": ""
+      },
+      "exit": 0,
+      "sha256": "0793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc",
+      "elf_bytes": 1108040,
+      "segments": [
+        {
+          "flags": 5,
+          "address": 65536,
+          "file_bytes": 898252,
+          "memory_bytes": 898252
+        },
+        {
+          "flags": 4,
+          "address": 966656,
+          "file_bytes": 1946,
+          "memory_bytes": 1946
+        },
+        {
+          "flags": 6,
+          "address": 970752,
+          "file_bytes": 198728,
+          "memory_bytes": 53118748
+        }
+      ],
+      "rw_bytes": 53118748,
+      "image_span": 54023964,
+      "trace": "184628 openat(AT_FDCWD,\"self.build\",O_RDONLY) = 3\n184628 read(3,0x16f8e98,4096) = 479\n184628 read(3,0x16f9077,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/model.vt\",O_RDONLY) = 3\n184628 read(3,0x16fce99,4096) = 4096\n184628 read(3,0x16fde99,4096) = 4096\n184628 read(3,0x16fee99,4096) = 4096\n184628 read(3,0x16ffe99,4096) = 4096\n184628 read(3,0x1700e99,4096) = 4096\n184628 read(3,0x1701e99,4096) = 4074\n184628 read(3,0x1702e83,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/rules.vt\",O_RDONLY) = 3\n184628 read(3,0x1702e83,4096) = 4096\n184628 read(3,0x1703e83,4096) = 1519\n184628 read(3,0x1704472,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/lex.vt\",O_RDONLY) = 3\n184628 read(3,0x1704472,4096) = 4096\n184628 read(3,0x1705472,4096) = 4096\n184628 read(3,0x1706472,4096) = 3009\n184628 read(3,0x1707033,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/input.vt\",O_RDONLY) = 3\n184628 read(3,0x1707033,4096) = 4096\n184628 read(3,0x1708033,4096) = 4096\n184628 read(3,0x1709033,4096) = 2220\n184628 read(3,0x17098df,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/types.vt\",O_RDONLY) = 3\n184628 read(3,0x17098df,4096) = 4096\n184628 read(3,0x170a8df,4096) = 4096\n184628 read(3,0x170b8df,4096) = 4096\n184628 read(3,0x170c8df,4096) = 4096\n184628 read(3,0x170d8df,4096) = 4096\n184628 read(3,0x170e8df,4096) = 4096\n184628 read(3,0x170f8df,4096) = 4096\n184628 read(3,0x17108df,4096) = 4096\n184628 read(3,0x17118df,4096) = 4093\n184628 read(3,0x17128dc,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/parse.vt\",O_RDONLY) = 3\n184628 read(3,0x17128dc,4096) = 4096\n184628 read(3,0x17138dc,4096) = 4096\n184628 read(3,0x17148dc,4096) = 4096\n184628 read(3,0x17158dc,4096) = 4096\n184628 read(3,0x17168dc,4096) = 4096\n184628 read(3,0x17178dc,4096) = 4096\n184628 read(3,0x17188dc,4096) = 4096\n184628 read(3,0x17198dc,4096) = 4096\n184628 read(3,0x171a8dc,4096) = 4096\n184628 read(3,0x171b8dc,4096) = 597\n184628 read(3,0x171bb31,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/ir.vt\",O_RDONLY) = 3\n184628 read(3,0x171bb31,4096) = 4096\n184628 read(3,0x171cb31,4096) = 3722\n184628 read(3,0x171d9bb,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/check.vt\",O_RDONLY) = 3\n184628 read(3,0x171d9bb,4096) = 4096\n184628 read(3,0x171e9bb,4096) = 4096\n184628 read(3,0x171f9bb,4096) = 4096\n184628 read(3,0x17209bb,4096) = 4096\n184628 read(3,0x17219bb,4096) = 4096\n184628 read(3,0x17229bb,4096) = 4096\n184628 read(3,0x17239bb,4096) = 4096\n184628 read(3,0x17249bb,4096) = 4096\n184628 read(3,0x17259bb,4096) = 4096\n184628 read(3,0x17269bb,4096) = 4096\n184628 read(3,0x17279bb,4096) = 4096\n184628 read(3,0x17289bb,4096) = 1507\n184628 read(3,0x1728f9e,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/image.vt\",O_RDONLY) = 3\n184628 read(3,0x1728f9e,4096) = 4096\n184628 read(3,0x1729f9e,4096) = 4096\n184628 read(3,0x172af9e,4096) = 4096\n184628 read(3,0x172bf9e,4096) = 516\n184628 read(3,0x172c1a2,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/rv64.vt\",O_RDONLY) = 3\n184628 read(3,0x172c1a2,4096) = 4096\n184628 read(3,0x172d1a2,4096) = 4096\n184628 read(3,0x172e1a2,4096) = 4096\n184628 read(3,0x172f1a2,4096) = 4096\n184628 read(3,0x17301a2,4096) = 4096\n184628 read(3,0x17311a2,4096) = 4096\n184628 read(3,0x17321a2,4096) = 4096\n184628 read(3,0x17331a2,4096) = 4096\n184628 read(3,0x17341a2,4096) = 4096\n184628 read(3,0x17351a2,4096) = 4096\n184628 read(3,0x17361a2,4096) = 4096\n184628 read(3,0x17371a2,4096) = 1767\n184628 read(3,0x1737889,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/s0.vt\",O_RDONLY) = 3\n184628 read(3,0x1737889,4096) = 4096\n184628 read(3,0x1738889,4096) = 4096\n184628 read(3,0x1739889,4096) = 2407\n184628 read(3,0x173a1f0,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/blocking.vt\",O_RDONLY) = 3\n184628 read(3,0x173a1f0,4096) = 4096\n184628 read(3,0x173b1f0,4096) = 4096\n184628 read(3,0x173c1f0,4096) = 3990\n184628 read(3,0x173d186,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"bootstrap/main.vt\",O_RDONLY) = 3\n184628 read(3,0x173d186,4096) = 4096\n184628 read(3,0x173e186,4096) = 2917\n184628 read(3,0x173eceb,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"runtime/bytes.vt\",O_RDONLY) = 3\n184628 read(3,0x173eceb,4096) = 2333\n184628 read(3,0x173f608,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"runtime/linux.vt\",O_RDONLY) = 3\n184628 read(3,0x173f608,4096) = 4096\n184628 read(3,0x1740608,4096) = 349\n184628 read(3,0x1740765,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"runtime/linux.s0\",O_RDONLY) = 3\n184628 read(3,0x1afce9a,4096) = 345\n184628 read(3,0x1afcff3,4096) = 0\n184628 close(3) = 0\n184628 openat(AT_FDCWD,\"rebuilt.elf\",O_WRONLY|O_CREAT|O_EXCL,0600) = 3\n184628 write(3,0x209aff0,1108040) = 1108040\n184628 fchmod(3,0755) = 0\n184628 close(3) = 0\n184628 write(2,0xe157e,2)B3 = 2\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe1580,7)sources = 7\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e12,2)15 = 2\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe1587,7)imports = 7\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e12,2)38 = 2\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe158e,14)assembly_files = 14\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e13,1)1 = 1\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe159c,6)source = 6\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e0e,6)276684 = 6\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15a2,8)assembly = 8\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)345 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15aa,5)names = 5\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e10,4)2631 = 4\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15af,10)name_bytes = 10\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e0f,5)52015 = 5\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15b9,5)decls = 5\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)595 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15be,5)types = 5\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)191 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15c3,6)fields = 6\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)120 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15c9,6)params = 6\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)460 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15cf,7)max_ast = 7\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)867 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15d6,6)max_ir = 6\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e10,4)1633 = 4\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15dc,9)max_frame = 9\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e0f,5)26384 = 5\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15e5,12)max_bindings = 12\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e12,2)18 = 2\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15f1,10)max_defers = 10\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e13,1)0 = 1\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe15fb,9)max_loops = 9\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e13,1)3 = 1\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe1604,9)max_saved = 9\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)182 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe160d,9)max_slots = 9\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e10,4)1015 = 4\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe1616,8)max_args = 8\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)262 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe161e,10)max_params = 10\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e13,1)7 = 1\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe1628,4)text = 4\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e0e,6)898252 = 6\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe162c,4)data = 4\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e0e,6)200667 = 6\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe1630,7)objects = 7\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e11,3)568 = 3\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe1637,7)symbols = 7\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e0f,5)11217 = 5\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe163e,6)fixups = 6\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e0f,5)21625 = 5\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe1644,11)relocations = 11\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e10,4)8281 = 4\n184628 write(2,0xe152b,1)  = 1\n184628 write(2,0xe164f,3)elf = 3\n184628 write(2,0xe152c,1)= = 1\n184628 write(2,0x7f3e02c48e0d,7)1108040 = 7\n184628 write(2,0xe1652,1)\n = 1\n184628 exit(0)\n",
+      "trace_decoded": {
+        "opened": [
+          "self.build",
+          "bootstrap/model.vt",
+          "bootstrap/rules.vt",
+          "bootstrap/lex.vt",
+          "bootstrap/input.vt",
+          "bootstrap/types.vt",
+          "bootstrap/parse.vt",
+          "bootstrap/ir.vt",
+          "bootstrap/check.vt",
+          "bootstrap/image.vt",
+          "bootstrap/rv64.vt",
+          "bootstrap/s0.vt",
+          "bootstrap/blocking.vt",
+          "bootstrap/main.vt",
+          "runtime/bytes.vt",
+          "runtime/linux.vt",
+          "runtime/linux.s0",
+          "rebuilt.elf"
+        ],
+        "stderr_payloads": "B3 sources=15 imports=38 assembly_files=1 source=276684 assembly=345 names=2631 name_bytes=52015 decls=595 types=191 fields=120 params=460 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=898252 data=200667 objects=568 symbols=11217 fixups=21625 relocations=8281 elf=1108040\n"
+      },
+      "verified_roots": []
+    },
+    {
+      "stage": 2,
+      "argv": [
+        "/usr/bin/qemu-riscv64",
+        "-s",
+        "1048576",
+        "-strace",
+        "compiler.elf",
+        "build",
+        "self.build",
+        "--blocking",
+        "bootstrap/pure.blocking"
+      ],
+      "environment": {
+        "PATH": ""
+      },
+      "exit": 0,
+      "sha256": "0793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc",
+      "elf_bytes": 1108040,
+      "segments": [
+        {
+          "flags": 5,
+          "address": 65536,
+          "file_bytes": 898252,
+          "memory_bytes": 898252
+        },
+        {
+          "flags": 4,
+          "address": 966656,
+          "file_bytes": 1946,
+          "memory_bytes": 1946
+        },
+        {
+          "flags": 6,
+          "address": 970752,
+          "file_bytes": 198728,
+          "memory_bytes": 53118748
+        }
+      ],
+      "rw_bytes": 53118748,
+      "image_span": 54023964,
+      "trace": "185569 openat(AT_FDCWD,\"self.build\",O_RDONLY) = 3\n185569 read(3,0x16a3e98,4096) = 479\n185569 read(3,0x16a4077,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/model.vt\",O_RDONLY) = 3\n185569 read(3,0x16a7e99,4096) = 4096\n185569 read(3,0x16a8e99,4096) = 4096\n185569 read(3,0x16a9e99,4096) = 4096\n185569 read(3,0x16aae99,4096) = 4096\n185569 read(3,0x16abe99,4096) = 4096\n185569 read(3,0x16ace99,4096) = 4074\n185569 read(3,0x16ade83,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/rules.vt\",O_RDONLY) = 3\n185569 read(3,0x16ade83,4096) = 4096\n185569 read(3,0x16aee83,4096) = 1519\n185569 read(3,0x16af472,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/lex.vt\",O_RDONLY) = 3\n185569 read(3,0x16af472,4096) = 4096\n185569 read(3,0x16b0472,4096) = 4096\n185569 read(3,0x16b1472,4096) = 3009\n185569 read(3,0x16b2033,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/input.vt\",O_RDONLY) = 3\n185569 read(3,0x16b2033,4096) = 4096\n185569 read(3,0x16b3033,4096) = 4096\n185569 read(3,0x16b4033,4096) = 2220\n185569 read(3,0x16b48df,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/types.vt\",O_RDONLY) = 3\n185569 read(3,0x16b48df,4096) = 4096\n185569 read(3,0x16b58df,4096) = 4096\n185569 read(3,0x16b68df,4096) = 4096\n185569 read(3,0x16b78df,4096) = 4096\n185569 read(3,0x16b88df,4096) = 4096\n185569 read(3,0x16b98df,4096) = 4096\n185569 read(3,0x16ba8df,4096) = 4096\n185569 read(3,0x16bb8df,4096) = 4096\n185569 read(3,0x16bc8df,4096) = 4093\n185569 read(3,0x16bd8dc,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/parse.vt\",O_RDONLY) = 3\n185569 read(3,0x16bd8dc,4096) = 4096\n185569 read(3,0x16be8dc,4096) = 4096\n185569 read(3,0x16bf8dc,4096) = 4096\n185569 read(3,0x16c08dc,4096) = 4096\n185569 read(3,0x16c18dc,4096) = 4096\n185569 read(3,0x16c28dc,4096) = 4096\n185569 read(3,0x16c38dc,4096) = 4096\n185569 read(3,0x16c48dc,4096) = 4096\n185569 read(3,0x16c58dc,4096) = 4096\n185569 read(3,0x16c68dc,4096) = 597\n185569 read(3,0x16c6b31,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/ir.vt\",O_RDONLY) = 3\n185569 read(3,0x16c6b31,4096) = 4096\n185569 read(3,0x16c7b31,4096) = 3722\n185569 read(3,0x16c89bb,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/check.vt\",O_RDONLY) = 3\n185569 read(3,0x16c89bb,4096) = 4096\n185569 read(3,0x16c99bb,4096) = 4096\n185569 read(3,0x16ca9bb,4096) = 4096\n185569 read(3,0x16cb9bb,4096) = 4096\n185569 read(3,0x16cc9bb,4096) = 4096\n185569 read(3,0x16cd9bb,4096) = 4096\n185569 read(3,0x16ce9bb,4096) = 4096\n185569 read(3,0x16cf9bb,4096) = 4096\n185569 read(3,0x16d09bb,4096) = 4096\n185569 read(3,0x16d19bb,4096) = 4096\n185569 read(3,0x16d29bb,4096) = 4096\n185569 read(3,0x16d39bb,4096) = 1507\n185569 read(3,0x16d3f9e,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/image.vt\",O_RDONLY) = 3\n185569 read(3,0x16d3f9e,4096) = 4096\n185569 read(3,0x16d4f9e,4096) = 4096\n185569 read(3,0x16d5f9e,4096) = 4096\n185569 read(3,0x16d6f9e,4096) = 516\n185569 read(3,0x16d71a2,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/rv64.vt\",O_RDONLY) = 3\n185569 read(3,0x16d71a2,4096) = 4096\n185569 read(3,0x16d81a2,4096) = 4096\n185569 read(3,0x16d91a2,4096) = 4096\n185569 read(3,0x16da1a2,4096) = 4096\n185569 read(3,0x16db1a2,4096) = 4096\n185569 read(3,0x16dc1a2,4096) = 4096\n185569 read(3,0x16dd1a2,4096) = 4096\n185569 read(3,0x16de1a2,4096) = 4096\n185569 read(3,0x16df1a2,4096) = 4096\n185569 read(3,0x16e01a2,4096) = 4096\n185569 read(3,0x16e11a2,4096) = 4096\n185569 read(3,0x16e21a2,4096) = 1767\n185569 read(3,0x16e2889,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/s0.vt\",O_RDONLY) = 3\n185569 read(3,0x16e2889,4096) = 4096\n185569 read(3,0x16e3889,4096) = 4096\n185569 read(3,0x16e4889,4096) = 2407\n185569 read(3,0x16e51f0,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/blocking.vt\",O_RDONLY) = 3\n185569 read(3,0x16e51f0,4096) = 4096\n185569 read(3,0x16e61f0,4096) = 4096\n185569 read(3,0x16e71f0,4096) = 3990\n185569 read(3,0x16e8186,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/main.vt\",O_RDONLY) = 3\n185569 read(3,0x16e8186,4096) = 4096\n185569 read(3,0x16e9186,4096) = 2917\n185569 read(3,0x16e9ceb,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"runtime/bytes.vt\",O_RDONLY) = 3\n185569 read(3,0x16e9ceb,4096) = 2333\n185569 read(3,0x16ea608,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"runtime/linux.vt\",O_RDONLY) = 3\n185569 read(3,0x16ea608,4096) = 4096\n185569 read(3,0x16eb608,4096) = 349\n185569 read(3,0x16eb765,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"runtime/linux.s0\",O_RDONLY) = 3\n185569 read(3,0x1aa7e9a,4096) = 345\n185569 read(3,0x1aa7ff3,4096) = 0\n185569 close(3) = 0\n185569 openat(AT_FDCWD,\"bootstrap/pure.blocking\",O_RDONLY) = 3\n185569 read(3,0x339170b,4096) = 293\n185569 read(3,0x3391830,4096) = 0\n185569 close(3) = 0\n185569 write(2,0xec56f,78)Blocking scope: direct-call may-block analysis; not termination or IRQ safety\n = 78\n185569 write(2,0xec5e6,9)Blocking  = 9\n185569 write(2,0x14a5f5b,16)bootstrap::rules = 16\n185569 write(2,0xec56d,2):: = 2\n185569 write(2,0x14a6045,7)literal = 7\n185569 write(2,0xec5ef,2):  = 2\n185569 write(2,0xec603,9)Verified\n = 9\n185569 write(2,0xec5e6,9)Blocking  = 9\n185569 write(2,0x14a5f5b,16)bootstrap::rules = 16\n185569 write(2,0xec56d,2):: = 2\n185569 write(2,0x14a6065,5)unary = 5\n185569 write(2,0xec5ef,2):  = 2\n185569 write(2,0xec603,9)Verified\n = 9\n185569 write(2,0xec5e6,9)Blocking  = 9\n185569 write(2,0x14a5f5b,16)bootstrap::rules = 16\n185569 write(2,0xec56d,2):: = 2\n185569 write(2,0x14a6081,4)cast = 4\n185569 write(2,0xec5ef,2):  = 2\n185569 write(2,0xec603,9)Verified\n = 9\n185569 write(2,0xec5e6,9)Blocking  = 9\n185569 write(2,0x14a5f5b,16)bootstrap::rules = 16\n185569 write(2,0xec56d,2):: = 2\n185569 write(2,0x14a609b,8)add_size = 8\n185569 write(2,0xec5ef,2):  = 2\n185569 write(2,0xec603,9)Verified\n = 9\n185569 write(2,0xec5e6,9)Blocking  = 9\n185569 write(2,0x14a5f5b,16)bootstrap::rules = 16\n185569 write(2,0xec56d,2):: = 2\n185569 write(2,0x14a60bd,8)align_up = 8\n185569 write(2,0xec5ef,2):  = 2\n185569 write(2,0xec603,9)Verified\n = 9\n185569 write(2,0xec5e6,9)Blocking  = 9\n185569 write(2,0x14a5f5b,16)bootstrap::rules = 16\n185569 write(2,0xec56d,2):: = 2\n185569 write(2,0x14a60df,6)binary = 6\n185569 write(2,0xec5ef,2):  = 2\n185569 write(2,0xec603,9)Verified\n = 9\n185569 openat(AT_FDCWD,\"rebuilt.elf\",O_WRONLY|O_CREAT|O_EXCL,0600) = 3\n185569 write(3,0x2045ff8,1108040) = 1108040\n185569 fchmod(3,0755) = 0\n185569 close(3) = 0\n185569 write(2,0xec6c5,2)B3 = 2\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec6c7,7)sources = 7\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca2,2)15 = 2\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec6ce,7)imports = 7\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca2,2)38 = 2\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec6d5,14)assembly_files = 14\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca3,1)1 = 1\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec6e3,6)source = 6\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183c9e,6)276684 = 6\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec6e9,8)assembly = 8\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)345 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec6f1,5)names = 5\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca0,4)2631 = 4\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec6f6,10)name_bytes = 10\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183c9f,5)52015 = 5\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec700,5)decls = 5\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)595 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec705,5)types = 5\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)191 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec70a,6)fields = 6\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)120 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec710,6)params = 6\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)460 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec716,7)max_ast = 7\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)867 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec71d,6)max_ir = 6\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca0,4)1633 = 4\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec723,9)max_frame = 9\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183c9f,5)26384 = 5\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec72c,12)max_bindings = 12\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca2,2)18 = 2\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec738,10)max_defers = 10\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca3,1)0 = 1\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec742,9)max_loops = 9\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca3,1)3 = 1\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec74b,9)max_saved = 9\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)182 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec754,9)max_slots = 9\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca0,4)1015 = 4\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec75d,8)max_args = 8\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)262 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec765,10)max_params = 10\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca3,1)7 = 1\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec76f,4)text = 4\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183c9e,6)898252 = 6\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec773,4)data = 4\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183c9e,6)200667 = 6\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec777,7)objects = 7\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca1,3)568 = 3\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec77e,7)symbols = 7\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183c9f,5)11217 = 5\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec785,6)fixups = 6\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183c9f,5)21625 = 5\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec78b,11)relocations = 11\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183ca0,4)8281 = 4\n185569 write(2,0xec60c,1)  = 1\n185569 write(2,0xec796,3)elf = 3\n185569 write(2,0xec60d,1)= = 1\n185569 write(2,0x7fa9d1183c9d,7)1108040 = 7\n185569 write(2,0xec799,1)\n = 1\n185569 exit(0)\n",
+      "trace_decoded": {
+        "opened": [
+          "self.build",
+          "bootstrap/model.vt",
+          "bootstrap/rules.vt",
+          "bootstrap/lex.vt",
+          "bootstrap/input.vt",
+          "bootstrap/types.vt",
+          "bootstrap/parse.vt",
+          "bootstrap/ir.vt",
+          "bootstrap/check.vt",
+          "bootstrap/image.vt",
+          "bootstrap/rv64.vt",
+          "bootstrap/s0.vt",
+          "bootstrap/blocking.vt",
+          "bootstrap/main.vt",
+          "runtime/bytes.vt",
+          "runtime/linux.vt",
+          "runtime/linux.s0",
+          "bootstrap/pure.blocking",
+          "rebuilt.elf"
+        ],
+        "stderr_payloads": "Blocking scope: direct-call may-block analysis; not termination or IRQ safety\nBlocking bootstrap::rules::literal: Verified\nBlocking bootstrap::rules::unary: Verified\nBlocking bootstrap::rules::cast: Verified\nBlocking bootstrap::rules::add_size: Verified\nBlocking bootstrap::rules::align_up: Verified\nBlocking bootstrap::rules::binary: Verified\nB3 sources=15 imports=38 assembly_files=1 source=276684 assembly=345 names=2631 name_bytes=52015 decls=595 types=191 fields=120 params=460 max_ast=867 max_ir=1633 max_frame=26384 max_bindings=18 max_defers=0 max_loops=3 max_saved=182 max_slots=1015 max_args=262 max_params=7 text=898252 data=200667 objects=568 symbols=11217 fixups=21625 relocations=8281 elf=1108040\n"
+      },
+      "verified_roots": [
+        "bootstrap::rules::literal",
+        "bootstrap::rules::unary",
+        "bootstrap::rules::cast",
+        "bootstrap::rules::add_size",
+        "bootstrap::rules::align_up",
+        "bootstrap::rules::binary"
+      ]
+    }
+  ],
+  "directory": "/tmp/b31-n5-independent-j00mxipo",
+  "independent_old_seed_policy_fixed_point": true,
+  "metrics_and_preservation": {
+    "metrics_reproduced_byte_equal": true,
+    "all_group_file_hashes_verified": true,
+    "covered_unique_paths": 75,
+    "production_modules": 13,
+    "preservation_checks": [
+      {
+        "argv": [
+          "python3",
+          "/home/mii/code/konOSuba/biomiya/docs/workflows/bootstrap-b31/clean_build.py",
+          "--record-dir",
+          "/tmp/b31-n5-metrics-q5vartoi/protected"
+        ],
+        "exit": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"/home/mii/code/konOSuba/biomiya/docs/workflows/bootstrap-b31/clean_build.py\", line 11, in <module>\n    record=args.record_dir.resolve();record.mkdir(parents=True,exist_ok=False)\n                                     ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mii/miniconda3/lib/python3.13/pathlib/_local.py\", line 722, in mkdir\n    os.mkdir(self, mode)\n    ~~~~~~~~^^^^^^^^^^^^\nFileExistsError: [Errno 17] File exists: '/tmp/b31-n5-metrics-q5vartoi/protected'\n"
+      },
+      {
+        "argv": [
+          "python3",
+          "/home/mii/code/konOSuba/biomiya/docs/workflows/bootstrap-b31/migration.py",
+          "/home/mii/code/konOSuba/biomiya/core-s",
+          "/home/mii/code/konOSuba/biomiya/core-s/build/b31-seed.elf",
+          "/tmp/b31-n5-metrics-q5vartoi/protected"
+        ],
+        "exit": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"/home/mii/code/konOSuba/biomiya/docs/workflows/bootstrap-b31/migration.py\", line 6, in <module>\n    evidence=pathlib.Path(sys.argv[3]).resolve(); evidence.mkdir(parents=True,exist_ok=False)\n                                                  ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/mii/miniconda3/lib/python3.13/pathlib/_local.py\", line 722, in mkdir\n    os.mkdir(self, mode)\n    ~~~~~~~~^^^^^^^^^^^^\nFileExistsError: [Errno 17] File exists: '/tmp/b31-n5-metrics-q5vartoi/protected'\n"
+      }
+    ]
+  },
+  "fresh_behavior": {
+    "cases": [
+      {
+        "source": "static mut n:u32=0;fn helper(x:u32)->u32{defer{unsafe{n=n+3_u32;}}return x*2_u32;}pub fn run()->u32{let v:u32=helper(19);unsafe{return v+n;}}",
+        "compile_argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n5-independent-j00mxipo/stage2/rebuilt.elf",
+          "build",
+          "case.build",
+          "--blocking",
+          "policy"
+        ],
+        "compile_exit": 0,
+        "compile_stderr": "Blocking scope: direct-call may-block analysis; not termination or IRQ safety\nBlocking run: Verified\nB3 sources=1 imports=0 assembly_files=0 source=141 assembly=0 names=7 name_bytes=15 decls=3 types=7 fields=0 params=1 max_ast=14 max_ir=16 max_frame=96 max_bindings=1 max_defers=1 max_loops=0 max_saved=11 max_slots=10 max_args=1 max_params=1 text=712 data=0 objects=1 symbols=20 fixups=25 relocations=0 elf=12289\n",
+        "program_exit": 41,
+        "elf_sha256": "573a4ebd1c0c0f2484c6c7378f6e94c3b60f83c75a5de11765459c3493aa6b19"
+      },
+      {
+        "source": "static mut n:u32=0;fn helper(x:u32)->u32{defer{unsafe{n=n+3_u32;}}return x*2_u32;}pub fn run()->u32{let v:u32=helper(23);unsafe{return v+n;}}",
+        "compile_argv": [
+          "/usr/bin/qemu-riscv64",
+          "-s",
+          "1048576",
+          "/tmp/b31-n5-independent-j00mxipo/stage2/rebuilt.elf",
+          "build",
+          "case.build",
+          "--blocking",
+          "policy"
+        ],
+        "compile_exit": 0,
+        "compile_stderr": "Blocking scope: direct-call may-block analysis; not termination or IRQ safety\nBlocking run: Verified\nB3 sources=1 imports=0 assembly_files=0 source=141 assembly=0 names=7 name_bytes=15 decls=3 types=7 fields=0 params=1 max_ast=14 max_ir=16 max_frame=96 max_bindings=1 max_defers=1 max_loops=0 max_saved=11 max_slots=10 max_args=1 max_params=1 text=712 data=0 objects=1 symbols=20 fixups=25 relocations=0 elf=12289\n",
+        "program_exit": 49,
+        "elf_sha256": "06a8a3e9417e5ca14dabfb910bdd1241f9967ddce7460bd3d49b408d378d9b46"
+      }
+    ],
+    "independent_build_syscalls": [
+      "close",
+      "exit",
+      "fchmod",
+      "openat",
+      "read",
+      "write"
+    ]
+  },
+  "whitespace": {
+    "all_staged_exit": 2,
+    "warnings": [
+      "docs/workflows/bootstrap-b31/N1-cargo-tests.log:181: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N1-final-cargo-tests.log:181: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N2-diagnostic-tests.log:9: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N2-final-frontend-tests.log:16: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N2-focused-tests.log:17: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N2-frontend-tests.log:17: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N3-final-frontend-tests.log:20: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N3-final-pure-tests.log:9: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N3-frontend-tests.log:20: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N3-machine-tests.log:14: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N4-b3-tests.log:21: new blank line at EOF.",
+      "docs/workflows/bootstrap-b31/N5-clean/N5-clean-tests.log:202: new blank line at EOF."
+    ],
+    "non_log_check_command": "git diff --cached --check -- . ':!*.log'",
+    "non_log_exit": 0
+  },
+  "scripts": {
+    "build_and_audit": "import pathlib,subprocess,hashlib,json,re,tempfile,struct,collections,os\nR=pathlib.Path('/home/mii/code/konOSuba/biomiya');C=R/'core-s';D=R/'docs/workflows/bootstrap-b31';sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();c=json.loads((D/'N5-r1-candidate.json').read_text());assert sha(D/'N5-r1-candidate.json')=='7a2e1b9a4ad12009295cd42c5f8be3a31ac1ece2adf9668ad3c9fb73a4d3ec89';assert len(c['files'])==134\nfor p,h in dict(c['files'],**c['input_hashes']).items():assert sha(R/p)==h,p\nfor p,h in json.loads((D/'N4-r1-candidate.json').read_text())['files'].items():assert sha(R/p)==h,p\nbaseline=json.loads((D/'baseline.json').read_text());products=dict(baseline['files'])\nfor ph in ['N1','N2','N3','N4']:products.update({p:h for p,h in json.loads((D/f'{ph}-r1-candidate.json').read_text())['files'].items() if p.startswith('core-s/')})\nfor p,h in products.items():\n if p!='core-s/README.md':assert sha(R/p)==h,p\nclean=json.loads((D/'N5-clean/N5-clean-build.json').read_text());migration=json.loads((D/'N5-migration/N5-migration.json').read_text());expected=json.loads((D/'N5-validation.json').read_text())['fixed_point_sha256']\nfor data,key in [(clean,'source_sha256'),(migration,'source_hashes')]:\n for p,h in data[key].items():assert sha(C/p)==h,p\noldlog=(R/'docs/workflows/bootstrap-b3/I-r2-clean/I-clean-tests.txt').read_text();log=(D/'N5-clean/N5-clean-tests.log').read_text();labels=lambda s:collections.Counter(re.findall(r'^test (\\S+) \\.\\.\\. ok$',s,re.M));old=labels(oldlog);new=labels(log);assert sum(old.values())==81 and sum(new.values())==91 and not(old-new);assert not re.search(r'[1-9]\\d* (?:failed|ignored)',log);assert sum(map(int,re.findall(r'test result: ok\\. (\\d+) passed',log)))==91\nassert clean['hashes']['c2']==clean['hashes']['c3']==expected;assert all(x['sha256']==expected for x in migration['generations']);assert sha(C/'build/b31-final.elf')==expected;assert sha(C/'build/b31-seed.elf')==baseline['seed_sha256']\nresult={'candidate_sha256':sha(D/'N5-r1-candidate.json'),'candidate_files':134,'all_inherited_product_hashes_unchanged':True,'clean_test_labels':{'retained':81,'current':91,'added':list((new-old).elements())},'author_trace_audit':[],'independent_builds':[]}\nmanifest=(C/'bootstrap/c1.build').read_text();inputs=[x.split()[1] for x in manifest.splitlines()if x.startswith(('source ','assembly '))]\n# Decode actual write payload lengths instead of searching interleaved syscall lines.\ndef trace_data(log,allowed):\n opened=re.findall(r'openat\\([^,]+,\"([^\"]+)\"',log);assert set(opened)<=set(allowed),set(opened)-set(allowed);assert 'execve('not in log and 'execveat('not in log;assert not any(x.endswith('compiler.elf') for x in opened)\n writes=[]\n for m in re.finditer(r'\\d+ write\\(2,0x[0-9a-f]+,(\\d+)\\)',log):\n  n=int(m[1]);payload=log[m.end():m.end()+n];assert log[m.end()+n:].startswith(f' = {n}\\n');writes.append(payload)\n return {'opened':opened,'stderr_payloads':''.join(writes)}\nfor i,row in enumerate(migration['generations'],1):\n td=trace_data((D/f'N5-migration/N5-d{i}.log').read_text(),inputs+['self.build','next.elf']+(['bootstrap/pure.blocking']if i==3 else[]));assert td['stderr_payloads']==row['statistics'];assert sorted(set(td['opened']))==row['allowed_opens'];result['author_trace_audit'].append(td)\n# Independent two-stage old-seed recovery and actual policy-enabled fixed point.\nroot=pathlib.Path(tempfile.mkdtemp(prefix='b31-n5-independent-'));result['directory']=str(root);compiler=(C/'build/b31-seed.elf').read_bytes()\nfor stage in [1,2]:\n t=root/f'stage{stage}';t.mkdir()\n for f in inputs:\n  q=t/f;q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes((C/f).read_bytes())\n (t/'self.build').write_text(re.sub(r'^output .*$', 'output rebuilt.elf',manifest,flags=re.M));(t/'compiler.elf').write_bytes(compiler);(t/'compiler.elf').chmod(0o755)\n args=['/usr/bin/qemu-riscv64','-s','1048576','-strace','compiler.elf','build','self.build'];allowed=inputs+['self.build','rebuilt.elf']\n if stage==2:\n  (t/'bootstrap/pure.blocking').write_bytes((C/'bootstrap/pure.blocking').read_bytes());args+=['--blocking','bootstrap/pure.blocking'];allowed+=['bootstrap/pure.blocking']\n p=subprocess.run(args,cwd=t,env={'PATH':''},capture_output=True,text=True,timeout=180);assert p.returncode==0,p.stderr[-2000:];td=trace_data(p.stderr,allowed);compiler=(t/'rebuilt.elf').read_bytes();assert hashlib.sha256(compiler).hexdigest()==expected\n roots=re.findall(r'^Blocking (bootstrap::rules::\\w+): Verified$',td['stderr_payloads'],re.M)\n if stage==2:assert set(roots)=={'bootstrap::rules::'+x for x in ['literal','unary','cast','add_size','align_up','binary']};assert ': Unknown'not in td['stderr_payloads']and ': Violation'not in td['stderr_payloads']\n ph=struct.unpack_from('<Q',compiler,32)[0];stride,count=struct.unpack_from('<HH',compiler,54);segments=[]\n for i in range(count):\n  a=struct.unpack_from('<IIQQQQQQ',compiler,ph+i*stride)\n  if a[0]==1:segments.append({'flags':a[1],'address':a[3],'file_bytes':a[5],'memory_bytes':a[6]})\n rw=sum(x['memory_bytes']for x in segments if x['flags']&2);span=max(x['address']+x['memory_bytes']for x in segments)-min(x['address']for x in segments);assert rw==53118748 and span==54023964 and max(rw,span)<=67108864\n result['independent_builds'].append({'stage':stage,'argv':args,'environment':{'PATH':''},'exit':p.returncode,'sha256':hashlib.sha256(compiler).hexdigest(),'elf_bytes':len(compiler),'segments':segments,'rw_bytes':rw,'image_span':span,'trace':p.stderr,'trace_decoded':td,'verified_roots':roots});print(f'Independent stage{stage} passed SHA256 {expected}; policy roots={len(roots)}',flush=True)\nassert(root/'stage1/rebuilt.elf').read_bytes()==(root/'stage2/rebuilt.elf').read_bytes();result['independent_old_seed_policy_fixed_point']=True\npathlib.Path('/tmp/b31-n5-independent-result.json').write_text(json.dumps(result,indent=2))\n",
+    "metrics_and_preservation": "import pathlib,tempfile,hashlib,json,subprocess,collections\nR=pathlib.Path('/home/mii/code/konOSuba/biomiya');D=R/'docs/workflows/bootstrap-b31';tmp=pathlib.Path(tempfile.mkdtemp(prefix='b31-n5-metrics-'));source=(D/'metrics.py').read_text();assert source.count(\"record=root/'docs/workflows/bootstrap-b31'\")==1;source=source.replace(\"record=root/'docs/workflows/bootstrap-b31'\",'record=Path('+repr(str(tmp))+')');exec(compile(source,str(D/'metrics.py'),'exec'),{'__file__':str(D/'metrics.py')});assert(tmp/'metrics.json').read_bytes()==(D/'metrics.json').read_bytes()\nm=json.loads((D/'metrics.json').read_text());allfiles=[]\nfor name,g in m['groups'].items():\n for f in g['files']:\n  p=R/f['path'];h=f.get('sha256',f.get('source_sha256'));assert hashlib.sha256(p.read_bytes()).hexdigest()==h,(name,p)\n  if 'first_line'in f:\n   assert 1<=f['first_line']<=f['last_line']<=len(p.read_bytes().splitlines()),(name,p)\n  allfiles.append(f['path'])\ncovered=set(allfiles)\nfor folder,extension in [('core-s/bootstrap','.vt'),('core-s/runtime','.vt'),('core-s/runtime','.s0'),('core-s/src','.rs'),('core-s/tests','.rs')]:\n actual={str(p.relative_to(R))for p in(R/folder).glob('*'+extension)};assert actual<=covered,(folder,actual-covered)\n# Both source-preserving tools refuse existing evidence directories before touching outputs.\nprotected=tmp/'protected';protected.mkdir();sentinel=protected/'sentinel';sentinel.write_bytes(b'keep');before=(R/'core-s/build/b31-final.elf').read_bytes()\nchecks=[]\nfor args in [['python3',str(D/'clean_build.py'),'--record-dir',str(protected)],['python3',str(D/'migration.py'),str(R/'core-s'),str(R/'core-s/build/b31-seed.elf'),str(protected)]]:\n p=subprocess.run(args,cwd=R,capture_output=True,text=True,timeout=10);assert p.returncode!=0 and sentinel.read_bytes()==b'keep' and len(list(protected.iterdir()))==1;assert(R/'core-s/build/b31-final.elf').read_bytes()==before;checks.append({'argv':args,'exit':p.returncode,'stderr':p.stderr})\npathlib.Path('/tmp/b31-n5-metrics-result.json').write_text(json.dumps({'metrics_reproduced_byte_equal':True,'all_group_file_hashes_verified':True,'covered_unique_paths':len(covered),'production_modules':len(m['groups']['target_compiler']['files']),'preservation_checks':checks},indent=2));print('Metrics byte reproducibility, complete product/test coverage and existing-evidence preservation passed')\n",
+    "fresh_behavior": "import pathlib,json,subprocess,hashlib,re\nr=json.loads(pathlib.Path('/tmp/b31-n5-independent-result.json').read_text());root=pathlib.Path(r['directory']);compiler=root/'stage2/rebuilt.elf';compiler.chmod(0o755);results=[]\nfor x,expected in [(19,41),(23,49)]:\n d=root/f'behavior-verified-{x}';d.mkdir();source=f'static mut n:u32=0;fn helper(x:u32)->u32{{defer{{unsafe{{n=n+3_u32;}}}}return x*2_u32;}}pub fn run()->u32{{let v:u32=helper({x});unsafe{{return v+n;}}}}';(d/'main.vt').write_text(source);(d/'case.build').write_text('format 1\\nprofile linux-user\\nentry run\\nsource main.vt\\noutput out.elf\\n');(d/'policy').write_text('format 1\\nrequire run\\n')\n args=['/usr/bin/qemu-riscv64','-s','1048576',str(compiler),'build','case.build','--blocking','policy'];p=subprocess.run(args,cwd=d,env={'PATH':''},capture_output=True,text=True,timeout=10);assert p.returncode==0 and 'Blocking run: Verified' in p.stderr,p.stderr;(d/'out.elf').chmod(0o755);q=subprocess.run(['/usr/bin/qemu-riscv64','-s','1048576','out.elf'],cwd=d,env={'PATH':''},capture_output=True,text=True,timeout=10);assert q.returncode==expected,(q.returncode,expected);results.append({'source':source,'compile_argv':args,'compile_exit':p.returncode,'compile_stderr':p.stderr,'program_exit':q.returncode,'elf_sha256':hashlib.sha256((d/'out.elf').read_bytes()).hexdigest()})\nassert results[0]['elf_sha256']!=results[1]['elf_sha256']\nsyscalls=set()\nfor row in r['independent_builds']:syscalls.update(re.findall(r'^\\d+ ([A-Za-z_][A-Za-z_0-9]*)\\(',row['trace'],re.M))\nassert syscalls<={'openat','read','write','close','exit','exit_group','fchmod'},syscalls\npathlib.Path('/tmp/b31-n5-behavior-result.json').write_text(json.dumps({'cases':results,'independent_build_syscalls':sorted(syscalls)},indent=2));print('Fresh final compiler source perturbations exit41/49, ELF differ, analysis Verified; syscalls='+str(sorted(syscalls)))\n"
+  },
+  "final_candidate_recheck": {
+    "candidate_sha256": "7a2e1b9a4ad12009295cd42c5f8be3a31ac1ece2adf9668ad3c9fb73a4d3ec89",
+    "frozen_files_checked": 134,
+    "all_match": true
+  }
+}

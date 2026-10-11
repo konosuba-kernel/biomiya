@@ -1,0 +1,41 @@
+{
+  "sha256": "c880ca4d0c6f3e943741ea14227359785335f1bee9e4d9323ddda14fd884f103",
+  "model_references": [
+    "BIN_ADD",
+    "BIN_AND",
+    "BIN_BIT_AND",
+    "BIN_BIT_OR",
+    "BIN_BIT_XOR",
+    "BIN_DIV",
+    "BIN_EQ",
+    "BIN_GE",
+    "BIN_GT",
+    "BIN_LE",
+    "BIN_LT",
+    "BIN_MUL",
+    "BIN_NE",
+    "BIN_OR",
+    "BIN_REM",
+    "BIN_SHL",
+    "BIN_SHR",
+    "BIN_SUB",
+    "BIN_WRAP_ADD",
+    "BIN_WRAP_MUL",
+    "BIN_WRAP_SUB",
+    "TYPE_BOOL",
+    "TYPE_POINTER",
+    "TYPE_U32",
+    "TYPE_U8",
+    "TYPE_UNIT",
+    "TYPE_USIZE",
+    "UNARY_BIT_NOT",
+    "UNARY_NEG",
+    "UNARY_NOT"
+  ],
+  "imports": [
+    "bootstrap::model"
+  ],
+  "all_model_references_are_constant_names": true,
+  "no_unsafe_or_static": true,
+  "scope": "Lexical boundary audit plus explicit-parameter execution tests; not a whole-language purity proof"
+}
