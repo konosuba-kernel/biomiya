@@ -1,0 +1,3 @@
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+fn run()->u32{defer core::panic();return 0;}

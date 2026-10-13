@@ -1,0 +1,980 @@
+module bootstrap::types;
+import bootstrap::model;
+import bootstrap::rules;
+import bootstrap::parse;
+// Semantic diagnostics are independent of the parser cursor.
+static mut diagnostic:model::Span = model::Span {
+    file:0,
+    start:0,
+    end:0
+};
+// Binding side tables mirror the syntax arenas. Header entries survive every
+// function reset; bind_function_types overwrites the reused function range.
+static mut nominal_types:[32769]u32 = [0;32769];
+static mut value_decls:[32769]u32 = [0;32769];
+static mut layout_state:[8193]u32 = [0;8193];
+static mut layout_depth:u32 = 0;
+static mut fullnames:[8193]u32 = [0;8193];
+static mut preparing:[8193]u32 = [0;8193];
+static mut module_state:[33]u32 = [0;33];
+static mut prepare_depth:u32 = 0;
+static mut type_depth:u32 = 0;
+static mut constant_depth:u32 = 0;
+pub struct Constant {
+    pub bits:usize,
+    pub ty:u32
+}
+
+pub fn fail(code:u32) -> () {
+    unsafe {
+        model::fail(code, diagnostic.file, diagnostic.start as usize);
+    }
+    return ();
+}
+
+pub fn locate(location:model::Span) -> () {
+    unsafe {
+        diagnostic = location;
+    }
+    return ();
+}
+
+pub fn limit(actual:usize, capacity:usize) -> () {
+    unsafe {
+        model::limit_at(actual, capacity, diagnostic.file, diagnostic.start as usize);
+    }
+    return ();
+}
+
+pub fn text(id:u32) -> []const u8 {
+    return parse::text(id);
+}
+
+pub fn join(a:[]const u8, b:[]const u8) -> u32 {
+    return parse::join(a, b);
+}
+
+pub fn view(bytes:[]const u8, start:usize, end:usize) -> []const u8 {
+    return parse::view(bytes, start, end);
+}
+
+pub fn find(module_id:u32, name:u32) -> u32 {
+    unsafe {
+        var i:u32 = 1;
+        while i <= model::decl_count() {
+            let d:model::Decl = model::get_decl(i);
+            if d.module_id == module_id && d.name == name {
+                return i;
+            }
+            i = i+1_u32;
+        }
+    }
+    return 0;
+}
+
+pub fn resolve(file:u32, name:u32, public_use:bool) -> u32 {
+    let raw:[]const u8 = text(name);
+    unsafe {
+        let module_id:u32 = model::sources[file as usize].module_id;
+        var full:u32 = join(text(module_id), raw);
+        var split:usize = 0;
+        while split+1_usize < raw.len && !(raw[split] == 58_u8 && raw[split+1_usize] == 58_u8) {
+            split = split+1_usize;
+        }
+        if split+1_usize < raw.len {
+            let head:u32 = model::name(view(raw, 0, split));
+            var matched:bool = false;
+            var k:u32 = 1;
+            while k <= model::import_count {
+                let item:model::Import = model::imports[k as usize];
+                if model::sources[item.file as usize].module_id == module_id && item.alias == head {
+                    full = join(text(item.module_id), view(raw, split+2_usize, raw.len));
+                    matched = true;
+                }
+                k = k+1_u32;
+            }
+            if !matched {
+                return 0;
+            }
+        }
+        var id:u32 = 1;
+        while id <= model::decl_count() {
+            let d:model::Decl = model::get_decl(id);
+            if fullnames[id as usize] == full {
+                if (d.flags&model::FLAG_PUBLIC) == 0_u32 && (d.module_id != module_id || public_use) {
+                    fail(model::ERROR_NAME);
+                }
+                return id;
+            }
+            id = id+1_u32;
+        }
+    }
+    return 0;
+}
+
+pub fn info(id:u32) -> model::Type {
+    unsafe {
+        if id == 0_u32 || id > model::type_count() {
+            fail(model::ERROR_INTERNAL);
+        }
+        return model::get_type(id);
+    }
+}
+
+fn size_add(value:usize, extra:usize) -> usize {
+    let result:rules::SizeRule = rules::add_size(value, extra);
+    if !result.ok {
+        limit(extra, 0xffffffffffffffff_usize-value);
+    }
+    return result.size;
+}
+
+pub fn align(value:usize, alignment:usize) -> usize {
+    if alignment == 0_usize || (alignment&(alignment-1_usize)) != 0_usize {
+        fail(model::ERROR_INTERNAL);
+    }
+    let result:rules::SizeRule = rules::align_up(value, alignment);
+    if !result.ok {
+        limit(alignment-1_usize, 0xffffffffffffffff_usize-value);
+    }
+    return result.size;
+}
+
+pub fn intern(kind:u32, a:u32, b:u32, flags:u32) -> u32 {
+    unsafe {
+        var i:u32 = 1;
+        while i <= model::type_count() {
+            let t:model::Type = model::get_type(i);
+            if t.kind == kind && t.a == a && t.b == b && t.flags == flags {
+                return i;
+            }
+            i = i+1_u32;
+        }
+        var size:usize = 8;
+        var alignment:usize = 8;
+        var payload:u32 = 0;
+        if kind == model::TYPE_ARRAY {
+            // An array identity can appear behind a pointer to a type whose
+            // layout is still pending. Only layout() follows its by-value edge.
+            size = 0;
+            alignment = 0;
+        }
+        if kind == model::TYPE_SLICE {
+            size = 16;
+        }
+        return model::add_type(model::Type {
+            kind:kind,
+            a:a,
+            b:b,
+            flags:flags,
+            size:size,
+            align:alignment,
+            first:payload,
+            count:0
+        });
+    }
+}
+
+pub fn pointer(target:u32, const_:bool) -> u32 {
+    var flag:u32 = 0;
+    if const_ {
+        flag = model::TYPE_CONST;
+    }
+    return intern(model::TYPE_POINTER, target, 0, flag);
+}
+
+pub fn scalar(ty:u32) -> bool {
+    let kind:u32 = info(ty).kind;
+    return kind <= model::TYPE_POINTER;
+}
+
+pub fn integer(ty:u32) -> bool {
+    return rules::integer(info(ty).kind);
+}
+
+pub fn max(ty:u32) -> usize {
+    return rules::max(info(ty).kind);
+}
+
+fn scalar_value(result:rules::ScalarRule) -> usize {
+    if !result.ok {
+        fail(model::ERROR_TYPE);
+    }
+    return result.bits;
+}
+
+pub fn literal(bits:usize, ty:u32) -> usize {
+    if ty == model::TYPE_INVALID {
+        fail(model::ERROR_TYPE);
+    }
+    return scalar_value(rules::literal(bits, info(ty).kind));
+}
+
+pub fn unary(op:u32, value:Constant) -> Constant {
+    return Constant {
+        bits:scalar_value(rules::unary(op, value.bits, info(value.ty).kind)),
+        ty:value.ty
+    };
+}
+
+pub fn cast(value:Constant, ty:u32) -> Constant {
+    return Constant {
+        bits:scalar_value(rules::cast(value.bits, info(value.ty).kind, info(ty).kind)),
+        ty:ty
+    };
+}
+
+pub fn apply(op:u32, a:usize, b:usize, ty:u32) -> usize {
+    return scalar_value(rules::binary(op, a, b, info(ty).kind));
+}
+
+pub fn named_type(file:u32, name:u32, public_use:bool) -> u32 {
+    let word:[]const u8 = text(name);
+    if model::equal(word, "bool") {
+        return model::TYPE_BOOL;
+    }
+    if model::equal(word, "u8") {
+        return model::TYPE_U8;
+    }
+    if model::equal(word, "u32") {
+        return model::TYPE_U32;
+    }
+    if model::equal(word, "usize") {
+        return model::TYPE_USIZE;
+    }
+    if model::equal(word, "u16") || model::equal(word, "u64") || model::equal(word, "isize") || model::equal(word, "i32") {
+        fail(model::ERROR_UNSUPPORTED);
+    }
+    let id:u32 = resolve(file, name, public_use);
+    if id == 0_u32 {
+        fail(model::ERROR_NAME);
+    }
+    unsafe {
+        if model::get_decl(id).kind != model::DECL_STRUCT && model::get_decl(id).kind != model::DECL_ENUM {
+            fail(model::ERROR_TYPE);
+        }
+        return model::get_decl(id).ty;
+    }
+}
+
+pub struct Variant {
+    pub found:bool,
+    pub ty:u32,
+    pub tag:u32,
+    pub payload:u32,
+    pub has_payload:bool,
+    pub offset:usize
+}
+
+// A constructor's final segment names a variant; the preceding path must bind
+// to an enum type. Ordinary module-qualified function names return not-found.
+pub fn variant(file:u32, name:u32) -> Variant {
+    var result:Variant = Variant {
+        found:false,
+        ty:0,
+        tag:0,
+        payload:0,
+        has_payload:false,
+        offset:0
+    };
+    let raw:[]const u8 = text(name);
+    var split:usize = 0;
+    var i:usize = 0;
+    unsafe {
+        while i+1_usize < raw.len {
+            if raw[i] == 58_u8 && raw[i+1_usize] == 58_u8 {
+                split = i;
+            }
+            i = i+1_usize;
+        }
+    }
+    if split == 0_usize {
+        return result;
+    }
+    let owner:u32 = resolve(file, model::name(view(raw, 0, split)), false);
+    if owner == 0_u32 {
+        return result;
+    }
+    unsafe {
+        let d:model::Decl = model::get_decl(owner);
+        if d.kind != model::DECL_ENUM {
+            return result;
+        }
+        let t:model::Type = info(d.ty);
+        let label:u32 = model::name(view(raw, split+2_usize, raw.len));
+        var tag:u32 = 0;
+        while tag < t.count {
+            let f:model::Field = model::get_field((t.first+tag));
+            if f.name == label {
+                return Variant {
+                    found:true,
+                    ty:d.ty,
+                    tag:tag,
+                    payload:f.ty,
+                    has_payload:(f.flags&model::FLAG_PAYLOAD) != 0_u32,
+                    offset:f.offset
+                };
+            }
+            tag = tag+1_u32;
+        }
+    }
+    fail(model::ERROR_NAME);
+    return result;
+}
+
+// Resolve every syntax name before any expression evaluation or layout.
+// Unknown value names remain absent because the same arena also contains local
+// names and intrinsic callee syntax. Constant checking requires a bound CONST.
+fn bind_range(first_node:u32, first_type:u32) -> () {
+    var id:u32 = first_type;
+    while id <= parse::type_limit() {
+        let n:parse::TypeSyntax = parse::type_node(id);
+        locate(n.span);
+        var ty:u32 = 0;
+        if n.kind == model::TYPE_STRUCT {
+            ty = named_type(n.span.file, n.a, false);
+        }
+        unsafe {
+            nominal_types[id as usize] = ty;
+        }
+        id = id+1_u32;
+    }
+    id = first_node;
+    unsafe {
+        while id <= parse::node_count() {
+            let n:parse::Node = parse::get(id);
+            locate(parse::location(id));
+            value_decls[id as usize] = 0;
+            if n.tag == model::AST_NAME {
+                value_decls[id as usize] = resolve(n.file, n.a, false);
+            }
+            id = id+1_u32;
+        }
+    }
+    return ();
+}
+
+fn require_public_type(id:u32) -> () {
+    let n:parse::TypeSyntax = parse::type_node(id);
+    locate(n.span);
+    if n.kind == model::TYPE_STRUCT {
+        unsafe {
+            let t:model::Type = info(nominal_types[id as usize]);
+            if (t.kind == model::TYPE_STRUCT || t.kind == model::TYPE_ENUM) && (model::get_decl(t.a).flags&model::FLAG_PUBLIC) == 0_u32 {
+                fail(model::ERROR_NAME);
+            }
+        }
+    } else if n.kind != model::TYPE_UNIT {
+        require_public_type(n.a);
+    }
+    return ();
+}
+
+fn bind_headers() -> () {
+    bind_range(1, 1);
+    unsafe {
+        var id:u32 = 1;
+        while id <= parse::header_count() {
+            let h:parse::Header = parse::header(id);
+            if (h.flags&model::FLAG_PUBLIC) != 0_u32 {
+                if h.ty != 0_u32 {
+                    require_public_type(h.ty);
+                }
+                var i:u32 = 0;
+                while i < h.count {
+                    let m:parse::Member = parse::member(h.first+i);
+                    if m.ty != 0_u32 && (h.kind != model::DECL_STRUCT || (m.flags&model::FLAG_PUBLIC) != 0_u32) {
+                        require_public_type(m.ty);
+                    }
+                    i = i+1_u32;
+                }
+            }
+            id = id+1_u32;
+        }
+    }
+    return ();
+}
+
+pub fn bind_function_types() -> () {
+    bind_range(parse::node_floor(), parse::type_floor());
+    // All names are now bound. Instantiate concrete local types, then complete
+    // their layouts before checks such as ptr_add can consume pointee sizes.
+    var id:u32 = parse::type_floor();
+    while id <= parse::type_limit() {
+        let n:parse::TypeSyntax = parse::type_node(id);
+        let ignored:u32 = syntax_type(id, n.span.file, false);
+        id = id+1_u32;
+    }
+    finish_layouts();
+    return ();
+}
+
+pub fn syntax_type(id:u32, file:u32, public_use:bool) -> u32 {
+    let n:parse::TypeSyntax = parse::type_node(id);
+    locate(n.span);
+    unsafe {
+        if type_depth >= 64_u32 {
+            limit((type_depth as usize)+1_usize, 64);
+        }
+        type_depth = type_depth+1_u32;
+    }
+    var ty:u32 = model::TYPE_UNIT;
+    if n.kind == model::TYPE_STRUCT {
+        unsafe {
+            ty = nominal_types[id as usize];
+            if ty == 0_u32 {
+                fail(model::ERROR_INTERNAL);
+            }
+        }
+    } else if n.kind != model::TYPE_UNIT {
+        let element:u32 = syntax_type(n.a, file, public_use);
+        var length:u32 = 0;
+        if n.kind == model::TYPE_ARRAY {
+            length = repeat_length(n.b);
+        }
+        ty = intern(n.kind, element, length, n.flags);
+    }
+    unsafe {
+        type_depth = type_depth-1_u32;
+    }
+    return ty;
+}
+
+pub fn field_visible(ty:u32, flags:u32, file:u32) -> bool {
+    if (flags&model::FLAG_PUBLIC) != 0_u32 {
+        return true;
+    }
+    unsafe {
+        return model::get_decl(info(ty).a).module_id == model::sources[file as usize].module_id;
+    }
+}
+
+pub fn constant_value(node:u32, expected:u32) -> Constant {
+    locate(parse::location(node));
+    unsafe {
+        if constant_depth >= 64_u32 {
+            limit((constant_depth as usize)+1_usize, 64);
+        }
+        constant_depth = constant_depth+1_u32;
+    }
+    let value:Constant = constant_inner(node, expected);
+    unsafe {
+        constant_depth = constant_depth-1_u32;
+    }
+    if expected != 0_u32 && value.ty != expected {
+        fail(model::ERROR_TYPE);
+    }
+    return value;
+}
+
+fn constant_inner(node:u32, expected:u32) -> Constant {
+    let n:parse::Node = parse::get(node);
+    if n.tag == model::AST_INTEGER {
+        var ty:u32 = n.a;
+        if ty == 0_u32 {
+            ty = expected;
+        }
+        return Constant {
+            bits:literal(n.bits, ty),
+            ty:ty
+        };
+    }
+    if n.tag == model::AST_BOOL {
+        return Constant {
+            bits:n.bits,
+            ty:model::TYPE_BOOL
+        };
+    }
+    if n.tag == model::AST_NAME {
+        var id:u32 = 0;
+        unsafe {
+            id = value_decls[node as usize];
+        }
+        if id == 0_u32 {
+            fail(model::ERROR_NAME);
+        }
+        unsafe {
+            let d:model::Decl = model::get_decl(id);
+            if d.kind != model::DECL_CONST || d.state != 2_u32 {
+                fail(model::ERROR_TYPE);
+            }
+            return Constant {
+                bits:d.bits,
+                ty:d.ty
+            };
+        }
+    }
+    if n.tag == model::AST_CAST {
+        let value:Constant = constant_value(n.a, 0);
+        let ty:u32 = syntax_type(n.b, n.file, false);
+        return cast(value, ty);
+    }
+    if n.tag == model::AST_UNARY {
+        return unary(n.a, constant_value(n.b, expected));
+    }
+    if n.tag == model::AST_BINARY {
+        var left_expected:u32 = expected;
+        if n.a >= model::BIN_EQ && n.a <= model::BIN_GE {
+            left_expected = 0;
+        }
+        let left:Constant = constant_value(n.b, left_expected);
+        let right:Constant = constant_value(n.c, left.ty);
+        var ty:u32 = left.ty;
+        if n.a >= model::BIN_EQ {
+            ty = model::TYPE_BOOL;
+        }
+        return Constant {
+            bits:apply(n.a, left.bits, right.bits, left.ty),
+            ty:ty
+        };
+    }
+    fail(model::ERROR_TYPE);
+    return Constant {
+        bits:0,
+        ty:0
+    };
+}
+
+pub fn repeat_length(node:u32) -> u32 {
+    let value:Constant = constant_value(node, model::TYPE_USIZE);
+    if value.bits > 4294967295_usize {
+        limit(value.bits, 4294967295);
+    }
+    return value.bits as u32;
+}
+
+pub fn layout(ty:u32) -> () {
+    var t:model::Type = info(ty);
+    if t.align != 0_usize {
+        return ();
+    }
+    unsafe {
+        if layout_state[ty as usize] == 1_u32 {
+            fail(model::ERROR_TYPE);
+        }
+        if layout_depth >= 64_u32 {
+            limit((layout_depth as usize)+1_usize, 64);
+        }
+        layout_depth = layout_depth+1_u32;
+        layout_state[ty as usize] = 1;
+        if t.kind == model::TYPE_STRUCT || t.kind == model::TYPE_ENUM {
+            prepare(t.a);
+        } else if t.kind == model::TYPE_ARRAY {
+            layout(t.a);
+            let element:model::Type = info(t.a);
+            if element.size != 0_usize && (t.b as usize) > 67108864_usize/element.size {
+                limit(t.b as usize, 67108864_usize/element.size);
+            }
+            t.size = element.size*(t.b as usize);
+            t.align = element.align;
+            model::complete_type(ty, t);
+        } else {
+            fail(model::ERROR_INTERNAL);
+        }
+        layout_state[ty as usize] = 2;
+        layout_depth = layout_depth-1_u32;
+    }
+    return ();
+}
+
+pub fn finish_layouts() -> () {
+    unsafe {
+        var id:u32 = 1;
+        while id <= model::type_count() {
+            layout(id);
+            id = id+1_u32;
+        }
+    }
+    return ();
+}
+
+pub fn zero_valid(ty:u32) -> bool {
+    let t:model::Type = info(ty);
+    if t.kind <= model::TYPE_POINTER || t.kind == model::TYPE_SLICE {
+        return true;
+    }
+    if t.kind == model::TYPE_ENUM {
+        unsafe {
+            return t.count != 0_u32 && (model::get_field(t.first).flags&model::FLAG_PAYLOAD) == 0_u32;
+        }
+    }
+    if t.kind == model::TYPE_ARRAY {
+        return zero_valid(t.a);
+    }
+    if t.kind == model::TYPE_STRUCT {
+        var i:u32 = 0;
+        unsafe {
+            while i < t.count {
+                if !zero_valid(model::get_field((t.first+i)).ty) {
+                    return false;
+                }
+                i = i+1_u32;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+pub fn check_zero(ty:u32, file:u32) -> () {
+    if ty == 0_u32 {
+        fail(model::ERROR_TYPE);
+    }
+    let t:model::Type = info(ty);
+    if t.kind == model::TYPE_ARRAY {
+        check_zero(t.a, file);
+        return ();
+    }
+    if t.kind == model::TYPE_STRUCT {
+        var i:u32 = 0;
+        unsafe {
+            while i < t.count {
+                let f:model::Field = model::get_field((t.first+i));
+                if !field_visible(ty, f.flags, file) {
+                    fail(model::ERROR_NAME);
+                }
+                check_zero(f.ty, file);
+                i = i+1_u32;
+            }
+        }
+        return ();
+    }
+    if !zero_valid(ty) {
+        fail(model::ERROR_TYPE);
+    }
+    return ();
+}
+
+pub fn prepare(id:u32) -> () {
+    unsafe {
+        if id == 0_u32 || id > model::decl_count() {
+            fail(model::ERROR_INTERNAL);
+        }
+        if preparing[id as usize] == 2_u32 {
+            return ();
+        }
+        if preparing[id as usize] == 1_u32 {
+            fail(model::ERROR_TYPE);
+        }
+        if prepare_depth >= 32_u32 {
+            limit((prepare_depth as usize)+1_usize, 32);
+        }
+        prepare_depth = prepare_depth+1_u32;
+        preparing[id as usize] = 1;
+        var d:model::Decl = model::get_decl(id);
+        let h:parse::Header = parse::header(id);
+        locate(model::Span {
+            file:h.file,
+            start:h.start,
+            end:h.end
+        });
+        let public_use:bool = (d.flags&model::FLAG_PUBLIC) != 0_u32;
+        if d.kind == model::DECL_STRUCT || d.kind == model::DECL_ENUM {
+            let variant_type:bool = d.kind == model::DECL_ENUM;
+            if variant_type && h.count == 0_u32 {
+                fail(model::ERROR_TYPE);
+            }
+            var fields:[256]model::Field = [model::Field {
+                name:0,
+                ty:0,
+                flags:0,
+                offset:0,
+                span:model::Span {
+                    file:0,
+                    start:0,
+                    end:0
+                }
+            };256];
+            var size:usize = 0;
+            var alignment:usize = 1;
+            if variant_type {
+                alignment = 4;
+            }
+            var i:u32 = 0;
+            while i < h.count {
+                let m:parse::Member = parse::member(h.first+i);
+                locate(m.span);
+                var j:u32 = 0;
+                while j < i {
+                    if fields[j as usize].name == m.name {
+                        fail(model::ERROR_NAME);
+                    }
+                    j = j+1_u32;
+                }
+                var ty:u32 = model::TYPE_UNIT;
+                if m.ty != 0_u32 {
+                    ty = syntax_type(m.ty, d.file, public_use);
+                }
+                layout(ty);
+                let t:model::Type = info(ty);
+                if !variant_type {
+                    size = align(size, t.align);
+                }
+                fields[i as usize] = model::Field {
+                    name:m.name,
+                    ty:ty,
+                    flags:m.flags,
+                    offset:size,
+                    span:m.span
+                };
+                if variant_type {
+                    if t.size > size {
+                        size = t.size;
+                    }
+                } else {
+                    size = size_add(size, t.size);
+                }
+                if t.align > alignment {
+                    alignment = t.align;
+                }
+                i = i+1_u32;
+            }
+            var payload_offset:usize = 0;
+            var kind:u32 = model::TYPE_STRUCT;
+            if variant_type {
+                kind = model::TYPE_ENUM;
+                payload_offset = align(4, alignment);
+                size = size_add(payload_offset, size);
+            }
+            let first:u32 = model::field_count()+1_u32;
+            i = 0;
+            while i < h.count {
+                if variant_type {
+                    fields[i as usize].offset = payload_offset;
+                }
+                let ignored:u32 = model::add_field(fields[i as usize]);
+                i = i+1_u32;
+            }
+            model::complete_type(d.ty, model::Type {
+                kind:kind,
+                a:id,
+                b:payload_offset as u32,
+                flags:0,
+                size:align(size, alignment),
+                align:alignment,
+                first:first,
+                count:h.count
+            });
+        } else if d.kind == model::DECL_FUNCTION || d.kind == model::DECL_EXTERN {
+            d.first = model::param_count()+1_u32;
+            d.count = h.count;
+            var i:u32 = 0;
+            while i < h.count {
+                let m:parse::Member = parse::member(h.first+i);
+                locate(m.span);
+                var j:u32 = 0;
+                while j < i {
+                    if parse::member(h.first+j).name == m.name {
+                        fail(model::ERROR_NAME);
+                    }
+                    j = j+1_u32;
+                }
+                let ty:u32 = syntax_type(m.ty, d.file, public_use);
+                layout(ty);
+                if d.kind == model::DECL_EXTERN && (!scalar(ty) || ty == model::TYPE_UNIT) {
+                    fail(model::ERROR_UNSUPPORTED);
+                }
+                let ignored:u32 = model::add_param(model::Param {
+                    name:m.name,
+                    ty:ty,
+                    span:m.span
+                });
+                i = i+1_u32;
+            }
+            d.ty = syntax_type(h.ty, d.file, public_use);
+            layout(d.ty);
+            if d.kind == model::DECL_EXTERN && !scalar(d.ty) {
+                fail(model::ERROR_UNSUPPORTED);
+            }
+        } else {
+            d.ty = syntax_type(h.ty, d.file, public_use);
+            if d.kind == model::DECL_CONST {
+                if !integer(d.ty) && d.ty != model::TYPE_BOOL {
+                    fail(model::ERROR_UNSUPPORTED);
+                }
+                d.bits = constant_value(h.init, d.ty).bits;
+            } else {
+                layout(d.ty);
+            }
+        }
+        d.state = 2;
+        model::complete_decl(id, d);
+        preparing[id as usize] = 2;
+        prepare_depth = prepare_depth-1_u32;
+    }
+    return ();
+}
+
+fn module_file(module_id:u32) -> u32 {
+    unsafe {
+        var file:u32 = 1;
+        while file <= model::source_count {
+            if model::sources[file as usize].module_id == module_id {
+                return file;
+            }
+            file = file+1_u32;
+        }
+    }
+    return 0;
+}
+
+fn reserved(name:u32) -> bool {
+    let raw:[]const u8 = text(name);
+    var first:usize = 0;
+    unsafe {
+        while first < raw.len && raw[first] != 58_u8 {
+            first = first+1_usize;
+        }
+    }
+    let head:[]const u8 = view(raw, 0, first);
+    return model::equal(head, "root") || model::equal(head, "core");
+}
+
+fn validate_imports() -> () {
+    unsafe {
+        var i:u32 = 1;
+        while i <= model::import_count {
+            let item:model::Import = model::imports[i as usize];
+            locate(item.span);
+            let owner:u32 = model::sources[item.file as usize].module_id;
+            if module_file(item.module_id) == 0_u32 || reserved(item.alias) || find(owner, item.alias) != 0_u32 {
+                fail(model::ERROR_NAME);
+            }
+            var j:u32 = 1;
+            while j < i {
+                let old:model::Import = model::imports[j as usize];
+                if model::sources[old.file as usize].module_id == owner && old.alias == item.alias {
+                    fail(model::ERROR_NAME);
+                }
+                j = j+1_u32;
+            }
+            i = i+1_u32;
+        }
+    }
+    return ();
+}
+
+// A module is completed only after every imported module. Constants within a
+// module follow manifest file order and declaration order; no recursive prepare.
+fn module_constants(file:u32) -> () {
+    unsafe {
+        if module_state[file as usize] == 2_u32 {
+            return ();
+        }
+        if module_state[file as usize] == 1_u32 {
+            fail(model::ERROR_NAME);
+        }
+        module_state[file as usize] = 1;
+        let module_id:u32 = model::sources[file as usize].module_id;
+        var i:u32 = 1;
+        while i <= model::import_count {
+            let item:model::Import = model::imports[i as usize];
+            if model::sources[item.file as usize].module_id == module_id {
+                locate(item.span);
+                module_constants(module_file(item.module_id));
+            }
+            i = i+1_u32;
+        }
+        i = 1;
+        while i <= model::decl_count() {
+            let d:model::Decl = model::get_decl(i);
+            if d.module_id == module_id && d.kind == model::DECL_CONST {
+                prepare(i);
+            }
+            i = i+1_u32;
+        }
+        module_state[file as usize] = 2;
+    }
+    return ();
+}
+
+pub fn collect() -> () {
+    parse::headers_collect();
+    unsafe {
+        var id:u32 = 1;
+        while id <= parse::header_count() {
+            let h:parse::Header = parse::header(id);
+            locate(model::Span {
+                file:h.file,
+                start:h.start,
+                end:h.end
+            });
+            let module_id:u32 = model::sources[h.file as usize].module_id;
+            if reserved(module_id) || reserved(h.name) || find(module_id, h.name) != 0_u32 {
+                fail(model::ERROR_NAME);
+            }
+            var symbol:u32 = 0;
+            var ty:u32 = 0;
+            if h.kind == model::DECL_STRUCT || h.kind == model::DECL_ENUM {
+                var kind:u32 = model::TYPE_STRUCT;
+                if h.kind == model::DECL_ENUM {
+                    kind = model::TYPE_ENUM;
+                }
+                ty = model::add_type(model::Type {
+                    kind:kind,
+                    a:id,
+                    b:0,
+                    flags:0,
+                    size:0,
+                    align:0,
+                    first:0,
+                    count:0
+                });
+            }
+            if h.kind == model::DECL_FUNCTION {
+                symbol = model::symbol(0, model::SYMBOL_FUNCTION);
+            }
+            if h.kind == model::DECL_EXTERN {
+                symbol = model::symbol(h.name, model::SYMBOL_FUNCTION);
+            }
+            if h.kind == model::DECL_STATIC {
+                symbol = model::symbol(0, model::SYMBOL_DATA);
+            }
+            let added:u32 = model::add_decl(model::Decl {
+                kind:h.kind,
+                name:h.name,
+                module_id:module_id,
+                file:h.file,
+                flags:h.flags,
+                ty:ty,
+                first:0,
+                count:0,
+                start:h.start,
+                end:h.end,
+                init_start:0,
+                init_end:0,
+                symbol:symbol,
+                bits:0,
+                state:0
+            });
+            if added != id {
+                fail(model::ERROR_INTERNAL);
+            }
+            fullnames[id as usize] = join(text(module_id), text(h.name));
+            if module_file(fullnames[id as usize]) != 0_u32 {
+                fail(model::ERROR_NAME);
+            }
+            preparing[id as usize] = 0;
+            id = id+1_u32;
+        }
+        validate_imports();
+        bind_headers();
+        var file:u32 = 1;
+        while file <= model::source_count {
+            module_state[file as usize] = 0;
+            file = file+1_u32;
+        }
+        file = 1;
+        while file <= model::source_count {
+            module_constants(module_file(model::sources[file as usize].module_id));
+            file = file+1_u32;
+        }
+        id = 1;
+        while id <= model::decl_count() {
+            prepare(id);
+            id = id+1_u32;
+        }
+        finish_layouts();
+    }
+    return ();
+}

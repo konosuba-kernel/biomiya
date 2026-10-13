@@ -1,0 +1,5 @@
+module sample;
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+fn crash()->(){core::panic();return();}
+fn run()->u32{defer note(65);defer crash();defer note(67);return 0;}

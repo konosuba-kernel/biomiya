@@ -1,0 +1,42 @@
+module probe;
+import bootstrap::model;
+import bootstrap::lex;
+import bootstrap::input;
+import runtime::linux;
+pub fn run() -> u32 {
+ model::reset_all();
+ var path:[]const u8 = "";
+ match linux::argument(1) { linux::BytesResult::Value(p)=>{path=p;},linux::BytesResult::Failed(e)=>{return 2;}, }
+ input::load(path);
+ unsafe {
+  if !model::equal(input::entry_name(),"probe::run") {return 3;}
+  var file:u32 = 1;
+  while file <= input::source_count() {
+   var offset:usize = 0;
+   loop {let t:model::Token=lex::next(file,offset);if t.kind==0_u32 {break;} offset=t.end as usize;}
+   file=file+1_u32;
+  }
+  input::save(input::source(1).bytes);
+ }
+ return 0;
+}
+pub fn tokens() -> u32 {
+ model::reset_all();
+ unsafe {
+  input::begin_compile();
+  let file:u32 = input::add_source("test", "/*a /*b*/ */ 0xff_u8 123_456_usize abc \"a\\x00\" <<");
+  input::freeze();
+  let a:model::Token=lex::next(1,0);
+  if a.kind!=2_u32 || a.number!=255_usize || a.suffix!=3_u32 || a.start!=13_u32 || a.end!=20_u32 {return 1;}
+  let b:model::Token=lex::next(1,a.end as usize);
+  if b.number!=123456_usize || b.suffix!=5_u32 {return 2;}
+  let c:model::Token=lex::next(1,b.end as usize);
+  if !lex::is(c,"abc") {return 3;}
+  let d:model::Token=lex::next(1,c.end as usize);
+  var out:[4]u8=[0;4];let n:usize=lex::decode(d,core::slice_of_mut(out));
+  if n!=2_usize || out[0]!=97_u8 || out[1]!=0_u8 {return 4;}
+  let e:model::Token=lex::next(1,d.end as usize);if !lex::is(e,"<<") {return 5;}
+  let f:model::Token=lex::next(1,e.end as usize);if f.kind!=0_u32 {return 6;}
+ }
+ return 0;
+}

@@ -1,0 +1,1 @@
+module sample; import values as v; fn run()->u32{let e=v::Answer::Value(42);match e{v::Answer::None=>{return 0;},v::Answer::Value(x)=>{return x;},}}

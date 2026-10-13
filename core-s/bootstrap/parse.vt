@@ -146,168 +146,168 @@ pub fn expression(minimum:u32, head:bool) -> u32 {
     return result;
 }
 
-fn expression_inner(minimum:u32, head:bool) -> u32 {
-    let sp:u32 = start();
+// Opening [ has already been consumed; this function consumes the closing ].
+fn array_expression(sp:u32) -> u32 {
+    var value:u32 = 0;
+    unsafe {
+        if types::eat("]") {
+            value = add(model::AST_ARRAY, 0, 0, 0, 0, 0, sp);
+        } else {
+            let first:u32 = expression(0, false);
+            if types::eat(";") {
+                let n:types::Constant = types::constant(0, model::TYPE_USIZE);
+                if !types::integer(n.ty) {
+                    types::fail(model::ERROR_TYPE);
+                }
+                if n.bits > 4294967295_usize {
+                    model::limit_at(n.bits, 4294967295, types::token.file, types::token.start as usize);
+                }
+                types::need("]");
+                value = add(model::AST_REPEAT, first, n.bits as u32, 0, 0, 0, sp);
+            } else {
+                var tail:u32 = first;
+                while types::eat(",") && !types::at("]") {
+                    tail = append(tail, expression(0, false));
+                }
+                types::need("]");
+                value = add(model::AST_ARRAY, first, 0, 0, 0, 0, sp);
+            }
+        }
+    }
+    return value;
+}
+
+// Parse a path and its optional Result, pointer or struct constructor.
+fn named_expression(sp:u32, head:bool) -> u32 {
+    var value:u32 = 0;
+    unsafe {
+        if types::at("offsetof") || types::at("Option") {
+            types::fail(model::ERROR_UNSUPPORTED);
+        }
+        let name:u32 = types::path();
+        let text:[]const u8 = types::text(name);
+        if model::equal(text, "Result") && types::at("::") {
+            let ty:u32 = result_type();
+            types::need("::");
+            var tag:u32 = model::RESULT_OK;
+            if types::eat("Ok") {
+                tag = model::RESULT_OK;
+            } else {
+                types::need("Err");
+                tag = model::RESULT_ERR;
+            }
+            types::need("(");
+            let payload:u32 = expression(0, false);
+            types::need(")");
+            value = add(model::AST_RESULT, ty, tag, payload, 0, 0, sp);
+        } else if model::equal(text, "core::ptr") && types::eat("::") {
+            types::need("<");
+            let ty:u32 = types::type_expr(false);
+            types::close_gt();
+            types::need("(");
+            let arg:u32 = expression(0, false);
+            types::need(")");
+            value = add(model::AST_POINTER, ty, arg, 0, 0, 0, sp);
+        } else if !head && types::eat("{") {
+            if types::shadowed(name) {
+                types::fail(model::ERROR_TYPE);
+            }
+            let decl:u32 = types::resolve(types::token.file, name, false);
+            if decl == 0_u32 {
+                types::fail(model::ERROR_NAME);
+            }
+            if model::decls[decl as usize].kind != model::DECL_STRUCT {
+                types::fail(model::ERROR_TYPE);
+            }
+            let ty:u32 = model::decls[decl as usize].ty;
+            types::layout(ty);
+            var first:u32 = 0;
+            var tail:u32 = 0;
+            while !types::eat("}") {
+                let field:u32 = types::ident();
+                types::need(":");
+                let expr:u32 = expression(0, false);
+                let pair:u32 = add(model::AST_FIELD_VALUE, field, expr, 0, 0, 0, sp);
+                if first == 0_u32 {
+                    first = pair;
+                }
+                tail = append(tail, pair);
+                if !types::eat(",") {
+                    types::need("}");
+                    break;
+                }
+            }
+            value = add(model::AST_STRUCT, ty, first, 0, 0, 0, sp);
+        } else {
+            value = add(model::AST_NAME, name, 0, 0, 0, 0, sp);
+        }
+
+    }
+    return value;
+}
+
+fn primary(sp:u32, head:bool) -> u32 {
     var value:u32 = 0;
     unsafe {
         if types::token.kind == model::TOKEN_NUMBER {
             value = add(model::AST_INTEGER, types::token.suffix, 0, 0, 0, types::token.number, sp);
             types::advance();
-        }
-        else {
-            if types::token.kind == model::TOKEN_STRING {
-                let len:usize = lex::decode(types::token, core::slice_of_mut(string_buffer));
-                let name:u32 = model::name(core::slice_from_raw_parts(core::slice_of(string_buffer).data, len));
-                value = add(model::AST_STRING, name, 0, 0, 0, 0, sp);
-                types::advance();
+        } else if types::token.kind == model::TOKEN_STRING {
+            let len:usize = lex::decode(types::token, core::slice_of_mut(string_buffer));
+            let name:u32 = model::name(core::slice_from_raw_parts(core::slice_of(string_buffer).data, len));
+            value = add(model::AST_STRING, name, 0, 0, 0, 0, sp);
+            types::advance();
+        } else if types::eat("true") {
+            value = add(model::AST_BOOL, 0, 0, 0, 0, 1, sp);
+        } else if types::eat("false") {
+            value = add(model::AST_BOOL, 0, 0, 0, 0, 0, sp);
+        } else if types::eat("null") {
+            value = add(model::AST_NULL, 0, 0, 0, 0, 0, sp);
+        } else if types::eat("(") {
+            if types::eat(")") {
+                value = add(model::AST_UNIT, 0, 0, 0, 0, 0, sp);
             } else {
-                if types::eat("true") {
-                    value = add(model::AST_BOOL, 0, 0, 0, 0, 1, sp);
-                }
-                else {
-                    if types::eat("false") {
-                        value = add(model::AST_BOOL, 0, 0, 0, 0, 0, sp);
-                    }
-                    else {
-                        if types::eat("null") {
-                            value = add(model::AST_NULL, 0, 0, 0, 0, 0, sp);
-                        }
-                        else {
-                            if types::eat("(") {
-                                if types::eat(")") {
-                                    value = add(model::AST_UNIT, 0, 0, 0, 0, 0, sp);
-                                } else {
-                                    value = expression(0, false);
-                                    types::need(")");
-                                }
-                            }
-                            else {
-                                if types::eat("[") {
-                                    if types::eat("]") {
-                                        value = add(model::AST_ARRAY, 0, 0, 0, 0, 0, sp);
-                                    }
-                                    else {
-                                        let first:u32 = expression(0, false);
-                                        if types::eat(";") {
-                                            let n:types::Constant = types::constant(0, model::TYPE_USIZE);
-                                            if !types::integer(n.ty) {
-                                                types::fail(model::ERROR_TYPE);
-                                            }
-                                            if n.bits > 4294967295_usize {
-                                                model::limit_at(n.bits, 4294967295, types::token.file, types::token.start as usize);
-                                            }
-                                            types::need("]");
-                                            value = add(model::AST_REPEAT, first, n.bits as u32, 0, 0, 0, sp);
-                                        }
-                                        else {
-                                            var tail:u32 = first;
-                                            while types::eat(",") && !types::at("]") {
-                                                tail = append(tail, expression(0, false));
-                                            }
-                                            types::need("]");
-                                            value = add(model::AST_ARRAY, first, 0, 0, 0, 0, sp);
-                                        }
-                                    }
-                                } else {
-                                    if types::at("!") || types::at("~") || types::at("-") || types::at("*") {
-                                        var op:u32 = model::UNARY_NOT;
-                                        if types::at("~") {
-                                            op = model::UNARY_BIT_NOT;
-                                        }
-                                        if types::at("-") {
-                                            op = model::UNARY_NEG;
-                                        }
-                                        if types::at("*") {
-                                            op = model::UNARY_DEREF;
-                                        }
-                                        types::advance();
-                                        value = add(model::AST_UNARY, op, expression(12, head), 0, 0, 0, sp);
-                                    } else {
-                                        if types::at("sizeof") || types::at("alignof") {
-                                            var kind:u32 = model::AST_SIZEOF;
-                                            if types::at("alignof") {
-                                                kind = model::AST_ALIGNOF;
-                                            }
-                                            types::advance();
-                                            types::need("(");
-                                            let ty:u32 = types::type_expr(false);
-                                            types::need(")");
-                                            types::layout(ty);
-                                            value = add(kind, ty, 0, 0, 0, 0, sp);
-                                        } else {
-                                            if types::at("offsetof") || types::at("Option") {
-                                                types::fail(model::ERROR_UNSUPPORTED);
-                                            }
-                                            let name:u32 = types::path();
-                                            let text:[]const u8 = types::text(name);
-                                            if model::equal(text, "Result") && types::at("::") {
-                                                let ty:u32 = result_type();
-                                                types::need("::");
-                                                var tag:u32 = model::RESULT_OK;
-                                                if types::eat("Ok") {
-                                                    tag = model::RESULT_OK;
-                                                } else {
-                                                    types::need("Err");
-                                                    tag = model::RESULT_ERR;
-                                                }
-                                                types::need("(");
-                                                let payload:u32 = expression(0, false);
-                                                types::need(")");
-                                                value = add(model::AST_RESULT, ty, tag, payload, 0, 0, sp);
-                                            } else {
-                                                if model::equal(text, "core::ptr") && types::eat("::") {
-                                                    types::need("<");
-                                                    let ty:u32 = types::type_expr(false);
-                                                    types::close_gt();
-                                                    types::need("(");
-                                                    let arg:u32 = expression(0, false);
-                                                    types::need(")");
-                                                    value = add(model::AST_POINTER, ty, arg, 0, 0, 0, sp);
-                                                } else {
-                                                    if !head && types::eat("{") {
-                                                        if types::shadowed(name) {
-                                                            types::fail(model::ERROR_TYPE);
-                                                        }
-                                                        let decl:u32 = types::resolve(types::token.file, name, false);
-                                                        if decl == 0_u32 {
-                                                            types::fail(model::ERROR_NAME);
-                                                        }
-                                                        if model::decls[decl as usize].kind != model::DECL_STRUCT {
-                                                            types::fail(model::ERROR_TYPE);
-                                                        }
-                                                        let ty:u32 = model::decls[decl as usize].ty;
-                                                        types::layout(ty);
-                                                        var first:u32 = 0;
-                                                        var tail:u32 = 0;
-                                                        while !types::eat("}") {
-                                                            let field:u32 = types::ident();
-                                                            types::need(":");
-                                                            let expr:u32 = expression(0, false);
-                                                            let pair:u32 = add(model::AST_FIELD_VALUE, field, expr, 0, 0, 0, sp);
-                                                            if first == 0_u32 {
-                                                                first = pair;
-                                                            }
-                                                            tail = append(tail, pair);
-                                                            if !types::eat(",") {
-                                                                types::need("}");
-                                                                break;
-                                                            }
-                                                        }
-                                                        value = add(model::AST_STRUCT, ty, first, 0, 0, 0, sp);
-                                                    } else {
-                                                        value = add(model::AST_NAME, name, 0, 0, 0, 0, sp);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                value = expression(0, false);
+                types::need(")");
             }
+        } else if types::eat("[") {
+            value = array_expression(sp);
+        } else if types::at("!") || types::at("~") || types::at("-") || types::at("*") {
+            var op:u32 = model::UNARY_NOT;
+            if types::at("~") {
+                op = model::UNARY_BIT_NOT;
+            }
+            if types::at("-") {
+                op = model::UNARY_NEG;
+            }
+            if types::at("*") {
+                op = model::UNARY_DEREF;
+            }
+            types::advance();
+            value = add(model::AST_UNARY, op, expression(12, head), 0, 0, 0, sp);
+        } else if types::at("sizeof") || types::at("alignof") {
+            var kind:u32 = model::AST_SIZEOF;
+            if types::at("alignof") {
+                kind = model::AST_ALIGNOF;
+            }
+            types::advance();
+            types::need("(");
+            let ty:u32 = types::type_expr(false);
+            types::need(")");
+            types::layout(ty);
+            value = add(kind, ty, 0, 0, 0, 0, sp);
+        } else {
+            value = named_expression(sp, head);
         }
+    }
+    return value;
+}
+
+// Precedence climbing extends one primary; recursion budgets stay in expression().
+fn expression_inner(minimum:u32, head:bool) -> u32 {
+    let sp:u32 = start();
+    var value:u32 = primary(sp, head);
+    unsafe {
         loop {
             if minimum <= 13_u32 && types::eat(".") {
                 value = add(model::AST_FIELD, value, types::ident(), 0, 0, 0, sp);

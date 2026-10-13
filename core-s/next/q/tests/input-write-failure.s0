@@ -1,0 +1,16 @@
+# Test shim: with a 32-byte input, write seven bytes then fail the next write.
+# Diagnostic writes to stderr remain usable. No production source is changed.
+__b2_syscall6:
+addi x5,x0,64
+bne x10,x5,.Lreal
+sltiu x5,x11,3
+bne x5,x0,.Lreal
+addi x5,x0,32
+bne x13,x5,.Lfail
+addi x13,x0,7
+jump __b2_real
+.Lfail:
+addi x10,x0,-5
+jalr x0,0(x1)
+.Lreal:
+jump __b2_real

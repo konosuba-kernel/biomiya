@@ -1,0 +1,1 @@
+module sample; static x:u32=42; static p:*const u32=core::addr_of(x); fn run()->u32{unsafe{return *p;}}

@@ -1,0 +1,1 @@
+module sample; enum E{Empty,Next(*[1]E)} fn run()->u32{return sizeof(E) as u32;}

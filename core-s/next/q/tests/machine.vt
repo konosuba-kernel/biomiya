@@ -1,0 +1,611 @@
+module machine_test;
+import bootstrap::model;
+import bootstrap::image;
+import bootstrap::ir;
+import bootstrap::rv64;
+import bootstrap::types;
+import bootstrap::s0;
+import runtime::linux;
+static mut assembly:[1048577]u8 = zero;
+fn decl(result:model::TypeId, first:u32, count:u32) -> u32 {
+    return model::add_decl(make model::Decl {
+        kind:model::DECL_FUNCTION, name:model::no_name(), module_id:model::no_name(), file:2, flags:0,
+        ty:result, first:first, count:count, start:0, end:0,
+        init_start:0, init_end:0, symbol:image::fresh(), bits:0, state:2
+    });
+}
+
+fn where_() -> model::Span {
+    return make model::Span {
+        file:2, start:17, end:18
+    };
+}
+
+fn begin(id:u32) -> ir::LabelId {
+    ir::begin_function(id);
+    ir::locate(where_());
+    let label:ir::LabelId = ir::label_id();
+    ir::append(ir::Instruction::Label(label));
+    return label;
+}
+
+fn finish(id:u32) -> () {
+    ir::finish_ir();
+    let slots:u32 = ir::slot_count();
+    let insts:u32 = ir::inst_count();
+    let arguments:u32 = ir::arg_count();
+    let revision:u32 = ir::function_revision();
+    rv64::verify_function(id);
+    rv64::emit_function(id);
+    if slots != ir::slot_count() || insts != ir::inst_count() || arguments != ir::arg_count() || revision != ir::function_revision() {
+        model::fail(model::ERROR_INTERNAL, 2, 9001);
+    }
+    ir::end_function();
+    return ();
+}
+
+fn empty_arguments() -> ir::ArgumentRange {
+    let values:[0]ir::SlotId = [ir::no_slot();0];
+    return ir::arguments(core::slice_of(values));
+}
+
+fn simple(mode:[]const u8) -> u32 {
+    let f:u32 = decl(model::u32_type(), 0, 0);
+    let start:u32 = rv64::start(model::get_decl(f).symbol);
+    let first:ir::LabelId = begin(f);
+    type_probe(mode);
+    if model::equal(mode, "badtype") {
+        let malformed:model::TypeId = model::add_type(make model::Type { kind:3, element:model::no_type(), owner:0, b:0, flags:0, size:2, align:1, first:0, count:0 });
+    }
+    if model::equal(mode, "badoffsetconst") || model::equal(mode, "badoffsetmut") {
+        let mutable:model::TypeId = types::pointer(model::u8_type(), false);
+        let frozen:model::TypeId = types::pointer(model::u8_type(), true);
+        var source_type:model::TypeId = mutable;
+        var destination_type:model::TypeId = frozen;
+        if model::equal(mode, "badoffsetmut") { source_type = frozen; destination_type = mutable; }
+        let source:ir::SlotId = ir::slot(source_type);
+        let destination:ir::SlotId = ir::slot(destination_type);
+        ir::append(ir::Instruction::Offset(make ir::Offset { destination:destination, address:source, bytes:ir::value(model::usize_type(), 0) }));
+    }
+    var result:ir::SlotId = ir::value(model::u32_type(), 42);
+    if model::equal(mode, "overflow") || model::equal(mode, "wrap") || model::equal(mode, "divzero") || model::equal(mode, "shift") {
+        let a:ir::SlotId = ir::value(model::u8_type(), 255);
+        var b:ir::SlotId = ir::value(model::u8_type(), 1);
+        var op:u32 = model::BIN_ADD;
+        if model::equal(mode, "wrap") {
+            op = model::BIN_WRAP_ADD;
+        }
+        if model::equal(mode, "divzero") {
+            op = model::BIN_DIV;
+            b = ir::value(model::u8_type(), 0);
+        }
+        if model::equal(mode, "shift") {
+            op = model::BIN_SHL;
+            b = ir::value(model::u8_type(), 8);
+        }
+        result = ir::cast(ir::binary(op, a, b, model::u8_type()), model::u32_type());
+    }
+    if model::equal(mode, "badir") {
+        let wrong:ir::SlotId = ir::value(model::u8_type(), 1);
+        ir::append(ir::Instruction::Copy(make ir::Copy {
+            destination:result, source:wrong
+        }));
+    }
+    if model::equal(mode, "badpointer") {
+        ir::append(ir::Instruction::Load(make ir::Load {
+            destination:result, address:result
+        }));
+    }
+    if model::equal(mode, "badreturn") {
+        ir::return_value(ir::Destination::Unit);
+    }
+    else {
+        ir::return_value(ir::Destination::Slot(result));
+    }
+    if model::equal(mode, "badlabel") {
+        let missing:ir::LabelId = ir::label_id();
+        ir::append(ir::Instruction::Jump(missing));
+    }
+    if model::equal(mode, "duplicatelabel") {
+        ir::append(ir::Instruction::Label(first));
+        ir::return_value(ir::Destination::Slot(result));
+    }
+    if model::equal(mode, "badslot") {
+        ir::append(ir::Instruction::Return(ir::Destination::Slot(ir::no_slot())));
+    }
+    if model::equal(mode, "afterterm") {
+        ir::append(ir::Instruction::Value(make ir::Value {
+            destination:result, bits:1
+        }));
+    }
+    if model::equal(mode, "noverify") {
+        ir::finish_ir();
+        rv64::emit_function(f);
+    }
+    if model::equal(mode, "sealed") {
+        ir::finish_ir();
+        let invalid:ir::SlotId = ir::slot(model::u32_type());
+    }
+    if model::equal(mode, "twice") {
+        ir::finish_ir();
+        rv64::verify_function(f);
+        rv64::emit_function(f);
+        rv64::emit_function(f);
+    }
+    if model::equal(mode, "staleslot") || model::equal(mode, "stalelabel") || model::equal(mode, "stalerange") {
+        let range:ir::ArgumentRange = empty_arguments();
+        ir::end_function();
+        let second:ir::LabelId = begin(f);
+        if model::equal(mode, "staleslot") {
+            let wrong:model::TypeId = ir::type_of(result);
+        }
+        if model::equal(mode, "stalelabel") {
+            let wrong:u32 = ir::label_index(first);
+        }
+        if model::equal(mode, "stalerange") {
+            let wrong:u32 = ir::argument_count(range);
+        }
+    }
+    finish(f);
+    return start;
+}
+
+fn expect(value:ir::SlotId, expected:usize) -> () {
+    let good:ir::LabelId = ir::label_id();
+    let bad:ir::LabelId = ir::label_id();
+    let equal:ir::SlotId = ir::binary(model::BIN_EQ, value, ir::value(ir::type_of(value), expected), model::bool_type());
+    ir::branch(equal, good, bad);
+    ir::label(bad);
+    ir::panic_();
+    ir::label(good);
+    return ();
+}
+fn operators() -> u32 {
+    let f:u32 = decl(model::u32_type(), 0, 0);
+    let start:u32 = rv64::start(model::get_decl(f).symbol);
+    let first:ir::LabelId = begin(f);
+    expect(ir::binary(model::BIN_ADD, ir::value(model::u32_type(), 20), ir::value(model::u32_type(), 22), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_SUB, ir::value(model::u32_type(), 64), ir::value(model::u32_type(), 22), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_MUL, ir::value(model::u32_type(), 6), ir::value(model::u32_type(), 7), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_DIV, ir::value(model::u32_type(), 85), ir::value(model::u32_type(), 2), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_REM, ir::value(model::u32_type(), 127), ir::value(model::u32_type(), 85), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_WRAP_ADD, ir::value(model::u8_type(), 255), ir::value(model::u8_type(), 43), model::u8_type()), 42);
+    expect(ir::binary(model::BIN_WRAP_SUB, ir::value(model::u8_type(), 0), ir::value(model::u8_type(), 214), model::u8_type()), 42);
+    expect(ir::binary(model::BIN_WRAP_MUL, ir::value(model::u8_type(), 149), ir::value(model::u8_type(), 2), model::u8_type()), 42);
+    expect(ir::binary(model::BIN_SHL, ir::value(model::u32_type(), 21), ir::value(model::u32_type(), 1), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_SHR, ir::value(model::u32_type(), 84), ir::value(model::u32_type(), 1), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_BIT_AND, ir::value(model::u32_type(), 63), ir::value(model::u32_type(), 42), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_BIT_OR, ir::value(model::u32_type(), 40), ir::value(model::u32_type(), 2), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_BIT_XOR, ir::value(model::u32_type(), 43), ir::value(model::u32_type(), 1), model::u32_type()), 42);
+    expect(ir::binary(model::BIN_EQ, ir::value(model::u32_type(), 42), ir::value(model::u32_type(), 42), model::bool_type()), 1);
+    expect(ir::binary(model::BIN_NE, ir::value(model::u32_type(), 42), ir::value(model::u32_type(), 43), model::bool_type()), 1);
+    expect(ir::binary(model::BIN_LT, ir::value(model::u32_type(), 42), ir::value(model::u32_type(), 43), model::bool_type()), 1);
+    expect(ir::binary(model::BIN_LE, ir::value(model::u32_type(), 42), ir::value(model::u32_type(), 42), model::bool_type()), 1);
+    expect(ir::binary(model::BIN_GT, ir::value(model::u32_type(), 43), ir::value(model::u32_type(), 42), model::bool_type()), 1);
+    expect(ir::binary(model::BIN_GE, ir::value(model::u32_type(), 42), ir::value(model::u32_type(), 42), model::bool_type()), 1);
+    expect(ir::unary(model::UNARY_NOT, ir::value(model::bool_type(), 0), model::bool_type()), 1);
+    expect(ir::unary(model::UNARY_BIT_NOT, ir::value(model::u8_type(), 213), model::u8_type()), 42);
+    expect(ir::unary(model::UNARY_NEG, ir::value(model::u32_type(), 0), model::u32_type()), 0);
+    ir::return_value(ir::Destination::Slot(ir::value(model::u32_type(), 42)));
+    finish(f);
+    return start;
+}
+fn structure(mode:[]const u8) -> u32 {
+    let f:u32 = decl(model::u32_type(), 0, 0);
+    let start:u32 = rv64::start(model::get_decl(f).symbol);
+    ir::begin_function(f);
+    ir::locate(where_());
+    let first:ir::LabelId = ir::label_id();
+    if !model::equal(mode, "nolabel") {
+        var initial:ir::LabelId = first;
+        if model::equal(mode, "label_two") { initial = ir::label_id(); }
+        ir::append(ir::Instruction::Label(initial));
+    }
+    let value:ir::SlotId = ir::value(model::u32_type(), 42);
+    if model::equal(mode, "empty") {
+        ir::append(ir::Instruction::Empty);
+    }
+    if model::equal(mode, "callcount") {
+        let values:[1]ir::SlotId = [value;1];
+        ir::call(ir::Destination::Slot(value), f, ir::arguments(core::slice_of(values)));
+    }
+    if model::equal(mode, "calltype") {
+        ir::call(ir::Destination::Unit, f, empty_arguments());
+    }
+    if model::equal(mode, "badcallee") {
+        ir::call(ir::Destination::Slot(value), 999, empty_arguments());
+    }
+    if model::equal(mode, "labels_zero") {
+        ir::append(ir::Instruction::Jump(ir::no_label()));
+    }
+    if model::equal(mode, "labels_high") || model::equal(mode, "labels_missing") || model::equal(mode, "labels_limit") {
+        var last:ir::LabelId = first;
+        var n:u32 = 1;
+        while n < 65536_u32 {
+            last = ir::label_id();
+            n = n+1_u32;
+        }
+        if model::equal(mode, "labels_limit") {
+            let excess:ir::LabelId = ir::label_id();
+        }
+        ir::append(ir::Instruction::Jump(last));
+        if !model::equal(mode, "labels_missing") {
+            ir::append(ir::Instruction::Label(last));
+        }
+    }
+    if model::equal(mode, "arguments_high") || model::equal(mode, "arguments_limit") {
+        let values:[1]ir::SlotId = [value;1];
+        var n:u32 = 0;
+        var last:ir::ArgumentRange = empty_arguments();
+        while n < 65536_u32 {
+            last = ir::arguments(core::slice_of(values));
+            n = n+1_u32;
+        }
+        if ir::argument_count(last) != 1_u32 || ir::slot_index(ir::argument(last, 0)) != ir::slot_index(value) || ir::argument_count(empty_arguments()) != 0_u32 {
+            model::fail(model::ERROR_INTERNAL, 2, 9002);
+        }
+        if model::equal(mode, "arguments_limit") {
+            let excess:ir::ArgumentRange = ir::arguments(core::slice_of(values));
+        }
+    }
+    if model::equal(mode, "slot_alias") {
+        let invalid:ir::SlotId = ir::slot_id(131073);
+    }
+    if model::equal(mode, "frame_limit") {
+        let huge:model::TypeId = model::add_type(make model::Type {
+            kind:model::TYPE_ARRAY, element:model::u8_type(), owner:0, b:262145,
+            flags:0, size:262145, align:1, first:0, count:0
+        });
+        let invalid:ir::SlotId = ir::slot(huge);
+    }
+    if !model::equal(mode, "unterminated") {
+        ir::return_value(ir::Destination::Slot(value));
+    }
+    finish(f);
+    return start;
+}
+fn aggregate(with_data:bool) -> u32 {
+    let array:model::TypeId = model::add_type(make model::Type {
+        kind:model::TYPE_ARRAY, element:model::u32_type(), owner:0, b:2, flags:0,
+        size:8, align:4, first:0, count:0
+    });
+    var p:u32 = 0;
+    var first:u32 = 0;
+    while p < 10_u32 {
+        var ty:model::TypeId = model::u32_type();
+        if p == 9_u32 {
+            ty = array;
+        }
+        let id:u32 = model::add_param(make model::Param {
+            name:model::no_name(), ty:ty, span:where_()
+        });
+        if p == 0_u32 {
+            first = id;
+        }
+        p = p+1_u32;
+    }
+    let callee:u32 = decl(array, first, 10);
+    let caller:u32 = decl(model::u32_type(), 0, 0);
+    let start:u32 = rv64::start(model::get_decl(caller).symbol);
+    let entry:ir::LabelId = begin(callee);
+    var params:[10]ir::SlotId = [ir::no_slot();10];
+    p = 0;
+    while p < 10_u32 {
+        let slot:ir::SlotId = ir::slot(model::get_param(first+p).ty);
+        ir::mark_parameter(slot);
+        unsafe {
+            params[p as usize] = slot;
+        }
+        p = p+1_u32;
+    }
+    unsafe {
+        let result:ir::SlotId = ir::snapshot(params[9]);
+        let address:ir::SlotId = ir::local_address(result, model::u32_type(), 0, false);
+        let sum:ir::SlotId = ir::binary(model::BIN_ADD, ir::load(address, model::u32_type()), params[0], model::u32_type());
+        ir::store(address, sum);
+        ir::return_value(ir::Destination::Slot(result));
+    }
+    finish(callee);
+    let caller_entry:ir::LabelId = begin(caller);
+    var args:[10]ir::SlotId = [ir::no_slot();10];
+    p = 0;
+    while p < 9_u32 {
+        unsafe {
+            args[p as usize] = ir::value(model::u32_type(), (p+1_u32) as usize);
+        }
+        p = p+1_u32;
+    }
+    let original:ir::SlotId = ir::slot(array);
+    var initial:usize = 20;
+    var second:usize = 21;
+    if with_data { initial = 10; second = 20; }
+    ir::store(ir::local_address(original, model::u32_type(), 0, false), ir::value(model::u32_type(), initial));
+    let field:ir::SlotId = ir::offset(ir::local_address(original, array, 0, false), ir::value(model::usize_type(), 4), model::u32_type(), false);
+    ir::store(field, ir::value(model::u32_type(), second));
+    unsafe {
+        args[9] = ir::snapshot(original);
+    }
+    ir::store(ir::local_address(original, model::u32_type(), 0, false), ir::value(model::u32_type(), 99));
+    let output:ir::SlotId = ir::slot(array);
+    ir::call(ir::Destination::Slot(output), callee, ir::arguments(core::slice_of(args)));
+    let a:ir::SlotId = ir::load(ir::local_address(output, model::u32_type(), 0, false), model::u32_type());
+    let b:ir::SlotId = ir::load(ir::local_address(output, model::u32_type(), 4, false), model::u32_type());
+    var total:ir::SlotId = ir::binary(model::BIN_ADD, a, b, model::u32_type());
+    if with_data {
+        let chars:u32 = image::symbol("chars");
+        let link:u32 = image::symbol("link");
+        let bss:u32 = image::symbol("bss");
+        image::data(chars, false, 1, "AB", 0);
+        image::data(link, true, 8, "00000000", 0);
+        image::data(bss, true, 4096, "", 8192);
+        image::abs64(link, 0, chars, 1);
+        let pointer:model::TypeId = types::pointer(model::u8_type(), false);
+        let address:ir::SlotId = ir::load(ir::symbol_address(link, pointer, false), pointer);
+        let byte:ir::SlotId = ir::load(address, model::u8_type());
+        total = ir::binary(model::BIN_ADD, total, ir::cast(byte, model::u32_type()), model::u32_type());
+        let end:ir::SlotId = ir::offset(ir::symbol_address(bss, model::u8_type(), false), ir::value(model::usize_type(), 8191), model::u8_type(), false);
+        total = ir::binary(model::BIN_ADD, total, ir::cast(ir::load(end, model::u8_type()), model::u32_type()), model::u32_type());
+    }
+    ir::return_value(ir::Destination::Slot(total));
+    finish(caller);
+    return start;
+}
+
+fn pending_record() -> model::TypeId {
+    return model::add_type(make model::Type {
+        kind:model::TYPE_STRUCT, element:model::no_type(), owner:0, b:0,
+        flags:0, size:0, align:0, first:0, count:0
+    });
+}
+fn complete_record(id:model::TypeId, element:model::TypeId, size:usize, alignment:usize) -> () {
+    let field:u32 = model::add_field(make model::Field {
+        name:model::no_name(), ty:element, flags:0, offset:0, span:where_()
+    });
+    model::complete_type(id, make model::Type {
+        kind:model::TYPE_STRUCT, element:model::no_type(), owner:0, b:0,
+        flags:0, size:size, align:alignment, first:field, count:1
+    });
+    return ();
+}
+fn type_probe(mode:[]const u8) -> () {
+    if model::equal(mode, "badcycle") || model::equal(mode, "badmutualcycle") {
+        let first:model::TypeId = pending_record();
+        var target:model::TypeId = first;
+        if model::equal(mode, "badmutualcycle") {
+            target = pending_record();
+        }
+        complete_record(first, target, 0, 1);
+        if !model::same_type(first, target) {
+            complete_record(target, first, 0, 1);
+        }
+    }
+    if model::equal(mode, "selfpointer") || model::equal(mode, "selfslice") {
+        let target:model::TypeId = pending_record();
+        var kind:u32 = model::TYPE_POINTER;
+        var size:usize = 8;
+        if model::equal(mode, "selfslice") {
+            kind = model::TYPE_SLICE;
+            size = 16;
+        }
+        let pointer:model::TypeId = model::add_type(make model::Type {
+            kind:kind, element:target, owner:0, b:0, flags:0,
+            size:size, align:8, first:0, count:0
+        });
+        complete_record(target, pointer, size, 8);
+    }
+    return ();
+}
+
+fn array(element:model::TypeId, count:u32, size:usize, alignment:usize) -> model::TypeId {
+    return model::add_type(make model::Type {
+        kind:model::TYPE_ARRAY, element:element, owner:0, b:count, flags:0,
+        size:size, align:alignment, first:0, count:0
+    });
+}
+fn copy_overlap() -> u32 {
+    let bytes:model::TypeId = array(model::u8_type(), 8, 8, 1);
+    let huge:model::TypeId = array(model::u8_type(), 4096, 4096, 1);
+    let zero_size:model::TypeId = array(model::usize_type(), 0, 0, 8);
+    let pzero:u32 = model::add_param(make model::Param { name:model::no_name(), ty:zero_size, span:where_() });
+    let punit:u32 = model::add_param(make model::Param { name:model::no_name(), ty:model::unit_type(), span:where_() });
+    let identity:u32 = decl(zero_size, pzero, 1);
+    let unit:u32 = decl(model::unit_type(), punit, 1);
+    let caller:u32 = decl(model::usize_type(), 0, 0);
+    let start:u32 = rv64::start(model::get_decl(caller).symbol);
+    let first:ir::LabelId = begin(identity);
+    let zp:ir::SlotId = ir::slot(zero_size);
+    ir::mark_parameter(zp);
+    ir::return_value(ir::Destination::Slot(zp));
+    finish(identity);
+    let second:ir::LabelId = begin(unit);
+    let up:ir::SlotId = ir::slot(model::unit_type());
+    ir::mark_parameter(up);
+    ir::return_value(ir::Destination::Unit);
+    finish(unit);
+    let third:ir::LabelId = begin(caller);
+    let large:ir::SlotId = ir::slot(huge);
+    // The RV64 frame assigns these three byte-aligned slots contiguously.
+    // Both raw overlapping regions stay inside this reserved frame storage.
+    let before:ir::SlotId = ir::slot(bytes);
+    let source:ir::SlotId = ir::slot(bytes);
+    let after:ir::SlotId = ir::slot(bytes);
+    var n:usize = 0;
+    while n < 8_usize {
+        ir::store(ir::local_address(source, model::u8_type(), n, false), ir::value(model::u8_type(), n));
+        n = n+1_usize;
+    }
+    let base:ir::SlotId = ir::local_address(source, bytes, 0, false);
+    let destination:ir::SlotId = ir::offset(base, ir::value(model::usize_type(), 2), bytes, false);
+    ir::store(destination, source);
+    let backward:ir::SlotId = ir::cast(ir::load(ir::local_address(source, model::u8_type(), 5, false), model::u8_type()), model::usize_type());
+    let earlier:ir::SlotId = ir::binary(model::BIN_SUB, ir::bitcast(base, model::usize_type()), ir::value(model::usize_type(), 2), model::usize_type());
+    ir::store(ir::bitcast(earlier, ir::type_of(base)), source);
+    let forward:ir::SlotId = ir::cast(ir::load(ir::local_address(source, model::u8_type(), 3, false), model::u8_type()), model::usize_type());
+    let z:ir::SlotId = ir::slot(zero_size);
+    let result:ir::SlotId = ir::slot(zero_size);
+    let za:[1]ir::SlotId = [z;1];
+    ir::call(ir::Destination::Slot(result), identity, ir::arguments(core::slice_of(za)));
+    let ua:[1]ir::SlotId = [ir::value(model::unit_type(), 0);1];
+    ir::call(ir::Destination::Unit, unit, ir::arguments(core::slice_of(ua)));
+    ir::return_value(ir::Destination::Slot(ir::binary(model::BIN_ADD, backward, forward, model::usize_type())));
+    finish(caller);
+    return start;
+}
+
+fn sparse_body(id:u32, high:u32, number:usize, mode:[]const u8, first:u32, second:u32) -> () {
+    let entry:ir::LabelId = begin(id);
+    var last:ir::LabelId = entry;
+    var n:u32 = 1;
+    while n < high { last = ir::label_id(); n = n+1_u32; }
+    var missing:ir::LabelId = last;
+    if model::equal(mode, "labels_yes_missing") || model::equal(mode, "labels_no_missing") {
+        while n < 65536_u32 { missing = ir::label_id(); n = n+1_u32; }
+    }
+    var yes:ir::LabelId = last;
+    var no:ir::LabelId = last;
+    if model::equal(mode, "labels_yes_missing") { yes = missing; }
+    if model::equal(mode, "labels_no_missing") { no = missing; }
+    let condition:ir::SlotId = ir::value(model::bool_type(), 1);
+    if !model::equal(mode, "labels_fallthrough") {
+        ir::append(ir::Instruction::Branch(make ir::Branch { condition:condition, yes:yes, no:no }));
+    }
+    ir::append(ir::Instruction::Label(last));
+    var result:ir::SlotId = ir::value(model::u32_type(), number);
+    if first != 0_u32 {
+        let a:ir::SlotId = ir::slot(model::u32_type());
+        let b:ir::SlotId = ir::slot(model::u32_type());
+        ir::call(ir::Destination::Slot(a), first, empty_arguments());
+        ir::call(ir::Destination::Slot(b), second, empty_arguments());
+        result = ir::binary(model::BIN_ADD, a, b, model::u32_type());
+    }
+    ir::return_value(ir::Destination::Slot(result));
+    finish(id);
+    return ();
+}
+fn sparse(mode:[]const u8) -> u32 {
+    let first:u32 = decl(model::u32_type(), 0, 0);
+    let second:u32 = decl(model::u32_type(), 0, 0);
+    let third:u32 = decl(model::u32_type(), 0, 0);
+    let start:u32 = rv64::start(model::get_decl(third).symbol);
+    sparse_body(first, 65536, 41, "", 0, 0);
+    sparse_body(second, 2, 1, "", 0, 0);
+    var high:u32 = 65536;
+    if model::equal(mode, "labels_yes_missing") || model::equal(mode, "labels_no_missing") { high = 2; }
+    sparse_body(third, high, 0, mode, first, second);
+    return start;
+}
+
+fn constants() -> u32 {
+    let entry:u32 = image::fresh();
+    image::define(entry, 1, 0);
+    let numbers:[13]usize = [0, 2047, 2048, 4095, 32767, 32768, 268435455, 2147483648, 4294967295, 9223372036854775807, 9223372036854775808, 18446744073709549568, 18446744073709551615];
+    rv64::i(19, 0, 2, 2, 18446744073709551504);
+    var j:usize = 0;
+    while j < 13_usize {
+        unsafe {
+            rv64::constant(5, numbers[j]);
+        }
+        rv64::s(3, 5, 2, j*8_usize);
+        j = j+1_usize;
+    }
+    rv64::constant(10, 1);
+    rv64::i(19, 0, 11, 2, 0);
+    rv64::constant(12, 104);
+    rv64::constant(17, 64);
+    image::word(115);
+    rv64::constant(10, 0);
+    rv64::constant(17, 93);
+    image::word(115);
+    return entry;
+}
+
+fn invalid_data(mode:[]const u8) -> u32 {
+    let entry:u32 = image::fresh();
+    image::define(entry, 1, 0);
+    image::word(3221229683);
+    let data:u32 = image::symbol("data");
+    image::data(data, true, 8, "0000000000000000", 0);
+    if model::equal(mode, "duplicate") {
+        image::data(data, true, 8, "00000000", 0);
+    }
+    if model::equal(mode, "absout") {
+        image::abs64(data, 9, entry, 0);
+    }
+    if model::equal(mode, "absunder") {
+        image::abs64(data, 0, entry, 18446744073709486079);
+    }
+    if model::equal(mode, "overlap") {
+        image::abs64(data, 0, entry, 0);
+        image::abs64(data, 4, entry, 0);
+    }
+    if model::equal(mode, "jumpdata") {
+        rv64::transfer(0, data, true);
+    }
+    if model::equal(mode, "undefined") {
+        rv64::transfer(0, image::symbol("missing"), true);
+    }
+    return entry;
+}
+
+pub fn run() -> u32 {
+    var mode:[]const u8 = "simple";
+    match linux::argument(1) {
+        linux::BytesResult::Value(value) => {
+            mode = value;
+        },
+        linux::BytesResult::Failed(error) => {
+            return error;
+        },
+    }
+    if sizeof(ir::Inst) != 48_usize || sizeof(ir::Instruction) != 32_usize || sizeof(ir::SlotId) != 4_usize || sizeof(ir::LabelId) != 4_usize || sizeof(ir::ArgumentRange) != 8_usize || sizeof(ir::Destination) != 8_usize {
+        return 99;
+    }
+    model::reset_all();
+    image::begin_compile();
+    image::begin_text();
+    var entry:u32 = 0;
+    if model::equal(mode, "asm") {
+        unsafe {
+            match linux::read_file("input.s0", core::slice_of_mut(assembly)) {
+                linux::CountResult::Value(n) => { s0::parse(7, core::slice_from_raw_parts(core::slice_of(assembly).data, n)); },
+                linux::CountResult::Failed(error) => { return error; },
+            }
+        }
+        entry = image::symbol("entry");
+    } else if model::equal(mode, "labels_reuse") || model::equal(mode, "labels_yes_missing") || model::equal(mode, "labels_no_missing") || model::equal(mode, "labels_fallthrough") {
+        entry = sparse(mode);
+    } else if model::equal(mode, "copy_overlap") {
+        entry = copy_overlap();
+    } else if model::equal(mode, "constants") {
+        entry = constants();
+    } else if model::equal(mode, "duplicate") || model::equal(mode, "absout") || model::equal(mode, "absunder") || model::equal(mode, "overlap") || model::equal(mode, "jumpdata") || model::equal(mode, "undefined") {
+        entry = invalid_data(mode);
+    } else if model::equal(mode, "aggregate") || model::equal(mode, "abs64") {
+        entry = aggregate(model::equal(mode, "abs64"));
+    } else if model::equal(mode, "operators") {
+        entry = operators();
+    } else if model::equal(mode, "empty") || model::equal(mode, "nolabel") || model::equal(mode, "label_two") || model::equal(mode, "callcount") || model::equal(mode, "calltype") || model::equal(mode, "badcallee") || model::equal(mode, "labels_zero") || model::equal(mode, "labels_high") || model::equal(mode, "labels_missing") || model::equal(mode, "labels_limit") || model::equal(mode, "slot_alias") || model::equal(mode, "frame_limit") || model::equal(mode, "unterminated") || model::equal(mode, "arguments_high") || model::equal(mode, "arguments_limit") {
+        entry = structure(mode);
+    } else {
+        entry = simple(mode);
+    }
+    let output:[]const u8 = image::finish(entry);
+    match linux::create_new("out.elf") {
+        linux::CountResult::Failed(error) => {
+            return error;
+        },
+        linux::CountResult::Value(fd) => {
+            unsafe {
+                match linux::write_all(fd, output) {
+                    linux::WriteResult::Done => {
+                    },
+                    linux::WriteResult::Failed(error) => {
+                        let ignored:u32 = linux::close(fd);
+                        return error;
+                    },
+                }
+            }
+            return linux::close(fd);
+        },
+    }
+}

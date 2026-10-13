@@ -1,0 +1,12 @@
+# Test shim: force repeated reads and writes without changing production runtime.
+__b2_syscall6:
+addi x5,x0,63
+beq x10,x5,.Lshort
+addi x5,x0,64
+bne x10,x5,.Lreal
+.Lshort:
+sltiu x5,x13,8
+bne x5,x0,.Lreal
+addi x13,x0,7
+.Lreal:
+jump __b2_real

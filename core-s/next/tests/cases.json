@@ -1,0 +1,250 @@
+[
+  {
+    "name": "assignment_order",
+    "source": "assignment_order.vt",
+    "assembly": "trace.s0",
+    "exit": 42,
+    "stdout": "AB"
+  },
+  {
+    "name": "assignment_destination",
+    "source": "assignment_destination.vt",
+    "assembly": "trace.s0",
+    "exit": 42,
+    "stdout": ""
+  },
+  {
+    "name": "assignment_bounds_first",
+    "source": "assignment_bounds_first.vt",
+    "assembly": "trace.s0",
+    "exit": 101,
+    "stdout": "A"
+  },
+  {
+    "name": "call_scalar_snapshot",
+    "source": "call_scalar_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": ""
+  },
+  {
+    "name": "call_aggregate_snapshot",
+    "source": "call_aggregate_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": ""
+  },
+  {
+    "name": "defer_scalar_snapshot",
+    "source": "defer_scalar_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A"
+  },
+  {
+    "name": "defer_aggregate_snapshot",
+    "source": "defer_aggregate_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A"
+  },
+  {
+    "name": "defer_pointer_value",
+    "source": "defer_pointer_value.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "B"
+  },
+  {
+    "name": "defer_nested_lifo",
+    "source": "defer_nested_lifo.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "CBDA"
+  },
+  {
+    "name": "defer_branch",
+    "source": "defer_branch.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "AC"
+  },
+  {
+    "name": "defer_loop_exits",
+    "source": "defer_loop_exits.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "ABC"
+  },
+  {
+    "name": "defer_nested_loop",
+    "source": "defer_nested_loop.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "CDBEA"
+  },
+  {
+    "name": "defer_return_snapshot",
+    "source": "defer_return_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": "A"
+  },
+  {
+    "name": "defer_return_aggregate",
+    "source": "defer_return_aggregate.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": ""
+  },
+  {
+    "name": "defer_panic_no_unwind",
+    "source": "defer_panic_no_unwind.vt",
+    "assembly": "trace.s0",
+    "exit": 101,
+    "stdout": ""
+  },
+  {
+    "name": "defer_cleanup_panic",
+    "source": "defer_cleanup_panic.vt",
+    "assembly": "trace.s0",
+    "exit": 101,
+    "stdout": "C"
+  },
+  {
+    "name": "defer_partial_arguments",
+    "source": "defer_partial_arguments.vt",
+    "assembly": "trace.s0",
+    "exit": 101,
+    "stdout": "AB"
+  },
+  {
+    "name": "defer_nested_arguments",
+    "source": "defer_nested_arguments.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "ABCDE"
+  },
+  {
+    "name": "defer_over_eight_args",
+    "source": "defer_over_eight_args.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A"
+  },
+  {
+    "name": "defer_extern",
+    "source": "defer_extern.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A",
+    "blocking": {
+      "root": "run",
+      "external": "emit"
+    }
+  },
+  {
+    "name": "defer_binding_identity",
+    "source": "defer_binding_identity.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A"
+  },
+  {
+    "name": "explicit_rollback",
+    "source": "explicit_rollback.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": "ABC"
+  },
+  {
+    "name": "reject_block_defer",
+    "source": "reject_block_defer.vt",
+    "assembly": "trace.s0",
+    "reject": "I_UNSUPPORTED"
+  },
+  {
+    "name": "reject_question",
+    "source": "reject_question.vt",
+    "assembly": "trace.s0",
+    "reject": "I_UNSUPPORTED"
+  },
+  {
+    "name": "reject_defer_value",
+    "source": "reject_defer_value.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "reject_defer_intrinsic",
+    "source": "reject_defer_intrinsic.vt",
+    "assembly": "trace.s0",
+    "reject": "I_UNSUPPORTED"
+  },
+  {
+    "name": "reject_defer_expression",
+    "source": "reject_defer_expression.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "reject_defer_arity",
+    "source": "reject_defer_arity.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "reject_defer_permission",
+    "source": "reject_defer_permission.vt",
+    "assembly": "trace.s0",
+    "reject": "E_PERMISSION"
+  },
+  {
+    "name": "reject_defer_shadow",
+    "source": "reject_defer_shadow.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "reject_uninitialized",
+    "source": "reject_uninitialized.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "reject_dead_cleanup",
+    "source": "reject_dead_cleanup.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "reject_defer_later_local",
+    "source": "reject_defer_later_local.vt",
+    "assembly": "trace.s0",
+    "reject": "E_NAME"
+  },
+  {
+    "name": "file_read_failure_closes",
+    "source": "file_read_failure_closes.vt",
+    "assembly": "io.s0",
+    "exit": 42,
+    "stdout": "C"
+  },
+  {
+    "name": "defer_many_iterations",
+    "source": "defer_many_iterations.vt",
+    "exit": 42,
+    "stdout": ""
+  },
+  {
+    "name": "defer_capacity_1024",
+    "source": "defer_capacity_1024.vt",
+    "exit": 42,
+    "stdout": ""
+  },
+  {
+    "name": "defer_capacity_1025",
+    "source": "defer_capacity_1025.vt",
+    "reject": "I_LIMIT"
+  }
+]

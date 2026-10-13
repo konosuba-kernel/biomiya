@@ -1,0 +1,44 @@
+module frontlife;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::image;
+import bootstrap::parse;
+import bootstrap::types;
+import bootstrap::init;
+import runtime::linux;
+pub fn run() -> u32 {
+    var mode:[]const u8 = "good";
+    if linux::argc() > 1_usize {
+        match linux::argument(1) {
+            linux::BytesResult::Value(value) => { mode = value; },
+            linux::BytesResult::Failed(_) => { return 2; }
+        }
+    }
+    if sizeof(parse::Node) != 40_usize || sizeof(parse::TypeSyntax) != 24_usize { return 3; }
+    model::reset_all();
+    input::begin_compile();
+    let file:u32 = input::add_source("memory", "module demo; const N:u32=7; fn f()->(){let a:[1]u8=[3];return ();}");
+    input::freeze();
+    image::begin_compile();
+    types::collect();
+    let constant:parse::Header = parse::header(1);
+    let function:parse::Header = parse::header(2);
+    parse::reset(file);
+    parse::seek(file,function.start);
+    let old:parse::NodeId = parse::block();
+    let old_type:parse::TypeSyntaxId = parse::first_type(false);
+    types::bind_function_types();
+    parse::reset(0);
+    if model::equal(mode,"end-node") { let stale:parse::Node = parse::get(old); return 4; }
+    parse::reset(file);
+    parse::seek(file,function.start);
+    let current:parse::NodeId = parse::block();
+    types::bind_function_types();
+    if model::equal(mode,"stale-node") { let stale:parse::Node = parse::get(old); return 5; }
+    if model::equal(mode,"stale-type") { let stale:parse::TypeSyntax = parse::type_node(old_type); return 6; }
+    if types::constant_value(constant.init,model::u32_type()).bits != 7_usize { return 7; }
+    if !model::same_type(types::syntax_type(constant.ty,file,false), model::u32_type()) { return 8; }
+    if parse::index(current) == 0_u32 { return 9; }
+    parse::reset(0);
+    return 0;
+}

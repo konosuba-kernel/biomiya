@@ -167,12 +167,10 @@ pub fn data(id:u32, mutable:bool, alignment:usize, input:[]const u8, zero_fill:u
         }
         region = 4;
         size = zero_fill;
+    } else if zero_fill != 0_usize {
+        bad();
     }
-    else {
-        if zero_fill != 0_usize {
-            bad();
-        }
-    }
+
     let check:usize = aligned(0, alignment);
     unsafe {
         let first:usize = model::data_byte_count;
@@ -272,12 +270,10 @@ fn pair(item:model::Fixup) -> () {
             if target-pc > 2147481599_usize {
                 bad();
             }
+        } else if pc-target > 2147485696_usize {
+            bad();
         }
-        else {
-            if pc-target > 2147485696_usize {
-                bad();
-            }
-        }
+
         let delta:usize = target-%pc;
         let hi:usize = ((delta+%2048_usize) >> 12_usize) & 1048575_usize;
         let lo:usize = delta & 4095_usize;
@@ -310,12 +306,10 @@ pub fn finish(entry:u32) -> []const u8 {
                 if item.align > bss_align {
                     bss_align = item.align;
                 }
+            } else if item.count != item.size || item.first > model::data_byte_count || item.count > model::data_byte_count-item.first {
+                bad();
             }
-            else {
-                if item.count != item.size || item.first > model::data_byte_count || item.count > model::data_byte_count-item.first {
-                    bad();
-                }
-            }
+
             let at:usize = aligned(lengths[item.region as usize], item.align);
             if item.size > 67108864_usize-at {
                 model::limit(item.size+at, 67108864);

@@ -1,0 +1,6 @@
+module sample;
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+static mut ix:usize=0;
+fn value()->u32{unsafe{ix=1;}return 42;}
+fn run()->u32{var a:[2]u32=[1,2];unsafe{a[ix]=value();}if a[0]==42_u32 && a[1]==2_u32{return 42;}return 0;}

@@ -1,0 +1,5 @@
+module app;
+
+pub fn run() -> u32 {
+    return 42;
+}

@@ -1,0 +1,18 @@
+# Supervisor-to-monitor interface; no hidden source-language semantics.
+# The monitor uses real QEMU virt UART MMIO and RV64A atomics on two harts.
+p5_uart:
+addi x17, x0, 1024
+ecall
+jalr x0, 0(x1)
+p5_exchange:
+addi x17, x0, 1025
+ecall
+jalr x0, 0(x1)
+p5_install:
+addi x17, x0, 1026
+ecall
+jalr x0, 0(x1)
+p5_inspect:
+addi x17, x0, 1027
+ecall
+jalr x0, 0(x1)

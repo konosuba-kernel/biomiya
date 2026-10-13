@@ -1,0 +1,1 @@
+module sample; struct H{x:u32} pub enum E{Value(H)} fn run()->u32{return 0;}

@@ -1,0 +1,578 @@
+// Deterministic three-segment ELF writer. Text is emitted into its final file range.
+module bootstrap::image;
+import bootstrap::model;
+import bootstrap::rules;
+const CAP:usize = 16789504;
+static mut bytes:[16789504]u8 = zero;
+static mut text:usize = 0;
+static mut relocated_bytes:[2098688]u8 = zero;
+static mut bases:[5]usize = zero;
+static mut offsets:[5]usize = zero;
+static mut lengths:[5]usize = zero;
+// All linker tables and bytes belong to this builder. Phase 1 collects static
+// data/declarations; phase 2 emits text and links; phase 3 publishes a frozen ELF.
+enum SymbolEntry { Empty, Value(model::Symbol) }
+static mut symbols:[32769]SymbolEntry = zero;
+static mut symbol_used:u32 = 0;
+static mut data_objs:[16385]model::Data = zero;
+static mut data_used:u32 = 0;
+static mut data_relocations:[32769]model::DataRelocation = zero;
+static mut relocation_used:u32 = 0;
+static mut fixups:[65537]model::Fixup = zero;
+static mut fixup_used:u32 = 0;
+static mut data_bytes:[8388608]u8 = zero;
+static mut data_byte_used:usize = 0;
+static mut phase:u32 = 0;
+
+fn building() -> () {
+    unsafe { if phase != 1_u32 && phase != 2_u32 { model::fail(model::ERROR_INTERNAL, 0, 0); } }
+    return ();
+}
+fn emitting() -> () {
+    unsafe { if phase != 2_u32 { model::fail(model::ERROR_INTERNAL, 0, 0); } }
+    return ();
+}
+pub fn begin_compile() -> () {
+    unsafe {
+        if phase == 1_u32 || phase == 2_u32 { model::fail(model::ERROR_INTERNAL, 0, 0); }
+        phase = 1;
+        symbol_used = 0;
+        data_used = 0;
+        relocation_used = 0;
+        fixup_used = 0;
+        data_byte_used = 0;
+        text = 0;
+    }
+    return ();
+}
+pub fn symbol_count() -> u32 { unsafe { return symbol_used; } }
+pub fn data_count() -> u32 { unsafe { return data_used; } }
+pub fn relocation_count() -> u32 { unsafe { return relocation_used; } }
+pub fn fixup_count() -> u32 { unsafe { return fixup_used; } }
+pub fn data_size() -> usize { unsafe { return data_byte_used; } }
+pub fn get_symbol(id:u32) -> model::Symbol {
+    unsafe {
+        if id == 0_u32 || id > symbol_used { bad(); }
+        match symbols[id as usize] {
+            SymbolEntry::Value(value) => { return value; },
+            SymbolEntry::Empty => { bad(); },
+        }
+    }
+    return make model::Symbol { name:model::no_name(), region:0, offset:0, size:0, align:0, defined:0, kind:0 };
+}
+pub fn get_data(id:u32) -> model::Data {
+    unsafe {
+        if id == 0_u32 || id > data_used { bad(); }
+        return data_objs[id as usize];
+    }
+}
+pub fn get_relocation(id:u32) -> model::DataRelocation {
+    unsafe {
+        if id == 0_u32 || id > relocation_used { bad(); }
+        return data_relocations[id as usize];
+    }
+}
+pub fn named(name:model::NameId, kind:u32) -> u32 {
+    building();
+    unsafe {
+        if !model::is_no_name(name) {
+            let valid:model::Name = model::get_name(name);
+            var i:u32 = 1;
+            while i <= symbol_used {
+                var value:model::Symbol = get_symbol(i);
+                if model::same_name(value.name, name) {
+                    if value.kind != model::SYMBOL_UNSPECIFIED && kind != model::SYMBOL_UNSPECIFIED && value.kind != kind { bad(); }
+                    if value.kind == model::SYMBOL_UNSPECIFIED && kind != model::SYMBOL_UNSPECIFIED {
+                        if value.defined != 0_u32 { bad(); }
+                        value.kind = kind;
+                        symbols[i as usize] = SymbolEntry::Value(value);
+                    }
+                    return i;
+                }
+                i = i+1_u32;
+            }
+        }
+        if symbol_used >= 32768_u32 { model::limit((symbol_used as usize)+1_usize, 32768); }
+        symbol_used = symbol_used+1_u32;
+        symbols[symbol_used as usize] = SymbolEntry::Value(make model::Symbol {
+            name:name, region:0, offset:0, size:0, align:1, defined:0, kind:kind
+        });
+        return symbol_used;
+    }
+}
+pub fn object(symbol:u32, region:u32, alignment:usize, size:usize) -> u32 {
+    building();
+    let valid:model::Symbol = get_symbol(symbol);
+    if region < 2_u32 || region > 4_u32 || size == 0_usize { bad(); }
+    if size > 67108864_usize { model::limit(size, 67108864); }
+    let checked:usize = aligned(0, alignment);
+    unsafe {
+        if data_used >= 16384_u32 { model::limit((data_used as usize)+1_usize, 16384); }
+        var amount:usize = size;
+        if region == 4_u32 { amount = 0; }
+        if amount > 8388608_usize-data_byte_used { model::limit(data_byte_used+amount, 8388608); }
+        let first:usize = data_byte_used;
+        var i:usize = 0;
+        while i < amount { data_bytes[data_byte_used] = 0; data_byte_used = data_byte_used+1_usize; i = i+1_usize; }
+        data_used = data_used+1_u32;
+        data_objs[data_used as usize] = make model::Data {
+            symbol:symbol, region:region, align:alignment, size:size, first:first, count:amount
+        };
+        return data_used;
+    }
+}
+fn data_range(object:u32, offset:usize, count:usize) -> usize {
+    let value:model::Data = get_data(object);
+    if offset > value.count || count > value.count-offset { bad(); }
+    return value.first+offset;
+}
+pub fn write_scalar(object:u32, offset:usize, bits:usize, size:usize) -> () {
+    building();
+    if size > 8_usize { bad(); }
+    let first:usize = data_range(object, offset, size);
+    var i:usize = 0;
+    unsafe {
+        while i < size { data_bytes[first+i] = ((bits>>(i*8_usize))&255_usize) as u8; i = i+1_usize; }
+    }
+    return ();
+}
+pub fn copy_data(object:u32, destination:usize, source:usize, count:usize) -> () {
+    building();
+    let to:usize = data_range(object, destination, count);
+    let from:usize = data_range(object, source, count);
+    var i:usize = 0;
+    unsafe {
+        while i < count {
+            var at:usize = i;
+            if to > from { at = count-1_usize-i; }
+            data_bytes[to+at] = data_bytes[from+at];
+            i = i+1_usize;
+        }
+    }
+    return ();
+}
+pub fn relocate(value:model::DataRelocation) -> () {
+    building();
+    let checked:usize = data_range(value.object, value.offset, 8);
+    let target:model::Symbol = get_symbol(value.target);
+    unsafe {
+        if relocation_used >= 32768_u32 { model::limit((relocation_used as usize)+1_usize, 32768); }
+        relocation_used = relocation_used+1_u32;
+        data_relocations[relocation_used as usize] = value;
+    }
+    return ();
+}
+
+fn bad() -> () {
+    model::fail(model::ERROR_LINK, 0, 0);
+    return ();
+}
+
+pub fn aligned(n:usize, a:usize) -> usize {
+    if a == 0_usize || a > 4096_usize || (a & (a-1_usize)) != 0_usize {
+        bad();
+    }
+    if n > 67108864_usize {
+        model::limit(n, 67108864);
+    }
+    let result:rules::SizeRule = rules::align_up(n, a);
+    if !result.ok {
+        bad();
+    }
+    return result.size;
+}
+
+fn put(at:usize, n:usize, count:usize) -> () {
+    if at > CAP || count > CAP-at {
+        model::limit(at+count, CAP);
+    }
+    var i:usize = 0;
+    var value:usize = n;
+    unsafe {
+        while i < count {
+            bytes[at+i] = (value & 255_usize) as u8;
+            value = value >> 8_usize;
+            i = i+1_usize;
+        }
+    }
+    return ();
+}
+
+fn clear_bytes(first:usize, end:usize) -> () {
+    if end > CAP || first > end {
+        bad();
+    }
+    var i:usize = first;
+    unsafe {
+        while i < end {
+            bytes[i] = 0;
+            i = i+1_usize;
+        }
+    }
+    return ();
+}
+
+pub fn begin_text() -> () {
+    unsafe {
+        if phase != 1_u32 { model::fail(model::ERROR_INTERNAL, 0, 0); }
+        phase = 2;
+        text = 0;
+        fixup_used = 0;
+    }
+    clear_bytes(0, 4096);
+    return ();
+}
+
+pub fn symbol(name:[]const u8) -> u32 {
+    return named(model::name(name), model::SYMBOL_UNSPECIFIED);
+}
+
+pub fn fresh() -> u32 {
+    return named(model::no_name(), 3);
+}
+
+pub fn define(id:u32, region:u32, at:usize) -> () {
+    emitting();
+    var value:model::Symbol = get_symbol(id);
+    if region == 0_u32 || region > 4_u32 || value.defined != 0_u32 { bad(); }
+    unsafe {
+        if region == 1_u32 && (at > text || (at & 3_usize) != 0_usize) { bad(); }
+        value.defined = 1;
+        value.region = region;
+        value.offset = at;
+        symbols[id as usize] = SymbolEntry::Value(value);
+    }
+    return ();
+}
+
+pub fn text_position() -> usize {
+    unsafe {
+        return text;
+    }
+}
+
+pub fn word(bits:u32) -> () {
+    emitting();
+    unsafe {
+        if text > 8388604_usize {
+            model::limit(text+4_usize, 8388608);
+        }
+        put(4096_usize+text, bits as usize, 4);
+        text = text+4_usize;
+    }
+    return ();
+}
+
+pub fn patch_word(at:usize, bits:u32) -> () {
+    emitting();
+    unsafe {
+        if (at&3_usize) != 0_usize || at > text || 4_usize > text-at {
+            bad();
+        }
+    }
+    put(4096_usize+at, bits as usize, 4);
+    return ();
+}
+
+pub fn fixup(at:usize, id:u32, rd:u32, jump:bool) -> () {
+    emitting();
+    let target:model::Symbol = get_symbol(id);
+    if at != text_position() || rd >= 32_u32 {
+        bad();
+    }
+    var scratch:u32 = rd;
+    var opcode:u32 = 19;
+    if jump {
+        scratch = 31;
+        opcode = 103;
+    }
+    unsafe {
+        if fixup_used >= 65536_u32 { model::limit((fixup_used as usize)+1_usize, 65536); }
+        fixup_used = fixup_used+1_u32;
+        fixups[fixup_used as usize] = make model::Fixup {
+            region:1, kind:1, offset:at, symbol:id, addend:0
+        };
+    }
+    word((scratch << 7_u32) | 23_u32);
+    word((scratch << 15_u32) | (rd << 7_u32) | opcode);
+    return ();
+}
+
+fn read_word(at:usize) -> usize {
+    var n:usize = 0;
+    var j:usize = 0;
+    unsafe {
+        while j < 4_usize {
+            n = n | ((bytes[at+j] as usize) << (j*8_usize));
+            j = j+1_usize;
+        }
+    }
+    return n;
+}
+
+pub fn data(id:u32, mutable:bool, alignment:usize, input:[]const u8, zero_fill:usize) -> () {
+    var region:u32 = 2;
+    var size:usize = input.len;
+    if mutable {
+        region = 3;
+    }
+    if input.len == 0_usize {
+        if !mutable || zero_fill == 0_usize {
+            bad();
+        }
+        region = 4;
+        size = zero_fill;
+    } else if zero_fill != 0_usize {
+        bad();
+    }
+    let object_id:u32 = object(id, region, alignment, size);
+    let first:usize = get_data(object_id).first;
+    var i:usize = 0;
+    unsafe {
+        while i < input.len { data_bytes[first+i] = input[i]; i = i+1_usize; }
+    }
+    return ();
+}
+
+pub fn abs64(id:u32, at:usize, target:u32, addend:usize) -> () {
+    unsafe {
+        var i:u32 = 1;
+        while i <= data_used {
+            if data_objs[i as usize].symbol == id {
+                relocate(make model::DataRelocation {
+                    object:i,
+                    offset:at,
+                    target:target,
+                    addend:addend
+                });
+                return ();
+            }
+            i = i+1_u32;
+        }
+    }
+    bad();
+    return ();
+}
+
+fn address(id:u32) -> usize {
+    unsafe {
+        if id == 0_u32 || id > symbol_used {
+            bad();
+        }
+        let item:model::Symbol = get_symbol(id);
+        if item.defined == 0_u32 || item.region == 0_u32 || item.region > 4_u32 {
+            bad();
+        }
+        if item.region == 1_u32 && item.offset > text {
+            bad();
+        }
+        return bases[item.region as usize]+item.offset;
+    }
+}
+
+fn relocated(value:usize, addend:usize) -> usize {
+    if addend < 9223372036854775808_usize {
+        if addend > 18446744073709551615_usize-value {
+            bad();
+        }
+        return value+addend;
+    }
+    let amount:usize = 0_usize-%addend;
+    if amount > value {
+        bad();
+    }
+    return value-amount;
+}
+
+fn pair(item:model::Fixup) -> () {
+    unsafe {
+        if item.kind != 1_u32 || item.region != 1_u32 || item.offset > text || text-item.offset < 8_usize {
+            bad();
+        }
+        let target:usize = relocated(address(item.symbol), item.addend);
+        let encoded:usize = read_word(4100_usize+item.offset);
+        let jump:bool = (encoded & 127_usize) == 103_usize;
+        let rd:usize = (encoded >> 7_usize) & 31_usize;
+        if !jump && (encoded & 127_usize) != 19_usize {
+            bad();
+        }
+        if jump && get_symbol(item.symbol).region != 1_u32 {
+            bad();
+        }
+        if !jump && rd == 0_usize {
+            bad();
+        }
+        var scratch:usize = rd;
+        var opcode:usize = 19;
+        if jump {
+            scratch = 31;
+            opcode = 103;
+        }
+        let pc:usize = 65536_usize+item.offset;
+        if target >= pc {
+            if target-pc > 2147481599_usize {
+                bad();
+            }
+        } else if pc-target > 2147485696_usize {
+            bad();
+        }
+        let delta:usize = target-%pc;
+        let hi:usize = ((delta+%2048_usize) >> 12_usize) & 1048575_usize;
+        let lo:usize = delta & 4095_usize;
+        patch_word(item.offset, ((hi << 12_usize) | (scratch << 7_usize) | 23_usize) as u32);
+        patch_word(item.offset+4_usize, ((lo << 20_usize) | (scratch << 15_usize) | (rd << 7_usize) | opcode) as u32);
+    }
+    return ();
+}
+
+pub fn finish(entry:u32) -> []const u8 {
+    emitting();
+    unsafe {
+        if text == 0_usize {
+            bad();
+        }
+        lengths[1] = text;
+        lengths[2] = 0;
+        lengths[3] = 0;
+        lengths[4] = 0;
+        var bss_align:usize = 1;
+        var i:u32 = 1;
+        while i <= data_used {
+            let item:model::Data = data_objs[i as usize];
+            if item.region < 2_u32 || item.region > 4_u32 || item.size == 0_usize {
+                bad();
+            }
+            if item.region == 4_u32 {
+                if item.count != 0_usize {
+                    bad();
+                }
+                if item.align > bss_align {
+                    bss_align = item.align;
+                }
+            } else if item.count != item.size || item.first > data_byte_used || item.count > data_byte_used-item.first {
+                bad();
+            }
+            let at:usize = aligned(lengths[item.region as usize], item.align);
+            if item.size > 67108864_usize-at {
+                model::limit(item.size+at, 67108864);
+            }
+            define(item.symbol, item.region, at);
+            lengths[item.region as usize] = at+item.size;
+            i = i+1_u32;
+        }
+        if lengths[2] == 0_usize {
+            lengths[2] = 1;
+        }
+        if lengths[3] == 0_usize {
+            lengths[3] = 1;
+        }
+        let bss_start:usize = aligned(lengths[3], bss_align);
+        var rw_memory:usize = lengths[3];
+        if lengths[4] != 0_usize {
+            rw_memory = bss_start+lengths[4];
+        }
+        bases[1] = 65536;
+        bases[2] = aligned(bases[1]+text, 4096);
+        bases[3] = aligned(bases[2]+lengths[2], 4096);
+        bases[4] = bases[3]+bss_start;
+        if bases[3]+rw_memory-65536_usize > 67108864_usize {
+            model::limit(bases[3]+rw_memory-65536_usize, 67108864);
+        }
+        offsets[1] = 4096;
+        offsets[2] = aligned(4096_usize+text, 4096);
+        offsets[3] = aligned(offsets[2]+lengths[2], 4096);
+        let total:usize = offsets[3]+lengths[3];
+        clear_bytes(4096_usize+text, total);
+        var claimed:usize = 0;
+        while claimed < (total+7_usize)/8_usize {
+            relocated_bytes[claimed] = 0;
+            claimed = claimed+1_usize;
+        }
+        i = 1;
+        while i <= data_used {
+            let item:model::Data = data_objs[i as usize];
+            if item.region != 4_u32 {
+                let dest:usize = offsets[item.region as usize]+get_symbol(item.symbol).offset;
+                var j:usize = 0;
+                while j < item.count {
+                    bytes[dest+j] = data_bytes[item.first+j];
+                    j = j+1_usize;
+                }
+            }
+            i = i+1_u32;
+        }
+        i = 1;
+        while i <= relocation_used {
+            let rel:model::DataRelocation = data_relocations[i as usize];
+            if rel.object == 0_u32 || rel.object > data_used {
+                bad();
+            }
+            let obj:model::Data = data_objs[rel.object as usize];
+            if obj.region == 4_u32 || rel.offset > obj.count || obj.count-rel.offset < 8_usize {
+                bad();
+            }
+            let dest:usize = offsets[obj.region as usize]+get_symbol(obj.symbol).offset+rel.offset;
+            var byte:usize = dest;
+            while byte < dest+8_usize {
+                let index:usize = byte/8_usize;
+                let bit:u8 = 1_u8 << ((byte%8_usize) as u8);
+                if (relocated_bytes[index] & bit) != 0_u8 {
+                    bad();
+                }
+                relocated_bytes[index] = relocated_bytes[index] | bit;
+                byte = byte+1_usize;
+            }
+            put(dest, relocated(address(rel.target), rel.addend), 8);
+            i = i+1_u32;
+        }
+        i = 1;
+        while i <= symbol_used {
+            let checked:usize = address(i);
+            i = i+1_u32;
+        }
+        i = 1;
+        while i <= fixup_used {
+            pair(fixups[i as usize]);
+            i = i+1_u32;
+        }
+        let start:usize = address(entry);
+        if get_symbol(entry).region != 1_u32 || start < 65536_usize || start >= 65536_usize+text {
+            bad();
+        }
+        put(0, 0x00010102464c457f, 8);
+        put(16, 2, 2);
+        put(18, 243, 2);
+        put(20, 1, 4);
+        put(24, start, 8);
+        put(32, 64, 8);
+        put(52, 64, 2);
+        put(54, 56, 2);
+        put(56, 3, 2);
+        var segment:usize = 1;
+        while segment <= 3_usize {
+            let at:usize = 64_usize+(segment-1_usize)*56_usize;
+            var flags:usize = 5;
+            if segment == 2_usize {
+                flags = 4;
+            }
+            if segment == 3_usize {
+                flags = 6;
+            }
+            var memory:usize = lengths[segment];
+            if segment == 3_usize {
+                memory = rw_memory;
+            }
+            put(at, 1, 4);
+            put(at+4_usize, flags, 4);
+            put(at+8_usize, offsets[segment], 8);
+            put(at+16_usize, bases[segment], 8);
+            put(at+24_usize, bases[segment], 8);
+            put(at+32_usize, lengths[segment], 8);
+            put(at+40_usize, memory, 8);
+            put(at+48_usize, 4096, 8);
+            segment = segment+1_usize;
+        }
+        phase = 3;
+        return core::slice_from_raw_parts(core::slice_of(bytes).data, total);
+    }
+}

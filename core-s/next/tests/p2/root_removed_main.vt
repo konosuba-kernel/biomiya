@@ -1,0 +1,1 @@
+module sample; fn f()->u32{return 42;} fn run()->u32{return root::sample::f();}

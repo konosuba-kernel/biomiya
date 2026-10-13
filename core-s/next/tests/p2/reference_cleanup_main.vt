@@ -1,0 +1,16 @@
+module sample;
+static mut cleaned:u32 = 0;
+fn read_value() -> Result<u32,u32> {
+    defer { unsafe { cleaned = cleaned + 1_u32; } }
+    return Result::<u32,u32>::Err(7);
+}
+fn operation() -> Result<u32,u32> {
+    let n:u32 = read_value()?;
+    return Result::<u32,u32>::Ok(n);
+}
+fn run() -> u32 {
+    match operation() {
+        Result::<u32,u32>::Ok(n:u32) => { return n; },
+        Result::<u32,u32>::Err(e:u32) => { unsafe { return e + cleaned; } },
+    }
+}

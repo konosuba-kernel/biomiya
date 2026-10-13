@@ -1,0 +1,75 @@
+// Real Linux fd failure and cleanup; no fake resource counters.
+module system::files;
+extern abi(C) fn syscall6(n:usize,a:usize,b:usize,c:usize,d:usize,e:usize,f:usize) -> usize;
+enum OpenResult { Opened(usize), Failed(usize) }
+enum ReadResult { Read(usize), Failed(usize) }
+enum CloseResult { Closed, Failed(usize) }
+static mut saved:usize = 0;
+static mut closed:bool = false;
+static mut close_failed:bool = false;
+
+fn open_write_only() -> OpenResult {
+    let path:[]const u8 = "/dev/null\0";
+    unsafe {
+        let value:usize = syscall6(56,0xffffffffffffff9c,core::addr(path.data),1,0,0,0);
+        if value >= 0xfffffffffffff001_usize { return OpenResult::Failed(value); }
+        return OpenResult::Opened(value);
+    }
+}
+fn read_empty(fd:usize) -> ReadResult {
+    unsafe {
+        let value:usize = syscall6(63,fd,0,0,0,0,0);
+        if value >= 0xfffffffffffff001_usize { return ReadResult::Failed(value); }
+        return ReadResult::Read(value);
+    }
+}
+fn close(fd:usize) -> CloseResult {
+    unsafe {
+        let value:usize = syscall6(57,fd,0,0,0,0,0);
+        if value >= 0xfffffffffffff001_usize { return CloseResult::Failed(value); }
+        return CloseResult::Closed;
+    }
+}
+fn cleanup(fd:usize) -> () {
+    // Observable policy: record failure, continue; caller checks both flags.
+    unsafe {
+        match close(fd) {
+            CloseResult::Closed => { closed = true; },
+            CloseResult::Failed(error) => { close_failed = true; },
+        }
+    }
+    return ();
+}
+fn work() -> u32 {
+    match open_write_only() {
+        OpenResult::Failed(error) => { return 1; },
+        OpenResult::Opened(fd) => {
+            unsafe { saved = fd; }
+            defer cleanup(fd);
+            match read_empty(fd) {
+                ReadResult::Read(count) => { return 2; },
+                ReadResult::Failed(error) => {
+                    if error == 0xfffffffffffffff7_usize { return 0; }
+                    return 3;
+                },
+            }
+        },
+    }
+}
+fn run() -> u32 {
+    if work() != 0_u32 { return 4; }
+    unsafe {
+        if !closed || close_failed { return 5; }
+        // A second close proves that deferred cleanup released the real fd.
+        match close(saved) {
+            CloseResult::Closed => { return 6; },
+            CloseResult::Failed(error) => {
+                if error != 0xfffffffffffffff7_usize { return 7; }
+            },
+        }
+        closed = false;
+        cleanup(saved);
+        if !close_failed || closed { return 8; }
+    }
+    return 0;
+}

@@ -1,0 +1,5 @@
+module sample;
+fn run() -> u32 {
+    defer { return 1; }
+    return 0;
+}

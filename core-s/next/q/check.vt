@@ -1,0 +1,2090 @@
+module bootstrap::check;
+import bootstrap::model;
+import bootstrap::types;
+import bootstrap::parse;
+import bootstrap::init;
+import bootstrap::ir;
+struct Binding {
+    name:model::NameId,
+    slot:ir::SlotId,
+    mutable:bool,
+    depth:u32
+}
+
+struct Place {
+    address:ir::SlotId,
+    ty:model::TypeId,
+    writable:bool,
+    global_mut:bool
+}
+
+struct Loop {
+    exit:ir::LabelId,
+    again:ir::LabelId,
+    cleanup:u32,
+    has_break:bool
+}
+
+// Checker-owned function tables, expired at function entry.
+enum BindingEntry {
+    Empty,
+    Bound(Binding)
+}
+
+static mut bindings:[8193]BindingEntry = zero;
+static mut binding_count:u32 = 0;
+static mut depth:u32 = 0;
+static mut unsafe_depth:u32 = 0;
+// A prepared call owns a stable range in the current function argument table.
+struct PreparedCall {
+    callee:u32,
+    arguments:ir::ArgumentRange,
+    output:model::TypeId
+}
+
+struct CleanupCall {
+    call:PreparedCall,
+    span:model::Span
+}
+
+enum CleanupEntry {
+    Empty,
+    Saved(CleanupCall)
+}
+
+static mut defers:[1025]CleanupEntry = zero;
+static mut defer_count:u32 = 0;
+enum LoopEntry {
+    Empty,
+    Active(Loop)
+}
+
+static mut loops:[257]LoopEntry = zero;
+static mut loop_count:u32 = 0;
+static mut output:model::TypeEntry = zero;
+fn output_type() -> model::TypeId {
+    unsafe {
+        return model::entry_type(output);
+    }
+}
+
+static mut file:u32 = 0;
+static mut expression_depth:u32 = 0;
+static mut place_depth:u32 = 0;
+pub static mut max_bindings:usize = 0;
+pub static mut max_defers:usize = 0;
+pub static mut max_loops:usize = 0;
+fn binding_at(id:u32) -> Binding {
+    loop {
+        unsafe {
+            match bindings[id as usize] {
+                BindingEntry::Empty => {
+                    types::fail(model::ERROR_INTERNAL);
+                },
+                BindingEntry::Bound(value) => {
+                    return value;
+                },
+            }
+        }
+    }
+}
+
+fn cleanup_at(id:u32) -> CleanupCall {
+    loop {
+        unsafe {
+            match defers[id as usize] {
+                CleanupEntry::Empty => {
+                    types::fail(model::ERROR_INTERNAL);
+                },
+                CleanupEntry::Saved(value) => {
+                    return value;
+                },
+            }
+        }
+    }
+}
+
+fn loop_at(id:u32) -> Loop {
+    loop {
+        unsafe {
+            match loops[id as usize] {
+                LoopEntry::Empty => {
+                    types::fail(model::ERROR_INTERNAL);
+                },
+                LoopEntry::Active(value) => {
+                    return value;
+                },
+            }
+        }
+    }
+}
+
+fn location(node:parse::NodeId) -> () {
+    let at:model::Span = parse::location(node);
+    types::locate(at);
+    unsafe {
+        ir::locate(at);
+    }
+    return ();
+}
+
+fn require_unsafe() -> () {
+    unsafe {
+        if unsafe_depth == 0_u32 {
+            types::fail(model::ERROR_PERMISSION);
+        }
+    }
+    return ();
+}
+
+fn local(name:model::NameId) -> u32 {
+    unsafe {
+        var i:u32 = binding_count;
+        while i != 0_u32 {
+            if model::same_name(binding_at(i).name, name) {
+                return i;
+            }
+            i = i-1_u32;
+        }
+    }
+    return 0;
+}
+
+fn bind(name:model::NameId, ty:model::TypeId, mutable:bool) -> ir::SlotId {
+    unsafe {
+        var i:u32 = binding_count;
+        while i != 0_u32 && binding_at(i).depth == depth {
+            if model::same_name(binding_at(i).name, name) {
+                types::fail(model::ERROR_NAME);
+            }
+            i = i-1_u32;
+        }
+        if binding_count >= 8192_u32 {
+            model::limit((binding_count as usize)+1_usize, 8192);
+        }
+        let slot:ir::SlotId = ir::slot(ty);
+        binding_count = binding_count+1_u32;
+        if (binding_count as usize) > max_bindings {
+            max_bindings = binding_count as usize;
+        }
+        bindings[binding_count as usize] = BindingEntry::Bound(make Binding {
+            name:name,
+            slot:slot,
+            mutable:mutable,
+            depth:depth
+        });
+        return slot;
+    }
+}
+
+fn same(value:ir::SlotId, ty:model::TypeId) -> ir::SlotId {
+    if !model::is_no_type(ty) && !model::same_type(ir::type_of(value), ty) {
+        types::fail(model::ERROR_TYPE);
+    }
+    return value;
+}
+
+fn access(place:Place) -> () {
+    if place.global_mut {
+        require_unsafe();
+    }
+    return ();
+}
+
+fn read(place:Place) -> ir::SlotId {
+    access(place);
+    return ir::load(place.address, place.ty);
+}
+
+fn projection(base:Place, ty:model::TypeId, offset:usize, writable:bool) -> Place {
+    return make Place {
+        address:ir::offset(base.address, ir::value(model::usize_type(), offset), ty, !writable),
+        ty:ty,
+        writable:writable,
+        global_mut:base.global_mut
+    };
+}
+
+fn slot_place(slot:ir::SlotId, writable:bool) -> Place {
+    let ty:model::TypeId = ir::type_of(slot);
+    return make Place {
+        address:ir::local_address(slot, ty, 0, !writable),
+        ty:ty,
+        writable:writable,
+        global_mut:false
+    };
+}
+
+fn field(base:Place, name:model::NameId) -> Place {
+    let t:model::Type = types::info(base.ty);
+    let raw:[]const u8 = types::text(name);
+    if t.kind == model::TYPE_SLICE {
+        if model::equal(raw, "data") {
+            return projection(base, types::pointer(t.element, t.flags != model::TYPE_MUTABLE), 0, false);
+        }
+        if model::equal(raw, "len") {
+            return projection(base, model::usize_type(), 8, false);
+        }
+        types::fail(model::ERROR_NAME);
+    }
+    if t.kind != model::TYPE_STRUCT {
+        types::fail(model::ERROR_TYPE);
+    }
+    unsafe {
+        var i:u32 = 0;
+        while i < t.count {
+            let f:model::Field = model::get_field((t.first+i));
+            if model::same_name(f.name, name) {
+                if !types::field_visible(base.ty, f.flags, file) {
+                    types::fail(model::ERROR_NAME);
+                }
+                return projection(base, f.ty, f.offset, base.writable);
+            }
+            i = i+1_u32;
+        }
+    }
+    types::fail(model::ERROR_NAME);
+    return base;
+}
+
+fn is_place(node:parse::NodeId) -> bool {
+    var current:parse::NodeId = node;
+    loop {
+        let n:parse::Node = parse::get(current);
+        match n.syntax {
+            parse::Syntax::Empty => {
+                return false;
+            },
+            parse::Syntax::Integer(part) => {
+                return false;
+            },
+            parse::Syntax::Boolean(part) => {
+                return false;
+            },
+            parse::Syntax::Unit => {
+                return false;
+            },
+            parse::Syntax::Null => {
+                return false;
+            },
+            parse::Syntax::Zero => {
+                return false;
+            },
+            parse::Syntax::Name(part) => {
+                if local(part) != 0_u32 {
+                    return true;
+                }
+                unsafe {
+                    let id:u32 = types::resolve(file, part, false);
+                    return id != 0_u32 && model::get_decl(id).kind == model::DECL_STATIC;
+                }
+            },
+            parse::Syntax::String(part) => {
+                return false;
+            },
+            parse::Syntax::Unary(part) => {
+                return part.op == model::UNARY_DEREF;
+            },
+            parse::Syntax::Binary(part) => {
+                return false;
+            },
+            parse::Syntax::Cast(part) => {
+                return false;
+            },
+            parse::Syntax::Call(part) => {
+                return false;
+            },
+            parse::Syntax::Field(part) => {
+                current = part.base;
+            },
+            parse::Syntax::Index(part) => {
+                current = part.base;
+            },
+            parse::Syntax::Record(part) => {
+                return false;
+            },
+            parse::Syntax::FieldValue(part) => {
+                return false;
+            },
+            parse::Syntax::Array(part) => {
+                return false;
+            },
+            parse::Syntax::Repeat(part) => {
+                return false;
+            },
+            parse::Syntax::SizeOf(part) => {
+                return false;
+            },
+            parse::Syntax::AlignOf(part) => {
+                return false;
+            },
+            parse::Syntax::Pointer(part) => {
+                return false;
+            },
+            parse::Syntax::VariantPattern(part) => {
+                return false;
+            },
+            parse::Syntax::Wildcard => {
+                return false;
+            },
+            parse::Syntax::MatchArm(part) => {
+                return false;
+            },
+            parse::Syntax::Block(part) => {
+                return false;
+            },
+            parse::Syntax::Bind(part) => {
+                return false;
+            },
+            parse::Syntax::Assign(part) => {
+                return false;
+            },
+            parse::Syntax::Expression(part) => {
+                return false;
+            },
+            parse::Syntax::Unsafe(part) => {
+                return false;
+            },
+            parse::Syntax::If(part) => {
+                return false;
+            },
+            parse::Syntax::While(part) => {
+                return false;
+            },
+            parse::Syntax::Loop(part) => {
+                return false;
+            },
+            parse::Syntax::Return(part) => {
+                return false;
+            },
+            parse::Syntax::Break => {
+                return false;
+            },
+            parse::Syntax::Continue => {
+                return false;
+            },
+            parse::Syntax::Defer(part) => {
+                return false;
+            },
+            parse::Syntax::Match(part) => {
+                return false;
+            },
+            parse::Syntax::EmptyStatement => {
+                return false;
+            },
+        }
+    }
+}
+
+fn base_place(node:parse::NodeId) -> Place {
+    if is_place(node) {
+        return place(node);
+    }
+    let value:ir::SlotId = expr(node, model::no_type());
+    if types::scalar(ir::type_of(value)) {
+        types::fail(model::ERROR_TYPE);
+    }
+    return slot_place(value, false);
+}
+
+fn index(base:Place, node:parse::NodeId) -> Place {
+    let t:model::Type = types::info(base.ty);
+    var address:ir::SlotId = base.address;
+    var length:ir::SlotId = ir::no_slot();
+    var writable:bool = base.writable;
+    if t.kind == model::TYPE_ARRAY {
+        length = ir::value(model::usize_type(), t.b as usize);
+    } else if t.kind == model::TYPE_SLICE {
+        require_unsafe();
+        access(base);
+        address = read(projection(base, types::pointer(t.element, t.flags != model::TYPE_MUTABLE), 0, false));
+        length = read(projection(base, model::usize_type(), 8, false));
+        writable = t.flags == model::TYPE_MUTABLE;
+    } else {
+        types::fail(model::ERROR_TYPE);
+    }
+    let ix:ir::SlotId = expr(node, model::usize_type());
+    ir::bounds(ix, length);
+    let bytes:ir::SlotId = ir::binary(model::BIN_MUL, ix, ir::value(model::usize_type(), types::info(t.element).size), model::usize_type());
+    return make Place {
+        address:ir::offset(address, bytes, t.element, !writable),
+        ty:t.element,
+        writable:writable,
+        global_mut:base.global_mut
+    };
+}
+
+fn place(node:parse::NodeId) -> Place {
+    unsafe {
+        if place_depth >= 64_u32 {
+            model::limit_at((place_depth as usize)+1_usize, 64, file, parse::get(node).span.start as usize);
+        }
+        place_depth = place_depth+1_u32;
+    }
+    let result:Place = place_inner(node);
+    unsafe {
+        place_depth = place_depth-1_u32;
+    }
+    return result;
+}
+
+fn place_inner(node:parse::NodeId) -> Place {
+    location(node);
+    match parse::get(node).syntax {
+        parse::Syntax::Empty => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Integer(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Boolean(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Unit => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Null => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Zero => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Name(part) => {
+            let binding:u32 = local(part);
+            unsafe {
+                if binding != 0_u32 {
+                    let b:Binding = binding_at(binding);
+                    return slot_place(b.slot, b.mutable);
+                }
+                let id:u32 = types::resolve(file, part, false);
+                if id == 0_u32 {
+                    types::fail(model::ERROR_NAME);
+                }
+                let d:model::Decl = model::get_decl(id);
+                if d.kind != model::DECL_STATIC {
+                    types::fail(model::ERROR_TYPE);
+                }
+                let writable:bool = (d.flags&model::FLAG_MUTABLE) != 0_u32;
+                return make Place {
+                    address:ir::symbol_address(d.symbol, d.ty, !writable),
+                    ty:d.ty,
+                    writable:writable,
+                    global_mut:writable
+                };
+            }
+        },
+        parse::Syntax::String(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Unary(part) => {
+            if part.op != model::UNARY_DEREF {
+                types::fail(model::ERROR_TYPE);
+            }
+            require_unsafe();
+            let address:ir::SlotId = expr(part.operand, model::no_type());
+            let t:model::Type = types::info(ir::type_of(address));
+            if t.kind != model::TYPE_POINTER {
+                types::fail(model::ERROR_TYPE);
+            }
+            return make Place {
+                address:address,
+                ty:t.element,
+                writable:t.flags == model::TYPE_MUTABLE,
+                global_mut:false
+            };
+        },
+        parse::Syntax::Binary(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Cast(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Call(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Field(part) => {
+            return field(place(part.base), part.name);
+        },
+        parse::Syntax::Index(part) => {
+            return index(place(part.base), part.index);
+        },
+        parse::Syntax::Record(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::FieldValue(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Array(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Repeat(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::SizeOf(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::AlignOf(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Pointer(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::VariantPattern(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Wildcard => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::MatchArm(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Block(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Bind(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Assign(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Expression(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Unsafe(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::If(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::While(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Loop(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Return(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Break => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Continue => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Defer(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Match(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::EmptyStatement => {
+            types::fail(model::ERROR_TYPE);
+        },
+    }
+    loop {
+        types::fail(model::ERROR_TYPE);
+    }
+}
+
+fn slice(element:model::TypeId, const_:bool, address:ir::SlotId, length:ir::SlotId) -> ir::SlotId {
+    var flags:u32 = 0;
+    if const_ {
+        flags = model::TYPE_CONST;
+    }
+    let ty:model::TypeId = types::intern(model::TYPE_SLICE, element, 0, flags);
+    let result:ir::SlotId = ir::slot(ty);
+    ir::store(ir::local_address(result, types::pointer(element, const_), 0, false), address);
+    ir::store(ir::local_address(result, model::usize_type(), 8, false), length);
+    return result;
+}
+
+fn cleanup(mark:u32) -> () {
+    unsafe {
+        let saved:model::Span = ir::at();
+        var i:u32 = defer_count;
+        while i > mark {
+            if ir::is_closed() {
+                break;
+            }
+            let entry:CleanupCall = cleanup_at(i);
+            ir::locate(entry.span);
+            ir::call(ir::Destination::Unit, entry.call.callee, entry.call.arguments);
+            i = i-1_u32;
+        }
+        ir::locate(saved);
+    }
+    return ();
+}
+
+fn arity(first:parse::NodeId, wanted:u32) -> () {
+    var id:parse::NodeId = first;
+    var n:u32 = 0;
+    while !parse::is_none(id) {
+        n = n+1_u32;
+        id = parse::get(id).next;
+    }
+    if n != wanted {
+        types::fail(model::ERROR_TYPE);
+    }
+    return ();
+}
+
+fn builtin(name:[]const u8, first:parse::NodeId) -> ir::SlotId {
+    var raw:[]const u8 = name;
+    if raw.len > 6_usize && model::equal(types::view(raw, 0, 6), "core::") {
+        raw = types::view(raw, 6, raw.len);
+    }
+    if model::equal(raw, "panic") {
+        arity(first, 0);
+        ir::panic_();
+        ir::ensure();
+        return ir::value(model::unit_type(), 0);
+    }
+    if model::equal(raw, "addr_of") || model::equal(raw, "addr_of_mut") {
+        arity(first, 1);
+        let p:Place = place(first);
+        let mutable:bool = model::equal(raw, "addr_of_mut");
+        if model::is_no_name(parse::name_of(first)) {
+            access(p);
+        }
+        if mutable && !p.writable {
+            types::fail(model::ERROR_TYPE);
+        }
+        let ty:model::TypeId = types::pointer(p.ty, !mutable);
+        if model::same_type(ir::type_of(p.address), ty) {
+            return p.address;
+        }
+        return ir::bitcast(p.address, ty);
+    }
+    if model::equal(raw, "addr") {
+        arity(first, 1);
+        let value:ir::SlotId = expr(first, model::no_type());
+        if types::info(ir::type_of(value)).kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        return ir::bitcast(value, model::usize_type());
+    }
+    if model::equal(raw, "ptr_const") {
+        arity(first, 1);
+        let value:ir::SlotId = expr(first, model::no_type());
+        let t:model::Type = types::info(ir::type_of(value));
+        if t.kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        return ir::bitcast(value, types::pointer(t.element, true));
+    }
+    if model::equal(raw, "ptr_add") || model::equal(raw, "ptr_add_bytes") {
+        arity(first, 2);
+        require_unsafe();
+        let value:ir::SlotId = expr(first, model::no_type());
+        let t:model::Type = types::info(ir::type_of(value));
+        if t.kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        var bytes:ir::SlotId = expr(parse::get(first).next, model::usize_type());
+        if model::equal(raw, "ptr_add") {
+            bytes = ir::binary(model::BIN_MUL, bytes, ir::value(model::usize_type(), types::info(t.element).size), model::usize_type());
+        }
+        return ir::offset(value, bytes, t.element, t.flags != model::TYPE_MUTABLE);
+    }
+    if model::equal(raw, "slice_of") || model::equal(raw, "slice_of_mut") {
+        arity(first, 1);
+        let p:Place = place(first);
+        access(p);
+        let t:model::Type = types::info(p.ty);
+        if t.kind != model::TYPE_ARRAY {
+            types::fail(model::ERROR_TYPE);
+        }
+        let mutable:bool = model::equal(raw, "slice_of_mut");
+        if mutable && !p.writable {
+            types::fail(model::ERROR_TYPE);
+        }
+        let address:ir::SlotId = ir::offset(p.address, ir::value(model::usize_type(), 0), t.element, !mutable);
+        return slice(t.element, !mutable, address, ir::value(model::usize_type(), t.b as usize));
+    }
+    if model::equal(raw, "slice_from_raw_parts") || model::equal(raw, "slice_from_raw_parts_mut") {
+        arity(first, 2);
+        require_unsafe();
+        var address:ir::SlotId = expr(first, model::no_type());
+        let t:model::Type = types::info(ir::type_of(address));
+        if t.kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        let mutable:bool = model::equal(raw, "slice_from_raw_parts_mut");
+        if mutable && t.flags != model::TYPE_MUTABLE {
+            types::fail(model::ERROR_TYPE);
+        }
+        let length:ir::SlotId = expr(parse::get(first).next, model::usize_type());
+        let ty:model::TypeId = types::pointer(t.element, !mutable);
+        if !model::same_type(ir::type_of(address), ty) {
+            address = ir::bitcast(address, ty);
+        }
+        return slice(t.element, !mutable, address, length);
+    }
+    if model::equal(raw, "slice_const") {
+        arity(first, 1);
+        let value:ir::SlotId = expr(first, model::no_type());
+        let t:model::Type = types::info(ir::type_of(value));
+        if t.kind != model::TYPE_SLICE {
+            types::fail(model::ERROR_TYPE);
+        }
+        let address:ir::SlotId = ir::load(ir::local_address(value, types::pointer(t.element, t.flags != model::TYPE_MUTABLE), 0, true), types::pointer(t.element, t.flags != model::TYPE_MUTABLE));
+        let readonly:ir::SlotId = ir::bitcast(address, types::pointer(t.element, true));
+        return slice(t.element, true, readonly, ir::load(ir::local_address(value, model::usize_type(), 8, true), model::usize_type()));
+    }
+    if model::equal(raw, "read") || model::equal(raw, "write") || model::equal(raw, "copy_bytes") || model::equal(raw, "fill_bytes") || model::equal(raw, "atomic_load") || model::equal(raw, "atomic_store") {
+        types::fail(model::ERROR_UNSUPPORTED);
+    }
+    types::fail(model::ERROR_NAME);
+    return ir::no_slot();
+}
+
+// Evaluate each argument once. Nested calls append their arguments before this
+// call's contiguous range is published; later calls cannot overwrite that range.
+fn prepare_call(id:u32, first:parse::NodeId) -> PreparedCall {
+    unsafe {
+        let d:model::Decl = model::get_decl(id);
+        if d.kind != model::DECL_FUNCTION && d.kind != model::DECL_EXTERN {
+            types::fail(model::ERROR_TYPE);
+        }
+        if (d.flags&model::FLAG_UNSAFE) != 0_u32 {
+            require_unsafe();
+        }
+        arity(first, d.count);
+        var values:[256]ir::SlotId = [ir::no_slot();256];
+        var i:u32 = 0;
+        var arg:parse::NodeId = first;
+        while i < d.count {
+            values[i as usize] = expr(arg, model::get_param((d.first+i)).ty);
+            arg = parse::get(arg).next;
+            i = i+1_u32;
+        }
+        let arguments:ir::ArgumentRange = ir::arguments(core::slice_from_raw_parts(core::slice_of(values).data, d.count as usize));
+        return make PreparedCall {
+            callee:id,
+            arguments:arguments,
+            output:d.ty
+        };
+    }
+}
+
+fn variant_value(v:types::Variant, first:parse::NodeId, called:bool) -> ir::SlotId {
+    if v.has_payload != called {
+        types::fail(model::ERROR_TYPE);
+    }
+    var payload:ir::SlotId = ir::no_slot();
+    if v.has_payload {
+        arity(first, 1);
+        payload = expr(first, v.payload);
+    }
+    let result:ir::SlotId = zero_storage(v.ty);
+    ir::store(ir::local_address(result, model::u32_type(), 0, false), ir::value(model::u32_type(), v.tag as usize));
+    if v.has_payload {
+        ir::store(ir::local_address(result, v.payload, v.offset, false), payload);
+    }
+    return result;
+}
+
+fn call(name:model::NameId, first:parse::NodeId) -> ir::SlotId {
+    if local(name) != 0_u32 {
+        types::fail(model::ERROR_TYPE);
+    }
+    unsafe {
+        let v:types::Variant = types::variant(file, name);
+        if v.found {
+            return variant_value(v, first, true);
+        }
+    }
+    var id:u32 = 0;
+    unsafe {
+        id = types::resolve(file, name, false);
+    }
+    if id == 0_u32 {
+        return builtin(types::text(name), first);
+    }
+    let prepared:PreparedCall = prepare_call(id, first);
+    if model::same_type(prepared.output, model::unit_type()) {
+        ir::call(ir::Destination::Unit, prepared.callee, prepared.arguments);
+        return ir::value(model::unit_type(), 0);
+    }
+    let result:ir::SlotId = ir::slot(prepared.output);
+    ir::call(ir::Destination::Slot(result), prepared.callee, prepared.arguments);
+    return result;
+}
+
+fn register_cleanup(n:parse::Call, span:model::Span) -> () {
+    if local(n.callee) != 0_u32 {
+        types::fail(model::ERROR_TYPE);
+    }
+    unsafe {
+        if types::variant(file, n.callee).found {
+            types::fail(model::ERROR_TYPE);
+        }
+        let id:u32 = types::resolve(file, n.callee, false);
+        if id == 0_u32 {
+            // Intrinsics are expressions, not deferred direct declarations.
+            types::fail(model::ERROR_UNSUPPORTED);
+        }
+        let d:model::Decl = model::get_decl(id);
+        if !model::same_type(d.ty, model::unit_type()) {
+            types::fail(model::ERROR_TYPE);
+        }
+        if defer_count >= 1024_u32 {
+            model::limit((defer_count as usize)+1_usize, 1024);
+        }
+        let prepared:PreparedCall = prepare_call(id, n.arguments);
+        defer_count = defer_count+1_u32;
+        defers[defer_count as usize] = CleanupEntry::Saved(make CleanupCall {
+            call:prepared,
+            span:span
+        });
+        if (defer_count as usize) > max_defers {
+            max_defers = defer_count as usize;
+        }
+    }
+    return ();
+}
+
+fn binary(n:parse::Binary, expected:model::TypeId) -> ir::SlotId {
+    if n.op >= model::BIN_AND {
+        let result:ir::SlotId = ir::slot(model::bool_type());
+        let left:ir::SlotId = expr(n.left, model::bool_type());
+        let yes:ir::LabelId = ir::label_id();
+        let no:ir::LabelId = ir::label_id();
+        let end:ir::LabelId = ir::label_id();
+        if n.op == model::BIN_AND {
+            ir::branch(left, yes, no);
+        } else {
+            ir::branch(left, no, yes);
+        }
+        ir::label(no);
+        var bits:usize = 0;
+        if n.op == model::BIN_OR {
+            bits = 1;
+        }
+        ir::copy_to(result, ir::value(model::bool_type(), bits));
+        ir::jump(end);
+        ir::label(yes);
+        let right:ir::SlotId = expr(n.right, model::bool_type());
+        ir::copy_to(result, right);
+        ir::jump(end);
+        ir::label(end);
+        return result;
+    }
+    var want:model::TypeId = expected;
+    if n.op >= model::BIN_EQ {
+        want = model::no_type();
+    }
+    let left:ir::SlotId = expr(n.left, want);
+    let ty:model::TypeId = ir::type_of(left);
+    let right:ir::SlotId = expr(n.right, ty);
+    if !model::same_type(ir::type_of(right), ty) {
+        types::fail(model::ERROR_TYPE);
+    }
+    if n.op >= model::BIN_EQ {
+        if n.op >= model::BIN_LT && !types::integer(ty) {
+            types::fail(model::ERROR_TYPE);
+        }
+        if n.op <= model::BIN_NE && !types::scalar(ty) {
+            types::fail(model::ERROR_TYPE);
+        }
+        return ir::binary(n.op, left, right, model::bool_type());
+    }
+    if !types::integer(ty) {
+        types::fail(model::ERROR_TYPE);
+    }
+    return ir::binary(n.op, left, right, ty);
+}
+
+fn repeat(ty:model::TypeId, element:model::TypeId, length:u32, value:ir::SlotId) -> ir::SlotId {
+    let result:ir::SlotId = ir::slot(ty);
+    let counter:ir::SlotId = ir::value(model::usize_type(), 0);
+    let test:ir::LabelId = ir::label_id();
+    let body:ir::LabelId = ir::label_id();
+    let done:ir::LabelId = ir::label_id();
+    ir::jump(test);
+    ir::label(test);
+    let condition:ir::SlotId = ir::binary(model::BIN_LT, counter, ir::value(model::usize_type(), length as usize), model::bool_type());
+    ir::branch(condition, body, done);
+    ir::label(body);
+    let bytes:ir::SlotId = ir::binary(model::BIN_MUL, counter, ir::value(model::usize_type(), types::info(element).size), model::usize_type());
+    let address:ir::SlotId = ir::offset(ir::local_address(result, ty, 0, false), bytes, element, false);
+    ir::store(address, value);
+    let next:ir::SlotId = ir::binary(model::BIN_ADD, counter, ir::value(model::usize_type(), 1), model::usize_type());
+    ir::copy_to(counter, next);
+    ir::jump(test);
+    ir::label(done);
+    return result;
+}
+
+// A zero aggregate is initialized through ordinary byte stores. This includes
+// padding, so copying a completed value never depends on old frame contents.
+fn zero_storage(ty:model::TypeId) -> ir::SlotId {
+    if types::scalar(ty) {
+        return ir::value(ty, 0);
+    }
+    let result:ir::SlotId = ir::slot(ty);
+    let size:usize = types::info(ty).size;
+    if size == 0_usize {
+        return result;
+    }
+    let base:ir::SlotId = ir::local_address(result, model::u8_type(), 0, false);
+    let counter:ir::SlotId = ir::value(model::usize_type(), 0);
+    let test:ir::LabelId = ir::label_id();
+    let body:ir::LabelId = ir::label_id();
+    let done:ir::LabelId = ir::label_id();
+    ir::jump(test);
+    ir::label(test);
+    ir::branch(ir::binary(model::BIN_LT, counter, ir::value(model::usize_type(), size), model::bool_type()), body, done);
+    ir::label(body);
+    ir::store(ir::offset(base, counter, model::u8_type(), false), ir::value(model::u8_type(), 0));
+    ir::copy_to(counter, ir::binary(model::BIN_ADD, counter, ir::value(model::usize_type(), 1), model::usize_type()));
+    ir::jump(test);
+    ir::label(done);
+    return result;
+}
+
+fn expr(node:parse::NodeId, expected:model::TypeId) -> ir::SlotId {
+    unsafe {
+        if expression_depth >= 64_u32 {
+            model::limit_at((expression_depth as usize)+1_usize, 64, file, parse::get(node).span.start as usize);
+        }
+        expression_depth = expression_depth+1_u32;
+    }
+    let result:ir::SlotId = expr_inner(node, expected);
+    unsafe {
+        expression_depth = expression_depth-1_u32;
+    }
+    return result;
+}
+
+// These handlers emit into the current function IR. Recursive operands use expr(),
+// which owns diagnostic positioning and the expression-depth budget.
+fn name_value(node:parse::NodeId, name:model::NameId) -> ir::SlotId {
+    unsafe {
+        if local(name) == 0_u32 {
+            let v:types::Variant = types::variant(file, name);
+            if v.found {
+                return variant_value(v, parse::nil(), false);
+            }
+        }
+    }
+    var value:ir::SlotId = ir::no_slot();
+    if is_place(node) {
+        value = read(place(node));
+    } else {
+        unsafe {
+            let id:u32 = types::resolve(file, name, false);
+            if id == 0_u32 {
+                types::fail(model::ERROR_NAME);
+            }
+            let d:model::Decl = model::get_decl(id);
+            if d.kind != model::DECL_CONST {
+                types::fail(model::ERROR_UNSUPPORTED);
+            }
+            value = ir::value(d.ty, d.bits);
+        }
+    }
+    return value;
+}
+
+fn unary_value(node:parse::NodeId, n:parse::Unary, expected:model::TypeId) -> ir::SlotId {
+    var value:ir::SlotId = ir::no_slot();
+    if n.op == model::UNARY_DEREF {
+        value = read(place(node));
+    } else {
+        var want:model::TypeId = expected;
+        if n.op == model::UNARY_NOT {
+            want = model::bool_type();
+        }
+        let operand:ir::SlotId = expr(n.operand, want);
+        let ty:model::TypeId = ir::type_of(operand);
+        if n.op == model::UNARY_NEG || n.op == model::UNARY_BIT_NOT && !types::integer(ty) {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = ir::unary(n.op, operand, ty);
+    }
+    return value;
+}
+
+fn field_value(n:parse::FieldAccess) -> ir::SlotId {
+    var value:ir::SlotId = ir::no_slot();
+    let base:Place = base_place(n.base);
+    let t:model::Type = types::info(base.ty);
+    if t.kind == model::TYPE_ARRAY {
+        access(base);
+        if !model::equal(types::text(n.name), "len") {
+            types::fail(model::ERROR_NAME);
+        }
+        value = ir::value(model::usize_type(), t.b as usize);
+    } else {
+        value = read(field(base, n.name));
+    }
+    return value;
+}
+
+fn struct_value(n:parse::RecordValue, file:u32) -> ir::SlotId {
+    let ty:model::TypeId = types::named_type(file, n.type_name, false);
+    let t:model::Type = types::info(ty);
+    if t.kind != model::TYPE_STRUCT {
+        types::fail(model::ERROR_TYPE);
+    }
+    let value:ir::SlotId = ir::slot(ty);
+    var seen:[256]u32 = [0;256];
+    var p:parse::NodeId = n.fields;
+    var found:u32 = 0;
+    while !parse::is_none(p) {
+        let pair:parse::FieldValue = parse::field_value(p);
+        var index:u32 = 0;
+        unsafe {
+            while index < t.count && !model::same_name(model::get_field((t.first+index)).name, pair.name) {
+                index = index+1_u32;
+            }
+        }
+        if index == t.count {
+            types::fail(model::ERROR_NAME);
+        }
+        unsafe {
+            if seen[index as usize] != 0_u32 {
+                types::fail(model::ERROR_TYPE);
+            }
+            seen[index as usize] = 1;
+            let f:model::Field = model::get_field((t.first+index));
+            if !types::field_visible(ty, f.flags, file) {
+                types::fail(model::ERROR_NAME);
+            }
+            let v:ir::SlotId = expr(pair.value, f.ty);
+            ir::store(ir::local_address(value, f.ty, f.offset, false), v);
+        }
+        found = found+1_u32;
+        p = parse::next(p);
+    }
+    if found != t.count {
+        types::fail(model::ERROR_TYPE);
+    }
+    return value;
+}
+
+fn array_type(expected:model::TypeId) -> model::Type {
+    if model::is_no_type(expected) {
+        types::fail(model::ERROR_TYPE);
+    }
+    let t:model::Type = types::info(expected);
+    if t.kind != model::TYPE_ARRAY {
+        types::fail(model::ERROR_TYPE);
+    }
+    return t;
+}
+
+fn array_list(first:parse::NodeId, expected:model::TypeId) -> ir::SlotId {
+    let t:model::Type = array_type(expected);
+    let value:ir::SlotId = ir::slot(expected);
+    var p:parse::NodeId = first;
+    var index:u32 = 0;
+    while !parse::is_none(p) {
+        if index >= t.b {
+            types::fail(model::ERROR_TYPE);
+        }
+        let v:ir::SlotId = expr(p, t.element);
+        ir::store(ir::local_address(value, t.element, (index as usize)*types::info(t.element).size, false), v);
+        index = index+1_u32;
+        p = parse::next(p);
+    }
+    if index != t.b {
+        types::fail(model::ERROR_TYPE);
+    }
+    return value;
+}
+
+fn array_repeat(n:parse::RepeatValue, expected:model::TypeId) -> ir::SlotId {
+    let t:model::Type = array_type(expected);
+    if types::repeat_length(n.length) != t.b {
+        types::fail(model::ERROR_TYPE);
+    }
+    return repeat(expected, t.element, t.b, expr(n.value, t.element));
+}
+
+fn expr_inner(node:parse::NodeId, expected:model::TypeId) -> ir::SlotId {
+    location(node);
+    let n:parse::Node = parse::get(node);
+    var value:ir::SlotId = ir::no_slot();
+    match n.syntax {
+        parse::Syntax::Empty => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Integer(part) => {
+            var ty:model::TypeId = model::primitive_type(part.suffix);
+            if model::is_no_type(ty) {
+                ty = expected;
+            }
+            value = ir::value(ty, types::literal(part.bits, ty));
+        },
+        parse::Syntax::Boolean(part) => {
+            var bits:usize = 0;
+            if part {
+                bits = 1;
+            }
+            value = ir::value(model::bool_type(), bits);
+        },
+        parse::Syntax::Unit => {
+            value = ir::value(model::unit_type(), 0);
+        },
+        parse::Syntax::Null => {
+            if model::is_no_type(expected) || types::info(expected).kind != model::TYPE_POINTER {
+                types::fail(model::ERROR_TYPE);
+            }
+            value = ir::value(expected, 0);
+        },
+        parse::Syntax::Zero => {
+            types::check_zero(expected, n.span.file);
+            value = zero_storage(expected);
+        },
+        parse::Syntax::Name(part) => {
+            value = name_value(node, part);
+        },
+        parse::Syntax::String(part) => {
+            let symbol:u32 = init::string_data(part);
+            value = slice(model::u8_type(), true, ir::symbol_address(symbol, model::u8_type(), true), ir::value(model::usize_type(), types::text(part).len));
+        },
+        parse::Syntax::Unary(part) => {
+            value = unary_value(node, part, expected);
+        },
+        parse::Syntax::Binary(part) => {
+            value = binary(part, expected);
+        },
+        parse::Syntax::Cast(part) => {
+            let operand:ir::SlotId = expr(part.value, model::no_type());
+            let target:model::TypeId = types::syntax_type(part.target, n.span.file, false);
+            if !types::integer(ir::type_of(operand)) || !types::integer(target) {
+                types::fail(model::ERROR_TYPE);
+            }
+            value = ir::cast(operand, target);
+        },
+        parse::Syntax::Call(part) => {
+            value = call(part.callee, part.arguments);
+        },
+        parse::Syntax::Field(part) => {
+            value = field_value(part);
+        },
+        parse::Syntax::Index(part) => {
+            value = read(index(base_place(part.base), part.index));
+        },
+        parse::Syntax::Record(part) => {
+            value = struct_value(part, n.span.file);
+        },
+        parse::Syntax::FieldValue(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Array(part) => {
+            value = array_list(part, expected);
+        },
+        parse::Syntax::Repeat(part) => {
+            value = array_repeat(part, expected);
+        },
+        parse::Syntax::SizeOf(part) => {
+            let target:model::TypeId = types::syntax_type(part, n.span.file, false);
+            types::layout(target);
+            value = ir::value(model::usize_type(), types::info(target).size);
+        },
+        parse::Syntax::AlignOf(part) => {
+            let target:model::TypeId = types::syntax_type(part, n.span.file, false);
+            types::layout(target);
+            value = ir::value(model::usize_type(), types::info(target).align);
+        },
+        parse::Syntax::Pointer(part) => {
+            require_unsafe();
+            value = ir::bitcast(expr(part.address, model::usize_type()), types::pointer(types::syntax_type(part.target, n.span.file, false), false));
+        },
+        parse::Syntax::VariantPattern(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Wildcard => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::MatchArm(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Block(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Bind(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Assign(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Expression(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Unsafe(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::If(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::While(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Loop(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Return(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Break => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Continue => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Defer(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Match(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::EmptyStatement => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+    }
+    return same(value, expected);
+}
+
+fn statement(node:parse::NodeId) -> bool {
+    location(node);
+    let n:parse::Node = parse::get(node);
+    match n.syntax {
+        parse::Syntax::Empty => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Integer(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Boolean(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Unit => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Null => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Zero => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Name(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::String(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Unary(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Binary(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Cast(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Call(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Field(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Index(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Record(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::FieldValue(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Array(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Repeat(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::SizeOf(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::AlignOf(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Pointer(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::VariantPattern(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Wildcard => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::MatchArm(part) => {
+            types::fail(model::ERROR_INTERNAL);
+        },
+        parse::Syntax::Block(part) => {
+            return block(node);
+        },
+        parse::Syntax::Bind(part) => {
+            var ty:model::TypeId = model::no_type();
+            if parse::has_type(part.declared) {
+                ty = types::syntax_type(part.declared, n.span.file, false);
+            }
+            let value:ir::SlotId = expr(part.initializer, ty);
+            let target:ir::SlotId = bind(part.name, ir::type_of(value), part.mutable);
+            ir::copy_to(target, value);
+            return true;
+        },
+        parse::Syntax::Assign(part) => {
+            // Fix and validate the destination before any RHS effects.
+            let target:Place = place(part.target);
+            access(target);
+            if !target.writable {
+                types::fail(model::ERROR_TYPE);
+            }
+            let value:ir::SlotId = expr(part.value, target.ty);
+            ir::store(target.address, value);
+            return true;
+        },
+        parse::Syntax::Expression(part) => {
+            let ignored:ir::SlotId = expr(part, model::no_type());
+            return true;
+        },
+        parse::Syntax::Unsafe(part) => {
+            unsafe {
+                unsafe_depth = unsafe_depth+1_u32;
+            }
+            let falls:bool = block(part);
+            unsafe {
+                unsafe_depth = unsafe_depth-1_u32;
+            }
+            return falls;
+        },
+        parse::Syntax::If(part) => {
+            let condition:ir::SlotId = expr(part.condition, model::bool_type());
+            let yes:ir::LabelId = ir::label_id();
+            let no:ir::LabelId = ir::label_id();
+            let end:ir::LabelId = ir::label_id();
+            ir::branch(condition, yes, no);
+            ir::label(yes);
+            let a:bool = block(part.then_body);
+            ir::jump(end);
+            ir::label(no);
+            var b:bool = true;
+            if !parse::is_none(part.else_body) {
+                b = block(part.else_body);
+            }
+            ir::jump(end);
+            if a || b {
+                ir::label(end);
+            }
+            return a || b;
+        },
+        parse::Syntax::While(part) => {
+            return loop_statement(part.condition, part.body);
+        },
+        parse::Syntax::Loop(part) => {
+            return loop_statement(parse::nil(), part);
+        },
+        parse::Syntax::Return(part) => {
+            unsafe {
+                let value:ir::SlotId = expr(part, output_type());
+                cleanup(0);
+                if !ir::is_closed() {
+                    var result:ir::Destination = ir::Destination::Slot(value);
+                    if model::same_type(output_type(), model::unit_type()) {
+                        result = ir::Destination::Unit;
+                    }
+                    ir::return_value(result);
+                }
+            }
+            return false;
+        },
+        parse::Syntax::Break => {
+            return loop_exit(true);
+        },
+        parse::Syntax::Continue => {
+            return loop_exit(false);
+        },
+        parse::Syntax::Defer(part) => {
+            register_cleanup(part, n.span);
+            return true;
+        },
+        parse::Syntax::Match(part) => {
+            return match_statement(part);
+        },
+        parse::Syntax::EmptyStatement => {
+            return true;
+        },
+    }
+    return false;
+}
+
+fn loop_statement(condition_node:parse::NodeId, body_node:parse::NodeId) -> bool {
+    unsafe {
+        if loop_count >= 256_u32 {
+            model::limit((loop_count as usize)+1_usize, 256);
+        }
+    }
+    let header:ir::LabelId = ir::label_id();
+    let body:ir::LabelId = ir::label_id();
+    let exit:ir::LabelId = ir::label_id();
+    ir::jump(header);
+    ir::label(header);
+    if !parse::is_none(condition_node) {
+        let condition:ir::SlotId = expr(condition_node, model::bool_type());
+        ir::branch(condition, body, exit);
+        ir::label(body);
+    }
+    unsafe {
+        loop_count = loop_count+1_u32;
+        if (loop_count as usize) > max_loops {
+            max_loops = loop_count as usize;
+        }
+        loops[loop_count as usize] = LoopEntry::Active(make Loop {
+            exit:exit,
+            again:header,
+            cleanup:defer_count,
+            has_break:false
+        });
+    }
+    let ignored:bool = block(body_node);
+    ir::jump(header);
+    var falls:bool = !parse::is_none(condition_node);
+    unsafe {
+        if loop_at(loop_count).has_break {
+            falls = true;
+        }
+        loop_count = loop_count-1_u32;
+    }
+    if falls {
+        ir::label(exit);
+    }
+    return falls;
+}
+
+fn loop_exit(exits:bool) -> bool {
+    unsafe {
+        if loop_count == 0_u32 {
+            types::fail(model::ERROR_TYPE);
+        }
+        var target:Loop = loop_at(loop_count);
+        var label:ir::LabelId = target.again;
+        if exits {
+            target.has_break = true;
+            loops[loop_count as usize] = LoopEntry::Active(target);
+            label = target.exit;
+        }
+        cleanup(target.cleanup);
+        ir::jump(label);
+    }
+    return false;
+}
+
+fn block_first(node:parse::NodeId) -> parse::NodeId {
+    loop {
+        match parse::get(node).syntax {
+            parse::Syntax::Empty => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Integer(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Boolean(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Unit => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Null => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Zero => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Name(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::String(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Unary(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Binary(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Cast(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Call(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Field(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Index(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Record(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::FieldValue(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Array(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Repeat(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::SizeOf(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::AlignOf(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Pointer(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::VariantPattern(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Wildcard => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::MatchArm(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Block(part) => {
+                return part;
+            },
+            parse::Syntax::Bind(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Assign(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Expression(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Unsafe(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::If(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::While(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Loop(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Return(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Break => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Continue => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Defer(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::Match(part) => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+            parse::Syntax::EmptyStatement => {
+                types::fail(model::ERROR_INTERNAL);
+            },
+        }
+    }
+}
+
+fn block(node:parse::NodeId) -> bool {
+    unsafe {
+        let binding_mark:u32 = binding_count;
+        let cleanup_mark:u32 = defer_count;
+        depth = depth+1_u32;
+        var item:parse::NodeId = block_first(node);
+        var falls:bool = true;
+        while !parse::is_none(item) {
+            ir::ensure();
+            let next:bool = statement(item);
+            falls = falls && next;
+            item = parse::get(item).next;
+        }
+        if falls {
+            cleanup(cleanup_mark);
+            if ir::is_closed() {
+                falls = false;
+            }
+        } else if !ir::is_closed() {
+            ir::panic_();
+        }
+        binding_count = binding_mark;
+        defer_count = cleanup_mark;
+        depth = depth-1_u32;
+        return falls;
+    }
+}
+
+fn match_arm(node:parse::NodeId) -> parse::MatchArm {
+    loop {
+        match parse::get(node).syntax {
+            parse::Syntax::Empty => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Integer(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Boolean(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Unit => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Null => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Zero => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Name(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::String(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Unary(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Binary(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Cast(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Call(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Field(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Index(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Record(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::FieldValue(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Array(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Repeat(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::SizeOf(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::AlignOf(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Pointer(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::VariantPattern(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Wildcard => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::MatchArm(part) => {
+                return part;
+            },
+            parse::Syntax::Block(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Bind(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Assign(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Expression(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Unsafe(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::If(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::While(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Loop(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Return(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Break => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Continue => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Defer(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::Match(part) => {
+                types::fail(model::ERROR_TYPE);
+            },
+            parse::Syntax::EmptyStatement => {
+                types::fail(model::ERROR_TYPE);
+            },
+        }
+    }
+}
+
+struct Pattern {
+    key:usize,
+    binding:model::NameId,
+    payload:model::TypeId,
+    offset:usize,
+    wildcard:bool
+}
+
+fn checked_pattern(node:parse::NodeId, ty:model::TypeId) -> Pattern {
+    location(node);
+    let n:parse::Node = parse::get(node);
+    let t:model::Type = types::info(ty);
+    var result:Pattern = make Pattern {
+        key:0,
+        binding:model::no_name(),
+        payload:model::no_type(),
+        offset:0,
+        wildcard:false
+    };
+    match n.syntax {
+        parse::Syntax::Empty => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Integer(part) => {
+            if !types::integer(ty) {
+                types::fail(model::ERROR_TYPE);
+            }
+            let k:types::Constant = types::constant_value(node, ty);
+            if !model::same_type(k.ty, ty) {
+                types::fail(model::ERROR_TYPE);
+            }
+            result.key = k.bits;
+        },
+        parse::Syntax::Boolean(part) => {
+            if !model::same_type(ty, model::bool_type()) {
+                types::fail(model::ERROR_TYPE);
+            }
+            if part {
+                result.key = 1;
+            }
+        },
+        parse::Syntax::Unit => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Null => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Zero => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Name(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::String(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Unary(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Binary(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Cast(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Call(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Field(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Index(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Record(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::FieldValue(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Array(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Repeat(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::SizeOf(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::AlignOf(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Pointer(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::VariantPattern(part) => {
+            let v:types::Variant = types::variant(n.span.file, part.path);
+            if !v.found || !model::same_type(v.ty, ty) || v.has_payload != part.has_payload {
+                types::fail(model::ERROR_TYPE);
+            }
+            result.key = v.tag as usize;
+            result.binding = part.binding;
+            result.payload = v.payload;
+            result.offset = v.offset;
+        },
+        parse::Syntax::Wildcard => {
+            if t.kind == model::TYPE_ENUM {
+                types::fail(model::ERROR_TYPE);
+            }
+            result.wildcard = true;
+        },
+        parse::Syntax::MatchArm(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Block(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Bind(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Assign(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Expression(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Unsafe(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::If(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::While(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Loop(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Return(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Break => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Continue => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Defer(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::Match(part) => {
+            types::fail(model::ERROR_TYPE);
+        },
+        parse::Syntax::EmptyStatement => {
+            types::fail(model::ERROR_TYPE);
+        },
+    }
+    return result;
+}
+
+fn match_statement(n:parse::MatchValue) -> bool {
+    let value:ir::SlotId = expr(n.value, model::no_type());
+    let ty:model::TypeId = ir::type_of(value);
+    let t:model::Type = types::info(ty);
+    if !model::same_type(ty, model::bool_type()) && !types::integer(ty) && t.kind != model::TYPE_ENUM {
+        types::fail(model::ERROR_TYPE);
+    }
+    var patterns:[256]usize = zero;
+    var count:u32 = 0;
+    var wildcard:bool = false;
+    var arm:parse::NodeId = n.arms;
+    while !parse::is_none(arm) {
+        let item:parse::MatchArm = match_arm(arm);
+        let p:Pattern = checked_pattern(item.pattern, ty);
+        if wildcard {
+            types::fail(model::ERROR_TYPE);
+        }
+        if p.wildcard {
+            wildcard = true;
+        } else {
+            unsafe {
+                var j:u32 = 0;
+                while j < count {
+                    if patterns[j as usize] == p.key {
+                        types::fail(model::ERROR_TYPE);
+                    }
+                    j = j+1_u32;
+                }
+                if count >= 256_u32 {
+                    model::limit((count as usize)+1_usize, 256);
+                }
+                patterns[count as usize] = p.key;
+            }
+            count = count+1_u32;
+        }
+        arm = parse::next(arm);
+    }
+    var required:u32 = 2;
+    if t.kind == model::TYPE_ENUM {
+        required = t.count;
+    }
+    if !wildcard && (types::integer(ty) || count != required) {
+        types::fail(model::ERROR_TYPE);
+    }
+    var tested:ir::SlotId = value;
+    if t.kind == model::TYPE_ENUM {
+        tested = ir::load(ir::local_address(value, model::u32_type(), 0, true), model::u32_type());
+    }
+    let end:ir::LabelId = ir::label_id();
+    var falls:bool = false;
+    arm = n.arms;
+    while !parse::is_none(arm) {
+        let item:parse::MatchArm = match_arm(arm);
+        let p:Pattern = checked_pattern(item.pattern, ty);
+        let body:ir::LabelId = ir::label_id();
+        let next:ir::LabelId = ir::label_id();
+        if p.wildcard {
+            ir::jump(body);
+        } else {
+            let condition:ir::SlotId = ir::binary(model::BIN_EQ, tested, ir::value(ir::type_of(tested), p.key), model::bool_type());
+            ir::branch(condition, body, next);
+        }
+        ir::label(body);
+        unsafe {
+            let mark:u32 = binding_count;
+            depth = depth+1_u32;
+            if !model::is_no_name(p.binding) {
+                let target:ir::SlotId = bind(p.binding, p.payload, false);
+                ir::copy_to(target, ir::load(ir::local_address(value, p.payload, p.offset, true), p.payload));
+            }
+            let f:bool = block(item.body);
+            falls = falls || f;
+            ir::jump(end);
+            binding_count = mark;
+            depth = depth-1_u32;
+        }
+        ir::label(next);
+        arm = parse::next(arm);
+    }
+    ir::panic_();
+    if falls {
+        ir::label(end);
+    }
+    return falls;
+}
+
+// The driver owns the complete lifetime; no reader may retain body/slot IDs.
+static mut active:bool = false;
+pub fn begin_function(decl:u32) -> parse::NodeId {
+    unsafe {
+        if active {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        active = true;
+    }
+    unsafe {
+        if decl == 0_u32 || decl > model::decl_count() {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        let d:model::Decl = model::get_decl(decl);
+        if d.kind != model::DECL_FUNCTION {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        // Sole production owner of function initialization. Tables stay in
+        // their modules; only counts and small context fields are reset.
+        parse::reset(d.file);
+        ir::begin_function(decl);
+        binding_count = 0;
+        expression_depth = 0;
+        place_depth = 0;
+        depth = 0;
+        unsafe_depth = 0;
+        defer_count = 0;
+        loop_count = 0;
+        output = model::TypeEntry::Value(d.ty);
+        file = d.file;
+        parse::seek(d.file, d.start);
+        let body:parse::NodeId = parse::block();
+        types::bind_function_types();
+        ir::locate(make model::Span {
+            file:d.file,
+            start:d.start,
+            end:d.end
+        });
+        ir::label(ir::label_id());
+        var i:u32 = 0;
+        while i < d.count {
+            let param:model::Param = model::get_param((d.first+i));
+            let slot:ir::SlotId = bind(param.name, param.ty, false);
+            ir::mark_parameter(slot);
+            i = i+1_u32;
+        }
+        return body;
+    }
+}
+
+pub fn check_body(body:parse::NodeId) -> () {
+    unsafe {
+        if !active {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        if block(body) {
+            types::fail(model::ERROR_TYPE);
+        }
+        if !ir::is_closed() {
+            ir::panic_();
+        }
+        types::finish_layouts();
+        ir::finish_ir();
+        if (ir::inst_count() as usize) > model::max_ir {
+            model::max_ir = ir::inst_count() as usize;
+        }
+        if (parse::node_count() as usize) > model::max_ast {
+            model::max_ast = parse::node_count() as usize;
+        }
+    }
+    return ();
+}
+
+pub fn end_function() -> () {
+    unsafe {
+        if !active {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        active = false;
+        binding_count = 0;
+        defer_count = 0;
+        loop_count = 0;
+        parse::reset(0);
+        ir::end_function();
+    }
+    return ();
+}

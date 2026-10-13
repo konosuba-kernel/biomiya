@@ -1,0 +1,1068 @@
+// Shared concrete B3 records. IDs are one-based; capacity is checked before append.
+module bootstrap::model;
+// Stable discriminants. Primitive TypeIds TYPE_UNIT..TYPE_USIZE equal their kinds.
+// Ordered ranges below are intentional: scalar types, comparisons and IR terminators.
+pub const TYPE_INVALID:u32 = 0;
+pub const TYPE_UNIT:u32 = 1;
+pub const TYPE_BOOL:u32 = 2;
+pub const TYPE_U8:u32 = 3;
+pub const TYPE_U32:u32 = 4;
+pub const TYPE_USIZE:u32 = 5;
+pub const TYPE_POINTER:u32 = 6;
+pub const TYPE_ARRAY:u32 = 7;
+pub const TYPE_SLICE:u32 = 8;
+pub const TYPE_STRUCT:u32 = 9;
+pub const TYPE_ENUM:u32 = 10;
+pub const DECL_INVALID:u32 = 0;
+pub const DECL_STRUCT:u32 = 1;
+pub const DECL_FUNCTION:u32 = 2;
+pub const DECL_EXTERN:u32 = 3;
+pub const DECL_CONST:u32 = 4;
+pub const DECL_STATIC:u32 = 5;
+pub const DECL_ENUM:u32 = 6;
+pub const TOKEN_EOF:u32 = 0;
+pub const TOKEN_IDENT:u32 = 1;
+pub const TOKEN_NUMBER:u32 = 2;
+pub const TOKEN_STRING:u32 = 3;
+pub const TOKEN_PUNCT:u32 = 4;
+pub const AST_INVALID:u32 = 0;
+pub const AST_INTEGER:u32 = 1;
+pub const AST_BOOL:u32 = 2;
+pub const AST_UNIT:u32 = 3;
+pub const AST_NULL:u32 = 4;
+pub const AST_NAME:u32 = 5;
+pub const AST_UNARY:u32 = 6;
+pub const AST_BINARY:u32 = 7;
+pub const AST_CAST:u32 = 8;
+pub const AST_CALL:u32 = 9;
+pub const AST_FIELD:u32 = 10;
+pub const AST_INDEX:u32 = 11;
+pub const AST_STRUCT:u32 = 12;
+pub const AST_ARRAY:u32 = 13;
+pub const AST_REPEAT:u32 = 14;
+pub const AST_SIZEOF:u32 = 17;
+pub const AST_ALIGNOF:u32 = 18;
+pub const AST_POINTER:u32 = 19;
+pub const AST_STRING:u32 = 20;
+pub const AST_ZERO:u32 = 21;
+pub const AST_FIELD_VALUE:u32 = 31;
+pub const AST_VARIANT_PATTERN:u32 = 40;
+pub const AST_MATCH_ARM:u32 = 41;
+pub const AST_WILDCARD:u32 = 42;
+pub const AST_BLOCK:u32 = 101;
+pub const AST_BIND:u32 = 102;
+pub const AST_ASSIGN:u32 = 103;
+pub const AST_EXPR:u32 = 104;
+pub const AST_UNSAFE:u32 = 105;
+pub const AST_IF:u32 = 106;
+pub const AST_WHILE:u32 = 107;
+pub const AST_LOOP:u32 = 108;
+pub const AST_RETURN:u32 = 109;
+pub const AST_BREAK:u32 = 110;
+pub const AST_CONTINUE:u32 = 111;
+pub const AST_DEFER:u32 = 112;
+pub const AST_MATCH:u32 = 113;
+pub const AST_EMPTY:u32 = 114;
+pub const IR_INVALID:u32 = 0;
+pub const IR_VALUE:u32 = 1;
+pub const IR_COPY:u32 = 2;
+pub const IR_LOCAL_ADDRESS:u32 = 3;
+pub const IR_SYMBOL_ADDRESS:u32 = 4;
+pub const IR_LOAD:u32 = 5;
+pub const IR_STORE:u32 = 6;
+pub const IR_OFFSET:u32 = 7;
+pub const IR_BINARY:u32 = 8;
+pub const IR_UNARY:u32 = 9;
+pub const IR_CAST:u32 = 10;
+pub const IR_BITCAST:u32 = 11;
+pub const IR_BOUNDS:u32 = 12;
+pub const IR_CALL:u32 = 13;
+pub const IR_LABEL:u32 = 14;
+pub const IR_JUMP:u32 = 15;
+pub const IR_BRANCH:u32 = 16;
+pub const IR_RETURN:u32 = 17;
+pub const IR_PANIC:u32 = 18;
+pub const BIN_INVALID:u32 = 0;
+pub const BIN_ADD:u32 = 1;
+pub const BIN_SUB:u32 = 2;
+pub const BIN_MUL:u32 = 3;
+pub const BIN_DIV:u32 = 4;
+pub const BIN_REM:u32 = 5;
+pub const BIN_WRAP_ADD:u32 = 6;
+pub const BIN_WRAP_SUB:u32 = 7;
+pub const BIN_WRAP_MUL:u32 = 8;
+pub const BIN_SHL:u32 = 9;
+pub const BIN_SHR:u32 = 10;
+pub const BIN_BIT_AND:u32 = 11;
+pub const BIN_BIT_OR:u32 = 12;
+pub const BIN_BIT_XOR:u32 = 13;
+pub const BIN_EQ:u32 = 14;
+pub const BIN_NE:u32 = 15;
+pub const BIN_LT:u32 = 16;
+pub const BIN_LE:u32 = 17;
+pub const BIN_GT:u32 = 18;
+pub const BIN_GE:u32 = 19;
+pub const BIN_AND:u32 = 20;
+pub const BIN_OR:u32 = 21;
+pub const UNARY_NOT:u32 = 1;
+pub const UNARY_BIT_NOT:u32 = 2;
+pub const UNARY_NEG:u32 = 3;
+pub const UNARY_DEREF:u32 = 4;
+pub const ERROR_NONE:u32 = 0;
+pub const ERROR_PARSE:u32 = 1;
+pub const ERROR_NAME:u32 = 2;
+pub const ERROR_TYPE:u32 = 3;
+pub const ERROR_PERMISSION:u32 = 4;
+pub const ERROR_UNSUPPORTED:u32 = 5;
+pub const ERROR_LIMIT:u32 = 6;
+pub const ERROR_INTERNAL:u32 = 7;
+pub const ERROR_IO:u32 = 8;
+pub const ERROR_LINK:u32 = 9;
+// Flags occupy separate record domains; zero means no declaration/slot flags.
+pub const FLAG_PUBLIC:u32 = 1;
+pub const FLAG_UNSAFE:u32 = 2;
+pub const FLAG_MUTABLE:u32 = 4;
+pub const FLAG_PAYLOAD:u32 = 8;
+pub const TYPE_CONST:u32 = 1;
+pub const TYPE_MUTABLE:u32 = 0;
+pub const SLOT_PARAMETER:u32 = 1;
+pub const SYMBOL_UNSPECIFIED:u32 = 0;
+pub const SYMBOL_FUNCTION:u32 = 1;
+pub const SYMBOL_DATA:u32 = 2;
+extern abi(C) fn __b2_syscall6(n:usize, a:usize, b:usize, c:usize, d:usize, e:usize, f:usize) -> usize;
+pub struct Span {
+    pub file:u32,
+    pub start:u32,
+    pub end:u32
+}
+
+pub struct Source {
+    pub path:[]const u8,
+    pub bytes:[]const u8,
+    pub module_id:u32,
+    pub import_first:u32,
+    pub import_count:u32
+}
+
+pub struct Token {
+    pub kind:u32,
+    pub file:u32,
+    pub start:u32,
+    pub end:u32,
+    pub number:usize,
+    pub suffix:u32
+}
+
+pub struct Name {
+    pub bytes:[]const u8,
+    pub hash:usize
+}
+
+pub struct Import {
+    pub file:u32,
+    pub module_id:u32,
+    pub alias:u32,
+    pub span:Span
+}
+
+// Type contract: kind is TYPE_*. a is pointee/element TypeId for POINTER,
+// ARRAY and SLICE, or owning DeclId for STRUCT/ENUM.
+// b is ARRAY length or ENUM payload byte offset; otherwise zero. flags is TYPE_CONST
+// only for POINTER/SLICE. size/align are bytes (align zero means pending layout).
+// first/count select fields for STRUCT or variants for ENUM.
+// Other kinds leave first/count zero. IDs remain stable for this compilation.
+pub struct Type {
+    pub kind:u32,
+    pub a:u32,
+    pub b:u32,
+    pub flags:u32,
+    pub size:usize,
+    pub align:usize,
+    pub first:u32,
+    pub count:u32
+}
+
+pub struct Field {
+    pub name:u32,
+    pub ty:u32,
+    pub flags:u32,
+    pub offset:usize,
+    pub span:Span
+}
+
+// Decl contract: kind is DECL_*; name/module_id are NameIds, file is FileId.
+// flags combines FLAG_PUBLIC, FLAG_UNSAFE (including extern), FLAG_MUTABLE.
+// ty is a TypeId (return type for functions); first/count select ParamIds for
+// functions. start/end delimit declaration/body source bytes; init_start/end
+// delimit initializer bytes. symbol is SymbolId, bits is CONST scalar value.
+// state is 0 before preparation and 2 after completion; the in-progress
+// marker belongs to types::preparing rather than this completed record.
+pub struct Decl {
+    pub kind:u32,
+    pub name:u32,
+    pub module_id:u32,
+    pub file:u32,
+    pub flags:u32,
+    pub ty:u32,
+    pub first:u32,
+    pub count:u32,
+    pub start:u32,
+    pub end:u32,
+    pub init_start:u32,
+    pub init_end:u32,
+    pub symbol:u32,
+    pub bits:usize,
+    pub state:u32
+}
+
+pub struct Param {
+    pub name:u32,
+    pub ty:u32,
+    pub span:Span
+}
+
+// Slot contract: semantic TypeId, SLOT_PARAMETER flags and source provenance.
+// Frame byte offsets live only in rv64's private target table. Slot has no
+// target-layout field; completed semantic slots are read-only to the backend.
+// SlotIds, InstIds and argument ranges live only until reset_function().
+pub struct Slot {
+    pub ty:u32,
+    pub flags:u32,
+    pub span:Span
+}
+
+// Inst contract: op is IR_*; span is diagnostic provenance. Unused operands
+// are zero. dst/a/b refer to SlotIds except for the explicit exceptions below.
+// VALUE: dst <- bits. COPY: dst <- a (aggregate snapshot/copy).
+// LOCAL_ADDRESS: dst <- address of slot a plus byte offset bits.
+// SYMBOL_ADDRESS: dst <- address of SymbolId a. LOAD: dst <- *a.
+// STORE: *a <- b. OFFSET: dst <- pointer a plus byte count in slot b.
+// BINARY: dst <- a BIN_aux b. UNARY: dst <- UNARY_aux a.
+// CAST/BITCAST: dst <- converted a; destination slot supplies target TypeId.
+// BOUNDS: require usize slots a < b, otherwise panic.
+// CALL: a is stable DeclId; b/c are first/count in model::args (SlotIds).
+//       dst is return SlotId, or zero for unit. aux/bits are unused.
+// LABEL/JUMP: a is LabelId. BRANCH: a is bool SlotId; b/c are yes/no LabelIds.
+// RETURN: a is returned SlotId, or zero for unit. PANIC: no operands.
+// LABEL opens a block. JUMP/BRANCH/RETURN/PANIC terminate it. IDs and ranges
+// use one-based indexes; zero is absent, never a valid non-unit value slot.
+pub struct Inst {
+    pub op:u32,
+    pub dst:u32,
+    pub a:u32,
+    pub b:u32,
+    pub c:u32,
+    pub aux:u32,
+    pub bits:usize,
+    pub span:Span
+}
+
+pub struct Data {
+    pub symbol:u32,
+    pub region:u32,
+    pub align:usize,
+    pub size:usize,
+    pub first:usize,
+    pub count:usize
+}
+
+pub struct DataRelocation {
+    pub object:u32,
+    pub offset:usize,
+    pub target:u32,
+    pub addend:usize
+}
+
+pub struct Symbol {
+    pub name:u32,
+    pub region:u32,
+    pub offset:usize,
+    pub size:usize,
+    pub align:usize,
+    pub defined:u32,
+    pub kind:u32
+}
+
+pub struct Fixup {
+    pub region:u32,
+    pub kind:u32,
+    pub offset:usize,
+    pub symbol:u32,
+    pub addend:usize
+}
+
+pub const SOURCE_CAP:u32 = 32;
+pub static mut sources:[33]Source = [Source {
+    path:"",
+    bytes:"",
+    module_id:0,
+    import_first:0,
+    import_count:0
+};33];
+pub static mut source_count:u32 = 0;
+pub const ASSEMBLY_CAP:u32 = 8;
+pub static mut assemblies:[9]Source = [Source {
+    path:"",
+    bytes:"",
+    module_id:0,
+    import_first:0,
+    import_count:0
+};9];
+pub static mut assembly_count:u32 = 0;
+pub const NAME_CAP:u32 = 8192;
+pub static mut names:[8193]Name = [Name {
+    bytes:"",
+    hash:0
+};8193];
+pub static mut name_count:u32 = 0;
+pub const IMPORT_CAP:u32 = 1024;
+pub static mut imports:[1025]Import = [Import {
+    file:0,
+    module_id:0,
+    alias:0,
+    span:Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};1025];
+pub static mut import_count:u32 = 0;
+pub const TYPE_CAP:u32 = 8192;
+static mut types:[8193]Type = [Type {
+    kind:TYPE_INVALID,
+    a:0,
+    b:0,
+    flags:0,
+    size:0,
+    align:0,
+    first:0,
+    count:0
+};8193];
+static mut type_used:u32 = 0;
+pub const FIELD_CAP:u32 = 32768;
+static mut fields:[32769]Field = [Field {
+    name:0,
+    ty:0,
+    flags:0,
+    offset:0,
+    span:Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};32769];
+static mut field_used:u32 = 0;
+pub const DECL_CAP:u32 = 8192;
+static mut decls:[8193]Decl = [Decl {
+    kind:DECL_INVALID,
+    name:0,
+    module_id:0,
+    file:0,
+    flags:0,
+    ty:0,
+    first:0,
+    count:0,
+    start:0,
+    end:0,
+    init_start:0,
+    init_end:0,
+    symbol:0,
+    bits:0,
+    state:0
+};8193];
+static mut decl_used:u32 = 0;
+pub const PARAM_CAP:u32 = 32768;
+static mut params:[32769]Param = [Param {
+    name:0,
+    ty:0,
+    span:Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};32769];
+static mut param_used:u32 = 0;
+pub const SLOT_CAP:u32 = 32768;
+static mut slots:[32769]Slot = [Slot {
+    ty:0,
+    flags:0,
+    span:Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};32769];
+static mut slot_used:u32 = 0;
+pub const INST_CAP:u32 = 65536;
+static mut insts:[65537]Inst = [Inst {
+    op:IR_INVALID,
+    dst:0,
+    a:0,
+    b:0,
+    c:0,
+    aux:0,
+    bits:0,
+    span:Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};65537];
+static mut inst_used:u32 = 0;
+pub const DATA_CAP:u32 = 16384;
+pub static mut data_objs:[16385]Data = [Data {
+    symbol:0,
+    region:0,
+    align:0,
+    size:0,
+    first:0,
+    count:0
+};16385];
+pub static mut data_count:u32 = 0;
+pub const DATA_RELOCATION_CAP:u32 = 32768;
+pub static mut data_relocations:[32769]DataRelocation = [DataRelocation {
+    object:0,
+    offset:0,
+    target:0,
+    addend:0
+};32769];
+pub static mut data_relocation_count:u32 = 0;
+pub const SYMBOL_CAP:u32 = 32768;
+pub static mut symbols:[32769]Symbol = [Symbol {
+    name:0,
+    region:0,
+    offset:0,
+    size:0,
+    align:0,
+    defined:0,
+    kind:0
+};32769];
+pub static mut symbol_count:u32 = 0;
+pub const FIXUP_CAP:u32 = 65536;
+pub static mut fixups:[65537]Fixup = [Fixup {
+    region:0,
+    kind:0,
+    offset:0,
+    symbol:0,
+    addend:0
+};65537];
+pub static mut fixup_count:u32 = 0;
+static mut args:[65537]u32 = [0;65537];
+static mut arg_used:u32 = 0;
+static mut parameter_slots:[257]u32 = [0;257];
+static mut parameter_slot_used:u32 = 0;
+static mut function_decl:u32 = 0;
+static mut function_version:u32 = 0;
+pub static mut data_bytes:[8388608]u8 = [0;8388608];
+pub static mut data_byte_count:usize = 0;
+pub static mut name_bytes:[2097152]u8 = [0;2097152];
+pub static mut name_byte_count:usize = 0;
+pub static mut max_ast:usize = 0;
+pub static mut max_ir:usize = 0;
+pub static mut max_frame:usize = 0;
+pub static mut source_bytes:usize = 0;
+pub static mut error_code:u32 = 0;
+pub static mut error_file:u32 = 0;
+pub static mut error_offset:usize = 0;
+// Diagnostic output is intentionally primitive and independent of lexer/driver.
+fn output(text:[]const u8) -> () {
+    var done:usize = 0;
+    unsafe {
+        while done < text.len {
+            let remaining:usize = text.len-done;
+            let written:usize = __b2_syscall6(64, 2, core::addr(core::ptr_add(text.data, done)), remaining, 0, 0, 0);
+            if written != 0xfffffffffffffffc_usize {
+                if written == 0_usize || written > remaining {
+                    return ();
+                }
+                done = done+written;
+            }
+        }
+    }
+    return ();
+}
+
+fn decimal(value:usize) -> () {
+    var digits:[20]u8 = [0;20];
+    var n:usize = value;
+    var at:usize = 20;
+    loop {
+        at = at-1_usize;
+        unsafe {
+            digits[at] = ((n%10_usize) as u8)+48_u8;
+        }
+        n = n/10_usize;
+        if n == 0_usize {
+            break;
+        }
+    }
+    unsafe {
+        output(core::slice_from_raw_parts(core::ptr_add(core::slice_of(digits).data, at), 20_usize-at));
+    }
+    return ();
+}
+
+pub fn fail(code:u32, file:u32, offset:usize) -> () {
+    unsafe {
+        error_code = code;
+        error_file = file;
+        error_offset = offset;
+    }
+    if code == ERROR_PARSE {
+        output("E_PARSE");
+    } else if code == ERROR_NAME {
+        output("E_NAME");
+    } else if code == ERROR_TYPE {
+        output("E_TYPE");
+    } else if code == ERROR_PERMISSION {
+        output("E_PERMISSION");
+    } else if code == ERROR_UNSUPPORTED {
+        output("I_UNSUPPORTED");
+    } else if code == ERROR_LIMIT {
+        output("I_LIMIT");
+    } else if code == ERROR_INTERNAL {
+        output("I_INTERNAL");
+    } else if code == ERROR_IO {
+        output("E_IO");
+    } else {
+        output("E_LINK");
+    }
+    output(" file=");
+    decimal(file as usize);
+    output(" byte=");
+    decimal(offset);
+    output("\n");
+    unsafe {
+        let ignored:usize = __b2_syscall6(93, 1, 0, 0, 0, 0, 0);
+    }
+    loop {
+    }
+    return ();
+}
+
+pub fn limit_at(actual:usize, capacity:usize, file:u32, offset:usize) -> () {
+    output("actual=");
+    decimal(actual);
+    output(" limit=");
+    decimal(capacity);
+    output(" ");
+    fail(ERROR_LIMIT, file, offset);
+    return ();
+}
+
+pub fn limit(actual:usize, capacity:usize) -> () {
+    limit_at(actual, capacity, 0, 0);
+    return ();
+}
+
+// Semantic tables and the current function arena expose bounded value reads.
+// Builders append; a completed declaration/type can never be overwritten.
+fn require_id(id:u32, count:u32) -> () {
+    if id == 0_u32 || id > count {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    return ();
+}
+
+pub fn get_type(id:u32) -> Type {
+    unsafe {
+        require_id(id, type_used);
+        return types[id as usize];
+    }
+}
+
+pub fn type_count() -> u32 {
+    unsafe {
+        return type_used;
+    }
+}
+
+pub fn get_field(id:u32) -> Field {
+    unsafe {
+        require_id(id, field_used);
+        return fields[id as usize];
+    }
+}
+
+pub fn field_count() -> u32 {
+    unsafe {
+        return field_used;
+    }
+}
+
+pub fn get_decl(id:u32) -> Decl {
+    unsafe {
+        require_id(id, decl_used);
+        return decls[id as usize];
+    }
+}
+
+pub fn decl_count() -> u32 {
+    unsafe {
+        return decl_used;
+    }
+}
+
+pub fn get_param(id:u32) -> Param {
+    unsafe {
+        require_id(id, param_used);
+        return params[id as usize];
+    }
+}
+
+pub fn param_count() -> u32 {
+    unsafe {
+        return param_used;
+    }
+}
+
+pub fn get_slot(id:u32) -> Slot {
+    unsafe {
+        require_id(id, slot_used);
+        return slots[id as usize];
+    }
+}
+
+pub fn slot_count() -> u32 {
+    unsafe {
+        return slot_used;
+    }
+}
+
+pub fn get_inst(id:u32) -> Inst {
+    unsafe {
+        require_id(id, inst_used);
+        return insts[id as usize];
+    }
+}
+
+pub fn inst_count() -> u32 {
+    unsafe {
+        return inst_used;
+    }
+}
+
+pub fn get_arg(id:u32) -> u32 {
+    unsafe {
+        require_id(id, arg_used);
+        return args[id as usize];
+    }
+}
+
+pub fn arg_count() -> u32 {
+    unsafe {
+        return arg_used;
+    }
+}
+
+pub fn get_parameter_slot(id:u32) -> u32 {
+    unsafe {
+        require_id(id, parameter_slot_used);
+        return parameter_slots[id as usize];
+    }
+}
+
+pub fn parameter_slot_count() -> u32 {
+    unsafe {
+        return parameter_slot_used;
+    }
+}
+
+pub fn complete_type(id:u32, value:Type) -> () {
+    let old:Type = get_type(id);
+    if old.align != 0_usize || value.align == 0_usize || old.kind != value.kind || old.a != value.a || old.flags != value.flags {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    if old.kind == TYPE_ARRAY && old.b != value.b {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    unsafe {
+        types[id as usize] = value;
+    }
+    return ();
+}
+
+pub fn complete_decl(id:u32, value:Decl) -> () {
+    let old:Decl = get_decl(id);
+    if old.state != 0_u32 || value.state != 2_u32 || old.kind != value.kind || old.name != value.name || old.file != value.file || old.module_id != value.module_id || old.flags != value.flags || old.symbol != value.symbol {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    unsafe {
+        decls[id as usize] = value;
+    }
+    return ();
+}
+
+pub fn current_function() -> u32 {
+    unsafe {
+        return function_decl;
+    }
+}
+
+pub fn select_function(id:u32) -> () {
+    let d:Decl = get_decl(id);
+    unsafe {
+        if function_decl != 0_u32 || d.kind != DECL_FUNCTION || d.state != 2_u32 {
+            fail(ERROR_INTERNAL, 0, 0);
+        }
+        function_decl = id;
+        function_version = function_version+1_u32;
+    }
+    return ();
+}
+
+pub fn function_revision() -> u32 {
+    unsafe {
+        return function_version;
+    }
+}
+
+pub fn add_source(value:Source) -> u32 {
+    unsafe {
+        if source_count >= 32_u32 {
+            limit((source_count as usize)+1_usize, 32);
+        }
+        source_count = source_count+1_u32;
+        sources[source_count as usize] = value;
+        return source_count;
+    }
+}
+
+pub fn add_assembly(value:Source) -> u32 {
+    unsafe {
+        if assembly_count >= 8_u32 {
+            limit((assembly_count as usize)+1_usize, 8);
+        }
+        assembly_count = assembly_count+1_u32;
+        assemblies[assembly_count as usize] = value;
+        return assembly_count;
+    }
+}
+
+pub fn add_name(value:Name) -> u32 {
+    unsafe {
+        if name_count >= 8192_u32 {
+            limit((name_count as usize)+1_usize, 8192);
+        }
+        name_count = name_count+1_u32;
+        names[name_count as usize] = value;
+        return name_count;
+    }
+}
+
+pub fn add_import(value:Import) -> u32 {
+    unsafe {
+        if import_count >= 1024_u32 {
+            limit((import_count as usize)+1_usize, 1024);
+        }
+        import_count = import_count+1_u32;
+        imports[import_count as usize] = value;
+        return import_count;
+    }
+}
+
+pub fn add_type(value:Type) -> u32 {
+    unsafe {
+        if type_used >= 8192_u32 {
+            limit((type_used as usize)+1_usize, 8192);
+        }
+        type_used = type_used+1_u32;
+        types[type_used as usize] = value;
+        return type_used;
+    }
+}
+
+pub fn add_field(value:Field) -> u32 {
+    unsafe {
+        if field_used >= 32768_u32 {
+            limit((field_used as usize)+1_usize, 32768);
+        }
+        field_used = field_used+1_u32;
+        fields[field_used as usize] = value;
+        return field_used;
+    }
+}
+
+pub fn add_decl(value:Decl) -> u32 {
+    unsafe {
+        if decl_used >= 8192_u32 {
+            limit((decl_used as usize)+1_usize, 8192);
+        }
+        decl_used = decl_used+1_u32;
+        decls[decl_used as usize] = value;
+        return decl_used;
+    }
+}
+
+pub fn add_param(value:Param) -> u32 {
+    unsafe {
+        if param_used >= 32768_u32 {
+            limit((param_used as usize)+1_usize, 32768);
+        }
+        param_used = param_used+1_u32;
+        params[param_used as usize] = value;
+        return param_used;
+    }
+}
+
+pub fn add_slot(value:Slot) -> u32 {
+    unsafe {
+        function_version = function_version+1_u32;
+        if slot_used >= 32768_u32 {
+            limit((slot_used as usize)+1_usize, 32768);
+        }
+        slot_used = slot_used+1_u32;
+        slots[slot_used as usize] = value;
+        return slot_used;
+    }
+}
+
+pub fn add_inst(value:Inst) -> u32 {
+    unsafe {
+        function_version = function_version+1_u32;
+        if inst_used >= 65536_u32 {
+            limit((inst_used as usize)+1_usize, 65536);
+        }
+        inst_used = inst_used+1_u32;
+        insts[inst_used as usize] = value;
+        return inst_used;
+    }
+}
+
+pub fn add_data(value:Data) -> u32 {
+    unsafe {
+        if data_count >= 16384_u32 {
+            limit((data_count as usize)+1_usize, 16384);
+        }
+        data_count = data_count+1_u32;
+        data_objs[data_count as usize] = value;
+        return data_count;
+    }
+}
+
+pub fn add_data_relocation(value:DataRelocation) -> u32 {
+    unsafe {
+        if data_relocation_count >= 32768_u32 {
+            limit((data_relocation_count as usize)+1_usize, 32768);
+        }
+        data_relocation_count = data_relocation_count+1_u32;
+        data_relocations[data_relocation_count as usize] = value;
+        return data_relocation_count;
+    }
+}
+
+pub fn add_symbol(value:Symbol) -> u32 {
+    unsafe {
+        if symbol_count >= 32768_u32 {
+            limit((symbol_count as usize)+1_usize, 32768);
+        }
+        symbol_count = symbol_count+1_u32;
+        symbols[symbol_count as usize] = value;
+        return symbol_count;
+    }
+}
+
+pub fn add_fixup(value:Fixup) -> u32 {
+    unsafe {
+        if fixup_count >= 65536_u32 {
+            limit((fixup_count as usize)+1_usize, 65536);
+        }
+        fixup_count = fixup_count+1_u32;
+        fixups[fixup_count as usize] = value;
+        return fixup_count;
+    }
+}
+
+pub fn add_arg(value:u32) -> u32 {
+    unsafe {
+        function_version = function_version+1_u32;
+        if arg_used >= 65536_u32 {
+            limit((arg_used as usize)+1_usize, 65536);
+        }
+        arg_used = arg_used+1_u32;
+        args[arg_used as usize] = value;
+        return arg_used;
+    }
+}
+
+pub fn mark_parameter(value:u32) -> () {
+    unsafe {
+        require_id(value, slot_used);
+        if slots[value as usize].flags != 0_u32 {
+            fail(ERROR_INTERNAL, 0, 0);
+        }
+        slots[value as usize].flags = SLOT_PARAMETER;
+        function_version = function_version+1_u32;
+        if parameter_slot_used >= 256_u32 {
+            limit((parameter_slot_used as usize)+1_usize, 256);
+        }
+        parameter_slot_used = parameter_slot_used+1_u32;
+        parameter_slots[parameter_slot_used as usize] = value;
+    }
+    return ();
+}
+
+pub fn data_byte(value:u8) -> () {
+    unsafe {
+        if data_byte_count >= 8388608_usize {
+            limit(data_byte_count+1_usize, 8388608);
+        }
+        data_bytes[data_byte_count] = value;
+        data_byte_count = data_byte_count+1_usize;
+    }
+    return ();
+}
+
+pub fn equal(a:[]const u8, b:[]const u8) -> bool {
+    if a.len != b.len {
+        return false;
+    }
+    var i:usize = 0;
+    while i < a.len {
+        unsafe {
+            if a[i] != b[i] {
+                return false;
+            }
+        }
+        i = i+1_usize;
+    }
+    return true;
+}
+
+pub fn name(text:[]const u8) -> u32 {
+    var hash:usize = 2166136261;
+    var i:usize = 0;
+    unsafe {
+        while i < text.len {
+            hash = (hash ^ (text[i] as usize))*%16777619_usize;
+            i = i+1_usize;
+        }
+        var id:u32 = 1;
+        while id <= name_count {
+            let item:Name = names[id as usize];
+            if item.hash == hash && equal(item.bytes, text) {
+                return id;
+            }
+            id = id+1_u32;
+        }
+        if text.len > 2097152_usize-name_byte_count {
+            limit(name_byte_count+text.len, 2097152);
+        }
+        let start:usize = name_byte_count;
+        i = 0;
+        while i < text.len {
+            name_bytes[name_byte_count] = text[i];
+            name_byte_count = name_byte_count+1_usize;
+            i = i+1_usize;
+        }
+        let saved:[]const u8 = core::slice_from_raw_parts(core::ptr_add(core::slice_of(name_bytes).data, start), text.len);
+        return add_name(Name {
+            bytes:saved,
+            hash:hash
+        });
+    }
+}
+
+pub fn symbol(name_id:u32, kind:u32) -> u32 {
+    unsafe {
+        if name_id != 0_u32 {
+            var i:u32 = 1;
+            while i <= symbol_count {
+                if symbols[i as usize].name == name_id {
+                    if symbols[i as usize].kind != SYMBOL_UNSPECIFIED && kind != SYMBOL_UNSPECIFIED && symbols[i as usize].kind != kind {
+                        fail(ERROR_LINK, 0, 0);
+                    }
+                    if symbols[i as usize].kind == SYMBOL_UNSPECIFIED {
+                        symbols[i as usize].kind = kind;
+                    }
+                    return i;
+                }
+                i = i+1_u32;
+            }
+        }
+        return add_symbol(Symbol {
+            name:name_id,
+            region:0,
+            offset:0,
+            size:0,
+            align:1,
+            defined:0,
+            kind:kind
+        });
+    }
+}
+
+// Storage-layer reset, invoked by check::function for each function, reset_all
+// for a new compilation, and the driver when leaving the source-function phase.
+// Global types/declarations/data/symbols and target work tables are unaffected.
+pub fn reset_function() -> () {
+    unsafe {
+        function_version = function_version+1_u32;
+        if (inst_used as usize) > max_ir {
+            max_ir = inst_used as usize;
+        }
+        slot_used = 0;
+        inst_used = 0;
+        arg_used = 0;
+        parameter_slot_used = 0;
+        function_decl = 0;
+    }
+    return ();
+}
+
+pub fn reset_all() -> () {
+    unsafe {
+        source_count = 0;
+        assembly_count = 0;
+        name_count = 0;
+        name_byte_count = 0;
+        import_count = 0;
+        type_used = 0;
+        field_used = 0;
+        decl_used = 0;
+        param_used = 0;
+        data_count = 0;
+        data_relocation_count = 0;
+        symbol_count = 0;
+        fixup_count = 0;
+        data_byte_count = 0;
+        max_ast = 0;
+        max_ir = 0;
+        max_frame = 0;
+        source_bytes = 0;
+        error_code = 0;
+        error_file = 0;
+        error_offset = 0;
+        reset_function();
+        max_ir = 0;
+        var kind:u32 = TYPE_UNIT;
+        while kind <= TYPE_USIZE {
+            var size:usize = 1;
+            if kind == TYPE_UNIT {
+                size = 0;
+            }
+            if kind == TYPE_U32 {
+                size = 4;
+            }
+            if kind == TYPE_USIZE {
+                size = 8;
+            }
+            var alignment:usize = size;
+            if alignment == 0_usize {
+                alignment = 1;
+            }
+            let id:u32 = add_type(Type {
+                kind:kind,
+                a:0,
+                b:0,
+                flags:0,
+                size:size,
+                align:alignment,
+                first:0,
+                count:0
+            });
+            kind = kind+1_u32;
+        }
+    }
+    return ();
+}

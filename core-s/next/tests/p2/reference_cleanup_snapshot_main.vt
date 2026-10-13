@@ -1,0 +1,12 @@
+module sample;
+static mut observed:u32 = 0;
+fn sample() -> u32 {
+    var x:u32 = 1;
+    defer { unsafe { observed = x; } x = 9; }
+    x = 2;
+    return x;
+}
+fn run() -> u32 {
+    let value:u32 = sample();
+    unsafe { return value * 10_u32 + observed; }
+}

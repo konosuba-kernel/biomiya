@@ -1,0 +1,27 @@
+module trial::main;
+import trial::arena;
+
+fn run() -> u32 {
+    if !arena::layout_valid() { return 1; }
+    arena::begin_function();
+    let a:u32 = arena::literal(20);
+    let b:u32 = arena::literal(22);
+    let root:u32 = arena::add(a,b);
+    let output:u32 = arena::compile(root);
+    if arena::execute() != 42_usize { return 2; }
+    if !arena::node_is_live(root) || !arena::slot_is_live(output) { return 3; }
+    arena::end_function();
+    if arena::node_is_live(root) || arena::slot_is_live(output) { return 4; }
+    arena::begin_function();
+    let c:u32 = arena::literal(40);
+    let d:u32 = arena::literal(2);
+    let next:u32 = arena::add(c,d);
+    let result:u32 = arena::compile(next);
+    // Counts and indices repeat, but the generation makes old IDs stale.
+    if arena::node_is_live(root) || arena::slot_is_live(output) { return 5; }
+    if !arena::node_is_live(next) || !arena::slot_is_live(result) { return 6; }
+    let value:usize = arena::execute();
+    arena::end_function();
+    if value != 42_usize { return 7; }
+    return value as u32;
+}

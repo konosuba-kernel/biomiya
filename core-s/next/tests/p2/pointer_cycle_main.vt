@@ -1,0 +1,1 @@
+module sample; struct A{x:*B} struct B{x:*A} fn run()->u32{return (sizeof(A)+sizeof(B)+26_usize) as u32;}

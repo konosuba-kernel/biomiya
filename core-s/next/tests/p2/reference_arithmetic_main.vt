@@ -1,0 +1,6 @@
+module sample;
+fn run() -> u32 {
+    let wrapped:u8 = 255_u8 +% 1_u8;
+    let low:u8 = 258_usize as u8;
+    return (wrapped as u32) + (low as u32);
+}

@@ -1,0 +1,92 @@
+// Inspect caller ABI bits before any typed callee truncation or prologue.
+module machine_abi;
+import bootstrap::model;
+import bootstrap::image;
+import bootstrap::ir;
+import bootstrap::rv64;
+import runtime::linux;
+
+fn function(first:u32, count:u32) -> u32 {
+    return model::add_decl(make model::Decl {
+        kind:model::DECL_FUNCTION, name:model::no_name(), module_id:model::no_name(),
+        file:2, flags:0, ty:model::u32_type(), first:first, count:count,
+        start:0, end:0, init_start:0, init_end:0, symbol:image::fresh(), bits:0, state:2
+    });
+}
+
+pub fn run() -> u32 {
+    model::reset_all();
+    image::begin_compile();
+    image::begin_text();
+    let kinds:[12]u32 = [3, 1, 4, 5, 5, 1, 5, 5, 5, 5, 3, 4];
+    let values:[12]usize = [255, 0, 4294967295, 12, 13, 0, 14, 15, 16, 17, 128, 2147483648];
+    let expected:[10]usize = [255, 18446744073709551615, 12, 13, 14, 15, 16, 17, 128, 18446744071562067968];
+    let location:model::Span = make model::Span { file:2, start:17, end:18 };
+    var first:u32 = 0;
+    var n:usize = 0;
+    while n < 12_usize {
+        unsafe {
+            let p:u32 = model::add_param(make model::Param {
+                name:model::no_name(), ty:model::primitive_type(kinds[n]), span:location
+            });
+            if first == 0_u32 { first = p; }
+        }
+        n = n+1_usize;
+    }
+    let callee:u32 = function(first, 12);
+    let caller:u32 = function(0, 0);
+    let start:u32 = rv64::start(model::get_decl(caller).symbol);
+    let fail:u32 = image::fresh();
+    image::define(model::get_decl(callee).symbol, 1, image::text_position());
+    // No prologue: these are the exact register and stack bits at call entry.
+    rv64::i(19, 7, 6, 2, 15);
+    rv64::branch(1, 6, 0, fail);
+    n = 0;
+    while n < 10_usize {
+        unsafe { rv64::constant(5, expected[n]); }
+        if n < 8_usize {
+            rv64::branch(1, 10_u32+n as u32, 5, fail);
+        } else {
+            rv64::i(3, 3, 6, 2, (n-8_usize)*8_usize);
+            rv64::branch(1, 6, 5, fail);
+        }
+        n = n+1_usize;
+    }
+    rv64::constant(10, 42);
+    rv64::i(103, 0, 0, 1, 0);
+    image::define(fail, 1, image::text_position());
+    rv64::constant(10, 99);
+    rv64::i(103, 0, 0, 1, 0);
+    ir::begin_function(caller);
+    ir::locate(location);
+    ir::append(ir::Instruction::Label(ir::label_id()));
+    var args:[12]ir::SlotId = [ir::no_slot();12];
+    n = 0;
+    while n < 12_usize {
+        unsafe { args[n] = ir::value(model::primitive_type(kinds[n]), values[n]); }
+        n = n+1_usize;
+    }
+    let result:ir::SlotId = ir::slot(model::u32_type());
+    ir::call(ir::Destination::Slot(result), callee, ir::arguments(core::slice_of(args)));
+    ir::return_value(ir::Destination::Slot(result));
+    ir::finish_ir();
+    rv64::verify_function(caller);
+    rv64::emit_function(caller);
+    ir::end_function();
+    let output:[]const u8 = image::finish(start);
+    match linux::create_new("out.elf") {
+        linux::CountResult::Failed(error) => { return error; },
+        linux::CountResult::Value(fd) => {
+            unsafe {
+                match linux::write_all(fd, output) {
+                    linux::WriteResult::Done => {},
+                    linux::WriteResult::Failed(error) => {
+                        let ignored:u32 = linux::close(fd);
+                        return error;
+                    },
+                }
+            }
+            return linux::close(fd);
+        },
+    }
+}

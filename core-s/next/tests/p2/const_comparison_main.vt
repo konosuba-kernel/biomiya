@@ -1,0 +1,1 @@
+module sample; const N:u32=4; const B:bool=N==4; fn run()->u32{if B{return 42;}return 0;}

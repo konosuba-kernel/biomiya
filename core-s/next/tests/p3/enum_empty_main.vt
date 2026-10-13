@@ -1,0 +1,1 @@
+module sample; enum E{Empty,Value(u32)} fn run()->u32{let e=E::Empty;match e{E::Empty=>{return 42;},E::Value(_)=>{return 0;},}}

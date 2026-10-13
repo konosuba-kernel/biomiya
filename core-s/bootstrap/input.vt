@@ -48,8 +48,7 @@ fn utf8(data:[]const u8, file:u32) -> () {
             let c:u8 = data[i];
             if c < 128_u8 {
                 i = i+1_usize;
-            }
-            else {
+            } else {
                 var n:usize = 0;
                 if c >= 194_u8 && c <= 223_u8 {
                     n = 2;
@@ -138,63 +137,57 @@ pub fn load(path:[]const u8) -> () {
                 if !bytes::equal(value, "1") {
                     model::fail(model::ERROR_PARSE, 0, line);
                 }
+            } else if bytes::equal(key, "profile") {
+                bit = 2;
+                if !bytes::equal(value, "linux-user") {
+                    model::fail(model::ERROR_UNSUPPORTED, 0, line);
+                }
+            } else if bytes::equal(key, "entry") {
+                bit = 4;
+                entry = value;
+            } else if bytes::equal(key, "output") {
+                bit = 8;
+                if !bytes::path(value) {
+                    model::fail(model::ERROR_PARSE, 0, line);
+                }
+                output = value;
             } else {
-                if bytes::equal(key, "profile") {
-                    bit = 2;
-                    if !bytes::equal(value, "linux-user") {
-                        model::fail(model::ERROR_UNSUPPORTED, 0, line);
+                let is_source:bool = bytes::equal(key, "source");
+                if !is_source && !bytes::equal(key, "assembly") {
+                    model::fail(model::ERROR_PARSE, 0, line);
+                }
+                if !bytes::path(value) {
+                    model::fail(model::ERROR_PARSE, 0, line);
+                }
+                var n:u32 = 1;
+                while n <= model::source_count {
+                    if bytes::equal(value, model::sources[n as usize].path) {
+                        model::fail(model::ERROR_PARSE, 0, line);
                     }
+                    n = n+1_u32;
+                }
+                n = 1;
+                while n <= model::assembly_count {
+                    if bytes::equal(value, model::assemblies[n as usize].path) {
+                        model::fail(model::ERROR_PARSE, 0, line);
+                    }
+                    n = n+1_u32;
+                }
+                if is_source {
+                    if model::source_count == 32_u32 {
+                        model::limit_at(33, 32, 0, line);
+                    }
+                    model::source_count = model::source_count+1_u32;
+                    model::sources[model::source_count as usize] = source(value, "");
                 } else {
-                    if bytes::equal(key, "entry") {
-                        bit = 4;
-                        entry = value;
+                    if model::assembly_count == 8_u32 {
+                        model::limit_at(9, 8, 0, line);
                     }
-                    else {
-                        if bytes::equal(key, "output") {
-                            bit = 8;
-                            if !bytes::path(value) {
-                                model::fail(model::ERROR_PARSE, 0, line);
-                            }
-                            output = value;
-                        } else {
-                            let is_source:bool = bytes::equal(key, "source");
-                            if !is_source && !bytes::equal(key, "assembly") {
-                                model::fail(model::ERROR_PARSE, 0, line);
-                            }
-                            if !bytes::path(value) {
-                                model::fail(model::ERROR_PARSE, 0, line);
-                            }
-                            var n:u32 = 1;
-                            while n <= model::source_count {
-                                if bytes::equal(value, model::sources[n as usize].path) {
-                                    model::fail(model::ERROR_PARSE, 0, line);
-                                }
-                                n = n+1_u32;
-                            }
-                            n = 1;
-                            while n <= model::assembly_count {
-                                if bytes::equal(value, model::assemblies[n as usize].path) {
-                                    model::fail(model::ERROR_PARSE, 0, line);
-                                }
-                                n = n+1_u32;
-                            }
-                            if is_source {
-                                if model::source_count == 32_u32 {
-                                    model::limit_at(33, 32, 0, line);
-                                }
-                                model::source_count = model::source_count+1_u32;
-                                model::sources[model::source_count as usize] = source(value, "");
-                            } else {
-                                if model::assembly_count == 8_u32 {
-                                    model::limit_at(9, 8, 0, line);
-                                }
-                                model::assembly_count = model::assembly_count+1_u32;
-                                model::assemblies[model::assembly_count as usize] = source(value, "");
-                            }
-                        }
-                    }
+                    model::assembly_count = model::assembly_count+1_u32;
+                    model::assemblies[model::assembly_count as usize] = source(value, "");
                 }
             }
+
             if bit != 0_u32 {
                 if seen & bit != 0_u32 {
                     model::fail(model::ERROR_PARSE, 0, line);

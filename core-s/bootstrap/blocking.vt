@@ -116,12 +116,10 @@ fn rule(key:[]const u8, value:[]const u8) -> bool {
         var effect:u32 = 0;
         if bytes::equal(key, "may_block") {
             effect = MAY_BLOCK;
+        } else if !bytes::equal(key, "nonblocking") {
+            return invalid();
         }
-        else {
-            if !bytes::equal(key, "nonblocking") {
-                return invalid();
-            }
-        }
+
         if decl.kind != model::DECL_EXTERN {
             return invalid();
         }
@@ -319,8 +317,7 @@ pub fn finish() -> bool {
                 text(": ");
                 if effects[id as usize] == MAY_BLOCK {
                     text("may_block\n");
-                }
-                else {
+                } else {
                     text("nonblocking\n");
                 }
             }
@@ -336,16 +333,13 @@ pub fn finish() -> bool {
                 if (effects[id as usize] & MAY_BLOCK) != 0_u32 {
                     text("Violation\n");
                     verified = false;
+                } else if (effects[id as usize] & UNKNOWN) != 0_u32 {
+                    text("Unknown\n");
+                    verified = false;
+                } else {
+                    text("Verified\n");
                 }
-                else {
-                    if (effects[id as usize] & UNKNOWN) != 0_u32 {
-                        text("Unknown\n");
-                        verified = false;
-                    }
-                    else {
-                        text("Verified\n");
-                    }
-                }
+
             }
             id = id+1_u32;
         }

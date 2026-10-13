@@ -1,0 +1,7 @@
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+struct Attempt{ok:bool,handle:usize}
+fn acquire(n:usize)->Attempt{note(64_usize+n);return Attempt{ok:n==1_usize,handle:n};}
+fn release(h:usize)->(){note(66_usize+h);return();}
+fn work()->u32{let a:Attempt=acquire(1);if !a.ok{return 1;}defer release(a.handle);let b:Attempt=acquire(2);if !b.ok{return 7;}defer release(b.handle);return 0;}
+fn run()->u32{return work();}

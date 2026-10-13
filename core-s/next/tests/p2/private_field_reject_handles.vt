@@ -1,0 +1,1 @@
+module handles; pub struct H{x:u32} pub fn create()->H{return make H{x:42};}

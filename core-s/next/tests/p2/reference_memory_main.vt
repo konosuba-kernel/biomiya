@@ -1,0 +1,10 @@
+module sample;
+fn run() -> u32 {
+    var data:[2]u32 = [20,1];
+    let view:[]u32 = core::slice_of_mut(data);
+    let pointer:*u32 = core::addr_of_mut(data[0]);
+    unsafe {
+        *pointer = *pointer + view[1];
+        return view[0];
+    }
+}

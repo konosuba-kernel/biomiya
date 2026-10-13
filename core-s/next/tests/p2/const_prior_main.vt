@@ -1,0 +1,1 @@
+module sample; const N:usize=2; const M:usize=N+1; static a:[M]u32=[14;M]; fn run()->u32{unsafe{return a[0]+a[1]+a[2];}}

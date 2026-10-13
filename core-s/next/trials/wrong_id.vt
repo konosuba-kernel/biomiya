@@ -1,0 +1,9 @@
+// Must fail E_TYPE: NodeId is not SlotId, despite identical physical layout.
+module trial::main;
+import trial::arena;
+fn run() -> u32 {
+    arena::begin_function();
+    let node:arena::NodeId = arena::literal(42);
+    let unused:bool = arena::slot_is_live(node);
+    return 0;
+}

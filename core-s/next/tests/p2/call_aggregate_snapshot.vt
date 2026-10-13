@@ -1,0 +1,7 @@
+module sample;
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+struct Box{value:u32}
+unsafe fn change(p:*Box)->u32{unsafe{(*p).value=9;}return 0;}
+fn first(a:Box,b:u32)->u32{return a.value;}
+fn run()->u32{var x:Box=make Box{value:7};unsafe{return first(x,change(core::addr_of_mut(x)));}}

@@ -1,0 +1,1299 @@
+module bootstrap::check;
+import bootstrap::model;
+import bootstrap::types;
+import bootstrap::parse;
+import bootstrap::init;
+import bootstrap::ir;
+
+struct Binding {
+    name:u32,
+    slot:u32,
+    mutable:bool,
+    depth:u32
+}
+
+struct Place {
+    address:u32,
+    ty:u32,
+    writable:bool,
+    global_mut:bool
+}
+
+struct Loop {
+    exit:u32,
+    again:u32,
+    cleanup:u32,
+    has_break:bool
+}
+// Checker-owned function tables, expired at function entry.
+static mut bindings:[8193]Binding = [Binding {
+    name:0,
+    slot:0,
+    mutable:false,
+    depth:0
+};8193];
+static mut binding_count:u32 = 0;
+static mut depth:u32 = 0;
+static mut unsafe_depth:u32 = 0;
+// A prepared call owns a stable range in the current function argument table.
+struct PreparedCall {
+    callee:u32,
+    first:u32,
+    count:u32,
+    output:u32
+}
+
+struct CleanupCall {
+    call:PreparedCall,
+    span:model::Span
+}
+
+static mut defers:[1025]CleanupCall = [CleanupCall {
+    call:PreparedCall { callee:0, first:0, count:0, output:0 },
+    span:model::Span { file:0, start:0, end:0 }
+};1025];
+static mut defer_count:u32 = 0;
+static mut loops:[257]Loop = [Loop {
+    exit:0,
+    again:0,
+    cleanup:0,
+    has_break:false
+};257];
+static mut loop_count:u32 = 0;
+static mut output_type:u32 = 0;
+static mut file:u32 = 0;
+static mut expression_depth:u32 = 0;
+static mut place_depth:u32 = 0;
+pub static mut max_bindings:usize = 0;
+pub static mut max_defers:usize = 0;
+pub static mut max_loops:usize = 0;
+
+fn location(node:u32) -> () {
+    let at:model::Span = parse::location(node);
+    types::locate(at);
+    unsafe {
+        ir::locate(at);
+    }
+    return ();
+}
+
+fn require_unsafe() -> () {
+    unsafe {
+        if unsafe_depth == 0_u32 {
+            types::fail(model::ERROR_PERMISSION);
+        }
+    }
+    return ();
+}
+
+fn local(name:u32) -> u32 {
+    unsafe {
+        var i:u32 = binding_count;
+        while i != 0_u32 {
+            if bindings[i as usize].name == name {
+                return i;
+            }
+            i = i-1_u32;
+        }
+    }
+    return 0;
+}
+
+fn bind(name:u32, ty:u32, mutable:bool) -> u32 {
+    unsafe {
+        var i:u32 = binding_count;
+        while i != 0_u32 && bindings[i as usize].depth == depth {
+            if bindings[i as usize].name == name {
+                types::fail(model::ERROR_NAME);
+            }
+            i = i-1_u32;
+        }
+        if binding_count >= 8192_u32 {
+            model::limit((binding_count as usize)+1_usize, 8192);
+        }
+        let slot:u32 = ir::slot(ty);
+        binding_count = binding_count+1_u32;
+        if (binding_count as usize) > max_bindings {
+            max_bindings = binding_count as usize;
+        }
+        bindings[binding_count as usize] = Binding {
+            name:name,
+            slot:slot,
+            mutable:mutable,
+            depth:depth
+        };
+        return slot;
+    }
+}
+
+fn same(value:u32, ty:u32) -> u32 {
+    if ty != model::TYPE_INVALID && ir::type_of(value) != ty {
+        types::fail(model::ERROR_TYPE);
+    }
+    return value;
+}
+
+fn access(place:Place) -> () {
+    if place.global_mut {
+        require_unsafe();
+    }
+    return ();
+}
+
+fn read(place:Place) -> u32 {
+    access(place);
+    return ir::load(place.address, place.ty);
+}
+
+fn projection(base:Place, ty:u32, offset:usize, writable:bool) -> Place {
+    return Place {
+        address:ir::offset(base.address, ir::value(model::TYPE_USIZE, offset), ty, !writable),
+        ty:ty,
+        writable:writable,
+        global_mut:base.global_mut
+    };
+}
+
+fn slot_place(slot:u32, writable:bool) -> Place {
+    let ty:u32 = ir::type_of(slot);
+    return Place {
+        address:ir::local_address(slot, ty, 0, !writable),
+        ty:ty,
+        writable:writable,
+        global_mut:false
+    };
+}
+
+fn field(base:Place, name:u32) -> Place {
+    let t:model::Type = types::info(base.ty);
+    let raw:[]const u8 = types::text(name);
+    if t.kind == model::TYPE_SLICE {
+        if model::equal(raw, "data") {
+            return projection(base, types::pointer(t.a, t.flags != model::TYPE_MUTABLE), 0, false);
+        }
+        if model::equal(raw, "len") {
+            return projection(base, model::TYPE_USIZE, 8, false);
+        }
+        types::fail(model::ERROR_NAME);
+    }
+    if t.kind != model::TYPE_STRUCT {
+        types::fail(model::ERROR_TYPE);
+    }
+    unsafe {
+        var i:u32 = 0;
+        while i < t.count {
+            let f:model::Field = model::get_field((t.first+i));
+            if f.name == name {
+                if !types::field_visible(base.ty, f.flags, file) {
+                    types::fail(model::ERROR_NAME);
+                }
+                return projection(base, f.ty, f.offset, base.writable);
+            }
+            i = i+1_u32;
+        }
+    }
+    types::fail(model::ERROR_NAME);
+    return base;
+}
+
+fn is_place(node:u32) -> bool {
+    var current:u32 = node;
+    loop {
+        let n:parse::Node = parse::get(current);
+        if n.tag == model::AST_FIELD || n.tag == model::AST_INDEX {
+            current = n.a;
+            continue;
+        }
+        if n.tag == model::AST_NAME {
+            if local(n.a) != 0_u32 {
+                return true;
+            }
+            unsafe {
+                let id:u32 = types::resolve(file, n.a, false);
+                return id != 0_u32 && model::get_decl(id).kind == model::DECL_STATIC;
+            }
+        }
+        return n.tag == model::AST_UNARY && n.a == model::UNARY_DEREF;
+    }
+    return false;
+}
+
+fn base_place(node:u32) -> Place {
+    if is_place(node) {
+        return place(node);
+    }
+    let value:u32 = expr(node, 0);
+    if types::scalar(ir::type_of(value)) {
+        types::fail(model::ERROR_TYPE);
+    }
+    return slot_place(value, false);
+}
+
+fn index(base:Place, node:u32) -> Place {
+    let t:model::Type = types::info(base.ty);
+    var address:u32 = base.address;
+    var length:u32 = 0;
+    var writable:bool = base.writable;
+    if t.kind == model::TYPE_ARRAY {
+        length = ir::value(model::TYPE_USIZE, t.b as usize);
+    } else if t.kind == model::TYPE_SLICE {
+        require_unsafe();
+        access(base);
+        address = read(projection(base, types::pointer(t.a, t.flags != model::TYPE_MUTABLE), 0, false));
+        length = read(projection(base, model::TYPE_USIZE, 8, false));
+        writable = t.flags == model::TYPE_MUTABLE;
+    } else {
+        types::fail(model::ERROR_TYPE);
+    }
+
+    let ix:u32 = expr(node, model::TYPE_USIZE);
+    ir::bounds(ix, length);
+    let bytes:u32 = ir::binary(model::BIN_MUL, ix, ir::value(model::TYPE_USIZE, types::info(t.a).size), model::TYPE_USIZE);
+    return Place {
+        address:ir::offset(address, bytes, t.a, !writable),
+        ty:t.a,
+        writable:writable,
+        global_mut:base.global_mut
+    };
+}
+
+fn place(node:u32) -> Place {
+    unsafe {
+        if place_depth >= 64_u32 {
+            model::limit_at((place_depth as usize)+1_usize, 64, file, parse::get(node).start as usize);
+        }
+        place_depth = place_depth+1_u32;
+    }
+    let result:Place = place_inner(node);
+    unsafe {
+        place_depth = place_depth-1_u32;
+    }
+    return result;
+}
+
+fn place_inner(node:u32) -> Place {
+    location(node);
+    let n:parse::Node = parse::get(node);
+    if n.tag == model::AST_NAME {
+        let binding:u32 = local(n.a);
+        unsafe {
+            if binding != 0_u32 {
+                let b:Binding = bindings[binding as usize];
+                return slot_place(b.slot, b.mutable);
+            }
+            let id:u32 = types::resolve(file, n.a, false);
+            if id == 0_u32 {
+                types::fail(model::ERROR_NAME);
+            }
+            let d:model::Decl = model::get_decl(id);
+            if d.kind != model::DECL_STATIC {
+                types::fail(model::ERROR_TYPE);
+            }
+            let writable:bool = (d.flags&model::FLAG_MUTABLE) != 0_u32;
+            return Place {
+                address:ir::symbol_address(d.symbol, d.ty, !writable),
+                ty:d.ty,
+                writable:writable,
+                global_mut:writable
+            };
+        }
+    }
+    if n.tag == model::AST_UNARY && n.a == model::UNARY_DEREF {
+        require_unsafe();
+        let address:u32 = expr(n.b, 0);
+        let t:model::Type = types::info(ir::type_of(address));
+        if t.kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        return Place {
+            address:address,
+            ty:t.a,
+            writable:t.flags == model::TYPE_MUTABLE,
+            global_mut:false
+        };
+    }
+    if n.tag == model::AST_FIELD {
+        return field(place(n.a), n.b);
+    }
+    if n.tag == model::AST_INDEX {
+        return index(place(n.a), n.b);
+    }
+    types::fail(model::ERROR_TYPE);
+    return Place {
+        address:0,
+        ty:0,
+        writable:false,
+        global_mut:false
+    };
+}
+
+fn slice(element:u32, const_:bool, address:u32, length:u32) -> u32 {
+    var flags:u32 = 0;
+    if const_ {
+        flags = model::TYPE_CONST;
+    }
+    let ty:u32 = types::intern(model::TYPE_SLICE, element, 0, flags);
+    let result:u32 = ir::slot(ty);
+    ir::store(ir::local_address(result, types::pointer(element, const_), 0, false), address);
+    ir::store(ir::local_address(result, model::TYPE_USIZE, 8, false), length);
+    return result;
+}
+
+fn cleanup(mark:u32) -> () {
+    unsafe {
+        let saved:model::Span = ir::at();
+        var i:u32 = defer_count;
+        while i > mark {
+            if ir::is_closed() {
+                break;
+            }
+            let entry:CleanupCall = defers[i as usize];
+            ir::locate(entry.span);
+            ir::call(0, entry.call.callee, entry.call.first, entry.call.count);
+            i = i-1_u32;
+        }
+        ir::locate(saved);
+    }
+    return ();
+}
+
+fn arity(first:u32, wanted:u32) -> () {
+    var id:u32 = first;
+    var n:u32 = 0;
+    while id != 0_u32 {
+        n = n+1_u32;
+        id = parse::get(id).next;
+    }
+    if n != wanted {
+        types::fail(model::ERROR_TYPE);
+    }
+    return ();
+}
+
+fn builtin(name:[]const u8, first:u32) -> u32 {
+    var raw:[]const u8 = name;
+    if raw.len > 6_usize && model::equal(types::view(raw, 0, 6), "core::") {
+        raw = types::view(raw, 6, raw.len);
+    }
+    if model::equal(raw, "panic") {
+        arity(first, 0);
+        ir::panic_();
+        ir::ensure();
+        return ir::value(model::TYPE_UNIT, 0);
+    }
+    if model::equal(raw, "addr_of") || model::equal(raw, "addr_of_mut") {
+        arity(first, 1);
+        let p:Place = place(first);
+        let mutable:bool = model::equal(raw, "addr_of_mut");
+        if parse::get(first).tag != model::AST_NAME {
+            access(p);
+        }
+        if mutable && !p.writable {
+            types::fail(model::ERROR_TYPE);
+        }
+        let ty:u32 = types::pointer(p.ty, !mutable);
+        if ir::type_of(p.address) == ty {
+            return p.address;
+        }
+        return ir::bitcast(p.address, ty);
+    }
+    if model::equal(raw, "addr") {
+        arity(first, 1);
+        let value:u32 = expr(first, 0);
+        if types::info(ir::type_of(value)).kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        return ir::bitcast(value, model::TYPE_USIZE);
+    }
+    if model::equal(raw, "ptr_const") {
+        arity(first, 1);
+        let value:u32 = expr(first, 0);
+        let t:model::Type = types::info(ir::type_of(value));
+        if t.kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        return ir::bitcast(value, types::pointer(t.a, true));
+    }
+    if model::equal(raw, "ptr_add") || model::equal(raw, "ptr_add_bytes") {
+        arity(first, 2);
+        require_unsafe();
+        let value:u32 = expr(first, 0);
+        let t:model::Type = types::info(ir::type_of(value));
+        if t.kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        var bytes:u32 = expr(parse::get(first).next, model::TYPE_USIZE);
+        if model::equal(raw, "ptr_add") {
+            bytes = ir::binary(model::BIN_MUL, bytes, ir::value(model::TYPE_USIZE, types::info(t.a).size), model::TYPE_USIZE);
+        }
+        return ir::offset(value, bytes, t.a, t.flags != model::TYPE_MUTABLE);
+    }
+    if model::equal(raw, "slice_of") || model::equal(raw, "slice_of_mut") {
+        arity(first, 1);
+        let p:Place = place(first);
+        access(p);
+        let t:model::Type = types::info(p.ty);
+        if t.kind != model::TYPE_ARRAY {
+            types::fail(model::ERROR_TYPE);
+        }
+        let mutable:bool = model::equal(raw, "slice_of_mut");
+        if mutable && !p.writable {
+            types::fail(model::ERROR_TYPE);
+        }
+        let address:u32 = ir::offset(p.address, ir::value(model::TYPE_USIZE, 0), t.a, !mutable);
+        return slice(t.a, !mutable, address, ir::value(model::TYPE_USIZE, t.b as usize));
+    }
+    if model::equal(raw, "slice_from_raw_parts") || model::equal(raw, "slice_from_raw_parts_mut") {
+        arity(first, 2);
+        require_unsafe();
+        var address:u32 = expr(first, 0);
+        let t:model::Type = types::info(ir::type_of(address));
+        if t.kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        let mutable:bool = model::equal(raw, "slice_from_raw_parts_mut");
+        if mutable && t.flags != model::TYPE_MUTABLE {
+            types::fail(model::ERROR_TYPE);
+        }
+        let length:u32 = expr(parse::get(first).next, model::TYPE_USIZE);
+        let ty:u32 = types::pointer(t.a, !mutable);
+        if ir::type_of(address) != ty {
+            address = ir::bitcast(address, ty);
+        }
+        return slice(t.a, !mutable, address, length);
+    }
+    if model::equal(raw, "slice_const") {
+        arity(first, 1);
+        let value:u32 = expr(first, 0);
+        let t:model::Type = types::info(ir::type_of(value));
+        if t.kind != model::TYPE_SLICE {
+            types::fail(model::ERROR_TYPE);
+        }
+        let address:u32 = ir::load(ir::local_address(value, types::pointer(t.a, t.flags != model::TYPE_MUTABLE), 0, true), types::pointer(t.a, t.flags != model::TYPE_MUTABLE));
+        let readonly:u32 = ir::bitcast(address, types::pointer(t.a, true));
+        return slice(t.a, true, readonly, ir::load(ir::local_address(value, model::TYPE_USIZE, 8, true), model::TYPE_USIZE));
+    }
+    if model::equal(raw, "read") || model::equal(raw, "write") || model::equal(raw, "copy_bytes") || model::equal(raw, "fill_bytes") || model::equal(raw, "atomic_load") || model::equal(raw, "atomic_store") {
+        types::fail(model::ERROR_UNSUPPORTED);
+    }
+    types::fail(model::ERROR_NAME);
+    return 0;
+}
+
+// Evaluate each argument once. Nested calls append their arguments before this
+// call's contiguous range is published; later calls cannot overwrite that range.
+fn prepare_call(id:u32, first:u32) -> PreparedCall {
+    unsafe {
+        let d:model::Decl = model::get_decl(id);
+        if d.kind != model::DECL_FUNCTION && d.kind != model::DECL_EXTERN {
+            types::fail(model::ERROR_TYPE);
+        }
+        if (d.flags&model::FLAG_UNSAFE) != 0_u32 {
+            require_unsafe();
+        }
+        arity(first, d.count);
+        var values:[256]u32 = [0;256];
+        var i:u32 = 0;
+        var arg:u32 = first;
+        while i < d.count {
+            values[i as usize] = expr(arg, model::get_param((d.first+i)).ty);
+            arg = parse::get(arg).next;
+            i = i+1_u32;
+        }
+        let begin:u32 = model::arg_count()+1_u32;
+        i = 0;
+        while i < d.count {
+            let ignored:u32 = model::add_arg(values[i as usize]);
+            i = i+1_u32;
+        }
+        return PreparedCall { callee:id, first:begin, count:d.count, output:d.ty };
+    }
+}
+
+fn variant_value(v:types::Variant, first:u32, called:bool) -> u32 {
+    if v.has_payload != called {
+        types::fail(model::ERROR_TYPE);
+    }
+    var payload:u32 = 0;
+    if v.has_payload {
+        arity(first, 1);
+        payload = expr(first, v.payload);
+    }
+    let result:u32 = zero_storage(v.ty);
+    ir::store(ir::local_address(result, model::TYPE_U32, 0, false), ir::value(model::TYPE_U32, v.tag as usize));
+    if v.has_payload {
+        ir::store(ir::local_address(result, v.payload, v.offset, false), payload);
+    }
+    return result;
+}
+
+fn call(name:u32, first:u32) -> u32 {
+    if local(name) != 0_u32 {
+        types::fail(model::ERROR_TYPE);
+    }
+    unsafe {
+        let v:types::Variant = types::variant(file, name);
+        if v.found {
+            return variant_value(v, first, true);
+        }
+    }
+    var id:u32 = 0;
+    unsafe {
+        id = types::resolve(file, name, false);
+    }
+    if id == 0_u32 {
+        return builtin(types::text(name), first);
+    }
+    let prepared:PreparedCall = prepare_call(id, first);
+    var result:u32 = 0;
+    if prepared.output != model::TYPE_UNIT {
+        result = ir::slot(prepared.output);
+    }
+    ir::call(result, prepared.callee, prepared.first, prepared.count);
+    if result == 0_u32 {
+        result = ir::value(model::TYPE_UNIT, 0);
+    }
+    return result;
+}
+
+fn register_cleanup(node:u32) -> () {
+    let n:parse::Node = parse::get(node);
+    if n.tag != model::AST_CALL || local(n.a) != 0_u32 {
+        types::fail(model::ERROR_TYPE);
+    }
+    unsafe {
+        if types::variant(file, n.a).found {
+            types::fail(model::ERROR_TYPE);
+        }
+        let id:u32 = types::resolve(file, n.a, false);
+        if id == 0_u32 {
+            // Intrinsics are expressions, not deferred direct declarations.
+            types::fail(model::ERROR_UNSUPPORTED);
+        }
+        let d:model::Decl = model::get_decl(id);
+        if d.ty != model::TYPE_UNIT {
+            types::fail(model::ERROR_TYPE);
+        }
+        if defer_count >= 1024_u32 {
+            model::limit((defer_count as usize)+1_usize, 1024);
+        }
+        let prepared:PreparedCall = prepare_call(id, n.b);
+        defer_count = defer_count+1_u32;
+        defers[defer_count as usize] = CleanupCall {
+            call:prepared,
+            span:parse::location(node)
+        };
+        if (defer_count as usize) > max_defers {
+            max_defers = defer_count as usize;
+        }
+    }
+    return ();
+}
+
+fn binary(n:parse::Node, expected:u32) -> u32 {
+    if n.a >= model::BIN_AND {
+        let result:u32 = ir::slot(model::TYPE_BOOL);
+        let left:u32 = expr(n.b, model::TYPE_BOOL);
+        let yes:u32 = ir::label_id();
+        let no:u32 = ir::label_id();
+        let end:u32 = ir::label_id();
+        if n.a == model::BIN_AND {
+            ir::branch(left, yes, no);
+        } else {
+            ir::branch(left, no, yes);
+        }
+        ir::label(no);
+        var bits:usize = 0;
+        if n.a == model::BIN_OR {
+            bits = 1;
+        }
+        ir::copy_to(result, ir::value(model::TYPE_BOOL, bits));
+        ir::jump(end);
+        ir::label(yes);
+        let right:u32 = expr(n.c, model::TYPE_BOOL);
+        ir::copy_to(result, right);
+        ir::jump(end);
+        ir::label(end);
+        return result;
+    }
+    var want:u32 = expected;
+    if n.a >= model::BIN_EQ {
+        want = 0;
+    }
+    let left:u32 = expr(n.b, want);
+    let ty:u32 = ir::type_of(left);
+    let right:u32 = expr(n.c, ty);
+    if ir::type_of(right) != ty {
+        types::fail(model::ERROR_TYPE);
+    }
+    if n.a >= model::BIN_EQ {
+        if n.a >= model::BIN_LT && !types::integer(ty) {
+            types::fail(model::ERROR_TYPE);
+        }
+        if n.a <= model::BIN_NE && !types::scalar(ty) {
+            types::fail(model::ERROR_TYPE);
+        }
+        return ir::binary(n.a, left, right, model::TYPE_BOOL);
+    }
+    if !types::integer(ty) {
+        types::fail(model::ERROR_TYPE);
+    }
+    return ir::binary(n.a, left, right, ty);
+}
+
+fn repeat(ty:u32, element:u32, length:u32, value:u32) -> u32 {
+    let result:u32 = ir::slot(ty);
+    let counter:u32 = ir::value(model::TYPE_USIZE, 0);
+    let test:u32 = ir::label_id();
+    let body:u32 = ir::label_id();
+    let done:u32 = ir::label_id();
+    ir::jump(test);
+    ir::label(test);
+    let condition:u32 = ir::binary(model::BIN_LT, counter, ir::value(model::TYPE_USIZE, length as usize), model::TYPE_BOOL);
+    ir::branch(condition, body, done);
+    ir::label(body);
+    let bytes:u32 = ir::binary(model::BIN_MUL, counter, ir::value(model::TYPE_USIZE, types::info(element).size), model::TYPE_USIZE);
+    let address:u32 = ir::offset(ir::local_address(result, ty, 0, false), bytes, element, false);
+    ir::store(address, value);
+    let next:u32 = ir::binary(model::BIN_ADD, counter, ir::value(model::TYPE_USIZE, 1), model::TYPE_USIZE);
+    ir::copy_to(counter, next);
+    ir::jump(test);
+    ir::label(done);
+    return result;
+}
+
+// A zero aggregate is initialized through ordinary byte stores. This includes
+// padding, so copying a completed value never depends on old frame contents.
+fn zero_storage(ty:u32) -> u32 {
+    if types::scalar(ty) {
+        return ir::value(ty, 0);
+    }
+    let result:u32 = ir::slot(ty);
+    let size:usize = types::info(ty).size;
+    if size == 0_usize {
+        return result;
+    }
+    let base:u32 = ir::local_address(result, model::TYPE_U8, 0, false);
+    let counter:u32 = ir::value(model::TYPE_USIZE, 0);
+    let test:u32 = ir::label_id();
+    let body:u32 = ir::label_id();
+    let done:u32 = ir::label_id();
+    ir::jump(test);
+    ir::label(test);
+    ir::branch(ir::binary(model::BIN_LT, counter, ir::value(model::TYPE_USIZE, size), model::TYPE_BOOL), body, done);
+    ir::label(body);
+    ir::store(ir::offset(base, counter, model::TYPE_U8, false), ir::value(model::TYPE_U8, 0));
+    ir::copy_to(counter, ir::binary(model::BIN_ADD, counter, ir::value(model::TYPE_USIZE, 1), model::TYPE_USIZE));
+    ir::jump(test);
+    ir::label(done);
+    return result;
+}
+
+fn expr(node:u32, expected:u32) -> u32 {
+    unsafe {
+        if expression_depth >= 64_u32 {
+            model::limit_at((expression_depth as usize)+1_usize, 64, file, parse::get(node).start as usize);
+        }
+        expression_depth = expression_depth+1_u32;
+    }
+    let result:u32 = expr_inner(node, expected);
+    unsafe {
+        expression_depth = expression_depth-1_u32;
+    }
+    return result;
+}
+
+// These handlers emit into the current function IR. Recursive operands use expr(),
+// which owns diagnostic positioning and the expression-depth budget.
+fn name_value(node:u32, n:parse::Node) -> u32 {
+    unsafe {
+        if local(n.a) == 0_u32 {
+            let v:types::Variant = types::variant(file, n.a);
+            if v.found {
+                return variant_value(v, 0, false);
+            }
+        }
+    }
+    var value:u32 = 0;
+    if is_place(node) {
+        value = read(place(node));
+    } else {
+        unsafe {
+            let id:u32 = types::resolve(file, n.a, false);
+            if id == 0_u32 {
+                types::fail(model::ERROR_NAME);
+            }
+            let d:model::Decl = model::get_decl(id);
+            if d.kind != model::DECL_CONST {
+                types::fail(model::ERROR_UNSUPPORTED);
+            }
+            value = ir::value(d.ty, d.bits);
+        }
+    }
+    return value;
+}
+
+fn unary_value(node:u32, n:parse::Node, expected:u32) -> u32 {
+    var value:u32 = 0;
+    if n.a == model::UNARY_DEREF {
+        value = read(place(node));
+    } else {
+        var want:u32 = expected;
+        if n.a == model::UNARY_NOT {
+            want = model::TYPE_BOOL;
+        }
+        let operand:u32 = expr(n.b, want);
+        let ty:u32 = ir::type_of(operand);
+        if n.a == model::UNARY_NEG || n.a == model::UNARY_BIT_NOT && !types::integer(ty) {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = ir::unary(n.a, operand, ty);
+    }
+    return value;
+}
+
+fn field_value(n:parse::Node) -> u32 {
+    var value:u32 = 0;
+    let base:Place = base_place(n.a);
+    let t:model::Type = types::info(base.ty);
+    if t.kind == model::TYPE_ARRAY {
+        access(base);
+        if !model::equal(types::text(n.b), "len") {
+            types::fail(model::ERROR_NAME);
+        }
+        value = ir::value(model::TYPE_USIZE, t.b as usize);
+    } else {
+        value = read(field(base, n.b));
+    }
+    return value;
+}
+
+fn struct_value(n:parse::Node) -> u32 {
+    let ty:u32 = types::named_type(n.file, n.a, false);
+    let t:model::Type = types::info(ty);
+    if t.kind != model::TYPE_STRUCT {
+        types::fail(model::ERROR_TYPE);
+    }
+    let value:u32 = ir::slot(ty);
+    var seen:[256]u32 = [0;256];
+    var p:u32 = n.b;
+    var found:u32 = 0;
+    while p != 0_u32 {
+        let pair:parse::Node = parse::get(p);
+        var index:u32 = 0;
+        unsafe {
+            while index < t.count && model::get_field((t.first+index)).name != pair.a {
+                index = index+1_u32;
+            }
+        }
+        if index == t.count {
+            types::fail(model::ERROR_NAME);
+        }
+        unsafe {
+            if seen[index as usize] != 0_u32 {
+                types::fail(model::ERROR_TYPE);
+            }
+            seen[index as usize] = 1;
+            let f:model::Field = model::get_field((t.first+index));
+            if !types::field_visible(ty, f.flags, n.file) {
+                types::fail(model::ERROR_NAME);
+            }
+            let v:u32 = expr(pair.b, f.ty);
+            ir::store(ir::local_address(value, f.ty, f.offset, false), v);
+        }
+        found = found+1_u32;
+        p = pair.next;
+    }
+    if found != t.count {
+        types::fail(model::ERROR_TYPE);
+    }
+    return value;
+}
+
+fn array_value(n:parse::Node, expected:u32) -> u32 {
+    var value:u32 = 0;
+    if expected == 0_u32 {
+        types::fail(model::ERROR_TYPE);
+    }
+    let t:model::Type = types::info(expected);
+    if t.kind != model::TYPE_ARRAY {
+        types::fail(model::ERROR_TYPE);
+    }
+    if n.tag == model::AST_REPEAT {
+        if types::repeat_length(n.b) != t.b {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = repeat(expected, t.a, t.b, expr(n.a, t.a));
+    } else {
+        value = ir::slot(expected);
+        var p:u32 = n.a;
+        var index:u32 = 0;
+        while p != 0_u32 {
+            if index >= t.b {
+                types::fail(model::ERROR_TYPE);
+            }
+            let v:u32 = expr(p, t.a);
+            ir::store(ir::local_address(value, t.a, (index as usize)*types::info(t.a).size, false), v);
+            index = index+1_u32;
+            p = parse::get(p).next;
+        }
+        if index != t.b {
+            types::fail(model::ERROR_TYPE);
+        }
+    }
+    return value;
+}
+
+fn expr_inner(node:u32, expected:u32) -> u32 {
+    location(node);
+    let n:parse::Node = parse::get(node);
+    var value:u32 = 0;
+    if n.tag == model::AST_INTEGER {
+        var ty:u32 = n.a;
+        if ty == model::TYPE_INVALID {
+            ty = expected;
+        }
+        value = ir::value(ty, types::literal(n.bits, ty));
+    } else if n.tag == model::AST_BOOL {
+        value = ir::value(model::TYPE_BOOL, n.bits);
+    } else if n.tag == model::AST_UNIT {
+        value = ir::value(model::TYPE_UNIT, 0);
+    } else if n.tag == model::AST_ZERO {
+        unsafe { types::check_zero(expected, file); }
+        value = zero_storage(expected);
+    } else if n.tag == model::AST_NULL {
+        if expected == 0_u32 || types::info(expected).kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = ir::value(expected, 0);
+    } else if n.tag == model::AST_NAME {
+        value = name_value(node, n);
+    } else if n.tag == model::AST_UNARY {
+        value = unary_value(node, n, expected);
+    } else if n.tag == model::AST_BINARY {
+        value = binary(n, expected);
+    } else if n.tag == model::AST_CAST {
+        let operand:u32 = expr(n.a, 0);
+        let target:u32 = types::syntax_type(n.b, n.file, false);
+        if !types::integer(ir::type_of(operand)) || !types::integer(target) {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = ir::cast(operand, target);
+    } else if n.tag == model::AST_CALL {
+        value = call(n.a, n.b);
+    } else if n.tag == model::AST_FIELD {
+        value = field_value(n);
+    } else if n.tag == model::AST_INDEX {
+        value = read(index(base_place(n.a), n.b));
+    } else if n.tag == model::AST_STRUCT {
+        value = struct_value(n);
+    } else if n.tag == model::AST_ARRAY || n.tag == model::AST_REPEAT {
+        value = array_value(n, expected);
+    } else if n.tag == model::AST_SIZEOF || n.tag == model::AST_ALIGNOF {
+        let target:u32 = types::syntax_type(n.a, n.file, false);
+        types::layout(target);
+        var size:usize = types::info(target).size;
+        if n.tag == model::AST_ALIGNOF {
+            size = types::info(target).align;
+        }
+        value = ir::value(model::TYPE_USIZE, size);
+    } else if n.tag == model::AST_POINTER {
+        require_unsafe();
+        value = ir::bitcast(expr(n.b, model::TYPE_USIZE), types::pointer(types::syntax_type(n.a, n.file, false), false));
+    } else if n.tag == model::AST_STRING {
+        let symbol:u32 = init::string_data(n.a);
+        value = slice(model::TYPE_U8, true, ir::symbol_address(symbol, model::TYPE_U8, true), ir::value(model::TYPE_USIZE, types::text(n.a).len));
+    } else {
+        types::fail(model::ERROR_INTERNAL);
+    }
+
+    // Every expression kind goes through the same expected-type check.
+    return same(value, expected);
+}
+
+fn statement(node:u32) -> bool {
+    location(node);
+    let n:parse::Node = parse::get(node);
+    if n.tag == model::AST_EMPTY {
+        return true;
+    }
+    if n.tag == model::AST_BLOCK {
+        return block(node);
+    }
+    if n.tag == model::AST_UNSAFE {
+        unsafe {
+            unsafe_depth = unsafe_depth+1_u32;
+        }
+        let falls:bool = block(n.a);
+        unsafe {
+            unsafe_depth = unsafe_depth-1_u32;
+        }
+        return falls;
+    }
+    if n.tag == model::AST_BIND {
+        var ty:u32 = 0;
+        if n.b != 0_u32 {
+            ty = types::syntax_type(n.b, n.file, false);
+        }
+        let value:u32 = expr(n.c, ty);
+        let target:u32 = bind(n.a, ir::type_of(value), n.d != 0_u32);
+        ir::copy_to(target, value);
+        return true;
+    }
+    if n.tag == model::AST_ASSIGN {
+        // Fix and validate the destination before any RHS effects.
+        let target:Place = place(n.a);
+        access(target);
+        if !target.writable {
+            types::fail(model::ERROR_TYPE);
+        }
+        let value:u32 = expr(n.b, target.ty);
+        ir::store(target.address, value);
+        return true;
+    }
+    if n.tag == model::AST_EXPR {
+        let ignored:u32 = expr(n.a, 0);
+        return true;
+    }
+    if n.tag == model::AST_IF {
+        let condition:u32 = expr(n.a, model::TYPE_BOOL);
+        let yes:u32 = ir::label_id();
+        let no:u32 = ir::label_id();
+        let end:u32 = ir::label_id();
+        ir::branch(condition, yes, no);
+        ir::label(yes);
+        let a:bool = block(n.b);
+        ir::jump(end);
+        ir::label(no);
+        var b:bool = true;
+        if n.c != 0_u32 {
+            b = block(n.c);
+        }
+        ir::jump(end);
+        if a || b {
+            ir::label(end);
+        }
+        return a || b;
+    }
+    if n.tag == model::AST_WHILE || n.tag == model::AST_LOOP {
+        unsafe {
+            if loop_count >= 256_u32 {
+                model::limit((loop_count as usize)+1_usize, 256);
+            }
+        }
+        let header:u32 = ir::label_id();
+        let body:u32 = ir::label_id();
+        let exit:u32 = ir::label_id();
+        ir::jump(header);
+        ir::label(header);
+        var body_node:u32 = n.a;
+        if n.tag == model::AST_WHILE {
+            let condition:u32 = expr(n.a, model::TYPE_BOOL);
+            ir::branch(condition, body, exit);
+            ir::label(body);
+            body_node = n.b;
+        }
+        unsafe {
+            loop_count = loop_count+1_u32;
+            if (loop_count as usize) > max_loops {
+                max_loops = loop_count as usize;
+            }
+            loops[loop_count as usize] = Loop {
+                exit:exit,
+                again:header,
+                cleanup:defer_count,
+                has_break:false
+            };
+        }
+        let ignored:bool = block(body_node);
+        ir::jump(header);
+        var falls:bool = n.tag == model::AST_WHILE;
+        unsafe {
+            if loops[loop_count as usize].has_break {
+                falls = true;
+            }
+            loop_count = loop_count-1_u32;
+        }
+        if falls {
+            ir::label(exit);
+        }
+        return falls;
+    }
+    if n.tag == model::AST_RETURN {
+        unsafe {
+            let value:u32 = expr(n.a, output_type);
+            cleanup(0);
+            if !ir::is_closed() {
+                var result:u32 = value;
+                if output_type == model::TYPE_UNIT {
+                    result = 0;
+                }
+                ir::return_value(result);
+            }
+        }
+        return false;
+    }
+    if n.tag == model::AST_BREAK || n.tag == model::AST_CONTINUE {
+        unsafe {
+            if loop_count == 0_u32 {
+                types::fail(model::ERROR_TYPE);
+            }
+            let target:Loop = loops[loop_count as usize];
+            var label:u32 = target.again;
+            if n.tag == model::AST_BREAK {
+                loops[loop_count as usize].has_break = true;
+                label = target.exit;
+            }
+            cleanup(target.cleanup);
+            ir::jump(label);
+        }
+        return false;
+    }
+    if n.tag == model::AST_DEFER {
+        register_cleanup(n.a);
+        return true;
+    }
+    if n.tag == model::AST_MATCH {
+        return match_statement(n);
+    }
+    types::fail(model::ERROR_INTERNAL);
+    return false;
+}
+
+fn block(node:u32) -> bool {
+    let n:parse::Node = parse::get(node);
+    if n.tag != model::AST_BLOCK {
+        types::fail(model::ERROR_INTERNAL);
+    }
+    unsafe {
+        let binding_mark:u32 = binding_count;
+        let cleanup_mark:u32 = defer_count;
+        depth = depth+1_u32;
+        var item:u32 = n.a;
+        var falls:bool = true;
+        while item != 0_u32 {
+            ir::ensure();
+            let next:bool = statement(item);
+            falls = falls && next;
+            item = parse::get(item).next;
+        }
+        if falls {
+            cleanup(cleanup_mark);
+            if ir::is_closed() {
+                falls = false;
+            }
+        } else if !ir::is_closed() {
+            ir::panic_();
+        }
+
+        binding_count = binding_mark;
+        defer_count = cleanup_mark;
+        depth = depth-1_u32;
+        return falls;
+    }
+}
+
+fn match_statement(n:parse::Node) -> bool {
+    let value:u32 = expr(n.a, 0);
+    let ty:u32 = ir::type_of(value);
+    let t:model::Type = types::info(ty);
+    if ty != model::TYPE_BOOL && !types::integer(ty) && t.kind != model::TYPE_ENUM {
+        types::fail(model::ERROR_TYPE);
+    }
+    var patterns:[256]usize = [0;256];
+    var count:u32 = 0;
+    var wildcard:bool = false;
+    var arm:u32 = n.b;
+    while arm != 0_u32 {
+        let item:parse::Node = parse::get(arm);
+        let p:parse::Node = parse::get(item.a);
+        location(item.a);
+        if wildcard {
+            types::fail(model::ERROR_TYPE);
+        }
+        var key:usize = 0;
+        if p.tag == model::AST_WILDCARD {
+            if t.kind == model::TYPE_ENUM {
+                types::fail(model::ERROR_TYPE);
+            }
+            wildcard = true;
+        } else {
+            if p.tag == model::AST_VARIANT_PATTERN {
+                let v:types::Variant = types::variant(p.file, p.a);
+                if !v.found || v.ty != ty || v.has_payload != (p.c != 0_u32) {
+                    types::fail(model::ERROR_TYPE);
+                }
+                key = v.tag as usize;
+            } else if p.tag == model::AST_BOOL {
+                if ty != model::TYPE_BOOL {
+                    types::fail(model::ERROR_TYPE);
+                }
+                key = p.bits;
+            } else if p.tag == model::AST_INTEGER {
+                if !types::integer(ty) {
+                    types::fail(model::ERROR_TYPE);
+                }
+                let k:types::Constant = types::constant_value(item.a, ty);
+                if k.ty != ty {
+                    types::fail(model::ERROR_TYPE);
+                }
+                key = k.bits;
+            } else {
+                types::fail(model::ERROR_TYPE);
+            }
+
+            unsafe {
+                var j:u32 = 0;
+                while j < count {
+                    if patterns[j as usize] == key {
+                        types::fail(model::ERROR_TYPE);
+                    }
+                    j = j+1_u32;
+                }
+                if count >= 256_u32 {
+                    model::limit((count as usize)+1_usize, 256);
+                }
+                patterns[count as usize] = key;
+            }
+            count = count+1_u32;
+        }
+        arm = item.next;
+    }
+    var required:u32 = 2;
+    if t.kind == model::TYPE_ENUM {
+        required = t.count;
+    }
+    if !wildcard && (types::integer(ty) || count != required) {
+        types::fail(model::ERROR_TYPE);
+    }
+    var tested:u32 = value;
+    if t.kind == model::TYPE_ENUM {
+        tested = ir::load(ir::local_address(value, model::TYPE_U32, 0, true), model::TYPE_U32);
+    }
+    let end:u32 = ir::label_id();
+    var falls:bool = false;
+    arm = n.b;
+    while arm != 0_u32 {
+        let item:parse::Node = parse::get(arm);
+        let p:parse::Node = parse::get(item.a);
+        let body:u32 = ir::label_id();
+        let next:u32 = ir::label_id();
+        if p.tag == model::AST_WILDCARD {
+            ir::jump(body);
+        } else {
+            var key:usize = p.bits;
+            if p.tag == model::AST_VARIANT_PATTERN {
+                key = types::variant(p.file, p.a).tag as usize;
+            }
+            let condition:u32 = ir::binary(model::BIN_EQ, tested, ir::value(ir::type_of(tested), key), model::TYPE_BOOL);
+            ir::branch(condition, body, next);
+        }
+        ir::label(body);
+        unsafe {
+            let mark:u32 = binding_count;
+            depth = depth+1_u32;
+            if p.tag == model::AST_VARIANT_PATTERN && p.b != 0_u32 {
+                let v:types::Variant = types::variant(p.file, p.a);
+                let target:u32 = bind(p.b, v.payload, false);
+                ir::copy_to(target, ir::load(ir::local_address(value, v.payload, v.offset, true), v.payload));
+            }
+            let f:bool = block(item.b);
+            falls = falls || f;
+            ir::jump(end);
+            binding_count = mark;
+            depth = depth-1_u32;
+        }
+        ir::label(next);
+        arm = item.next;
+    }
+    ir::panic_();
+    if falls {
+        ir::label(end);
+    }
+    return falls;
+}
+
+// The driver owns the complete lifetime; no reader may retain body/slot IDs.
+static mut active:bool = false;
+
+pub fn begin_function(decl:u32) -> u32 {
+    unsafe {
+        if active { types::fail(model::ERROR_INTERNAL); }
+        active = true;
+    }
+    unsafe {
+        if decl == 0_u32 || decl > model::decl_count() {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        let d:model::Decl = model::get_decl(decl);
+        if d.kind != model::DECL_FUNCTION {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        // Sole production owner of function initialization. Tables stay in
+        // their modules; only counts and small context fields are reset.
+        model::reset_function();
+        parse::reset(d.file);
+        ir::reset();
+        binding_count = 0;
+        expression_depth = 0;
+        place_depth = 0;
+        depth = 0;
+        unsafe_depth = 0;
+        defer_count = 0;
+        loop_count = 0;
+        output_type = d.ty;
+        file = d.file;
+        model::select_function(decl);
+        parse::seek(d.file, d.start);
+        let body:u32 = parse::block();
+        types::bind_function_types();
+        ir::locate(model::Span {
+            file:d.file,
+            start:d.start,
+            end:d.end
+        });
+        ir::label(ir::label_id());
+        var i:u32 = 0;
+        while i < d.count {
+            let param:model::Param = model::get_param((d.first+i));
+            let slot:u32 = bind(param.name, param.ty, false);
+            model::mark_parameter(slot);
+            i = i+1_u32;
+        }
+        return body;
+    }
+}
+
+pub fn check_body(body:u32) -> () {
+    unsafe {
+        if !active { types::fail(model::ERROR_INTERNAL); }
+        if block(body) {
+            types::fail(model::ERROR_TYPE);
+        }
+        if !ir::is_closed() {
+            ir::panic_();
+        }
+        types::finish_layouts();
+        if (model::inst_count() as usize) > model::max_ir {
+            model::max_ir = model::inst_count() as usize;
+        }
+        if (parse::node_count() as usize) > model::max_ast {
+            model::max_ast = parse::node_count() as usize;
+        }
+    }
+    return ();
+}
+
+pub fn end_function() -> () {
+    unsafe {
+        if !active { types::fail(model::ERROR_INTERNAL); }
+        active = false;
+        binding_count = 0;
+        defer_count = 0;
+        loop_count = 0;
+        model::reset_function();
+        parse::reset(0);
+        ir::reset();
+    }
+    return ();
+}

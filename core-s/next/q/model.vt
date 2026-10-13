@@ -1,0 +1,730 @@
+// Shared concrete B3 records. IDs are one-based; capacity is checked before append.
+module bootstrap::model;
+// Stable kind discriminants. Primitive identity binding is explicit in primitive_type.
+// Ordered ranges below are intentional: scalar types and comparisons.
+pub const TYPE_INVALID:u32 = 0;
+pub const TYPE_UNIT:u32 = 1;
+pub const TYPE_BOOL:u32 = 2;
+pub const TYPE_U8:u32 = 3;
+pub const TYPE_U32:u32 = 4;
+pub const TYPE_USIZE:u32 = 5;
+pub const TYPE_POINTER:u32 = 6;
+pub const TYPE_ARRAY:u32 = 7;
+pub const TYPE_SLICE:u32 = 8;
+pub const TYPE_STRUCT:u32 = 9;
+pub const TYPE_ENUM:u32 = 10;
+pub const DECL_INVALID:u32 = 0;
+pub const DECL_STRUCT:u32 = 1;
+pub const DECL_FUNCTION:u32 = 2;
+pub const DECL_EXTERN:u32 = 3;
+pub const DECL_CONST:u32 = 4;
+pub const DECL_STATIC:u32 = 5;
+pub const DECL_ENUM:u32 = 6;
+pub const TOKEN_EOF:u32 = 0;
+pub const TOKEN_IDENT:u32 = 1;
+pub const TOKEN_NUMBER:u32 = 2;
+pub const TOKEN_STRING:u32 = 3;
+pub const TOKEN_PUNCT:u32 = 4;
+pub const BIN_INVALID:u32 = 0;
+pub const BIN_ADD:u32 = 1;
+pub const BIN_SUB:u32 = 2;
+pub const BIN_MUL:u32 = 3;
+pub const BIN_DIV:u32 = 4;
+pub const BIN_REM:u32 = 5;
+pub const BIN_WRAP_ADD:u32 = 6;
+pub const BIN_WRAP_SUB:u32 = 7;
+pub const BIN_WRAP_MUL:u32 = 8;
+pub const BIN_SHL:u32 = 9;
+pub const BIN_SHR:u32 = 10;
+pub const BIN_BIT_AND:u32 = 11;
+pub const BIN_BIT_OR:u32 = 12;
+pub const BIN_BIT_XOR:u32 = 13;
+pub const BIN_EQ:u32 = 14;
+pub const BIN_NE:u32 = 15;
+pub const BIN_LT:u32 = 16;
+pub const BIN_LE:u32 = 17;
+pub const BIN_GT:u32 = 18;
+pub const BIN_GE:u32 = 19;
+pub const BIN_AND:u32 = 20;
+pub const BIN_OR:u32 = 21;
+pub const UNARY_NOT:u32 = 1;
+pub const UNARY_BIT_NOT:u32 = 2;
+pub const UNARY_NEG:u32 = 3;
+pub const UNARY_DEREF:u32 = 4;
+pub const ERROR_NONE:u32 = 0;
+pub const ERROR_PARSE:u32 = 1;
+pub const ERROR_NAME:u32 = 2;
+pub const ERROR_TYPE:u32 = 3;
+pub const ERROR_PERMISSION:u32 = 4;
+pub const ERROR_UNSUPPORTED:u32 = 5;
+pub const ERROR_LIMIT:u32 = 6;
+pub const ERROR_INTERNAL:u32 = 7;
+pub const ERROR_IO:u32 = 8;
+pub const ERROR_LINK:u32 = 9;
+// Flags occupy separate record domains; zero means no declaration/slot flags.
+pub const FLAG_PUBLIC:u32 = 1;
+pub const FLAG_UNSAFE:u32 = 2;
+pub const FLAG_MUTABLE:u32 = 4;
+pub const FLAG_PAYLOAD:u32 = 8;
+pub const TYPE_CONST:u32 = 1;
+pub const TYPE_MUTABLE:u32 = 0;
+pub const SLOT_PARAMETER:u32 = 1;
+pub const SYMBOL_UNSPECIFIED:u32 = 0;
+pub const SYMBOL_FUNCTION:u32 = 1;
+pub const SYMBOL_DATA:u32 = 2;
+extern abi(C) fn __b2_syscall6(n:usize, a:usize, b:usize, c:usize, d:usize, e:usize, f:usize) -> usize;
+pub struct Span {
+    pub file:u32,
+    pub start:u32,
+    pub end:u32
+}
+
+// Stable semantic identities are created only by this owner. Kind tags remain
+// integers; no public conversion accepts arbitrary table indices.
+pub struct NameId {
+    raw:u32
+}
+
+pub struct TypeId {
+    raw:u32
+}
+
+pub enum NameEntry {
+    Empty,
+    Value(NameId)
+}
+
+pub enum TypeEntry {
+    Empty,
+    Value(TypeId)
+}
+
+pub fn no_name() -> NameId {
+    return make NameId {
+        raw:0
+    };
+}
+
+pub fn no_type() -> TypeId {
+    return make TypeId {
+        raw:0
+    };
+}
+
+pub fn is_no_name(id:NameId) -> bool {
+    return id.raw == 0_u32;
+}
+
+pub fn is_no_type(id:TypeId) -> bool {
+    return id.raw == 0_u32;
+}
+
+pub fn same_name(a:NameId, b:NameId) -> bool {
+    return a.raw == b.raw;
+}
+
+pub fn same_type(a:TypeId, b:TypeId) -> bool {
+    return a.raw == b.raw;
+}
+
+pub fn name_index(id:NameId) -> u32 {
+    unsafe {
+        require_id(id.raw, name_count_used);
+        return id.raw;
+    }
+}
+
+pub fn type_index(id:TypeId) -> u32 {
+    unsafe {
+        require_id(id.raw, type_used);
+        return id.raw;
+    }
+}
+
+pub fn get_name(id:NameId) -> Name {
+    unsafe {
+        return names[name_index(id) as usize];
+    }
+}
+
+// The lexer carries suffix kind tags. Only the five primitive tags may bind
+// directly to stable primitive identities; all other types come from add_type.
+pub fn primitive_type(kind:u32) -> TypeId {
+    if kind > TYPE_USIZE {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    return make TypeId {
+        raw:kind
+    };
+}
+
+pub fn unit_type() -> TypeId {
+    return primitive_type(TYPE_UNIT);
+}
+
+pub fn bool_type() -> TypeId {
+    return primitive_type(TYPE_BOOL);
+}
+
+pub fn u8_type() -> TypeId {
+    return primitive_type(TYPE_U8);
+}
+
+pub fn u32_type() -> TypeId {
+    return primitive_type(TYPE_U32);
+}
+
+pub fn usize_type() -> TypeId {
+    return primitive_type(TYPE_USIZE);
+}
+
+pub fn first_type() -> TypeId {
+    unsafe {
+        if type_used == 0_u32 {
+            return no_type();
+        }
+        return make TypeId {
+            raw:1
+        };
+    }
+}
+
+pub fn next_type(id:TypeId) -> TypeId {
+    let index:u32 = type_index(id);
+    unsafe {
+        if index == type_used {
+            return no_type();
+        }
+    }
+    return make TypeId {
+        raw:index+1_u32
+    };
+}
+
+pub fn entry_type(entry:TypeEntry) -> TypeId {
+    match entry {
+        TypeEntry::Empty => {
+            return no_type();
+        },
+        TypeEntry::Value(id) => {
+            return id;
+        }
+    }
+}
+
+pub fn entry_name(entry:NameEntry) -> NameId {
+    match entry {
+        NameEntry::Empty => {
+            return no_name();
+        },
+        NameEntry::Value(id) => {
+            return id;
+        }
+    }
+}
+
+pub struct Source {
+    pub path:[]const u8,
+    pub bytes:[]const u8,
+    pub module_id:NameId,
+    pub import_first:u32,
+    pub import_count:u32
+}
+
+pub struct Token {
+    pub kind:u32,
+    pub file:u32,
+    pub start:u32,
+    pub end:u32,
+    pub number:usize,
+    pub suffix:u32
+}
+
+pub struct Name {
+    pub bytes:[]const u8,
+    pub hash:usize
+}
+
+pub struct Import {
+    pub file:u32,
+    pub module_id:NameId,
+    pub alias:NameId,
+    pub span:Span
+}
+
+// Type contract: kind is TYPE_*. element is used only by POINTER/ARRAY/SLICE;
+// owner is a declaration index used only by STRUCT/ENUM. Other links are empty.
+// b is ARRAY length or ENUM payload byte offset; otherwise zero. flags is TYPE_CONST
+// only for POINTER/SLICE. size/align are bytes (align zero means pending layout).
+// first/count select fields for STRUCT or variants for ENUM.
+// Other kinds leave first/count zero. IDs remain stable for this compilation.
+pub struct Type {
+    pub kind:u32,
+    pub element:TypeId,
+    pub owner:u32,
+    pub b:u32,
+    pub flags:u32,
+    pub size:usize,
+    pub align:usize,
+    pub first:u32,
+    pub count:u32
+}
+
+pub struct Field {
+    pub name:NameId,
+    pub ty:TypeId,
+    pub flags:u32,
+    pub offset:usize,
+    pub span:Span
+}
+
+// Decl contract: kind is DECL_*; name/module_id are NameIds, file is FileId.
+// flags combines FLAG_PUBLIC, FLAG_UNSAFE (including extern), FLAG_MUTABLE.
+// ty is a TypeId (return type for functions); first/count select ParamIds for
+// functions. start/end delimit declaration/body source bytes; init_start/end
+// delimit initializer bytes. symbol is SymbolId, bits is CONST scalar value.
+// state is 0 before preparation and 2 after completion; the in-progress
+// marker belongs to types::preparing rather than this completed record.
+pub struct Decl {
+    pub kind:u32,
+    pub name:NameId,
+    pub module_id:NameId,
+    pub file:u32,
+    pub flags:u32,
+    pub ty:TypeId,
+    pub first:u32,
+    pub count:u32,
+    pub start:u32,
+    pub end:u32,
+    pub init_start:u32,
+    pub init_end:u32,
+    pub symbol:u32,
+    pub bits:usize,
+    pub state:u32
+}
+
+pub struct Param {
+    pub name:NameId,
+    pub ty:TypeId,
+    pub span:Span
+}
+
+pub struct Data {
+    pub symbol:u32,
+    pub region:u32,
+    pub align:usize,
+    pub size:usize,
+    pub first:usize,
+    pub count:usize
+}
+
+pub struct DataRelocation {
+    pub object:u32,
+    pub offset:usize,
+    pub target:u32,
+    pub addend:usize
+}
+
+pub struct Symbol {
+    pub name:NameId,
+    pub region:u32,
+    pub offset:usize,
+    pub size:usize,
+    pub align:usize,
+    pub defined:u32,
+    pub kind:u32
+}
+
+pub struct Fixup {
+    pub region:u32,
+    pub kind:u32,
+    pub offset:usize,
+    pub symbol:u32,
+    pub addend:usize
+}
+
+pub const SOURCE_CAP:u32 = 32;
+pub const ASSEMBLY_CAP:u32 = 8;
+pub const NAME_CAP:u32 = 8192;
+static mut names:[8193]Name = zero;
+static mut name_count_used:u32 = 0;
+pub const IMPORT_CAP:u32 = 1024;
+pub const TYPE_CAP:u32 = 8192;
+static mut types:[8193]Type = [make Type {
+    kind:TYPE_INVALID,
+    element:zero,
+    owner:0,
+    b:0,
+    flags:0,
+    size:0,
+    align:0,
+    first:0,
+    count:0
+};8193];
+static mut type_used:u32 = 0;
+pub const FIELD_CAP:u32 = 32768;
+static mut fields:[32769]Field = zero;
+static mut field_used:u32 = 0;
+pub const DECL_CAP:u32 = 8192;
+static mut decls:[8193]Decl = zero;
+static mut decl_used:u32 = 0;
+pub const PARAM_CAP:u32 = 32768;
+static mut params:[32769]Param = zero;
+static mut param_used:u32 = 0;
+pub const SLOT_CAP:u32 = 32768;
+pub const DATA_CAP:u32 = 16384;
+pub const DATA_RELOCATION_CAP:u32 = 32768;
+pub const SYMBOL_CAP:u32 = 32768;
+pub const FIXUP_CAP:u32 = 65536;
+static mut name_bytes:[2097152]u8 = zero;
+static mut name_byte_count_used:usize = 0;
+pub static mut max_ast:usize = 0;
+pub static mut max_ir:usize = 0;
+pub static mut max_frame:usize = 0;
+pub static mut error_code:u32 = 0;
+pub static mut error_file:u32 = 0;
+pub static mut error_offset:usize = 0;
+// Diagnostic output is intentionally primitive and independent of lexer/driver.
+fn output(text:[]const u8) -> () {
+    var done:usize = 0;
+    unsafe {
+        while done < text.len {
+            let remaining:usize = text.len-done;
+            let written:usize = __b2_syscall6(64, 2, core::addr(core::ptr_add(text.data, done)), remaining, 0, 0, 0);
+            if written != 0xfffffffffffffffc_usize {
+                if written == 0_usize || written > remaining {
+                    return ();
+                }
+                done = done+written;
+            }
+        }
+    }
+    return ();
+}
+
+fn decimal(value:usize) -> () {
+    var digits:[20]u8 = [0;20];
+    var n:usize = value;
+    var at:usize = 20;
+    loop {
+        at = at-1_usize;
+        unsafe {
+            digits[at] = ((n%10_usize) as u8)+48_u8;
+        }
+        n = n/10_usize;
+        if n == 0_usize {
+            break;
+        }
+    }
+    unsafe {
+        output(core::slice_from_raw_parts(core::ptr_add(core::slice_of(digits).data, at), 20_usize-at));
+    }
+    return ();
+}
+
+pub fn fail(code:u32, file:u32, offset:usize) -> () {
+    unsafe {
+        error_code = code;
+        error_file = file;
+        error_offset = offset;
+    }
+    if code == ERROR_PARSE {
+        output("E_PARSE");
+    } else if code == ERROR_NAME {
+        output("E_NAME");
+    } else if code == ERROR_TYPE {
+        output("E_TYPE");
+    } else if code == ERROR_PERMISSION {
+        output("E_PERMISSION");
+    } else if code == ERROR_UNSUPPORTED {
+        output("I_UNSUPPORTED");
+    } else if code == ERROR_LIMIT {
+        output("I_LIMIT");
+    } else if code == ERROR_INTERNAL {
+        output("I_INTERNAL");
+    } else if code == ERROR_IO {
+        output("E_IO");
+    } else {
+        output("E_LINK");
+    }
+    output(" file=");
+    decimal(file as usize);
+    output(" byte=");
+    decimal(offset);
+    output("\n");
+    unsafe {
+        let ignored:usize = __b2_syscall6(93, 1, 0, 0, 0, 0, 0);
+    }
+    loop {
+    }
+    return ();
+}
+
+pub fn limit_at(actual:usize, capacity:usize, file:u32, offset:usize) -> () {
+    output("actual=");
+    decimal(actual);
+    output(" limit=");
+    decimal(capacity);
+    output(" ");
+    fail(ERROR_LIMIT, file, offset);
+    return ();
+}
+
+pub fn limit(actual:usize, capacity:usize) -> () {
+    limit_at(actual, capacity, 0, 0);
+    return ();
+}
+
+// Semantic tables and the current function arena expose bounded value reads.
+// Builders append; a completed declaration/type can never be overwritten.
+fn require_id(id:u32, count:u32) -> () {
+    if id == 0_u32 || id > count {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    return ();
+}
+
+pub fn get_type(id:TypeId) -> Type {
+    unsafe {
+        require_id(id.raw, type_used);
+        return types[type_index(id) as usize];
+    }
+}
+
+pub fn type_count() -> u32 {
+    unsafe {
+        return type_used;
+    }
+}
+
+pub fn get_field(id:u32) -> Field {
+    unsafe {
+        require_id(id, field_used);
+        return fields[id as usize];
+    }
+}
+
+pub fn field_count() -> u32 {
+    unsafe {
+        return field_used;
+    }
+}
+
+pub fn get_decl(id:u32) -> Decl {
+    unsafe {
+        require_id(id, decl_used);
+        return decls[id as usize];
+    }
+}
+
+pub fn decl_count() -> u32 {
+    unsafe {
+        return decl_used;
+    }
+}
+
+pub fn get_param(id:u32) -> Param {
+    unsafe {
+        require_id(id, param_used);
+        return params[id as usize];
+    }
+}
+
+pub fn param_count() -> u32 {
+    unsafe {
+        return param_used;
+    }
+}
+
+pub fn complete_type(id:TypeId, value:Type) -> () {
+    let old:Type = get_type(id);
+    if old.align != 0_usize || value.align == 0_usize || old.kind != value.kind || !same_type(old.element, value.element) || old.owner != value.owner || old.flags != value.flags {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    if old.kind == TYPE_ARRAY && old.b != value.b {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    unsafe {
+        types[type_index(id) as usize] = value;
+    }
+    return ();
+}
+
+pub fn complete_decl(id:u32, value:Decl) -> () {
+    let old:Decl = get_decl(id);
+    if old.state != 0_u32 || value.state != 2_u32 || old.kind != value.kind || !same_name(old.name, value.name) || old.file != value.file || !same_name(old.module_id, value.module_id) || old.flags != value.flags || old.symbol != value.symbol {
+        fail(ERROR_INTERNAL, 0, 0);
+    }
+    unsafe {
+        decls[id as usize] = value;
+    }
+    return ();
+}
+
+fn add_name(value:Name) -> NameId {
+    unsafe {
+        if name_count_used >= 8192_u32 {
+            limit((name_count_used as usize)+1_usize, 8192);
+        }
+        name_count_used = name_count_used+1_u32;
+        names[name_count_used as usize] = value;
+        return make NameId {
+            raw:name_count_used
+        };
+    }
+}
+
+pub fn add_type(value:Type) -> TypeId {
+    unsafe {
+        if type_used >= 8192_u32 {
+            limit((type_used as usize)+1_usize, 8192);
+        }
+        type_used = type_used+1_u32;
+        types[type_used as usize] = value;
+        return make TypeId {
+            raw:type_used
+        };
+    }
+}
+
+pub fn add_field(value:Field) -> u32 {
+    unsafe {
+        if field_used >= 32768_u32 {
+            limit((field_used as usize)+1_usize, 32768);
+        }
+        field_used = field_used+1_u32;
+        fields[field_used as usize] = value;
+        return field_used;
+    }
+}
+
+pub fn add_decl(value:Decl) -> u32 {
+    unsafe {
+        if decl_used >= 8192_u32 {
+            limit((decl_used as usize)+1_usize, 8192);
+        }
+        decl_used = decl_used+1_u32;
+        decls[decl_used as usize] = value;
+        return decl_used;
+    }
+}
+
+pub fn add_param(value:Param) -> u32 {
+    unsafe {
+        if param_used >= 32768_u32 {
+            limit((param_used as usize)+1_usize, 32768);
+        }
+        param_used = param_used+1_u32;
+        params[param_used as usize] = value;
+        return param_used;
+    }
+}
+
+pub fn equal(a:[]const u8, b:[]const u8) -> bool {
+    if a.len != b.len {
+        return false;
+    }
+    var i:usize = 0;
+    while i < a.len {
+        unsafe {
+            if a[i] != b[i] {
+                return false;
+            }
+        }
+        i = i+1_usize;
+    }
+    return true;
+}
+
+// Intern two readonly parts without exposing writable storage or requiring a
+// caller-sized temporary buffer (assembly local names can be very long).
+fn part_byte(prefix:[]const u8, suffix:[]const u8, at:usize) -> u8 {
+    unsafe {
+        if at < prefix.len { return prefix[at]; }
+        return suffix[at-prefix.len];
+    }
+}
+pub fn name_parts(prefix:[]const u8, suffix:[]const u8) -> NameId {
+    if prefix.len > 2097152_usize || suffix.len > 2097152_usize-prefix.len {
+        limit(2097153, 2097152);
+    }
+    let length:usize = prefix.len+suffix.len;
+    var hash:usize = 2166136261;
+    var i:usize = 0;
+    while i < length { hash = (hash ^ (part_byte(prefix, suffix, i) as usize))*%16777619_usize; i = i+1_usize; }
+    unsafe {
+        var id:u32 = 1;
+        while id <= name_count_used {
+            let item:Name = names[id as usize];
+            if item.hash == hash && item.bytes.len == length {
+                i = 0;
+                while i < length && item.bytes[i] == part_byte(prefix, suffix, i) { i = i+1_usize; }
+                if i == length { return make NameId { raw:id }; }
+            }
+            id = id+1_u32;
+        }
+        if length > 2097152_usize-name_byte_count_used { limit(name_byte_count_used+length, 2097152); }
+        let first:usize = name_byte_count_used;
+        i = 0;
+        while i < length { name_bytes[name_byte_count_used] = part_byte(prefix, suffix, i); name_byte_count_used = name_byte_count_used+1_usize; i = i+1_usize; }
+        let saved:[]const u8 = core::slice_from_raw_parts(core::ptr_add(core::slice_of(name_bytes).data, first), length);
+        return add_name(make Name { bytes:saved, hash:hash });
+    }
+}
+pub fn name(text:[]const u8) -> NameId { return name_parts("", text); }
+
+pub fn reset_all() -> () {
+    unsafe {
+        name_count_used = 0;
+        name_byte_count_used = 0;
+        type_used = 0;
+        field_used = 0;
+        decl_used = 0;
+        param_used = 0;
+        max_ast = 0;
+        max_ir = 0;
+        max_frame = 0;
+        error_code = 0;
+        error_file = 0;
+        error_offset = 0;
+        var kind:u32 = TYPE_UNIT;
+        while kind <= TYPE_USIZE {
+            var size:usize = 1;
+            if kind == TYPE_UNIT {
+                size = 0;
+            }
+            if kind == TYPE_U32 {
+                size = 4;
+            }
+            if kind == TYPE_USIZE {
+                size = 8;
+            }
+            var alignment:usize = size;
+            if alignment == 0_usize {
+                alignment = 1;
+            }
+            let id:TypeId = add_type(make Type {
+                kind:kind,
+                element:zero,
+                owner:0,
+                b:0,
+                flags:0,
+                size:size,
+                align:alignment,
+                first:0,
+                count:0
+            });
+            kind = kind+1_u32;
+        }
+    }
+    return ();
+}
+
+pub fn name_count() -> u32 { unsafe { return name_count_used; } }
+pub fn name_size() -> usize { unsafe { return name_byte_count_used; } }
+
+// Phase owners submit an explicit source span at the terminal diagnostic edge.
+pub fn diagnose(code:u32, span:Span) -> () {
+    fail(code, span.file, span.start as usize);
+    return ();
+}

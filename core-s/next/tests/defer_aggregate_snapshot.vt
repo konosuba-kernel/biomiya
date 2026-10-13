@@ -1,0 +1,5 @@
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+struct Box{value:usize}
+fn show(b:Box)->(){note(b.value);return();}
+fn run()->u32{var b:Box=Box{value:65};defer show(b);b.value=66;return 0;}

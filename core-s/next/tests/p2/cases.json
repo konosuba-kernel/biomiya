@@ -1,0 +1,795 @@
+[
+  {
+    "name": "assignment_order",
+    "source": "p2/assignment_order.vt",
+    "assembly": "trace.s0",
+    "exit": 42,
+    "stdout": "AB",
+    "entry": "sample::run"
+  },
+  {
+    "name": "assignment_destination",
+    "source": "p2/assignment_destination.vt",
+    "assembly": "trace.s0",
+    "exit": 42,
+    "stdout": "",
+    "entry": "sample::run"
+  },
+  {
+    "name": "assignment_bounds_first",
+    "source": "p2/assignment_bounds_first.vt",
+    "assembly": "trace.s0",
+    "exit": 101,
+    "stdout": "A",
+    "entry": "sample::run"
+  },
+  {
+    "name": "call_scalar_snapshot",
+    "source": "p2/call_scalar_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": "",
+    "entry": "sample::run"
+  },
+  {
+    "name": "call_aggregate_snapshot",
+    "source": "p2/call_aggregate_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": "",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_scalar_snapshot",
+    "source": "p2/defer_scalar_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_aggregate_snapshot",
+    "source": "p2/defer_aggregate_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_pointer_value",
+    "source": "p2/defer_pointer_value.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "B",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_nested_lifo",
+    "source": "p2/defer_nested_lifo.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "CBDA",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_branch",
+    "source": "p2/defer_branch.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "AC",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_loop_exits",
+    "source": "p2/defer_loop_exits.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "ABC",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_nested_loop",
+    "source": "p2/defer_nested_loop.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "CDBEA",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_return_snapshot",
+    "source": "p2/defer_return_snapshot.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": "A",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_return_aggregate",
+    "source": "p2/defer_return_aggregate.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": "",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_panic_no_unwind",
+    "source": "p2/defer_panic_no_unwind.vt",
+    "assembly": "trace.s0",
+    "exit": 101,
+    "stdout": "",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_cleanup_panic",
+    "source": "p2/defer_cleanup_panic.vt",
+    "assembly": "trace.s0",
+    "exit": 101,
+    "stdout": "C",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_partial_arguments",
+    "source": "p2/defer_partial_arguments.vt",
+    "assembly": "trace.s0",
+    "exit": 101,
+    "stdout": "AB",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_nested_arguments",
+    "source": "p2/defer_nested_arguments.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "ABCDE",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_over_eight_args",
+    "source": "p2/defer_over_eight_args.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_extern",
+    "source": "p2/defer_extern.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A",
+    "blocking": {
+      "root": "sample::run",
+      "external": "sample::emit"
+    },
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_binding_identity",
+    "source": "p2/defer_binding_identity.vt",
+    "assembly": "trace.s0",
+    "exit": 0,
+    "stdout": "A",
+    "entry": "sample::run"
+  },
+  {
+    "name": "explicit_rollback",
+    "source": "p2/explicit_rollback.vt",
+    "assembly": "trace.s0",
+    "exit": 7,
+    "stdout": "ABC",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_block_defer",
+    "source": "p2/reject_block_defer.vt",
+    "assembly": "trace.s0",
+    "reject": "I_UNSUPPORTED",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_question",
+    "source": "p2/reject_question.vt",
+    "assembly": "trace.s0",
+    "reject": "I_UNSUPPORTED",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_defer_value",
+    "source": "p2/reject_defer_value.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_defer_intrinsic",
+    "source": "p2/reject_defer_intrinsic.vt",
+    "assembly": "trace.s0",
+    "reject": "I_UNSUPPORTED",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_defer_expression",
+    "source": "p2/reject_defer_expression.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_defer_arity",
+    "source": "p2/reject_defer_arity.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_defer_permission",
+    "source": "p2/reject_defer_permission.vt",
+    "assembly": "trace.s0",
+    "reject": "E_PERMISSION",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_defer_shadow",
+    "source": "p2/reject_defer_shadow.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_uninitialized",
+    "source": "p2/reject_uninitialized.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_dead_cleanup",
+    "source": "p2/reject_dead_cleanup.vt",
+    "assembly": "trace.s0",
+    "reject": "E_TYPE",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reject_defer_later_local",
+    "source": "p2/reject_defer_later_local.vt",
+    "assembly": "trace.s0",
+    "reject": "E_NAME",
+    "entry": "sample::run"
+  },
+  {
+    "name": "file_read_failure_closes",
+    "source": "p2/file_read_failure_closes.vt",
+    "assembly": "io.s0",
+    "exit": 42,
+    "stdout": "C",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_many_iterations",
+    "source": "p2/defer_many_iterations.vt",
+    "exit": 42,
+    "stdout": "",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_capacity_1024",
+    "source": "p2/defer_capacity_1024.vt",
+    "exit": 42,
+    "stdout": "",
+    "entry": "sample::run"
+  },
+  {
+    "name": "defer_capacity_1025",
+    "source": "p2/defer_capacity_1025.vt",
+    "reject": "I_LIMIT",
+    "entry": "sample::run"
+  },
+  {
+    "name": "reference_hello",
+    "entry": "app::run",
+    "exit": 42,
+    "files": {
+      "main.vt": "p2/reference_hello_main.vt"
+    }
+  },
+  {
+    "name": "reference_modules",
+    "entry": "app::run",
+    "exit": 42,
+    "files": {
+      "math.vt": "p2/reference_modules_math.vt",
+      "main.vt": "p2/reference_modules_main.vt"
+    }
+  },
+  {
+    "name": "reference_values",
+    "entry": "sample::run",
+    "exit": 21,
+    "files": {
+      "main.vt": "p2/reference_values_main.vt"
+    }
+  },
+  {
+    "name": "reference_literal_bad",
+    "entry": "sample::run",
+    "exit": 1,
+    "files": {
+      "main.vt": "p2/reference_literal_bad_main.vt"
+    }
+  },
+  {
+    "name": "reference_literal_good",
+    "entry": "sample::run",
+    "exit": 1,
+    "files": {
+      "main.vt": "p2/reference_literal_good_main.vt"
+    }
+  },
+  {
+    "name": "reference_arithmetic",
+    "entry": "sample::run",
+    "exit": 2,
+    "files": {
+      "main.vt": "p2/reference_arithmetic_main.vt"
+    }
+  },
+  {
+    "name": "reference_overflow",
+    "entry": "sample::run",
+    "exit": 101,
+    "files": {
+      "main.vt": "p2/reference_overflow_main.vt"
+    }
+  },
+  {
+    "name": "reference_assignment_order",
+    "entry": "sample::run",
+    "exit": 21,
+    "files": {
+      "main.vt": "p2/reference_assignment_order_main.vt"
+    }
+  },
+  {
+    "name": "reference_zero_repeat",
+    "entry": "sample::run",
+    "exit": 1,
+    "files": {
+      "main.vt": "p2/reference_zero_repeat_main.vt"
+    }
+  },
+  {
+    "name": "reference_control",
+    "entry": "sample::run",
+    "exit": 42,
+    "files": {
+      "main.vt": "p2/reference_control_main.vt"
+    }
+  },
+  {
+    "name": "reference_cleanup",
+    "entry": "sample::run",
+    "reject": "I_UNSUPPORTED",
+    "files": {
+      "main.vt": "p2/reference_cleanup_main.vt"
+    }
+  },
+  {
+    "name": "reference_defer_bad",
+    "entry": "sample::run",
+    "reject": "I_UNSUPPORTED",
+    "files": {
+      "main.vt": "p2/reference_defer_bad_main.vt"
+    }
+  },
+  {
+    "name": "reference_memory",
+    "entry": "sample::run",
+    "exit": 21,
+    "files": {
+      "main.vt": "p2/reference_memory_main.vt"
+    }
+  },
+  {
+    "name": "reference_unsafe_body_bad",
+    "entry": "sample::run",
+    "reject": "E_PERMISSION",
+    "files": {
+      "main.vt": "p2/reference_unsafe_body_bad_main.vt"
+    }
+  },
+  {
+    "name": "reference_statics",
+    "entry": "sample::run",
+    "exit": 42,
+    "files": {
+      "main.vt": "p2/reference_statics_main.vt"
+    }
+  },
+  {
+    "name": "reference_constant_bad",
+    "entry": "sample::run",
+    "reject": "E_TYPE",
+    "files": {
+      "main.vt": "p2/reference_constant_bad_main.vt"
+    }
+  },
+  {
+    "name": "reference_static_zero_bad",
+    "entry": "sample::run",
+    "reject": "E_TYPE",
+    "files": {
+      "main.vt": "p2/reference_static_zero_bad_main.vt"
+    }
+  },
+  {
+    "name": "reference_ffi",
+    "entry": "app::run",
+    "exit": 42,
+    "blocking": {
+      "root": "app::run",
+      "external": "app::answer"
+    },
+    "files": {
+      "main.vt": "p2/reference_ffi_main.vt",
+      "answer.s0": "p2/reference_ffi_answer.s0",
+      "program.blocking": "p2/reference_ffi_program.blocking"
+    }
+  },
+  {
+    "name": "reference_lexemes",
+    "entry": "sample::run",
+    "exit": 8,
+    "files": {
+      "main.vt": "p2/reference_lexemes_main.vt"
+    }
+  },
+  {
+    "name": "reference_separators_bad",
+    "entry": "sample::run",
+    "reject": "E_PARSE",
+    "files": {
+      "main.vt": "p2/reference_separators_bad_main.vt"
+    }
+  },
+  {
+    "name": "reference_layout",
+    "entry": "sample::run",
+    "reject": "I_UNSUPPORTED",
+    "files": {
+      "main.vt": "p2/reference_layout_main.vt"
+    }
+  },
+  {
+    "name": "reference_cleanup_snapshot",
+    "entry": "sample::run",
+    "reject": "I_UNSUPPORTED",
+    "files": {
+      "main.vt": "p2/reference_cleanup_snapshot_main.vt"
+    }
+  },
+  {
+    "name": "const_prior",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/const_prior_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "const_forward",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/const_forward_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "const_sizeof",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/const_sizeof_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "array_sizeof",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/array_sizeof_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "const_overflow",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/const_overflow_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "const_comparison",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/const_comparison_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "const_no_default",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/const_no_default_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "array_strict_usize",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/array_strict_usize_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "value_cycle",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/value_cycle_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "pointer_cycle",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/pointer_cycle_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "mutual_functions",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/mutual_functions_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "const_import_order",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/const_import_order_main.vt",
+      "values.vt": "p2/const_import_order_values.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "module_cycle",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/module_cycle_main.vt",
+      "values.vt": "p2/module_cycle_values.vt"
+    },
+    "reject": "E_NAME"
+  },
+  {
+    "name": "module_required",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/module_required_main.vt"
+    },
+    "reject": "E_PARSE"
+  },
+  {
+    "name": "root_removed",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/root_removed_main.vt"
+    },
+    "reject": "E_NAME"
+  },
+  {
+    "name": "explicit_make",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/explicit_make_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "implicit_make_removed",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/implicit_make_removed_main.vt"
+    },
+    "reject": "E_PARSE"
+  },
+  {
+    "name": "synth_local",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/synth_local_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "synth_literal_reject",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/synth_literal_reject_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "compare_direction_reject",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/compare_direction_reject_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "private_handle",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/private_handle_main.vt",
+      "handles.vt": "p2/private_handle_handles.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "private_field_reject",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/private_field_reject_main.vt",
+      "handles.vt": "p2/private_field_reject_handles.vt"
+    },
+    "reject": "E_NAME"
+  },
+  {
+    "name": "private_make_reject",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/private_make_reject_main.vt",
+      "handles.vt": "p2/private_make_reject_handles.vt"
+    },
+    "reject": "E_NAME"
+  },
+  {
+    "name": "private_static_make_reject",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/private_static_make_reject_main.vt",
+      "handles.vt": "p2/private_static_make_reject_handles.vt"
+    },
+    "reject": "E_NAME"
+  },
+  {
+    "name": "static_repeat_invalid",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/static_repeat_invalid_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "static_field_invalid",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/static_field_invalid_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "static_relocation",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/static_relocation_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "function_reuse",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/function_reuse_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "layout_retained",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/layout_retained_main.vt"
+    },
+    "exit": 32
+  },
+  {
+    "name": "initializer_span",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/initializer_span_main.vt",
+      "other.vt": "p2/initializer_span_other.vt"
+    },
+    "reject": "E_TYPE",
+    "diagnostic": {
+      "file": 1,
+      "byte": 30
+    }
+  },
+  {
+    "name": "zero_values",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/zero_values_main.vt"
+    },
+    "exit": 42
+  },
+  {
+    "name": "zero_context",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/zero_context_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "private_zero_reject",
+    "entry": "sample::run",
+    "reject": "E_NAME",
+    "files": {
+      "main.vt": "p2/private_zero_reject_main.vt",
+      "handles.vt": "p2/private_zero_reject_handles.vt"
+    }
+  },
+  {
+    "name": "private_array_zero_reject",
+    "entry": "sample::run",
+    "reject": "E_NAME",
+    "files": {
+      "main.vt": "p2/private_array_zero_reject_main.vt",
+      "handles.vt": "p2/private_array_zero_reject_handles.vt"
+    }
+  },
+  {
+    "name": "pointer_recursive_array",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/pointer_recursive_array_main.vt"
+    },
+    "exit": 8
+  },
+  {
+    "name": "slice_recursive_array",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/slice_recursive_array_main.vt"
+    },
+    "exit": 16
+  },
+  {
+    "name": "mutual_pointer_array",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/mutual_pointer_array_main.vt"
+    },
+    "exit": 32
+  },
+  {
+    "name": "direct_array_cycle",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/direct_array_cycle_main.vt"
+    },
+    "reject": "E_TYPE"
+  },
+  {
+    "name": "zero_array_cycle",
+    "entry": "sample::run",
+    "files": {
+      "main.vt": "p2/zero_array_cycle_main.vt"
+    },
+    "reject": "E_TYPE"
+  }
+]

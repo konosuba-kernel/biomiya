@@ -1,0 +1,1 @@
+module sample; fn f()->u32{return 41;} fn run()->u32{let n=f(); let m=n+1; return m;}

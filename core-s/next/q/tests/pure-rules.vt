@@ -1,0 +1,85 @@
+// Preserved B3 pure rules contract; no model table setup or nominal IDs.
+module pure_rules;
+import bootstrap::model;
+import bootstrap::rules;
+pub fn run() -> u32 {
+    if !rules::literal(255,model::TYPE_U8).ok || rules::literal(256,model::TYPE_U8).ok {
+        return 1;
+    }
+    if rules::literal(1,model::TYPE_BOOL).ok {
+        return 2;
+    }
+    if rules::unary(model::UNARY_NOT,1,model::TYPE_BOOL).bits!=0_usize {
+        return 3;
+    }
+    if rules::unary(model::UNARY_BIT_NOT,0,model::TYPE_U8).bits!=255_usize {
+        return 4;
+    }
+    if !rules::unary(model::UNARY_NEG,0,model::TYPE_U8).ok || rules::unary(model::UNARY_NEG,1,model::TYPE_U8).ok {
+        return 5;
+    }
+    if rules::cast(256,model::TYPE_U32,model::TYPE_U8).bits!=0_usize || rules::cast(1,model::TYPE_BOOL,model::TYPE_U8).ok {
+        return 6;
+    }
+    if rules::binary(model::BIN_ADD,255,1,model::TYPE_U8).ok || rules::binary(model::BIN_WRAP_ADD,255,1,model::TYPE_U8).bits!=0_usize {
+        return 7;
+    }
+    if rules::binary(model::BIN_SUB,0,1,model::TYPE_U8).ok || rules::binary(model::BIN_WRAP_SUB,0,1,model::TYPE_U8).bits!=255_usize {
+        return 8;
+    }
+    if rules::binary(model::BIN_MUL,128,2,model::TYPE_U8).ok || rules::binary(model::BIN_WRAP_MUL,128,2,model::TYPE_U8).bits!=0_usize {
+        return 9;
+    }
+    if rules::binary(model::BIN_DIV,1,0,model::TYPE_U8).ok || rules::binary(model::BIN_REM,1,0,model::TYPE_U8).ok {
+        return 10;
+    }
+    if rules::binary(model::BIN_DIV,7,2,model::TYPE_U8).bits!=3_usize || rules::binary(model::BIN_REM,7,2,model::TYPE_U8).bits!=1_usize {
+        return 11;
+    }
+    if rules::binary(model::BIN_SHL,1,8,model::TYPE_U8).ok || rules::binary(model::BIN_SHR,128,7,model::TYPE_U8).bits!=1_usize {
+        return 12;
+    }
+    if rules::binary(model::BIN_BIT_AND,3,1,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_BIT_OR,2,1,model::TYPE_U8).bits!=3_usize || rules::binary(model::BIN_BIT_XOR,3,1,model::TYPE_U8).bits!=2_usize {
+        return 13;
+    }
+    if rules::binary(model::BIN_EQ,1,1,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_NE,1,2,model::TYPE_U8).bits!=1_usize {
+        return 14;
+    }
+    if rules::binary(model::BIN_LT,1,2,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_LE,1,1,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_GT,2,1,model::TYPE_U8).bits!=1_usize || rules::binary(model::BIN_GE,2,2,model::TYPE_U8).bits!=1_usize {
+        return 15;
+    }
+    if rules::binary(model::BIN_AND,1,0,model::TYPE_BOOL).bits!=0_usize || rules::binary(model::BIN_OR,1,0,model::TYPE_BOOL).bits!=1_usize {
+        return 16;
+    }
+    if rules::binary(model::BIN_INVALID,1,1,model::TYPE_U8).ok {
+        return 17;
+    }
+    if rules::binary(model::BIN_EQ,1,0,model::TYPE_UNIT).ok || !rules::binary(model::BIN_EQ,0,0,model::TYPE_UNIT).ok {
+        return 21;
+    }
+    if !rules::add_size(0xffffffffffffffff,0).ok || rules::add_size(0xffffffffffffffff,1).ok {
+        return 18;
+    }
+    if rules::align_up(1,0).ok || rules::align_up(1,3).ok || rules::align_up(0xffffffffffffffff,8).ok {
+        return 19;
+    }
+    if rules::align_up(67108865,4096).size!=67112960_usize || rules::align_up(0xffffffffffffffff,1).size!=0xffffffffffffffff_usize {
+        return 20;
+    }
+    if rules::literal(0,model::TYPE_INVALID).ok || rules::literal(0,model::TYPE_ARRAY).ok {
+        return 22;
+    }
+    if rules::unary(model::UNARY_NOT,2,model::TYPE_BOOL).ok || rules::unary(model::UNARY_NOT,0,model::TYPE_U8).ok {
+        return 23;
+    }
+    if rules::binary(model::BIN_EQ,0,0,model::TYPE_INVALID).ok || rules::binary(model::BIN_EQ,0,0,model::TYPE_ARRAY).ok {
+        return 24;
+    }
+    if rules::literal(4294967296,model::TYPE_U32).ok || !rules::literal(18446744073709551615,model::TYPE_USIZE).ok {
+        return 25;
+    }
+    if rules::binary(model::BIN_ADD,18446744073709551615,1,model::TYPE_USIZE).ok || rules::binary(model::BIN_WRAP_ADD,18446744073709551615,1,model::TYPE_USIZE).bits != 0_usize {
+        return 26;
+    }
+    return 0;
+}

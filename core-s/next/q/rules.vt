@@ -1,0 +1,225 @@
+// Concrete pure rules for the fixed Core S scalar kinds and byte layouts.
+// Only model discriminant constants are referenced: no tables, cursor, AST,
+// diagnostics, allocation or mutation. Checked operations return ok=false on
+// invalid kinds, representations or arithmetic; classifiers/max return scalars.
+module bootstrap::rules;
+import bootstrap::model;
+pub struct ScalarRule {
+    pub ok:bool,
+    pub bits:usize
+}
+
+pub struct SizeRule {
+    pub ok:bool,
+    pub size:usize
+}
+
+fn scalar(bits:usize) -> ScalarRule {
+    return make ScalarRule {
+        ok:true,
+        bits:bits
+    };
+}
+
+fn invalid() -> ScalarRule {
+    return make ScalarRule {
+        ok:false,
+        bits:0
+    };
+}
+
+pub fn integer(kind:u32) -> bool {
+    return kind >= model::TYPE_U8 && kind <= model::TYPE_USIZE;
+}
+
+// BOOL/U8/U32 have narrow bounds; every other kind uses the full usize bound.
+// This helper does not validate a kind. Each checked operation validates its
+// allowed kinds before using the bound (UNIT additionally requires zero bits).
+pub fn max(kind:u32) -> usize {
+    if kind == model::TYPE_U8 {
+        return 255;
+    }
+    if kind == model::TYPE_U32 {
+        return 4294967295;
+    }
+    if kind == model::TYPE_BOOL {
+        return 1;
+    }
+    return 0xffffffffffffffff;
+}
+
+fn width(kind:u32) -> usize {
+    if kind == model::TYPE_U8 {
+        return 8;
+    }
+    if kind == model::TYPE_U32 {
+        return 32;
+    }
+    return 64;
+}
+
+pub fn literal(bits:usize, kind:u32) -> ScalarRule {
+    if !integer(kind) || bits > max(kind) {
+        return invalid();
+    }
+    return scalar(bits);
+}
+
+pub fn unary(op:u32, bits:usize, kind:u32) -> ScalarRule {
+    if bits > max(kind) {
+        return invalid();
+    }
+    if op == model::UNARY_NOT {
+        if kind != model::TYPE_BOOL {
+            return invalid();
+        }
+        return scalar(1_usize-bits);
+    }
+    if !integer(kind) {
+        return invalid();
+    }
+    if op == model::UNARY_BIT_NOT {
+        return scalar((~bits)&max(kind));
+    }
+    if op == model::UNARY_NEG && bits == 0_usize {
+        return scalar(0);
+    }
+    return invalid();
+}
+
+pub fn cast(bits:usize, from_kind:u32, to_kind:u32) -> ScalarRule {
+    if !integer(from_kind) || !integer(to_kind) || bits > max(from_kind) {
+        return invalid();
+    }
+    return scalar(bits&max(to_kind));
+}
+
+pub fn add_size(value:usize, extra:usize) -> SizeRule {
+    if extra > 0xffffffffffffffff_usize-value {
+        return make SizeRule {
+            ok:false,
+            size:0
+        };
+    }
+    return make SizeRule {
+        ok:true,
+        size:value+extra
+    };
+}
+
+// Alignment is a nonzero power of two. Capacity policy belongs to the caller.
+pub fn align_up(value:usize, alignment:usize) -> SizeRule {
+    if alignment == 0_usize || (alignment&(alignment-1_usize)) != 0_usize {
+        return make SizeRule {
+            ok:false,
+            size:0
+        };
+    }
+    let sum:SizeRule = add_size(value, alignment-1_usize);
+    if !sum.ok {
+        return sum;
+    }
+    return make SizeRule {
+        ok:true,
+        size:sum.size&(~(alignment-1_usize))
+    };
+}
+
+pub fn binary(op:u32, a:usize, b:usize, kind:u32) -> ScalarRule {
+    if op < model::BIN_ADD || op > model::BIN_OR || kind < model::TYPE_UNIT || kind > model::TYPE_POINTER {
+        return invalid();
+    }
+    if op < model::BIN_EQ && !integer(kind) || op >= model::BIN_LT && op <= model::BIN_GE && !integer(kind) || op >= model::BIN_AND && kind != model::TYPE_BOOL {
+        return invalid();
+    }
+    if kind == model::TYPE_UNIT && (a != 0_usize || b != 0_usize) {
+        return invalid();
+    }
+    let bound:usize = max(kind);
+    if a > bound || b > bound {
+        return invalid();
+    }
+    if op == model::BIN_ADD {
+        if b > bound-a {
+            return invalid();
+        }
+        return scalar(a+b);
+    }
+    if op == model::BIN_SUB {
+        if b > a {
+            return invalid();
+        }
+        return scalar(a-b);
+    }
+    if op == model::BIN_MUL {
+        if b != 0_usize && a > bound/b {
+            return invalid();
+        }
+        return scalar(a*b);
+    }
+    if op == model::BIN_DIV || op == model::BIN_REM {
+        if b == 0_usize {
+            return invalid();
+        }
+        if op == model::BIN_DIV {
+            return scalar(a/b);
+        }
+        return scalar(a%b);
+    }
+    if op == model::BIN_WRAP_ADD {
+        return scalar((a+%b)&bound);
+    }
+    if op == model::BIN_WRAP_SUB {
+        return scalar((a-%b)&bound);
+    }
+    if op == model::BIN_WRAP_MUL {
+        return scalar((a*%b)&bound);
+    }
+    if op == model::BIN_SHL || op == model::BIN_SHR {
+        if b >= width(kind) {
+            return invalid();
+        }
+        if op == model::BIN_SHL {
+            return scalar((a<<b)&bound);
+        }
+        return scalar(a>>b);
+    }
+    if op == model::BIN_BIT_AND {
+        return scalar(a&b);
+    }
+    if op == model::BIN_BIT_OR {
+        return scalar(a|b);
+    }
+    if op == model::BIN_BIT_XOR {
+        return scalar(a^b);
+    }
+    var result:bool = false;
+    if op == model::BIN_EQ {
+        result = a == b;
+    }
+    if op == model::BIN_NE {
+        result = a != b;
+    }
+    if op == model::BIN_LT {
+        result = a < b;
+    }
+    if op == model::BIN_LE {
+        result = a <= b;
+    }
+    if op == model::BIN_GT {
+        result = a > b;
+    }
+    if op == model::BIN_GE {
+        result = a >= b;
+    }
+    if op == model::BIN_AND {
+        result = a != 0_usize && b != 0_usize;
+    }
+    if op == model::BIN_OR {
+        result = a != 0_usize || b != 0_usize;
+    }
+    if result {
+        return scalar(1);
+    }
+    return scalar(0);
+}

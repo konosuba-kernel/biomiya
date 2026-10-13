@@ -1,0 +1,149 @@
+// Integer-tag control with identical storage bounds and generation checks.
+module trial::arena;
+
+// Same lifecycle checks and capacities; all IDs are indistinguishable u32.
+struct Node { tag:u32, a:u32, b:u32, bits:usize }
+struct Instruction { tag:u32, destination:u32, a:u32, b:u32, bits:usize }
+
+static mut nodes:[17]Node = zero;
+static mut instructions:[18]Instruction = zero;
+static mut values:[17]usize = zero;
+static mut node_count:usize = 0;
+static mut instruction_count:usize = 0;
+static mut slot_count:usize = 0;
+static mut epoch:usize = 0;
+static mut active:bool = false;
+
+pub fn begin_function() -> () {
+    unsafe {
+        if active || epoch == 65535_usize { core::panic(); }
+        epoch = epoch+1_usize;
+        node_count = 0;
+        instruction_count = 0;
+        slot_count = 0;
+        active = true;
+    }
+    return ();
+}
+
+pub fn end_function() -> () {
+    unsafe {
+        if !active { core::panic(); }
+        active = false;
+    }
+    return ();
+}
+
+fn live(raw:u32, count:usize) -> bool {
+    unsafe {
+        let index:usize = (raw & 65535_u32) as usize;
+        return active && ((raw >> 16_u32) as usize) == epoch && index > 0_usize && index <= count;
+    }
+}
+pub fn node_is_live(id:u32) -> bool { unsafe { return live(id, node_count); } }
+pub fn slot_is_live(id:u32) -> bool { unsafe { return live(id, slot_count); } }
+
+fn node_index(id:u32) -> usize {
+    if !node_is_live(id) { core::panic(); }
+    return (id & 65535_u32) as usize;
+}
+fn slot_index(id:u32) -> usize {
+    if !slot_is_live(id) { core::panic(); }
+    return (id & 65535_u32) as usize;
+}
+
+fn append_node(expr:Node) -> u32 {
+    unsafe {
+        if !active || node_count == 16_usize { core::panic(); }
+        node_count = node_count+1_usize;
+        nodes[node_count] = expr;
+        return ((epoch << 16_usize) | node_count) as u32;
+    }
+}
+pub fn literal(value:usize) -> u32 { return append_node(make Node { tag:1, a:0, b:0, bits:value }); }
+pub fn add(left:u32, right:u32) -> u32 {
+    // Only existing nodes may be referenced: construction order rules out cycles.
+    if !node_is_live(left) || !node_is_live(right) { core::panic(); }
+    return append_node(make Node { tag:2, a:left, b:right, bits:0 });
+}
+
+fn append_instruction(instruction:Instruction) -> () {
+    unsafe {
+        if !active || instruction_count == 17_usize { core::panic(); }
+        instruction_count = instruction_count+1_usize;
+        instructions[instruction_count] = instruction;
+    }
+    return ();
+}
+fn new_slot() -> u32 {
+    unsafe {
+        if !active || slot_count == 16_usize { core::panic(); }
+        slot_count = slot_count+1_usize;
+        return ((epoch << 16_usize) | slot_count) as u32;
+    }
+}
+
+fn lower(id:u32) -> u32 {
+    unsafe {
+        let node:Node = nodes[node_index(id)];
+        if node.tag == 1_u32 {
+            let destination:u32 = new_slot();
+            append_instruction(make Instruction { tag:1, destination:destination, a:0, b:0, bits:node.bits });
+            return destination;
+        }
+        if node.tag == 2_u32 {
+            let left:u32 = lower(node.a);
+            let right:u32 = lower(node.b);
+            let destination:u32 = new_slot();
+            append_instruction(make Instruction { tag:2, destination:destination, a:left, b:right, bits:0 });
+            return destination;
+        }
+    }
+    core::panic();
+    return 0_u32;
+}
+
+pub fn compile(root:u32) -> u32 {
+    unsafe { if instruction_count != 0_usize { core::panic(); } }
+    let result:u32 = lower(root);
+    append_instruction(make Instruction { tag:3, destination:0, a:result, b:0, bits:0 });
+    return result;
+}
+
+pub fn execute() -> usize {
+    unsafe {
+        if !active { core::panic(); }
+        var next:usize = 1;
+        var produced:usize = 0;
+        while next <= instruction_count {
+            let instruction:Instruction = instructions[next];
+            if instruction.tag == 1_u32 {
+                let destination:usize = slot_index(instruction.destination);
+                if destination != produced+1_usize { core::panic(); }
+                values[destination] = instruction.bits;
+                produced = destination;
+            } else if instruction.tag == 2_u32 {
+                let destination:usize = slot_index(instruction.destination);
+                let left:usize = slot_index(instruction.a);
+                let right:usize = slot_index(instruction.b);
+                if destination != produced+1_usize || left > produced || right > produced { core::panic(); }
+                values[destination] = values[left]+values[right];
+                produced = destination;
+            } else if instruction.tag == 3_u32 {
+                let index:usize = slot_index(instruction.a);
+                if next != instruction_count || index > produced { core::panic(); }
+                return values[index];
+            } else {
+                core::panic();
+            }
+            next = next+1_usize;
+        }
+    }
+    core::panic();
+    return 0_usize;
+}
+
+pub fn layout_valid() -> bool {
+    return sizeof(u32) == 4_usize && sizeof(Node) == 24_usize
+        && sizeof(Instruction) == 24_usize;
+}

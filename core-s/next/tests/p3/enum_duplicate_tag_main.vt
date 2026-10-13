@@ -1,0 +1,1 @@
+module sample; enum E{A,A} fn run()->u32{return 0;}

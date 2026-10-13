@@ -1,0 +1,2 @@
+module math;
+pub fn twice(n:u32) -> u32 { return n * 2_u32; }

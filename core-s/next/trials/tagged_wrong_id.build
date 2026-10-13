@@ -1,0 +1,6 @@
+format 1
+profile linux-user
+entry trial::main::run
+source next/trials/tagged.vt
+source next/trials/tagged_wrong_id.vt
+output build/trial-tagged_wrong_id.elf

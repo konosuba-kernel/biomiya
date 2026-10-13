@@ -212,8 +212,7 @@ pub fn resolve(file:u32, name:u32, public_use:bool) -> u32 {
         var full:u32 = join(text(source.module_id), raw);
         if raw.len > 6_usize && model::equal(view(raw, 0, 6), "root::") {
             full = model::name(view(raw, 6, raw.len));
-        }
-        else {
+        } else {
             var split:usize = 0;
             while split+1_usize < raw.len && !(raw[split] == 58_u8 && raw[split+1_usize] == 58_u8) {
                 split = split+1_usize;
@@ -606,70 +605,58 @@ fn constant_inner(minimum:u32, expected:u32) -> Constant {
             }
             value.bits = literal(value.bits, value.ty);
             advance();
+        } else if eat("true") {
+            value.bits = 1;
+            value.ty = model::TYPE_BOOL;
+        } else if eat("false") {
+            value.bits = 0;
+            value.ty = model::TYPE_BOOL;
+        } else if eat("(") {
+            value = constant(0, expected);
+            need(")");
+        } else if at("sizeof") || at("alignof") {
+            let size:bool = at("sizeof");
+            advance();
+            need("(");
+            let ty:u32 = type_expr(false);
+            need(")");
+            layout(ty);
+            value.ty = model::TYPE_USIZE;
+            value.bits = info(ty).align;
+            if size {
+                value.bits = info(ty).size;
+            }
+        } else if at("~") || at("!") || at("-") {
+            let logical:bool = at("!");
+            let negative:bool = at("-");
+            advance();
+            value = constant(11, expected);
+            var op:u32 = model::UNARY_BIT_NOT;
+            if logical {
+                op = model::UNARY_NOT;
+            }
+            if negative {
+                op = model::UNARY_NEG;
+            }
+            value = unary(op, value);
         } else {
-            if eat("true") {
-                value.bits = 1;
-                value.ty = model::TYPE_BOOL;
+            let name:u32 = path();
+            if shadowed(name) {
+                fail(model::ERROR_TYPE);
             }
-            else {
-                if eat("false") {
-                    value.bits = 0;
-                    value.ty = model::TYPE_BOOL;
-                }
-                else {
-                    if eat("(") {
-                        value = constant(0, expected);
-                        need(")");
-                    }
-                    else {
-                        if at("sizeof") || at("alignof") {
-                            let size:bool = at("sizeof");
-                            advance();
-                            need("(");
-                            let ty:u32 = type_expr(false);
-                            need(")");
-                            layout(ty);
-                            value.ty = model::TYPE_USIZE;
-                            value.bits = info(ty).align;
-                            if size {
-                                value.bits = info(ty).size;
-                            }
-                        } else {
-                            if at("~") || at("!") || at("-") {
-                                let logical:bool = at("!");
-                                let negative:bool = at("-");
-                                advance();
-                                value = constant(11, expected);
-                                var op:u32 = model::UNARY_BIT_NOT;
-                                if logical {
-                                    op = model::UNARY_NOT;
-                                }
-                                if negative {
-                                    op = model::UNARY_NEG;
-                                }
-                                value = unary(op, value);
-                            } else {
-                                let name:u32 = path();
-                                if shadowed(name) {
-                                    fail(model::ERROR_TYPE);
-                                }
-                                let id:u32 = resolve(token.file, name, false);
-                                if id == 0_u32 {
-                                    fail(model::ERROR_NAME);
-                                }
-                                if model::decls[id as usize].kind != model::DECL_CONST {
-                                    fail(model::ERROR_TYPE);
-                                }
-                                prepare(id);
-                                let d:model::Decl = model::decls[id as usize];
-                                value.bits = d.bits;
-                                value.ty = d.ty;
-                            }
-                        }
-                    }
-                }
+            let id:u32 = resolve(token.file, name, false);
+            if id == 0_u32 {
+                fail(model::ERROR_NAME);
             }
+            if model::decls[id as usize].kind != model::DECL_CONST {
+                fail(model::ERROR_TYPE);
+            }
+            prepare(id);
+            let d:model::Decl = model::decls[id as usize];
+            value.bits = d.bits;
+            value.ty = d.ty;
         }
+
         loop {
             if minimum <= 11_u32 && eat("as") {
                 let ty:u32 = type_expr(false);
@@ -809,75 +796,74 @@ pub fn prepare(id:u32) -> () {
                 first:first,
                 count:count
             };
-        } else {
-            if d.kind == model::DECL_FUNCTION || d.kind == model::DECL_EXTERN {
-                need("(");
-                d.first = model::param_count+1_u32;
-                d.count = 0;
-                while !eat(")") {
-                    let sp:model::Span = span();
-                    let name:u32 = ident();
-                    need(":");
-                    let ty:u32 = type_expr((d.flags&model::FLAG_PUBLIC) != 0_u32);
-                    layout(ty);
-                    var k:u32 = 0;
-                    while k < d.count {
-                        if model::params[(d.first+k) as usize].name == name {
-                            fail(model::ERROR_NAME);
-                        }
-                        k = k+1_u32;
+        } else if d.kind == model::DECL_FUNCTION || d.kind == model::DECL_EXTERN {
+            need("(");
+            d.first = model::param_count+1_u32;
+            d.count = 0;
+            while !eat(")") {
+                let sp:model::Span = span();
+                let name:u32 = ident();
+                need(":");
+                let ty:u32 = type_expr((d.flags&model::FLAG_PUBLIC) != 0_u32);
+                layout(ty);
+                var k:u32 = 0;
+                while k < d.count {
+                    if model::params[(d.first+k) as usize].name == name {
+                        fail(model::ERROR_NAME);
                     }
-                    if d.kind == model::DECL_EXTERN && (!scalar(ty) || ty == model::TYPE_UNIT) {
-                        fail(model::ERROR_UNSUPPORTED);
-                    }
-                    let ignored:u32 = model::add_param(model::Param {
-                        name:name,
-                        ty:ty,
-                        span:sp
-                    });
-                    d.count = d.count+1_u32;
-                    if d.count > 256_u32 {
-                        model::limit(d.count as usize, 256);
-                    }
-                    if !eat(",") {
-                        need(")");
-                        break;
-                    }
+                    k = k+1_u32;
                 }
-                need("->");
-                d.ty = type_expr((d.flags&model::FLAG_PUBLIC) != 0_u32);
-                layout(d.ty);
-                if d.kind == model::DECL_EXTERN && !scalar(d.ty) {
+                if d.kind == model::DECL_EXTERN && (!scalar(ty) || ty == model::TYPE_UNIT) {
                     fail(model::ERROR_UNSUPPORTED);
                 }
-                if d.kind == model::DECL_EXTERN {
-                    need(";");
-                } else {
-                    d.start = token.start;
-                    if !at("{") {
-                        fail(model::ERROR_PARSE);
-                    }
+                let ignored:u32 = model::add_param(model::Param {
+                    name:name,
+                    ty:ty,
+                    span:sp
+                });
+                d.count = d.count+1_u32;
+                if d.count > 256_u32 {
+                    model::limit(d.count as usize, 256);
                 }
-            } else {
-                need(":");
-                d.ty = type_expr((d.flags&model::FLAG_PUBLIC) != 0_u32);
-                layout(d.ty);
-                need("=");
-                d.init_start = token.start;
-                if d.kind == model::DECL_CONST {
-                    if !scalar(d.ty) || d.ty == model::TYPE_UNIT || info(d.ty).kind == model::TYPE_POINTER {
-                        fail(model::ERROR_UNSUPPORTED);
-                    }
-                    let value:Constant = constant(0, d.ty);
-                    if value.ty != d.ty {
-                        fail(model::ERROR_TYPE);
-                    }
-                    d.bits = value.bits;
-                    need(";");
+                if !eat(",") {
+                    need(")");
+                    break;
                 }
-                d.init_end = ends[id as usize];
             }
+            need("->");
+            d.ty = type_expr((d.flags&model::FLAG_PUBLIC) != 0_u32);
+            layout(d.ty);
+            if d.kind == model::DECL_EXTERN && !scalar(d.ty) {
+                fail(model::ERROR_UNSUPPORTED);
+            }
+            if d.kind == model::DECL_EXTERN {
+                need(";");
+            } else {
+                d.start = token.start;
+                if !at("{") {
+                    fail(model::ERROR_PARSE);
+                }
+            }
+        } else {
+            need(":");
+            d.ty = type_expr((d.flags&model::FLAG_PUBLIC) != 0_u32);
+            layout(d.ty);
+            need("=");
+            d.init_start = token.start;
+            if d.kind == model::DECL_CONST {
+                if !scalar(d.ty) || d.ty == model::TYPE_UNIT || info(d.ty).kind == model::TYPE_POINTER {
+                    fail(model::ERROR_UNSUPPORTED);
+                }
+                let value:Constant = constant(0, d.ty);
+                if value.ty != d.ty {
+                    fail(model::ERROR_TYPE);
+                }
+                d.bits = value.bits;
+                need(";");
+            }
+            d.init_end = ends[id as usize];
         }
+
         d.state = 2;
         model::decls[id as usize] = d;
         preparing[id as usize] = 2;
@@ -948,38 +934,32 @@ pub fn headers_collect() -> () {
                 var kind:u32 = 0;
                 if eat("struct") {
                     kind = model::DECL_STRUCT;
-                }
-                else {
-                    if eat("const") {
-                        kind = model::DECL_CONST;
+                } else if eat("const") {
+                    kind = model::DECL_CONST;
+                } else if eat("static") {
+                    kind = model::DECL_STATIC;
+                    if eat("mut") {
+                        flags = flags|model::FLAG_MUTABLE;
                     }
-                    else {
-                        if eat("static") {
-                            kind = model::DECL_STATIC;
-                            if eat("mut") {
-                                flags = flags|model::FLAG_MUTABLE;
-                            }
-                        }
-                        else {
-                            if at("enum") || at("type") || at("impl") || at("resource") {
-                                fail(model::ERROR_UNSUPPORTED);
-                            }
-                            kind = model::DECL_FUNCTION;
-                            if eat("extern") {
-                                kind = model::DECL_EXTERN;
-                                need("abi");
-                                need("(");
-                                need("C");
-                                need(")");
-                                flags = flags|model::FLAG_UNSAFE;
-                            }
-                            if eat("unsafe") {
-                                flags = flags|model::FLAG_UNSAFE;
-                            }
-                            need("fn");
-                        }
+                } else {
+                    if at("enum") || at("type") || at("impl") || at("resource") {
+                        fail(model::ERROR_UNSUPPORTED);
                     }
+                    kind = model::DECL_FUNCTION;
+                    if eat("extern") {
+                        kind = model::DECL_EXTERN;
+                        need("abi");
+                        need("(");
+                        need("C");
+                        need(")");
+                        flags = flags|model::FLAG_UNSAFE;
+                    }
+                    if eat("unsafe") {
+                        flags = flags|model::FLAG_UNSAFE;
+                    }
+                    need("fn");
                 }
+
                 let name:u32 = ident();
                 if model::equal(text(name), "core") || model::equal(text(name), "root") || find(module_id, name) != 0_u32 {
                     fail(model::ERROR_NAME);

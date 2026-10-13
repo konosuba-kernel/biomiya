@@ -1,0 +1,1 @@
+module sample; struct Pair{x:u32,y:u32} enum E{Empty,Value(Pair)} static e:E=E::Value(make Pair{x:20,y:22}); fn run()->u32{match e{E::Empty=>{return 0;},E::Value(p)=>{return p.x+p.y;},}}

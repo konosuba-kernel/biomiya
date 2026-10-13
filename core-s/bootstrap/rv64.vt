@@ -120,8 +120,7 @@ fn mov(dst:u32, src:u32) -> () {
 fn address(rd:u32, base:u32, off:usize) -> () {
     if off <= 2047_usize {
         i(19, 0, rd, base, off);
-    }
-    else {
+    } else {
         var temp:u32 = rd;
         if rd == base {
             temp = 29;
@@ -140,21 +139,15 @@ fn load(rd:u32, base:u32, off:usize, size:usize) -> () {
     var f3:u32 = 3;
     if size == 1_usize {
         f3 = 4;
+    } else if size == 4_usize {
+        f3 = 6;
+    } else if size != 8_usize {
+        bad();
     }
-    else {
-        if size == 4_usize {
-            f3 = 6;
-        }
-        else {
-            if size != 8_usize {
-                bad();
-            }
-        }
-    }
+
     if off <= 2047_usize {
         i(3, f3, rd, base, off);
-    }
-    else {
+    } else {
         address(31, base, off);
         i(3, f3, rd, 31, 0);
     }
@@ -168,21 +161,15 @@ fn store(rs:u32, base:u32, off:usize, size:usize) -> () {
     var f3:u32 = 3;
     if size == 1_usize {
         f3 = 0;
+    } else if size == 4_usize {
+        f3 = 2;
+    } else if size != 8_usize {
+        bad();
     }
-    else {
-        if size == 4_usize {
-            f3 = 2;
-        }
-        else {
-            if size != 8_usize {
-                bad();
-            }
-        }
-    }
+
     if off <= 2047_usize {
         s(f3, rs, base, off);
-    }
-    else {
+    } else {
         address(31, base, off);
         s(f3, rs, 31, 0);
     }
@@ -280,8 +267,7 @@ fn finite_layouts() -> () {
                     if child == 0_u32 {
                         type_state[id as usize] = 2;
                         depth = depth-1_usize;
-                    }
-                    else {
+                    } else {
                         let checked:model::Type = info(child);
                         type_edge[depth] = type_edge[depth]+1_u32;
                         if type_state[child as usize] == 1_u8 {
@@ -576,8 +562,7 @@ fn outgoing_size(decl:model::Decl) -> usize {
 fn incoming(position:usize, rd:u32) -> () {
     if position < 8_usize {
         mov(rd, 10_u32+(position as u32));
-    }
-    else {
+    } else {
         load(rd, 8, (position-8_usize)*8_usize, 8);
     }
     return ();
@@ -586,8 +571,7 @@ fn incoming(position:usize, rd:u32) -> () {
 fn outgoing(position:usize, rs:u32) -> () {
     if position < 8_usize {
         mov(10_u32+(position as u32), rs);
-    }
-    else {
+    } else {
         store(rs, 2, (position-8_usize)*8_usize, 8);
     }
     return ();
@@ -631,182 +615,133 @@ fn validate(item:model::Inst, decl:model::Decl) -> () {
         if ty.kind == model::TYPE_U32 && item.bits > 4294967295_usize {
             bad();
         }
-    }
-    else {
-        if item.op == model::IR_COPY {
+    } else if item.op == model::IR_COPY {
+        same(item.dst, item.a);
+    } else if item.op == model::IR_LOCAL_ADDRESS {
+        let ty:model::Type = stype(item.dst);
+        let source:model::Type = stype(item.a);
+        if ty.kind != model::TYPE_POINTER {
+            bad();
+        }
+        let size:usize = info(ty.a).size;
+        if item.bits > source.size || size > source.size-item.bits {
+            bad();
+        }
+    } else if item.op == model::IR_SYMBOL_ADDRESS {
+        if stype(item.dst).kind != model::TYPE_POINTER {
+            bad();
+        }
+        unsafe {
+            if item.a == 0_u32 || item.a > model::symbol_count {
+                bad();
+            }
+        }
+    } else if item.op == model::IR_LOAD || item.op == model::IR_STORE {
+        let ptr:model::Type = stype(item.a);
+        var v:u32 = item.dst;
+        if item.op == model::IR_STORE {
+            v = item.b;
+            if (ptr.flags & model::TYPE_CONST) != 0_u32 {
+                bad();
+            }
+        }
+        if ptr.kind != model::TYPE_POINTER || ptr.a != slot(v).ty {
+            bad();
+        }
+    } else if item.op == model::IR_OFFSET {
+        // Internal layout projection may change pointee, never permission.
+        if stype(item.dst).kind != model::TYPE_POINTER || stype(item.a).kind != model::TYPE_POINTER || stype(item.b).kind != model::TYPE_USIZE || stype(item.dst).flags != stype(item.a).flags {
+            bad();
+        }
+    } else if item.op == model::IR_BINARY {
+        same(item.a, item.b);
+        let ty:model::Type = stype(item.a);
+        if item.aux == model::BIN_INVALID || item.aux > model::BIN_GE {
+            bad();
+        }
+        if item.aux >= model::BIN_EQ {
+            if stype(item.dst).kind != model::TYPE_BOOL || (!integer(ty) && ty.kind != model::TYPE_BOOL && ty.kind != model::TYPE_POINTER) {
+                bad();
+            }
+            if item.aux >= model::BIN_LT && !integer(ty) {
+                bad();
+            }
+        } else {
             same(item.dst, item.a);
-        }
-        else {
-            if item.op == model::IR_LOCAL_ADDRESS {
-                let ty:model::Type = stype(item.dst);
-                let source:model::Type = stype(item.a);
-                if ty.kind != model::TYPE_POINTER {
-                    bad();
-                }
-                let size:usize = info(ty.a).size;
-                if item.bits > source.size || size > source.size-item.bits {
-                    bad();
-                }
-            }
-            else {
-                if item.op == model::IR_SYMBOL_ADDRESS {
-                    if stype(item.dst).kind != model::TYPE_POINTER {
-                        bad();
-                    }
-                    unsafe {
-                        if item.a == 0_u32 || item.a > model::symbol_count {
-                            bad();
-                        }
-                    }
-                }
-                else {
-                    if item.op == model::IR_LOAD || item.op == model::IR_STORE {
-                        let ptr:model::Type = stype(item.a);
-                        var v:u32 = item.dst;
-                        if item.op == model::IR_STORE {
-                            v = item.b;
-                            if (ptr.flags & model::TYPE_CONST) != 0_u32 {
-                                bad();
-                            }
-                        }
-                        if ptr.kind != model::TYPE_POINTER || ptr.a != slot(v).ty {
-                            bad();
-                        }
-                    }
-                    else {
-                        if item.op == model::IR_OFFSET {
-                            // Internal layout projection may change pointee, never permission.
-                            if stype(item.dst).kind != model::TYPE_POINTER || stype(item.a).kind != model::TYPE_POINTER || stype(item.b).kind != model::TYPE_USIZE || stype(item.dst).flags != stype(item.a).flags {
-                                bad();
-                            }
-                        }
-                        else {
-                            if item.op == model::IR_BINARY {
-                                same(item.a, item.b);
-                                let ty:model::Type = stype(item.a);
-                                if item.aux == model::BIN_INVALID || item.aux > model::BIN_GE {
-                                    bad();
-                                }
-                                if item.aux >= model::BIN_EQ {
-                                    if stype(item.dst).kind != model::TYPE_BOOL || (!integer(ty) && ty.kind != model::TYPE_BOOL && ty.kind != model::TYPE_POINTER) {
-                                        bad();
-                                    }
-                                    if item.aux >= model::BIN_LT && !integer(ty) {
-                                        bad();
-                                    }
-                                }
-                                else {
-                                    same(item.dst, item.a);
-                                    if !integer(ty) {
-                                        bad();
-                                    }
-                                }
-                            }
-                            else {
-                                if item.op == model::IR_UNARY {
-                                    same(item.dst, item.a);
-                                    let ty:model::Type = stype(item.a);
-                                    if item.aux == model::UNARY_NOT {
-                                        if ty.kind != model::TYPE_BOOL {
-                                            bad();
-                                        }
-                                    }
-                                    else {
-                                        if (item.aux != model::UNARY_BIT_NOT && item.aux != model::UNARY_NEG) || !integer(ty) {
-                                            bad();
-                                        }
-                                    }
-                                }
-                                else {
-                                    if item.op == model::IR_CAST {
-                                        if !integer(stype(item.dst)) || !integer(stype(item.a)) {
-                                            bad();
-                                        }
-                                    }
-                                    else {
-                                        if item.op == model::IR_BITCAST {
-                                            let a:model::Type = stype(item.a);
-                                            let b:model::Type = stype(item.dst);
-                                            if a.kind == model::TYPE_POINTER && b.kind == model::TYPE_POINTER {
-                                                if a.a != b.a || (a.flags & model::TYPE_CONST) > (b.flags & model::TYPE_CONST) {
-                                                    bad();
-                                                }
-                                            }
-                                            else {
-                                                if !((a.kind == model::TYPE_POINTER && b.kind == model::TYPE_USIZE) || (a.kind == model::TYPE_USIZE && b.kind == model::TYPE_POINTER)) {
-                                                    bad();
-                                                }
-                                            }
-                                        }
-                                        else {
-                                            if item.op == model::IR_BOUNDS {
-                                                if stype(item.a).kind != model::TYPE_USIZE || stype(item.b).kind != model::TYPE_USIZE {
-                                                    bad();
-                                                }
-                                            }
-                                            else {
-                                                if item.op == model::IR_CALL {
-                                                    let target:model::Decl = declaration(item.a);
-                                                    if target.count != item.c {
-                                                        bad();
-                                                    }
-                                                    unsafe {
-                                                        if item.c != 0_u32 && (item.b == 0_u32 || item.b > model::arg_count || item.c > model::arg_count-item.b+1_u32) {
-                                                            bad();
-                                                        }
-                                                        var p:u32 = 0;
-                                                        while p < item.c {
-                                                            if slot(model::args[(item.b+p) as usize]).ty != model::params[(target.first+p) as usize].ty {
-                                                                bad();
-                                                            }
-                                                            p = p+1_u32;
-                                                        }
-                                                    }
-                                                    if info(target.ty).size != 0_usize || item.dst != 0_u32 {
-                                                        if slot(item.dst).ty != target.ty {
-                                                            bad();
-                                                        }
-                                                    }
-                                                }
-                                                else {
-                                                    if item.op == model::IR_LABEL || item.op == model::IR_JUMP {
-                                                        let ignored:u32 = label(item.a);
-                                                    }
-                                                    else {
-                                                        if item.op == model::IR_BRANCH {
-                                                            if stype(item.a).kind != model::TYPE_BOOL {
-                                                                bad();
-                                                            }
-                                                            let yes:u32 = label(item.b);
-                                                            let no:u32 = label(item.c);
-                                                        }
-                                                        else {
-                                                            if item.op == model::IR_RETURN {
-                                                                if info(decl.ty).size != 0_usize || item.a != 0_u32 {
-                                                                    if slot(item.a).ty != decl.ty {
-                                                                        bad();
-                                                                    }
-                                                                }
-                                                            }
-                                                            else {
-                                                                if item.op != model::IR_PANIC {
-                                                                    bad();
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            if !integer(ty) {
+                bad();
             }
         }
+    } else if item.op == model::IR_UNARY {
+        same(item.dst, item.a);
+        let ty:model::Type = stype(item.a);
+        if item.aux == model::UNARY_NOT {
+            if ty.kind != model::TYPE_BOOL {
+                bad();
+            }
+        } else if (item.aux != model::UNARY_BIT_NOT && item.aux != model::UNARY_NEG) || !integer(ty) {
+            bad();
+        }
+
+    } else if item.op == model::IR_CAST {
+        if !integer(stype(item.dst)) || !integer(stype(item.a)) {
+            bad();
+        }
+    } else if item.op == model::IR_BITCAST {
+        let a:model::Type = stype(item.a);
+        let b:model::Type = stype(item.dst);
+        if a.kind == model::TYPE_POINTER && b.kind == model::TYPE_POINTER {
+            if a.a != b.a || (a.flags & model::TYPE_CONST) > (b.flags & model::TYPE_CONST) {
+                bad();
+            }
+        } else if !((a.kind == model::TYPE_POINTER && b.kind == model::TYPE_USIZE) || (a.kind == model::TYPE_USIZE && b.kind == model::TYPE_POINTER)) {
+            bad();
+        }
+
+    } else if item.op == model::IR_BOUNDS {
+        if stype(item.a).kind != model::TYPE_USIZE || stype(item.b).kind != model::TYPE_USIZE {
+            bad();
+        }
+    } else if item.op == model::IR_CALL {
+        let target:model::Decl = declaration(item.a);
+        if target.count != item.c {
+            bad();
+        }
+        unsafe {
+            if item.c != 0_u32 && (item.b == 0_u32 || item.b > model::arg_count || item.c > model::arg_count-item.b+1_u32) {
+                bad();
+            }
+            var p:u32 = 0;
+            while p < item.c {
+                if slot(model::args[(item.b+p) as usize]).ty != model::params[(target.first+p) as usize].ty {
+                    bad();
+                }
+                p = p+1_u32;
+            }
+        }
+        if info(target.ty).size != 0_usize || item.dst != 0_u32 {
+            if slot(item.dst).ty != target.ty {
+                bad();
+            }
+        }
+    } else if item.op == model::IR_LABEL || item.op == model::IR_JUMP {
+        let ignored:u32 = label(item.a);
+    } else if item.op == model::IR_BRANCH {
+        if stype(item.a).kind != model::TYPE_BOOL {
+            bad();
+        }
+        let yes:u32 = label(item.b);
+        let no:u32 = label(item.c);
+    } else if item.op == model::IR_RETURN {
+        if info(decl.ty).size != 0_usize || item.a != 0_u32 {
+            if slot(item.a).ty != decl.ty {
+                bad();
+            }
+        }
+    } else if item.op != model::IR_PANIC {
+        bad();
     }
+
     return ();
 }
 
@@ -820,85 +755,57 @@ fn binary(item:model::Inst) -> () {
         if op == model::BIN_ADD {
             guard(7, 5, 6);
         }
-    }
-    else {
-        if op == model::BIN_SUB || op == model::BIN_WRAP_SUB {
-            if op == model::BIN_SUB {
-                guard(7, 6, 7);
-            }
-            r(32, 0, 5, 6, 7);
+    } else if op == model::BIN_SUB || op == model::BIN_WRAP_SUB {
+        if op == model::BIN_SUB {
+            guard(7, 6, 7);
         }
-        else {
-            if op == model::BIN_MUL || op == model::BIN_WRAP_MUL {
-                r(1, 0, 5, 6, 7);
-                if op == model::BIN_MUL {
-                    r(1, 3, 28, 6, 7);
-                    guard(0, 28, 0);
-                }
-            }
-            else {
-                if op == model::BIN_DIV || op == model::BIN_REM {
-                    guard(1, 7, 0);
-                    var f:u32 = 5;
-                    if op == model::BIN_REM {
-                        f = 7;
-                    }
-                    r(1, f, 5, 6, 7);
-                }
-                else {
-                    if op == model::BIN_SHL || op == model::BIN_SHR {
-                        constant(28, ty.size*8_usize);
-                        guard(6, 7, 28);
-                        var f:u32 = 1;
-                        if op == model::BIN_SHR {
-                            f = 5;
-                        }
-                        r(0, f, 5, 6, 7);
-                    }
-                    else {
-                        if op == model::BIN_BIT_AND {
-                            r(0, 7, 5, 6, 7);
-                        }
-                        else {
-                            if op == model::BIN_BIT_OR {
-                                r(0, 6, 5, 6, 7);
-                            }
-                            else {
-                                if op == model::BIN_BIT_XOR {
-                                    r(0, 4, 5, 6, 7);
-                                }
-                                else {
-                                    if op == model::BIN_EQ || op == model::BIN_NE {
-                                        r(0, 4, 5, 6, 7);
-                                        if op == model::BIN_EQ {
-                                            i(19, 3, 5, 5, 1);
-                                        }
-                                        else {
-                                            r(0, 3, 5, 0, 5);
-                                        }
-                                    }
-                                    else {
-                                        if op == model::BIN_LT || op == model::BIN_GE {
-                                            r(0, 3, 5, 6, 7);
-                                            if op == model::BIN_GE {
-                                                i(19, 4, 5, 5, 1);
-                                            }
-                                        }
-                                        else {
-                                            r(0, 3, 5, 7, 6);
-                                            if op == model::BIN_LE {
-                                                i(19, 4, 5, 5, 1);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        r(32, 0, 5, 6, 7);
+    } else if op == model::BIN_MUL || op == model::BIN_WRAP_MUL {
+        r(1, 0, 5, 6, 7);
+        if op == model::BIN_MUL {
+            r(1, 3, 28, 6, 7);
+            guard(0, 28, 0);
+        }
+    } else if op == model::BIN_DIV || op == model::BIN_REM {
+        guard(1, 7, 0);
+        var f:u32 = 5;
+        if op == model::BIN_REM {
+            f = 7;
+        }
+        r(1, f, 5, 6, 7);
+    } else if op == model::BIN_SHL || op == model::BIN_SHR {
+        constant(28, ty.size*8_usize);
+        guard(6, 7, 28);
+        var f:u32 = 1;
+        if op == model::BIN_SHR {
+            f = 5;
+        }
+        r(0, f, 5, 6, 7);
+    } else if op == model::BIN_BIT_AND {
+        r(0, 7, 5, 6, 7);
+    } else if op == model::BIN_BIT_OR {
+        r(0, 6, 5, 6, 7);
+    } else if op == model::BIN_BIT_XOR {
+        r(0, 4, 5, 6, 7);
+    } else if op == model::BIN_EQ || op == model::BIN_NE {
+        r(0, 4, 5, 6, 7);
+        if op == model::BIN_EQ {
+            i(19, 3, 5, 5, 1);
+        } else {
+            r(0, 3, 5, 0, 5);
+        }
+    } else if op == model::BIN_LT || op == model::BIN_GE {
+        r(0, 3, 5, 6, 7);
+        if op == model::BIN_GE {
+            i(19, 4, 5, 5, 1);
+        }
+    } else {
+        r(0, 3, 5, 7, 6);
+        if op == model::BIN_LE {
+            i(19, 4, 5, 5, 1);
         }
     }
+
     if op <= model::BIN_MUL && ty.size < 8_usize {
         mov(28, 5);
         normalize(28, ty);
@@ -927,8 +834,7 @@ fn call(item:model::Inst) -> () {
                 if scalar(ty) {
                     value(arg, 5);
                     extension(5, ty);
-                }
-                else {
+                } else {
                     destination(arg, 5);
                 }
                 outgoing(position, 5);
@@ -944,162 +850,122 @@ fn call(item:model::Inst) -> () {
     return ();
 }
 
+fn store_instruction(item:model::Inst) -> () {
+    let ty:model::Type = stype(item.b);
+    if scalar(ty) {
+        value(item.b, 5);
+        value(item.a, 6);
+        store(5, 6, 0, ty.size);
+    } else {
+        value(item.a, 5);
+        destination(item.b, 6);
+        copy(ty.size);
+    }
+    return ();
+}
+
+fn return_instruction(item:model::Inst, result:model::Type) -> () {
+    if result.size != 0_usize {
+        if scalar(result) {
+            value(item.a, 10);
+            extension(10, result);
+        } else {
+            unsafe {
+                load(5, 2, result_pointer, 8);
+            }
+            destination(item.a, 6);
+            copy(result.size);
+        }
+    }
+    unsafe {
+        mov(30, 8);
+        load(1, 2, save, 8);
+        load(8, 2, save+8_usize, 8);
+        mov(2, 30);
+    }
+    i(103, 0, 0, 1, 0);
+    return ();
+}
+
 fn instruction(item:model::Inst, decl:model::Decl) -> () {
     if item.op == model::IR_VALUE {
         constant(5, item.bits);
-    }
-    else {
-        if item.op == model::IR_COPY {
+    } else if item.op == model::IR_COPY {
+        destination(item.dst, 5);
+        destination(item.a, 6);
+        copy(stype(item.dst).size);
+        return ();
+    } else if item.op == model::IR_LOCAL_ADDRESS {
+        address(5, 2, frame_offset(item.a)+item.bits);
+    } else if item.op == model::IR_SYMBOL_ADDRESS {
+        transfer(5, item.a, false);
+    } else if item.op == model::IR_LOAD {
+        let ty:model::Type = stype(item.dst);
+        if scalar(ty) {
+            value(item.a, 6);
+            load(5, 6, 0, ty.size);
+        } else {
             destination(item.dst, 5);
-            destination(item.a, 6);
-            copy(stype(item.dst).size);
+            value(item.a, 6);
+            copy(ty.size);
             return ();
         }
-        else {
-            if item.op == model::IR_LOCAL_ADDRESS {
-                address(5, 2, frame_offset(item.a)+item.bits);
-            }
-            else {
-                if item.op == model::IR_SYMBOL_ADDRESS {
-                    transfer(5, item.a, false);
-                }
-                else {
-                    if item.op == model::IR_LOAD {
-                        let ty:model::Type = stype(item.dst);
-                        if scalar(ty) {
-                            value(item.a, 6);
-                            load(5, 6, 0, ty.size);
-                        }
-                        else {
-                            destination(item.dst, 5);
-                            value(item.a, 6);
-                            copy(ty.size);
-                            return ();
-                        }
-                    }
-                    else {
-                        if item.op == model::IR_STORE {
-                            let ty:model::Type = stype(item.b);
-                            if scalar(ty) {
-                                value(item.b, 5);
-                                value(item.a, 6);
-                                store(5, 6, 0, ty.size);
-                            }
-                            else {
-                                value(item.a, 5);
-                                destination(item.b, 6);
-                                copy(ty.size);
-                            }
-                            return ();
-                        }
-                        else {
-                            if item.op == model::IR_OFFSET {
-                                value(item.a, 6);
-                                value(item.b, 7);
-                                r(0, 0, 5, 6, 7);
-                                guard(7, 5, 6);
-                            }
-                            else {
-                                if item.op == model::IR_BINARY {
-                                    binary(item);
-                                }
-                                else {
-                                    if item.op == model::IR_UNARY {
-                                        value(item.a, 5);
-                                        if item.aux == model::UNARY_NOT {
-                                            i(19, 3, 5, 5, 1);
-                                        }
-                                        if item.aux == model::UNARY_BIT_NOT {
-                                            i(19, 4, 5, 5, 18446744073709551615);
-                                            normalize(5, stype(item.dst));
-                                        }
-                                        if item.aux == model::UNARY_NEG {
-                                            guard(0, 5, 0);
-                                        }
-                                    }
-                                    else {
-                                        if item.op == model::IR_CAST {
-                                            value(item.a, 5);
-                                            normalize(5, stype(item.dst));
-                                        }
-                                        else {
-                                            if item.op == model::IR_BITCAST {
-                                                value(item.a, 5);
-                                            }
-                                            else {
-                                                if item.op == model::IR_BOUNDS {
-                                                    value(item.a, 5);
-                                                    value(item.b, 6);
-                                                    guard(6, 5, 6);
-                                                    return ();
-                                                }
-                                                else {
-                                                    if item.op == model::IR_CALL {
-                                                        call(item);
-                                                        return ();
-                                                    }
-                                                    else {
-                                                        if item.op == model::IR_LABEL {
-                                                            mark(label(item.a));
-                                                            return ();
-                                                        }
-                                                        else {
-                                                            if item.op == model::IR_JUMP {
-                                                                transfer(0, label(item.a), true);
-                                                                return ();
-                                                            }
-                                                            else {
-                                                                if item.op == model::IR_BRANCH {
-                                                                    value(item.a, 5);
-                                                                    branch(1, 5, 0, label(item.b));
-                                                                    transfer(0, label(item.c), true);
-                                                                    return ();
-                                                                }
-                                                                else {
-                                                                    if item.op == model::IR_RETURN {
-                                                                        let result:model::Type = info(decl.ty);
-                                                                        if result.size != 0_usize {
-                                                                            if scalar(result) {
-                                                                                value(item.a, 10);
-                                                                                extension(10, result);
-                                                                            }
-                                                                            else {
-                                                                                unsafe {
-                                                                                    load(5, 2, result_pointer, 8);
-                                                                                }
-                                                                                destination(item.a, 6);
-                                                                                copy(result.size);
-                                                                            }
-                                                                        }
-                                                                        unsafe {
-                                                                            mov(30, 8);
-                                                                            load(1, 2, save, 8);
-                                                                            load(8, 2, save+8_usize, 8);
-                                                                            mov(2, 30);
-                                                                        }
-                                                                        i(103, 0, 0, 1, 0);
-                                                                        return ();
-                                                                    }
-                                                                    else {
-                                                                        panic();
-                                                                        return ();
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    } else if item.op == model::IR_STORE {
+        store_instruction(item);
+        return ();
+    } else if item.op == model::IR_OFFSET {
+        value(item.a, 6);
+        value(item.b, 7);
+        r(0, 0, 5, 6, 7);
+        guard(7, 5, 6);
+    } else if item.op == model::IR_BINARY {
+        binary(item);
+    } else if item.op == model::IR_UNARY {
+        value(item.a, 5);
+        if item.aux == model::UNARY_NOT {
+            i(19, 3, 5, 5, 1);
         }
+        if item.aux == model::UNARY_BIT_NOT {
+            i(19, 4, 5, 5, 18446744073709551615);
+            normalize(5, stype(item.dst));
+        }
+        if item.aux == model::UNARY_NEG {
+            guard(0, 5, 0);
+        }
+    } else if item.op == model::IR_CAST {
+        value(item.a, 5);
+        normalize(5, stype(item.dst));
+    } else if item.op == model::IR_BITCAST {
+        value(item.a, 5);
+    } else if item.op == model::IR_BOUNDS {
+        value(item.a, 5);
+        value(item.b, 6);
+        guard(6, 5, 6);
+        return ();
+    } else if item.op == model::IR_CALL {
+        call(item);
+        return ();
+    } else if item.op == model::IR_LABEL {
+        mark(label(item.a));
+        return ();
+    } else if item.op == model::IR_JUMP {
+        transfer(0, label(item.a), true);
+        return ();
+    } else if item.op == model::IR_BRANCH {
+        value(item.a, 5);
+        branch(1, 5, 0, label(item.b));
+        transfer(0, label(item.c), true);
+        return ();
+    } else if item.op == model::IR_RETURN {
+        return_instruction(item, info(decl.ty));
+        return ();
+    } else {
+        panic();
+        return ();
     }
+
+    // Only scalar-producing cases reach this shared x5 writeback.
+    // Copies, aggregate loads, stores, calls and control flow return above.
     store(5, 2, frame_offset(item.dst), stype(item.dst).size);
     return ();
 }
@@ -1141,8 +1007,7 @@ pub fn function(id:u32) -> () {
                 }
                 label_defs[inst.a as usize] = 1;
                 terminated = false;
-            }
-            else {
+            } else {
                 if terminated {
                     bad();
                 }
@@ -1231,8 +1096,7 @@ pub fn function(id:u32) -> () {
                 if scalar(ty) {
                     incoming(position, 5);
                     store(5, 2, frame_offset(arg), ty.size);
-                }
-                else {
+                } else {
                     incoming(position, 6);
                     destination(arg, 5);
                     copy(ty.size);

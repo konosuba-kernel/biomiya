@@ -1,0 +1,24 @@
+{
+  "version": "S-next 0.1",
+  "status": "implementation-reference",
+  "compiler_sha256": [
+    "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20"
+  ],
+  "cases": [
+    {
+      "name": "hello",
+      "entry": "app::run",
+      "exit": 42
+    },
+    {
+      "name": "zero",
+      "entry": "app::run",
+      "exit": 42
+    },
+    {
+      "name": "enum",
+      "entry": "app::run",
+      "exit": 42
+    }
+  ]
+}

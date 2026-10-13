@@ -223,18 +223,16 @@ fn index(base:Place, node:u32) -> Place {
     var writable:bool = base.writable;
     if t.kind == model::TYPE_ARRAY {
         length = ir::value(model::TYPE_USIZE, t.b as usize);
+    } else if t.kind == model::TYPE_SLICE {
+        require_unsafe();
+        access(base);
+        address = read(projection(base, types::pointer(t.a, t.flags != model::TYPE_MUTABLE), 0, false));
+        length = read(projection(base, model::TYPE_USIZE, 8, false));
+        writable = t.flags == model::TYPE_MUTABLE;
+    } else {
+        types::fail(model::ERROR_TYPE);
     }
-    else {
-        if t.kind == model::TYPE_SLICE {
-            require_unsafe();
-            access(base);
-            address = read(projection(base, types::pointer(t.a, t.flags != model::TYPE_MUTABLE), 0, false));
-            length = read(projection(base, model::TYPE_USIZE, 8, false));
-            writable = t.flags == model::TYPE_MUTABLE;
-        } else {
-            types::fail(model::ERROR_TYPE);
-        }
-    }
+
     let ix:u32 = expr(node, model::TYPE_USIZE);
     ir::bounds(ix, length);
     let bytes:u32 = ir::binary(model::BIN_MUL, ix, ir::value(model::TYPE_USIZE, types::info(t.a).size), model::TYPE_USIZE);
@@ -632,6 +630,132 @@ fn expr(node:u32, expected:u32) -> u32 {
     return result;
 }
 
+// These handlers emit into the current function IR. Recursive operands use expr(),
+// which owns diagnostic positioning and the expression-depth budget.
+fn name_value(node:u32, n:parse::Node) -> u32 {
+    var value:u32 = 0;
+    if is_place(node) {
+        value = read(place(node));
+    } else {
+        unsafe {
+            let id:u32 = types::resolve(file, n.a, false);
+            if id == 0_u32 {
+                types::fail(model::ERROR_NAME);
+            }
+            let d:model::Decl = model::decls[id as usize];
+            if d.kind != model::DECL_CONST {
+                types::fail(model::ERROR_UNSUPPORTED);
+            }
+            value = ir::value(d.ty, d.bits);
+        }
+    }
+    return value;
+}
+
+fn unary_value(node:u32, n:parse::Node, expected:u32) -> u32 {
+    var value:u32 = 0;
+    if n.a == model::UNARY_DEREF {
+        value = read(place(node));
+    } else {
+        var want:u32 = expected;
+        if n.a == model::UNARY_NOT {
+            want = model::TYPE_BOOL;
+        }
+        let operand:u32 = expr(n.b, want);
+        let ty:u32 = ir::type_of(operand);
+        if n.a == model::UNARY_NEG || n.a == model::UNARY_BIT_NOT && !types::integer(ty) {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = ir::unary(n.a, operand, ty);
+    }
+    return value;
+}
+
+fn field_value(n:parse::Node) -> u32 {
+    var value:u32 = 0;
+    let base:Place = base_place(n.a);
+    let t:model::Type = types::info(base.ty);
+    if t.kind == model::TYPE_ARRAY {
+        access(base);
+        if !model::equal(types::text(n.b), "len") {
+            types::fail(model::ERROR_NAME);
+        }
+        value = ir::value(model::TYPE_USIZE, t.b as usize);
+    } else {
+        value = read(field(base, n.b));
+    }
+    return value;
+}
+
+fn struct_value(n:parse::Node) -> u32 {
+    let value:u32 = ir::slot(n.a);
+    let t:model::Type = types::info(n.a);
+    var seen:[256]u32 = [0;256];
+    var p:u32 = n.b;
+    var found:u32 = 0;
+    while p != 0_u32 {
+        let pair:parse::Node = parse::get(p);
+        var index:u32 = 0;
+        unsafe {
+            while index < t.count && model::fields[(t.first+index) as usize].name != pair.a {
+                index = index+1_u32;
+            }
+        }
+        if index == t.count {
+            types::fail(model::ERROR_NAME);
+        }
+        unsafe {
+            if seen[index as usize] != 0_u32 {
+                types::fail(model::ERROR_TYPE);
+            }
+            seen[index as usize] = 1;
+            let f:model::Field = model::fields[(t.first+index) as usize];
+            let v:u32 = expr(pair.b, f.ty);
+            ir::store(ir::local_address(value, f.ty, f.offset, false), v);
+        }
+        found = found+1_u32;
+        p = pair.next;
+    }
+    if found != t.count {
+        types::fail(model::ERROR_TYPE);
+    }
+    return value;
+}
+
+fn array_value(n:parse::Node, expected:u32) -> u32 {
+    var value:u32 = 0;
+    if expected == 0_u32 {
+        types::fail(model::ERROR_TYPE);
+    }
+    let t:model::Type = types::info(expected);
+    if t.kind != model::TYPE_ARRAY {
+        types::fail(model::ERROR_TYPE);
+    }
+    if n.tag == model::AST_REPEAT {
+        if n.b != t.b {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = repeat(expected, t.a, t.b, expr(n.a, t.a));
+    } else {
+        value = ir::slot(expected);
+        var p:u32 = n.a;
+        var index:u32 = 0;
+        while p != 0_u32 {
+            if index >= t.b {
+                types::fail(model::ERROR_TYPE);
+            }
+            let v:u32 = expr(p, t.a);
+            ir::store(ir::local_address(value, t.a, (index as usize)*types::info(t.a).size, false), v);
+            index = index+1_u32;
+            p = parse::get(p).next;
+        }
+        if index != t.b {
+            types::fail(model::ERROR_TYPE);
+        }
+    }
+    return value;
+}
+
 fn expr_inner(node:u32, expected:u32) -> u32 {
     location(node);
     let n:parse::Node = parse::get(node);
@@ -642,207 +766,61 @@ fn expr_inner(node:u32, expected:u32) -> u32 {
             ty = expected;
         }
         value = ir::value(ty, types::literal(n.bits, ty));
+    } else if n.tag == model::AST_BOOL {
+        value = ir::value(model::TYPE_BOOL, n.bits);
+    } else if n.tag == model::AST_UNIT {
+        value = ir::value(model::TYPE_UNIT, 0);
+    } else if n.tag == model::AST_NULL {
+        if expected == 0_u32 || types::info(expected).kind != model::TYPE_POINTER {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = ir::value(expected, 0);
+    } else if n.tag == model::AST_NAME {
+        value = name_value(node, n);
+    } else if n.tag == model::AST_UNARY {
+        value = unary_value(node, n, expected);
+    } else if n.tag == model::AST_BINARY {
+        value = binary(n, expected);
+    } else if n.tag == model::AST_CAST {
+        let operand:u32 = expr(n.a, 0);
+        if !types::integer(ir::type_of(operand)) || !types::integer(n.b) {
+            types::fail(model::ERROR_TYPE);
+        }
+        value = ir::cast(operand, n.b);
+    } else if n.tag == model::AST_CALL {
+        value = call(n.a, n.b);
+    } else if n.tag == model::AST_FIELD {
+        value = field_value(n);
+    } else if n.tag == model::AST_INDEX {
+        value = read(index(base_place(n.a), n.b));
+    } else if n.tag == model::AST_STRUCT {
+        value = struct_value(n);
+    } else if n.tag == model::AST_ARRAY || n.tag == model::AST_REPEAT {
+        value = array_value(n, expected);
+    } else if n.tag == model::AST_RESULT {
+        let t:model::Type = types::info(n.a);
+        var ty:u32 = t.a;
+        if n.b == model::RESULT_ERR {
+            ty = t.b;
+        }
+        value = result(n.a, n.b, expr(n.c, ty));
+    } else if n.tag == model::AST_TRY {
+        value = try_value(n.a);
+    } else if n.tag == model::AST_SIZEOF {
+        value = ir::value(model::TYPE_USIZE, types::info(n.a).size);
+    } else if n.tag == model::AST_ALIGNOF {
+        value = ir::value(model::TYPE_USIZE, types::info(n.a).align);
+    } else if n.tag == model::AST_POINTER {
+        require_unsafe();
+        value = ir::bitcast(expr(n.b, model::TYPE_USIZE), types::pointer(n.a, false));
+    } else if n.tag == model::AST_STRING {
+        let symbol:u32 = parse::string_data(n.a);
+        value = slice(model::TYPE_U8, true, ir::symbol_address(symbol, model::TYPE_U8, true), ir::value(model::TYPE_USIZE, types::text(n.a).len));
     } else {
-        if n.tag == model::AST_BOOL {
-            value = ir::value(model::TYPE_BOOL, n.bits);
-        }
-        else {
-            if n.tag == model::AST_UNIT {
-                value = ir::value(model::TYPE_UNIT, 0);
-            }
-            else {
-                if n.tag == model::AST_NULL {
-                    if expected == 0_u32 || types::info(expected).kind != model::TYPE_POINTER {
-                        types::fail(model::ERROR_TYPE);
-                    }
-                    value = ir::value(expected, 0);
-                }
-                else {
-                    if n.tag == model::AST_NAME {
-                        if is_place(node) {
-                            value = read(place(node));
-                        }
-                        else {
-                            unsafe {
-                                let id:u32 = types::resolve(file, n.a, false);
-                                if id == 0_u32 {
-                                    types::fail(model::ERROR_NAME);
-                                }
-                                let d:model::Decl = model::decls[id as usize];
-                                if d.kind != model::DECL_CONST {
-                                    types::fail(model::ERROR_UNSUPPORTED);
-                                }
-                                value = ir::value(d.ty, d.bits);
-                            }
-                        }
-                    } else {
-                        if n.tag == model::AST_UNARY {
-                            if n.a == model::UNARY_DEREF {
-                                value = read(place(node));
-                            }
-                            else {
-                                var want:u32 = expected;
-                                if n.a == model::UNARY_NOT {
-                                    want = model::TYPE_BOOL;
-                                }
-                                let operand:u32 = expr(n.b, want);
-                                let ty:u32 = ir::type_of(operand);
-                                if n.a == model::UNARY_NEG || n.a == model::UNARY_BIT_NOT && !types::integer(ty) {
-                                    types::fail(model::ERROR_TYPE);
-                                }
-                                value = ir::unary(n.a, operand, ty);
-                            }
-                        } else {
-                            if n.tag == model::AST_BINARY {
-                                value = binary(n, expected);
-                            }
-                            else {
-                                if n.tag == model::AST_CAST {
-                                    let operand:u32 = expr(n.a, 0);
-                                    if !types::integer(ir::type_of(operand)) || !types::integer(n.b) {
-                                        types::fail(model::ERROR_TYPE);
-                                    }
-                                    value = ir::cast(operand, n.b);
-                                }
-                                else {
-                                    if n.tag == model::AST_CALL {
-                                        value = call(n.a, n.b);
-                                    }
-                                    else {
-                                        if n.tag == model::AST_FIELD {
-                                            let base:Place = base_place(n.a);
-                                            let t:model::Type = types::info(base.ty);
-                                            if t.kind == model::TYPE_ARRAY {
-                                                access(base);
-                                                if !model::equal(types::text(n.b), "len") {
-                                                    types::fail(model::ERROR_NAME);
-                                                }
-                                                value = ir::value(model::TYPE_USIZE, t.b as usize);
-                                            }
-                                            else {
-                                                value = read(field(base, n.b));
-                                            }
-                                        } else {
-                                            if n.tag == model::AST_INDEX {
-                                                value = read(index(base_place(n.a), n.b));
-                                            }
-                                            else {
-                                                if n.tag == model::AST_STRUCT {
-                                                    value = ir::slot(n.a);
-                                                    let t:model::Type = types::info(n.a);
-                                                    var seen:[256]u32 = [0;256];
-                                                    var p:u32 = n.b;
-                                                    var found:u32 = 0;
-                                                    while p != 0_u32 {
-                                                        let pair:parse::Node = parse::get(p);
-                                                        var index:u32 = 0;
-                                                        unsafe {
-                                                            while index < t.count && model::fields[(t.first+index) as usize].name != pair.a {
-                                                                index = index+1_u32;
-                                                            }
-                                                        }
-                                                        if index == t.count {
-                                                            types::fail(model::ERROR_NAME);
-                                                        }
-                                                        unsafe {
-                                                            if seen[index as usize] != 0_u32 {
-                                                                types::fail(model::ERROR_TYPE);
-                                                            }
-                                                            seen[index as usize] = 1;
-                                                            let f:model::Field = model::fields[(t.first+index) as usize];
-                                                            let v:u32 = expr(pair.b, f.ty);
-                                                            ir::store(ir::local_address(value, f.ty, f.offset, false), v);
-                                                        }
-                                                        found = found+1_u32;
-                                                        p = pair.next;
-                                                    }
-                                                    if found != t.count {
-                                                        types::fail(model::ERROR_TYPE);
-                                                    }
-                                                } else {
-                                                    if n.tag == model::AST_ARRAY || n.tag == model::AST_REPEAT {
-                                                        if expected == 0_u32 {
-                                                            types::fail(model::ERROR_TYPE);
-                                                        }
-                                                        let t:model::Type = types::info(expected);
-                                                        if t.kind != model::TYPE_ARRAY {
-                                                            types::fail(model::ERROR_TYPE);
-                                                        }
-                                                        if n.tag == model::AST_REPEAT {
-                                                            if n.b != t.b {
-                                                                types::fail(model::ERROR_TYPE);
-                                                            }
-                                                            value = repeat(expected, t.a, t.b, expr(n.a, t.a));
-                                                        }
-                                                        else {
-                                                            value = ir::slot(expected);
-                                                            var p:u32 = n.a;
-                                                            var index:u32 = 0;
-                                                            while p != 0_u32 {
-                                                                if index >= t.b {
-                                                                    types::fail(model::ERROR_TYPE);
-                                                                }
-                                                                let v:u32 = expr(p, t.a);
-                                                                ir::store(ir::local_address(value, t.a, (index as usize)*types::info(t.a).size, false), v);
-                                                                index = index+1_u32;
-                                                                p = parse::get(p).next;
-                                                            }
-                                                            if index != t.b {
-                                                                types::fail(model::ERROR_TYPE);
-                                                            }
-                                                        }
-                                                    } else {
-                                                        if n.tag == model::AST_RESULT {
-                                                            let t:model::Type = types::info(n.a);
-                                                            var ty:u32 = t.a;
-                                                            if n.b == model::RESULT_ERR {
-                                                                ty = t.b;
-                                                            }
-                                                            value = result(n.a, n.b, expr(n.c, ty));
-                                                        }
-                                                        else {
-                                                            if n.tag == model::AST_TRY {
-                                                                value = try_value(n.a);
-                                                            }
-                                                            else {
-                                                                if n.tag == model::AST_SIZEOF {
-                                                                    value = ir::value(model::TYPE_USIZE, types::info(n.a).size);
-                                                                }
-                                                                else {
-                                                                    if n.tag == model::AST_ALIGNOF {
-                                                                        value = ir::value(model::TYPE_USIZE, types::info(n.a).align);
-                                                                    }
-                                                                    else {
-                                                                        if n.tag == model::AST_POINTER {
-                                                                            require_unsafe();
-                                                                            value = ir::bitcast(expr(n.b, model::TYPE_USIZE), types::pointer(n.a, false));
-                                                                        }
-                                                                        else {
-                                                                            if n.tag == model::AST_STRING {
-                                                                                let symbol:u32 = parse::string_data(n.a);
-                                                                                value = slice(model::TYPE_U8, true, ir::symbol_address(symbol, model::TYPE_U8, true), ir::value(model::TYPE_USIZE, types::text(n.a).len));
-                                                                            }
-                                                                            else {
-                                                                                types::fail(model::ERROR_INTERNAL);
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        types::fail(model::ERROR_INTERNAL);
     }
+
+    // Every expression kind goes through the same expected-type check.
     return same(value, expected);
 }
 
@@ -1049,12 +1027,10 @@ fn block(node:u32) -> bool {
             if ir::closed {
                 falls = false;
             }
+        } else if !ir::closed {
+            ir::panic_();
         }
-        else {
-            if !ir::closed {
-                ir::panic_();
-            }
-        }
+
         binding_count = binding_mark;
         defer_count = cleanup_mark;
         depth = depth-1_u32;
@@ -1083,8 +1059,7 @@ fn match_statement(n:parse::Node) -> bool {
         var key:usize = 0;
         if p.tag == model::AST_WILDCARD {
             wildcard = true;
-        }
-        else {
+        } else {
             if p.tag == model::AST_RESULT_PATTERN {
                 if t.kind != model::TYPE_RESULT || p.a != ty {
                     types::fail(model::ERROR_TYPE);
@@ -1097,29 +1072,24 @@ fn match_statement(n:parse::Node) -> bool {
                 if p.c != 0_u32 && p.d != payload {
                     types::fail(model::ERROR_TYPE);
                 }
+            } else if p.tag == model::AST_BOOL {
+                if ty != model::TYPE_BOOL {
+                    types::fail(model::ERROR_TYPE);
+                }
+                key = p.bits;
+            } else if p.tag == model::AST_INTEGER {
+                if !types::integer(ty) {
+                    types::fail(model::ERROR_TYPE);
+                }
+                let k:types::Constant = parse::constant_value(item.a, ty);
+                if k.ty != ty {
+                    types::fail(model::ERROR_TYPE);
+                }
+                key = k.bits;
             } else {
-                if p.tag == model::AST_BOOL {
-                    if ty != model::TYPE_BOOL {
-                        types::fail(model::ERROR_TYPE);
-                    }
-                    key = p.bits;
-                }
-                else {
-                    if p.tag == model::AST_INTEGER {
-                        if !types::integer(ty) {
-                            types::fail(model::ERROR_TYPE);
-                        }
-                        let k:types::Constant = parse::constant_value(item.a, ty);
-                        if k.ty != ty {
-                            types::fail(model::ERROR_TYPE);
-                        }
-                        key = k.bits;
-                    }
-                    else {
-                        types::fail(model::ERROR_TYPE);
-                    }
-                }
+                types::fail(model::ERROR_TYPE);
             }
+
             unsafe {
                 var j:u32 = 0;
                 while j < count {
@@ -1154,8 +1124,7 @@ fn match_statement(n:parse::Node) -> bool {
         let next:u32 = ir::label_id();
         if p.tag == model::AST_WILDCARD {
             ir::jump(body);
-        }
-        else {
+        } else {
             var key:usize = p.bits;
             if p.tag == model::AST_RESULT_PATTERN {
                 key = p.b as usize;

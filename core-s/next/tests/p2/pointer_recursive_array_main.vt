@@ -1,0 +1,1 @@
+module sample; struct Node{next:*[1]Node} fn run()->u32{return sizeof(Node) as u32;}

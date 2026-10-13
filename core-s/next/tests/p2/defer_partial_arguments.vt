@@ -1,0 +1,7 @@
+module sample;
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+fn first()->usize{note(65);return 68;}
+fn second()->usize{note(66);core::panic();return 69;}
+fn pair(a:usize,b:usize)->(){note(a);note(b);return();}
+fn run()->u32{defer note(67);defer pair(first(),second());return 0;}

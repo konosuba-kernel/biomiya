@@ -1,0 +1,1 @@
+module sample; fn a()->u32{let x=10_u32;return x;} fn b()->u32{let x=32_u32;return x;} fn run()->u32{return a()+b();}

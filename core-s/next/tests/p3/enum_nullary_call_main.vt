@@ -1,0 +1,1 @@
+module sample; enum E{Empty} fn run()->u32{let e=E::Empty();return 0;}

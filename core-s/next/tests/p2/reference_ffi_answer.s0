@@ -1,0 +1,3 @@
+answer:
+addi x10, x0, 42
+jalr x0, 0(x1)

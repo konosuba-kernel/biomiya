@@ -1,0 +1,4 @@
+module sample;
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+fn run()->u32{defer note();return 0;}

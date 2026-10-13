@@ -1,18 +1,20 @@
 # biomiya
 
-konOSuba 的教学系统语言与自举编译器。当前工作实现是 **Core S B3.1**，优先级为自举、简单、现代；已经在 RV64 Linux-user 下实现多代自编译固定点。
+konOSuba 的教学系统语言与自举编译器。当前开发实现是 **Core S S-next 0.1**，优先级为自举、简单、现代；已经在 RV64 Linux-user 下实现多代自编译固定点。
 
 ## 当前入口
 
 | 目录 | 职责 |
 | --- | --- |
-| [core-s/bootstrap/](core-s/bootstrap/) | VT 编写的当前编译器：前端、IR、RV64、汇编适配、ELF 和可选 Blocking 分析 |
-| [core-s/src/](core-s/src/) | 启动自举链的 Rust 种子编译器 |
-| [core-s/runtime/](core-s/runtime/) | 当前 Linux 运行支持 |
+| [core-s/next/q/](core-s/next/q/) | S-next 编写的当前编译器：前端、IR、RV64、汇编适配、ELF 和可选 Blocking 分析 |
+| [core-s/src/](core-s/src/) | 冻结的 Rust 引导种子，后续新语义只维护 Q |
+| [core-s/next/q/runtime/](core-s/next/q/runtime/) | 当前 Linux 运行支持 |
 | [core-s/tests/](core-s/tests/) | 回归测试；早期 B2 扫描与复制程序收在 fixtures/b2-input/ |
 | [core-s/tools/](core-s/tools/) | 当前源码树的干净构建与自举验证入口 |
 
-请从 [Core S 构建与使用](core-s/README.md) 开始。当前实现仍是有明确限制的语言子集；Linux-user 自编译不代表 SOS 内自举。尚无与 B3.1 完整对应的统一语言参考手册，已实现范围及文档关系在上述说明中列明。
+请从 [Core S 构建与使用](core-s/README.md) 开始。当前实现仍是有明确限制的语言子集；Linux-user 自编译不代表 SOS 内自举。面向语言使用者的规则见 [S-next 0.1 参考](core-s/docs/reference/s-next-0.1.md)，版本与历史文档关系见 [参考索引](core-s/docs/reference/README.md)。
+
+[S-next 方案](docs/design/core-s-next.md)已推进到 Q 完整自编译和实际系统切片；分阶段与独立验收见 [执行记录](core-s/next/README.md)。Q 当前 10,991 生产行，8,000 行原型预算未达；自举正确性与复杂度目标分别报告。冻结的 B3.1 位于 `core-s/bootstrap/`，过渡 P 位于 `core-s/next/` 顶层。
 
 ## 保留的历史内容
 

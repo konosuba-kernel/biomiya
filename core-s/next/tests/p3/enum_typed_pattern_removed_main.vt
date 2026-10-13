@@ -1,0 +1,1 @@
+module sample; enum E{A(u32)} fn run()->u32{match E::A(0){E::A(x:u32)=>{return x;},}}

@@ -1,0 +1,32 @@
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+extern abi(C) fn __b2_syscall6(n:usize,a:usize,b:usize,c:usize,d:usize,e:usize,f:usize)->usize;
+static mut descriptor:usize=0;
+fn close_saved(fd:usize)->(){
+    unsafe {
+        let closed:usize=__b2_syscall6(57,fd,0,0,0,0,0);
+        if closed==0_usize{note(67);}else{note(88);}
+    }
+    return();
+}
+fn work()->u32{
+    unsafe {
+        let path:[]const u8="/dev/null\0";
+        let fd:usize=__b2_syscall6(56,0xffffffffffffff9c,core::addr(path.data),1,0,0,0);
+        if fd>=0xfffffffffffff001_usize{return 1;}
+        descriptor=fd;
+        defer close_saved(fd);
+        // A write-only descriptor rejects read with EBADF; defer still closes it.
+        let read:usize=__b2_syscall6(63,fd,0,0,0,0,0);
+        if read==0xfffffffffffffff7_usize{return 7;}
+        return 2;
+    }
+}
+fn run()->u32{
+    let result:u32=work();
+    unsafe {
+        let closed:usize=__b2_syscall6(57,descriptor,0,0,0,0,0);
+        if result==7_u32 && closed==0xfffffffffffffff7_usize{return 42;}
+    }
+    return 0;
+}

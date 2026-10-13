@@ -1,0 +1,7 @@
+// Must reject: the storage owner alone may construct the private raw field.
+module trial::main;
+import trial::arena;
+fn run() -> u32 {
+    let forged:arena::NodeId = make arena::NodeId { raw:1 };
+    return 0;
+}

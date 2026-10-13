@@ -1,0 +1,125 @@
+// S-next system slice: fixed bitmap allocator, concrete failure, real hardware.
+module system::main;
+
+extern abi(C) fn p5_uart(c:usize) -> ();
+extern abi(C) fn p5_exchange(value:usize) -> usize;
+extern abi(C) fn p5_install(index:usize, pte:usize) -> usize;
+extern abi(C) fn p5_inspect(index:usize) -> usize;
+
+// Sixteen 2 MiB pages in QEMU RAM. This is a superpage allocator, not a heap.
+const PAGE_BYTES:usize = 0x200000;
+const PAGE_BASE:usize = 0x85000000;
+struct PageId { index:usize }
+struct Bitmap { bits:u32 }
+enum Allocation { Empty, Page(PageId) }
+enum PairResult { Exhausted, Acquired }
+enum Encoding { Invalid, Entry(usize) }
+
+fn allocate(map:*Bitmap) -> Allocation {
+    unsafe {
+        var i:usize = 0;
+        while i < 16_usize {
+            let bit:u32 = 1_u32 << (i as u32);
+            if ((*map).bits & bit) == 0_u32 {
+                (*map).bits = (*map).bits | bit;
+                return Allocation::Page(make PageId { index:i });
+            }
+            i = i+1_usize;
+        }
+    }
+    return Allocation::Empty;
+}
+
+fn release(map:*Bitmap, page:PageId) -> () {
+    if page.index >= 16_usize { core::panic(); }
+    unsafe {
+        let bit:u32 = 1_u32 << (page.index as u32);
+        if ((*map).bits & bit) == 0_u32 { core::panic(); }
+        (*map).bits = (*map).bits ^ bit;
+    }
+    return ();
+}
+
+fn pair(map:*Bitmap) -> PairResult {
+    match allocate(map) {
+        Allocation::Empty => { return PairResult::Exhausted; },
+        Allocation::Page(first) => {
+            defer release(map, first);
+            match allocate(map) {
+                Allocation::Empty => { return PairResult::Exhausted; },
+                Allocation::Page(second) => {
+                    defer release(map, second);
+                    return PairResult::Acquired;
+                },
+            }
+        },
+    }
+}
+
+fn encode(address:usize) -> Encoding {
+    if (address & (PAGE_BYTES-1_usize)) != 0_usize { return Encoding::Invalid; }
+    if address < PAGE_BASE || address >= PAGE_BASE+16_usize*PAGE_BYTES {
+        return Encoding::Invalid;
+    }
+    // V|R|W|A|D, supervisor only, no execute. Sv39 PPN starts at bit 10.
+    return Encoding::Entry(((address >> 12_usize) << 10_usize) | 199_usize);
+}
+
+fn mapped_page(page:PageId) -> bool {
+    let physical:usize = PAGE_BASE+page.index*PAGE_BYTES;
+    match encode(physical) {
+        Encoding::Invalid => { return false; },
+        Encoding::Entry(pte) => {
+            unsafe {
+                if p5_install(64, pte) != pte { return false; }
+                if p5_inspect(64) != pte { return false; }
+                let alias:*usize = core::ptr::<usize>(0x08000000);
+                let direct:*usize = core::ptr::<usize>(physical);
+                *alias = 0x1122334455667788;
+                if *direct != 0x1122334455667788_usize { return false; }
+                *direct = 0x8877665544332211;
+                return *alias == 0x8877665544332211_usize;
+            }
+        },
+    }
+}
+
+fn run() -> u32 {
+    var map:Bitmap = zero;
+    // Successful two-page allocation also releases both pages on return.
+    match pair(core::addr_of_mut(map)) {
+        PairResult::Exhausted => { return 1; },
+        PairResult::Acquired => {},
+    }
+    if map.bits != 0_u32 { return 2; }
+    map.bits = 65534;
+    // Exactly one page available: the second request fails, first rolls back.
+    match pair(core::addr_of_mut(map)) {
+        PairResult::Exhausted => {},
+        PairResult::Acquired => { return 3; },
+    }
+    if map.bits != 65534_u32 { return 4; }
+    match encode(PAGE_BASE+1_usize) {
+        Encoding::Invalid => {},
+        Encoding::Entry(unused) => { return 5; },
+    }
+    match allocate(core::addr_of_mut(map)) {
+        Allocation::Empty => { return 6; },
+        Allocation::Page(page) => {
+            if page.index != 0_usize { return 7; }
+            if !mapped_page(page) { return 8; }
+            release(core::addr_of_mut(map), page);
+        },
+    }
+    if map.bits != 65534_u32 { return 9; }
+    unsafe {
+        var i:usize = 0;
+        while i < 4096_usize {
+            if p5_exchange(i) != i+17_usize { return 10; }
+            i = i+1_usize;
+        }
+        p5_uart(80); p5_uart(53); p5_uart(32);
+        p5_uart(79); p5_uart(75); p5_uart(10);
+    }
+    return 0;
+}

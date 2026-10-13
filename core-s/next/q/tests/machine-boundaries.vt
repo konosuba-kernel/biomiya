@@ -1,0 +1,139 @@
+// Original image contracts exercised through Q's real emitter and image builder.
+module machine_boundaries;
+import bootstrap::model;
+import bootstrap::image;
+import bootstrap::rv64;
+import runtime::linux;
+
+fn exit_code(code:usize) -> () {
+    rv64::constant(10, code);
+    rv64::constant(17, 93);
+    image::word(115);
+    return ();
+}
+
+fn far_scratch() -> u32 {
+    let entry:u32 = image::fresh();
+    let fail:u32 = image::fresh();
+    let success:u32 = image::fresh();
+    let function:u32 = image::fresh();
+    let branch:u32 = image::fresh();
+    let eq:u32 = image::fresh();
+    let ne:u32 = image::fresh();
+    let lt:u32 = image::fresh();
+    image::define(entry, 1, image::text_position());
+    let registers:[6]u32 = [5, 6, 7, 28, 29, 30];
+    var i:usize = 0;
+    while i < 6_usize {
+        unsafe {
+            rv64::constant(registers[i], registers[i] as usize);
+        }
+        i = i+1_usize;
+    }
+    rv64::branch(0, 5, 6, fail);
+    rv64::branch(1, 5, 5, fail);
+    rv64::branch(6, 6, 5, fail);
+    rv64::branch(7, 5, 6, fail);
+    rv64::transfer(1, function, true);
+    rv64::transfer(11, function, false);
+    rv64::branch(1, 10, 11, fail);
+    i = 0;
+    while i < 6_usize {
+        unsafe {
+            rv64::constant(12, registers[i] as usize);
+            rv64::branch(1, registers[i], 12, fail);
+        }
+        i = i+1_usize;
+    }
+    rv64::transfer(0, branch, true);
+    image::define(success, 1, image::text_position());
+    // Recheck after the far jump and taken branch chain as well as after the call.
+    i = 0;
+    while i < 6_usize {
+        unsafe {
+            rv64::constant(12, registers[i] as usize);
+            rv64::branch(1, registers[i], 12, fail);
+        }
+        i = i+1_usize;
+    }
+    exit_code(0);
+    image::define(fail, 1, image::text_position());
+    exit_code(42);
+    i = 0;
+    while i < 1700_usize {
+        image::word(3221229683);
+        i = i+1_usize;
+    }
+    image::define(function, 1, image::text_position());
+    rv64::transfer(10, function, false);
+    rv64::i(103, 0, 0, 1, 0);
+    image::define(branch, 1, image::text_position());
+    rv64::branch(0, 5, 5, eq);
+    image::word(3221229683);
+    image::define(eq, 1, image::text_position());
+    rv64::branch(1, 5, 6, ne);
+    image::word(3221229683);
+    image::define(ne, 1, image::text_position());
+    rv64::branch(6, 5, 6, lt);
+    image::word(3221229683);
+    image::define(lt, 1, image::text_position());
+    rv64::branch(7, 6, 5, success);
+    image::word(3221229683);
+    return entry;
+}
+
+fn padded(mode:[]const u8) -> u32 {
+    let entry:u32 = image::fresh();
+    image::define(entry, 1, 0);
+    exit_code(0);
+    var padding:usize = 0;
+    if model::equal(mode, "page-1021") { padding = 1021; }
+    if model::equal(mode, "page-1022") { padding = 1022; }
+    if model::equal(mode, "page-1023") { padding = 1023; }
+    if model::equal(mode, "page-1024") { padding = 1024; }
+    if model::equal(mode, "text-capacity") || model::equal(mode, "text-overflow") {
+        padding = 2097149;
+    }
+    var i:usize = 0;
+    while i < padding {
+        image::word(3221229683);
+        i = i+1_usize;
+    }
+    if model::equal(mode, "text-overflow") {
+        image::word(3221229683);
+    }
+    return entry;
+}
+
+pub fn run() -> u32 {
+    var mode:[]const u8 = "page-0";
+    match linux::argument(1) {
+        linux::BytesResult::Value(value) => { mode = value; },
+        linux::BytesResult::Failed(error) => { return error; },
+    }
+    model::reset_all();
+    image::begin_compile();
+    image::begin_text();
+    var entry:u32 = 0;
+    if model::equal(mode, "far-scratch") {
+        entry = far_scratch();
+    } else {
+        entry = padded(mode);
+    }
+    let output:[]const u8 = image::finish(entry);
+    match linux::create_new("out.elf") {
+        linux::CountResult::Failed(error) => { return error; },
+        linux::CountResult::Value(fd) => {
+            unsafe {
+                match linux::write_all(fd, output) {
+                    linux::WriteResult::Done => {},
+                    linux::WriteResult::Failed(error) => {
+                        let ignored:u32 = linux::close(fd);
+                        return error;
+                    },
+                }
+            }
+            return linux::close(fd);
+        },
+    }
+}

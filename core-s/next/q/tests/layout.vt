@@ -1,0 +1,32 @@
+// Machine fixture only: types are supplied with complete layouts by the test.
+// rv64 verifies their layout independently before publishing machine code.
+module bootstrap::types;
+import bootstrap::model;
+pub fn layout(id:model::TypeId) -> () {
+    let checked:model::Type = model::get_type(id);
+    return ();
+}
+pub fn info(id:model::TypeId) -> model::Type {
+    return model::get_type(id);
+}
+pub fn fail(error:u32) -> () {
+    model::fail(error, 2, 17);
+    return ();
+}
+pub fn pointer(target:model::TypeId, const_:bool) -> model::TypeId {
+    var flags:u32 = model::TYPE_MUTABLE;
+    if const_ {
+        flags = model::TYPE_CONST;
+    }
+    return model::add_type(make model::Type {
+        kind:model::TYPE_POINTER,
+        element:target,
+        owner:0,
+        b:0,
+        flags:flags,
+        size:8,
+        align:8,
+        first:0,
+        count:0
+    });
+}

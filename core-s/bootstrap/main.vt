@@ -82,12 +82,10 @@ fn selected_entry() -> u32 {
                 var matches:bool = false;
                 if mod.len == 0_usize {
                     matches = model::equal(entry, name);
+                } else if entry.len == mod.len+2_usize+name.len {
+                    matches = model::equal(bytes::view(entry, 0, mod.len), mod) && entry[mod.len] == 58_u8 && entry[mod.len+1_usize] == 58_u8 && model::equal(bytes::view(entry, mod.len+2_usize, entry.len), name);
                 }
-                else {
-                    if entry.len == mod.len+2_usize+name.len {
-                        matches = model::equal(bytes::view(entry, 0, mod.len), mod) && entry[mod.len] == 58_u8 && entry[mod.len+1_usize] == 58_u8 && model::equal(bytes::view(entry, mod.len+2_usize, entry.len), name);
-                    }
-                }
+
                 if matches {
                     if d.count != 0_u32 || d.ty != model::TYPE_U32 || (d.flags & model::FLAG_UNSAFE) != 0_u32 {
                         model::fail(model::ERROR_TYPE, d.file, d.start as usize);

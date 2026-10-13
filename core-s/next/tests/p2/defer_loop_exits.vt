@@ -1,0 +1,4 @@
+module sample;
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+fn run()->u32{var n:usize=0;while n<3_usize{defer note(65_usize+n);n=n+1_usize;if n==1_usize{continue;}if n==3_usize{break;}}return 0;}

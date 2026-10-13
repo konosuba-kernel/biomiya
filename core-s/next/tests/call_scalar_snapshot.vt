@@ -1,0 +1,5 @@
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+unsafe fn change(p:*u32)->u32{unsafe{*p=9;}return 0;}
+fn first(a:u32,b:u32)->u32{return a;}
+fn run()->u32{var x:u32=7;unsafe{return first(x,change(core::addr_of_mut(x)));}}

@@ -1,0 +1,55 @@
+// A complete manifest scanner/copy program using Q's actual input and lexer.
+module copy_probe;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::lex;
+import runtime::linux;
+
+fn copy(fd:usize) -> u32 {
+    var file:u32 = 1;
+    while file <= input::source_count() {
+        unsafe {
+            match linux::write_all(fd, input::source(file).bytes) {
+                linux::WriteResult::Done => {},
+                linux::WriteResult::Failed(error) => { return error; },
+            }
+        }
+        file = file+1_u32;
+    }
+    return 0;
+}
+
+pub fn run() -> u32 {
+    if linux::argc() != 2_usize { return 10; }
+    var manifest:[]const u8 = "";
+    match linux::argument(1) {
+        linux::BytesResult::Value(value) => { manifest = value; },
+        linux::BytesResult::Failed(error) => { return error; },
+    }
+    model::reset_all();
+    input::load(manifest);
+    // Scan before creating the output: lexical failures exit the compiler API.
+    var file:u32 = 1;
+    while file <= input::source_count() {
+        var offset:usize = 0;
+        loop {
+            let token:model::Token = lex::next(file, offset);
+            if token.kind == model::TOKEN_EOF { break; }
+            offset = token.end as usize;
+        }
+        file = file+1_u32;
+    }
+    var fd:usize = 0;
+    match linux::create_new(input::output_path()) {
+        linux::CountResult::Value(value) => { fd = value; },
+        linux::CountResult::Failed(error) => { return error; },
+    }
+    let result:u32 = copy(fd);
+    let closed:u32 = linux::close(fd);
+    if result != 0_u32 || closed != 0_u32 {
+        let ignored:u32 = linux::remove(input::output_path());
+        if result != 0_u32 { return result; }
+        return closed;
+    }
+    return 0;
+}

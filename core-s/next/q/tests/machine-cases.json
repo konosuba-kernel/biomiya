@@ -1,0 +1,1223 @@
+[
+  {
+    "name": "ir-simple",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "simple"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-aggregate",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "aggregate"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-operators",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "operators"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-overflow",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "overflow"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 101,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-wrap",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "wrap"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-divzero",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "divzero"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 101,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-shift",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "shift"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 101,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-labels_high",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "labels_high"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-arguments_high",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "arguments_high"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "ir-badir",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badir"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-badpointer",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badpointer"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-badreturn",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badreturn"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-badlabel",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badlabel"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-duplicatelabel",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "duplicatelabel"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-badslot",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badslot"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-afterterm",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "afterterm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-noverify",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "noverify"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-sealed",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "sealed"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-twice",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "twice"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-staleslot",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "staleslot"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-stalelabel",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "stalelabel"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-stalerange",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "stalerange"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-empty",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "empty"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-nolabel",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "nolabel"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-callcount",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "callcount"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-calltype",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "calltype"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-badcallee",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badcallee"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-labels_zero",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "labels_zero"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-labels_missing",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "labels_missing"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-slot_alias",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "slot_alias"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-unterminated",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "unterminated"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-labels_limit",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "labels_limit"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_LIMIT",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-frame_limit",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "frame_limit"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_LIMIT",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-arguments_limit",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "arguments_limit"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_LIMIT",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "machine-abs64-bss",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "abs64"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 97,
+      "stdout": "",
+      "stderr": "",
+      "rw_file_bytes": 8,
+      "rw_memory_bytes": 12288
+    }
+  },
+  {
+    "name": "machine-overlap-copy",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "copy_overlap"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 6,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "layout-selfpointer",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "selfpointer"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "layout-selfslice",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "selfslice"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "layout-badcycle",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badcycle"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "layout-badmutualcycle",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badmutualcycle"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "link-duplicate",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "duplicate"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "E_LINK",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "link-absout",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "absout"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "E_LINK",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "link-absunder",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "absunder"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "E_LINK",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "link-overlap",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "overlap"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "E_LINK",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "link-jumpdata",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "jumpdata"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "E_LINK",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "link-undefined",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "undefined"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "E_LINK",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "machine-constants",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "constants"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stderr": "",
+      "stdout_hex": "0000000000000000ff070000000000000008000000000000ff0f000000000000ff7f0000000000000080000000000000ffffff0f000000000000008000000000ffffffff00000000ffffffffffffff7f000000000000008000f8ffffffffffffffffffffffffffff"
+    },
+    "oracle": {
+      "kind": "execution",
+      "assembly": "next/q/tests/s0/constants-reference.s"
+    }
+  },
+  {
+    "name": "s0-all-operations-far-fixups",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "files": {
+      "input.s0": {
+        "source": "next/q/tests/s0/all.s0"
+      }
+    },
+    "oracle": {
+      "kind": "text_bytes",
+      "assembly": "next/q/tests/s0/all-reference.s"
+    }
+  },
+  {
+    "name": "s0-invalid-0",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\nadd x32,x1,x2\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-1",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\naddi x1,x2,2048\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-2",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\naddi x1,x2,-2049\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-3",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\nslli x1,x2,64\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-4",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\nsrli x1,x2,-1\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-5",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\nld x1,(x2)\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-6",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\nld x1,0xg(x2)\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-7",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\ncall foo+8\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-8",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\naddress x0,entry\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-9",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\necall x0\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-10",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\naddi x1,x2,0xAB\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-11",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=10",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\nentry: ecall\n"
+      }
+    }
+  },
+  {
+    "name": "s0-invalid-12",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "file=7 byte=17",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "# ignored\nentry:\nentry:\n"
+      }
+    }
+  },
+  {
+    "name": "s0-unsupported-0",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_UNSUPPORTED",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "li x1,0"
+      }
+    }
+  },
+  {
+    "name": "s0-unsupported-1",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_UNSUPPORTED",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "la x1,entry"
+      }
+    }
+  },
+  {
+    "name": "s0-unsupported-2",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_UNSUPPORTED",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": ".word 1"
+      }
+    }
+  },
+  {
+    "name": "s0-unsupported-3",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "asm"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_UNSUPPORTED",
+    "output_absent": "out.elf",
+    "files": {
+      "input.s0": {
+        "text": "csrrw x1,0,x2"
+      }
+    }
+  },
+  {
+    "name": "ir-badtype",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badtype"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-badoffsetconst",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badoffsetconst"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-badoffsetmut",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "badoffsetmut"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-label_two",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "label_two"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-labels_yes_missing",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "labels_yes_missing"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-labels_no_missing",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "labels_no_missing"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-labels_fallthrough",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "labels_fallthrough"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr_contains": "I_INTERNAL",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "ir-labels_reuse",
+    "manifest": "next/q/tests/machine.build",
+    "compile_exit": 0,
+    "arguments": [
+      "labels_reuse"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "pure-rules-explicit-inputs",
+    "manifest": "next/q/tests/pure-rules.build",
+    "compile_exit": 0,
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "machine-far-scratch",
+    "manifest": "next/q/tests/machine-boundaries.build",
+    "compile_exit": 0,
+    "arguments": [
+      "far-scratch"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  {
+    "name": "machine-page-0",
+    "manifest": "next/q/tests/machine-boundaries.build",
+    "compile_exit": 0,
+    "arguments": [
+      "page-0"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "elf_padding_words": 0,
+    "repeat_generator": true
+  },
+  {
+    "name": "machine-page-1021",
+    "manifest": "next/q/tests/machine-boundaries.build",
+    "compile_exit": 0,
+    "arguments": [
+      "page-1021"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "elf_padding_words": 1021,
+    "repeat_generator": true
+  },
+  {
+    "name": "machine-page-1022",
+    "manifest": "next/q/tests/machine-boundaries.build",
+    "compile_exit": 0,
+    "arguments": [
+      "page-1022"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "elf_padding_words": 1022,
+    "repeat_generator": true
+  },
+  {
+    "name": "machine-page-1023",
+    "manifest": "next/q/tests/machine-boundaries.build",
+    "compile_exit": 0,
+    "arguments": [
+      "page-1023"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "elf_padding_words": 1023,
+    "repeat_generator": true
+  },
+  {
+    "name": "machine-page-1024",
+    "manifest": "next/q/tests/machine-boundaries.build",
+    "compile_exit": 0,
+    "arguments": [
+      "page-1024"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "elf_padding_words": 1024,
+    "repeat_generator": true
+  },
+  {
+    "name": "machine-text-capacity",
+    "manifest": "next/q/tests/machine-boundaries.build",
+    "compile_exit": 0,
+    "arguments": [
+      "text-capacity"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "elf_padding_words": 2097149
+  },
+  {
+    "name": "machine-text-overflow",
+    "manifest": "next/q/tests/machine-boundaries.build",
+    "compile_exit": 0,
+    "arguments": [
+      "text-overflow"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "actual=8388612 limit=8388608 I_LIMIT file=0 byte=0\n",
+    "output_absent": "out.elf"
+  },
+  {
+    "name": "machine-raw-abi",
+    "manifest": "next/q/tests/machine-abi.build",
+    "compile_exit": 0,
+    "arguments": [],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "target": {
+      "path": "out.elf",
+      "exit": 42,
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+]

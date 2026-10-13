@@ -1,0 +1,1267 @@
+{
+  "baseline_source_identity": "cd6336297d22dd27efe29cbcc4fe0f0b88c7f4882e9f81fdce6e2f2e5415397d",
+  "baseline_count": 91,
+  "status": "91项选择器已绑定同一最终E3的实际通过记录；独立整合判定见next/q/release.json与reviews/integration.md",
+  "notes": [
+    "选择器是对应验证账本中的具体case名或glob；final release绑定每个suite的完整输入和编译器身份。",
+    "旧测试身份保留用于责任追踪，不要求恢复已删除的旧Rust内部接口。",
+    "fixed_point选择器指对应构建代、guest trace/内存/源码扰动证据，不是语言case。"
+  ],
+  "tests": [
+    {
+      "test": "aggregate_parameters_are_independent_and_results_use_hidden_slots",
+      "original": "core-s/tests/backend.rs:513",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-aggregate"
+        ]
+      }
+    },
+    {
+      "test": "all_generations_resolve_modules_externs_and_reject_without_output",
+      "original": "core-s/tests/b3.rs:342",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "fixed_point": [
+          "E1",
+          "E2",
+          "E3"
+        ],
+        "language": [
+          "reference_modules",
+          "reference_ffi",
+          "private_field_reject"
+        ]
+      }
+    },
+    {
+      "test": "arbitrary_u64_constants_execute_and_write_exact_bytes",
+      "original": "core-s/tests/image.rs:259",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "machine-constants"
+        ]
+      }
+    },
+    {
+      "test": "blocking_contracts_propagate_without_changing_generated_elf",
+      "original": "core-s/tests/b3.rs:447",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "blocking": [
+          "direct",
+          "contract",
+          "blocked",
+          "mixed-*",
+          "recursive-*",
+          "unused-blocked",
+          "dead-branch",
+          "defer*",
+          "requirement-order-*"
+        ]
+      }
+    },
+    {
+      "test": "blocking_long_chains_are_order_independent_and_do_not_skip_core_errors",
+      "original": "core-s/tests/b3.rs:681",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "blocking": [
+          "long-chain-*",
+          "core-*"
+        ]
+      }
+    },
+    {
+      "test": "blocking_missing_capture_invalid_ir_and_summary_capacity_fail_closed",
+      "original": "core-s/tests/b3.rs:736",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "blocking": [
+          "missing",
+          "bad",
+          "edges"
+        ]
+      }
+    },
+    {
+      "test": "blocking_policy_is_strict_and_failure_preserves_existing_files",
+      "original": "core-s/tests/b3.rs:568",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "blocking": [
+          "invalid-policy-*",
+          "symbol-alias-contract",
+          "preserve-*",
+          "requirement-order-*"
+        ]
+      }
+    },
+    {
+      "test": "branches_loops_and_recursive_calls_preserve_frames",
+      "original": "core-s/tests/backend.rs:423",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-simple",
+          "ir-labels_high"
+        ],
+        "language": [
+          "reference_control",
+          "mutual_functions"
+        ]
+      }
+    },
+    {
+      "test": "checked_arithmetic_and_shifts_really_stop",
+      "original": "core-s/tests/backend.rs:336",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-overflow",
+          "ir-divzero",
+          "ir-shift"
+        ]
+      }
+    },
+    {
+      "test": "cleanup_reads_exit_values_but_cannot_capture_later_bindings",
+      "original": "core-s/tests/check.rs:224",
+      "original_disposition": "改变规则",
+      "migration": "清理参数改在注册时求值；之后声明的名字仍拒绝",
+      "scenario_selectors": {
+        "language": [
+          "defer_scalar_snapshot",
+          "defer_binding_identity",
+          "reject_defer_later_local"
+        ]
+      }
+    },
+    {
+      "test": "cli_builds_the_target_language_manifest_scanner_and_copy_app",
+      "original": "core-s/tests/b2.rs:192",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "copy": [
+          "three-files",
+          "all-empty"
+        ]
+      }
+    },
+    {
+      "test": "compiler_reaches_full_file_fixed_point_and_compiles_changed_behavior",
+      "original": "core-s/tests/b3.rs:233",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "fixed_point": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "source_perturbation"
+        ]
+      }
+    },
+    {
+      "test": "constant_walkers_agree_on_values_and_reject_boundaries",
+      "original": "core-s/tests/b3_frontend.rs:632",
+      "original_disposition": "改变规则",
+      "migration": "两个常量结构入口合并，保留溢出和完整验证意图，重写允许节点与上下文期望",
+      "scenario_selectors": {
+        "interfaces": [
+          "constant-value-*",
+          "constant-invalid-*"
+        ]
+      }
+    },
+    {
+      "test": "data_abs64_bss_and_segment_permissions_execute_against_reference",
+      "original": "core-s/tests/image.rs:694",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "machine-abs64-bss"
+        ]
+      }
+    },
+    {
+      "test": "data_and_external_symbol_validation_rejects_malformed_images",
+      "original": "core-s/tests/image.rs:759",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "link-*"
+        ]
+      }
+    },
+    {
+      "test": "data_strings_bss_and_root_relocations",
+      "original": "core-s/tests/b2_language.rs:69",
+      "original_disposition": "改变规则",
+      "migration": "保留数据/重定位合同，更新构造与模块路径",
+      "scenario_selectors": {
+        "language": [
+          "reference_statics",
+          "static_relocation",
+          "enum_static_relocations"
+        ]
+      }
+    },
+    {
+      "test": "defer_restrictions_and_raw_permissions_are_enforced",
+      "original": "core-s/tests/check.rs:255",
+      "original_disposition": "改变规则",
+      "migration": "拒绝块式清理，保留 unsafe 权限检查",
+      "scenario_selectors": {
+        "language": [
+          "reject_defer_*",
+          "reference_unsafe_body_bad",
+          "reference_memory"
+        ]
+      }
+    },
+    {
+      "test": "deferred_slice_checks_and_pointer_operations_remap",
+      "original": "core-s/tests/b2_language.rs:216",
+      "original_disposition": "改变规则",
+      "migration": "块式清理改为调用式，保留切片和指针执行断言",
+      "scenario_selectors": {
+        "language": [
+          "defer_pointer_value",
+          "defer_aggregate_snapshot",
+          "defer_nested_arguments",
+          "reference_memory"
+        ]
+      }
+    },
+    {
+      "test": "direct_and_external_toolchain_execute_the_same_target_program",
+      "original": "core-s/tests/b2_runtime.rs:226",
+      "original_disposition": "保留规则",
+      "migration": "删除旧 Rust 源码→GNU 汇编输出；Q 只维护直接 ELF。应用语义由 copy 场景验证，外部独立机器对照由 Rust/LLVM oracle 承担，不声称同一 copy 程序仍有两个编译出口。",
+      "scenario_selectors": {
+        "copy": [
+          "three-files"
+        ],
+        "machine": [
+          "machine-constants",
+          "s0-all-operations-far-fixups"
+        ]
+      }
+    },
+    {
+      "test": "direct_build_needs_no_external_tools_and_is_deterministic",
+      "original": "core-s/tests/cli.rs:147",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "fixed_point": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "guest_trace"
+        ]
+      }
+    },
+    {
+      "test": "elf_headers_segments_entry_and_padding_are_exact",
+      "original": "core-s/tests/image.rs:460",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "machine-page-*"
+        ]
+      }
+    },
+    {
+      "test": "explicit_bounds_pointer_offset_and_raw_storage_execute",
+      "original": "core-s/tests/backend.rs:682",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "language": [
+          "reference_memory",
+          "assignment_bounds_first"
+        ],
+        "machine": [
+          "ir-badpointer",
+          "ir-operators"
+        ]
+      }
+    },
+    {
+      "test": "explicit_returns_and_dead_code_are_checked",
+      "original": "core-s/tests/check.rs:108",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "language": [
+          "reject_dead_cleanup",
+          "defer_panic_no_unwind",
+          "defer_cleanup_panic"
+        ]
+      }
+    },
+    {
+      "test": "external_c_calls_symbol_addresses_bitcasts_and_dynamic_bounds_execute",
+      "original": "core-s/tests/backend.rs:1221",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "language": [
+          "reference_ffi",
+          "reference_memory"
+        ],
+        "machine": [
+          "machine-raw-abi",
+          "machine-abs64-bss"
+        ]
+      }
+    },
+    {
+      "test": "externs_are_scalar_unsafe_placeholders",
+      "original": "core-s/tests/b2_language.rs:156",
+      "original_disposition": "保留规则",
+      "migration": "无效 extern 签名仍拒绝；当前诊断为 I_UNSUPPORTED，而非旧 Rust 的 E_TYPE。外部 ABI 范围未扩展。",
+      "scenario_selectors": {
+        "interfaces": [
+          "extern-*"
+        ],
+        "language": [
+          "reference_ffi",
+          "reject_defer_permission"
+        ]
+      }
+    },
+    {
+      "test": "failures_preserve_stage_and_source_identity",
+      "original": "core-s/tests/pipeline.rs:90",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "interfaces": [
+          "span-*",
+          "existing-*"
+        ],
+        "input": [
+          "bad-token-*"
+        ]
+      }
+    },
+    {
+      "test": "far_control_flow_calls_addresses_and_scratch_contract_execute",
+      "original": "core-s/tests/image.rs:336",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "machine-far-scratch"
+        ]
+      }
+    },
+    {
+      "test": "fixed_grammar_encodes_all_operations_and_localizes_labels",
+      "original": "core-s/tests/s0.rs:4",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "s0-all-operations-far-fixups",
+          "machine-far-scratch"
+        ]
+      }
+    },
+    {
+      "test": "frontend_accepts_forward_layout_snapshots_results_and_cleanup",
+      "original": "core-s/tests/b3_frontend.rs:219",
+      "original_disposition": "改变规则",
+      "migration": "包含块式 defer/旧控制流；改写清理后继续检验原有布局、快照或 arena 意图",
+      "scenario_selectors": {
+        "language": [
+          "pointer_cycle",
+          "call_aggregate_snapshot",
+          "enum_value",
+          "defer_return_aggregate"
+        ]
+      }
+    },
+    {
+      "test": "frontend_checks_actual_bootstrap_sources_and_ir_block_contract",
+      "original": "core-s/tests/b3_frontend.rs:200",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "fixed_point": [
+          "E1",
+          "E2",
+          "E3"
+        ],
+        "machine": [
+          "ir-afterterm",
+          "ir-unterminated",
+          "ir-nolabel"
+        ]
+      }
+    },
+    {
+      "test": "frontend_depth_limits_and_type_shadowing_fail_before_guest_stack_overflow",
+      "original": "core-s/tests/b3_frontend.rs:370",
+      "original_disposition": "改变规则",
+      "migration": "类型位置和 make 不再受局部同名值影响，改为固定类型名字空间。深度仍受控拒绝；新增接受例明确该规则改变。",
+      "scenario_selectors": {
+        "limits": [
+          "*-depth",
+          "type-chain"
+        ],
+        "interfaces": [
+          "independent-type-namespace"
+        ]
+      }
+    },
+    {
+      "test": "frontend_merges_module_imports_and_accepts_prefix_namespaces",
+      "original": "core-s/tests/b3_frontend.rs:253",
+      "original_disposition": "改变规则",
+      "migration": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图",
+      "scenario_selectors": {
+        "language": [
+          "reference_modules",
+          "const_import_order",
+          "enum_import"
+        ]
+      }
+    },
+    {
+      "test": "frontend_rejects_invalid_programs_with_source_diagnostics",
+      "original": "core-s/tests/b3_frontend.rs:280",
+      "original_disposition": "改变规则",
+      "migration": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图",
+      "scenario_selectors": {
+        "language": [
+          "private_*_reject",
+          "synth_literal_reject",
+          "compare_direction_reject"
+        ],
+        "interfaces": [
+          "span-*"
+        ]
+      }
+    },
+    {
+      "test": "frontend_reports_exact_ast_and_recursive_header_locations",
+      "original": "core-s/tests/b3_frontend.rs:533",
+      "original_disposition": "改变规则",
+      "migration": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图",
+      "scenario_selectors": {
+        "interfaces": [
+          "span-*"
+        ]
+      }
+    },
+    {
+      "test": "frontend_reports_permission_and_capacity_errors_without_target_panics",
+      "original": "core-s/tests/b3_frontend.rs:412",
+      "original_disposition": "改变规则",
+      "migration": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图",
+      "scenario_selectors": {
+        "limits": [
+          "array-*",
+          "repeat-count",
+          "layout-overflow",
+          "*-chain",
+          "mutable-static-permission"
+        ]
+      }
+    },
+    {
+      "test": "frontend_separates_cursor_diagnostics_and_reuses_function_arenas",
+      "original": "core-s/tests/b3_frontend.rs:521",
+      "original_disposition": "改变规则",
+      "migration": "包含块式 defer/旧控制流；改写清理后继续检验原有布局、快照或 arena 意图",
+      "scenario_selectors": {
+        "language": [
+          "function_reuse"
+        ],
+        "machine": [
+          "ast-*",
+          "ir-staleslot",
+          "ir-stalelabel",
+          "ir-stalerange"
+        ]
+      }
+    },
+    {
+      "test": "frontend_static_layout_keeps_large_zero_arrays_in_bss",
+      "original": "core-s/tests/b3_frontend.rs:319",
+      "original_disposition": "改变规则",
+      "migration": "静态 arena 容量和具体枚举布局已变；当前 Q 的可写预留和 ELF 分别记账，BSS 不占同等文件字节。",
+      "scenario_selectors": {
+        "fixed_point": [
+          "memory",
+          "source_perturbation"
+        ],
+        "machine": [
+          "machine-abs64-bss"
+        ]
+      }
+    },
+    {
+      "test": "hidden_result_unit_omission_and_over_eight_positions_follow_lp64",
+      "original": "core-s/tests/backend.rs:568",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "machine-raw-abi",
+          "ir-aggregate",
+          "machine-overlap-copy"
+        ]
+      }
+    },
+    {
+      "test": "instructions_match_independent_clang_lld_bytes",
+      "original": "core-s/tests/image.rs:87",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "machine-constants",
+          "s0-all-operations-far-fixups"
+        ]
+      }
+    },
+    {
+      "test": "integer_widths_wrapping_comparisons_and_lp64_results_execute",
+      "original": "core-s/tests/backend.rs:307",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-operators",
+          "ir-wrap",
+          "machine-raw-abi"
+        ]
+      }
+    },
+    {
+      "test": "io_failures_close_files_and_remove_only_the_new_output",
+      "original": "core-s/tests/b2_runtime.rs:317",
+      "original_disposition": "保留规则",
+      "migration": "新 copy 在创建输出前读取和扫描输入。读失败关闭已打开输入且不创建输出；写失败/close报告失败则删除新输出。close-error 注入先实际close再返回EIO，不证明真实失败close的内核FD状态。",
+      "scenario_selectors": {
+        "copy": [
+          "read-error",
+          "zero-write",
+          "write-error",
+          "close-error",
+          "existing"
+        ],
+        "input": [
+          "partial-write-cleanup"
+        ]
+      }
+    },
+    {
+      "test": "literals_do_not_unify_across_comparison_operands",
+      "original": "core-s/tests/check.rs:128",
+      "original_disposition": "改变规则",
+      "migration": "比较采用左侧定型后向右侧传递类型",
+      "scenario_selectors": {
+        "language": [
+          "compare_direction_reject",
+          "const_comparison",
+          "reference_literal_bad",
+          "reference_literal_good"
+        ]
+      }
+    },
+    {
+      "test": "malformed_and_unsupported_inputs_have_file_and_line_spans",
+      "original": "core-s/tests/s0.rs:20",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "s0-invalid-*",
+          "s0-unsupported-*"
+        ]
+      }
+    },
+    {
+      "test": "malformed_externs_slices_and_new_ir_are_rejected",
+      "original": "core-s/tests/backend.rs:1301",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-badoffset*",
+          "ir-badpointer",
+          "ir-calltype"
+        ],
+        "interfaces": [
+          "extern-*"
+        ]
+      }
+    },
+    {
+      "test": "malformed_ir_returns_diagnostics_without_source_rechecking",
+      "original": "core-s/tests/backend.rs:913",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-bad*",
+          "ir-call*",
+          "ir-afterterm",
+          "ir-unterminated"
+        ]
+      }
+    },
+    {
+      "test": "malformed_manifest_missing_source_scanner_error_and_limits_fail_cleanly",
+      "original": "core-s/tests/b2_runtime.rs:349",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "bad-token-*",
+          "bad-manifest-*",
+          "source-limit"
+        ],
+        "interfaces": [
+          "manifest-*",
+          "path-invalid-*"
+        ]
+      }
+    },
+    {
+      "test": "malformed_operands_symbols_entries_and_ranges_are_rejected",
+      "original": "core-s/tests/image.rs:514",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "link-*",
+          "s0-invalid-*",
+          "ir-label*"
+        ]
+      }
+    },
+    {
+      "test": "merged_imports_prefix_modules_and_shadowing",
+      "original": "core-s/tests/b2_language.rs:169",
+      "original_disposition": "改变规则",
+      "migration": "模块路径、遮蔽和 root 路径规则重定",
+      "scenario_selectors": {
+        "language": [
+          "reference_modules",
+          "const_import_order",
+          "reject_defer_shadow"
+        ],
+        "interfaces": [
+          "independent-type-namespace"
+        ]
+      }
+    },
+    {
+      "test": "modules_merge_and_private_boundaries",
+      "original": "core-s/tests/b2_language.rs:16",
+      "original_disposition": "改变规则",
+      "migration": "允许公开结构的私有字段，重新核对边界",
+      "scenario_selectors": {
+        "language": [
+          "reference_modules",
+          "private_handle",
+          "private_field_reject",
+          "private_make_reject",
+          "private_static_make_reject"
+        ]
+      }
+    },
+    {
+      "test": "normal_function_named_like_builtin_keeps_its_identity",
+      "original": "core-s/tests/check.rs:304",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "interfaces": [
+          "ordinary-builtin-name"
+        ]
+      }
+    },
+    {
+      "test": "output_failures_and_source_aliases_are_safe",
+      "original": "core-s/tests/cli.rs:209",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "output-alias",
+          "normal-existing-output",
+          "partial-write-cleanup"
+        ]
+      }
+    },
+    {
+      "test": "overlap_copy_large_stack_offsets_and_zero_size_values_execute",
+      "original": "core-s/tests/backend.rs:806",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "machine-overlap-copy",
+          "ir-frame_limit"
+        ]
+      }
+    },
+    {
+      "test": "project::tests::bounds_manifest_and_input_counts",
+      "original": "core-s/src/project.rs:175",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "interfaces": [
+          "input-capacities-exact",
+          "source-capacity-over",
+          "assembly-capacity-over",
+          "manifest-*"
+        ]
+      }
+    },
+    {
+      "test": "project::tests::preserves_input_order_and_unicode_paths",
+      "original": "core-s/src/project.rs:117",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "interfaces": [
+          "unicode-path"
+        ],
+        "copy": [
+          "three-files"
+        ]
+      }
+    },
+    {
+      "test": "project::tests::rejects_ambiguous_and_escaping_paths",
+      "original": "core-s/src/project.rs:128",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "interfaces": [
+          "path-*"
+        ]
+      }
+    },
+    {
+      "test": "project::tests::rejects_duplicates_missing_fields_and_unknowns",
+      "original": "core-s/src/project.rs:147",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "interfaces": [
+          "directive-invalid-*",
+          "missing-*",
+          "profile-invalid"
+        ]
+      }
+    },
+    {
+      "test": "project_builds_without_tools_is_deterministic_and_resolves_paths_from_root",
+      "original": "core-s/tests/b2.rs:82",
+      "original_disposition": "保留规则",
+      "migration": "删除旧 Rust CLI --root，Q 明确按进程cwd解析输入路径；无宿主代编译及确定性职责仍保留。",
+      "scenario_selectors": {
+        "fixed_point": [
+          "E0",
+          "E1",
+          "E2",
+          "E3",
+          "guest_trace"
+        ],
+        "interfaces": [
+          "unicode-path"
+        ]
+      }
+    },
+    {
+      "test": "project_cannot_publish_over_any_input_alias",
+      "original": "core-s/tests/b2.rs:166",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "output-alias",
+          "normal-existing-output"
+        ],
+        "blocking": [
+          "preserve-*"
+        ]
+      }
+    },
+    {
+      "test": "project_errors_keep_outputs_and_report_the_correct_source",
+      "original": "core-s/tests/b2.rs:112",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "interfaces": [
+          "existing-*",
+          "span-*"
+        ]
+      }
+    },
+    {
+      "test": "pure_rules_use_only_explicit_scalar_and_layout_inputs",
+      "original": "core-s/tests/b3_frontend.rs:579",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "pure-rules-explicit-inputs"
+        ]
+      }
+    },
+    {
+      "test": "real_program_reads_scans_and_copies_multiple_files_and_empty_input",
+      "original": "core-s/tests/b2_runtime.rs:188",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "copy": [
+          "three-files",
+          "all-empty"
+        ]
+      }
+    },
+    {
+      "test": "real_source_direct_and_reference_paths_agree",
+      "original": "core-s/tests/cli.rs:76",
+      "original_disposition": "保留规则",
+      "migration": "删除旧源码编译到 GNU 文本的第二出口；语言行为移入 Q 独立期望例，机器一致性由完整 ELF Rust oracle 与 LLVM编码/运行对照承担。",
+      "scenario_selectors": {
+        "language": [
+          "reference_arithmetic",
+          "reference_control",
+          "reference_memory",
+          "enum_value"
+        ],
+        "machine": [
+          "machine-constants",
+          "s0-all-operations-far-fixups"
+        ]
+      }
+    },
+    {
+      "test": "real_source_resolves_forward_constants_layouts_and_calls",
+      "original": "core-s/tests/pipeline.rs:14",
+      "original_disposition": "改变规则",
+      "migration": "后续 const 引用由接受改为拒绝，具名类型身份/前向函数调用保留。",
+      "scenario_selectors": {
+        "language": [
+          "const_prior",
+          "const_forward",
+          "mutual_functions",
+          "pointer_cycle"
+        ]
+      }
+    },
+    {
+      "test": "rejected_inputs_never_replace_existing_output",
+      "original": "core-s/tests/cli.rs:171",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "interfaces": [
+          "existing-*"
+        ]
+      }
+    },
+    {
+      "test": "return_snapshot_precedes_defer_and_captured_binding_is_stable",
+      "original": "core-s/tests/check.rs:204",
+      "original_disposition": "改变规则",
+      "migration": "保留返回快照，清理改为注册时保存实参",
+      "scenario_selectors": {
+        "language": [
+          "defer_return_snapshot",
+          "defer_return_aggregate",
+          "defer_binding_identity"
+        ]
+      }
+    },
+    {
+      "test": "scanner_reports_token_ranges_and_error_offsets",
+      "original": "core-s/tests/b2_runtime.rs:389",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "tokens",
+          "bad-token-*"
+        ]
+      }
+    },
+    {
+      "test": "self_compiler_diagnostic_change_is_translated_and_check_creates_no_output",
+      "original": "core-s/tests/b3.rs:311",
+      "original_disposition": "保留规则",
+      "migration": "自编译源码扰动观测对象从诊断文字改为 main 统计前缀；实际新产物行为必须变化。",
+      "scenario_selectors": {
+        "fixed_point": [
+          "source_perturbation"
+        ],
+        "reference": [
+          "hello",
+          "zero",
+          "enum"
+        ]
+      }
+    },
+    {
+      "test": "short_io_and_eintr_are_retried_in_target_code",
+      "original": "core-s/tests/b2_runtime.rs:302",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "copy": [
+          "short-eintr"
+        ],
+        "input": [
+          "short",
+          "short-existing-output"
+        ]
+      }
+    },
+    {
+      "test": "slices_pointer_builtins_and_permissions",
+      "original": "core-s/tests/b2_language.rs:109",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "language": [
+          "reference_memory",
+          "reference_unsafe_body_bad",
+          "private_field_reject"
+        ]
+      }
+    },
+    {
+      "test": "source_capacity_is_a_resource_diagnostic",
+      "original": "core-s/tests/pipeline.rs:124",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "source-limit"
+        ]
+      }
+    },
+    {
+      "test": "source_result_construction_propagation_and_match_compose",
+      "original": "core-s/tests/pipeline.rs:68",
+      "original_disposition": "改变规则",
+      "migration": "固定 Result 与 ? 删除，具体 enum + 显式match承担传播职责；不恢复旧内部IR形状。",
+      "scenario_selectors": {
+        "language": [
+          "enum_value",
+          "enum_static",
+          "reject_question"
+        ]
+      }
+    },
+    {
+      "test": "source_snapshots_cleanup_and_raw_access_reach_the_checker",
+      "original": "core-s/tests/pipeline.rs:48",
+      "original_disposition": "改变规则",
+      "migration": "赋值求值顺序及清理时机改变，保留值快照和原始访问",
+      "scenario_selectors": {
+        "language": [
+          "call_scalar_snapshot",
+          "call_aggregate_snapshot",
+          "assignment_destination",
+          "defer_pointer_value",
+          "reference_memory"
+        ]
+      }
+    },
+    {
+      "test": "static_validation_visits_invalid_tails_and_empty_repeats",
+      "original": "core-s/tests/b3_frontend.rs:725",
+      "original_disposition": "改变规则",
+      "migration": "两个常量结构入口合并，保留溢出和完整验证意图，重写允许节点与上下文期望",
+      "scenario_selectors": {
+        "language": [
+          "static_repeat_invalid",
+          "static_field_invalid",
+          "enum_zero_repeat_invalid"
+        ],
+        "limits": [
+          "zero-repeat-*"
+        ]
+      }
+    },
+    {
+      "test": "statics_validate_arrays_records_constants_and_permissions",
+      "original": "core-s/tests/b2_language.rs:198",
+      "original_disposition": "改变规则",
+      "migration": "布局前常量及新的聚合构造语法",
+      "scenario_selectors": {
+        "language": [
+          "reference_statics",
+          "static_repeat_invalid",
+          "private_static_make_reject",
+          "static_field_invalid"
+        ]
+      }
+    },
+    {
+      "test": "target_constants_match_rust_and_independent_assembler",
+      "original": "core-s/tests/b3_machine.rs:148",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "machine-constants"
+        ]
+      }
+    },
+    {
+      "test": "target_input_keeps_manifest_snapshots_and_handles_short_io",
+      "original": "core-s/tests/b3_input.rs:184",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "normal",
+          "short",
+          "normal-existing-output",
+          "partial-write-cleanup"
+        ],
+        "copy": [
+          "three-files"
+        ]
+      }
+    },
+    {
+      "test": "target_ir_aggregate_abi_snapshot_abs64_bss_and_checked_panic",
+      "original": "core-s/tests/b3_machine.rs:98",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-aggregate",
+          "machine-raw-abi",
+          "machine-abs64-bss",
+          "ir-overflow"
+        ]
+      }
+    },
+    {
+      "test": "target_lexer_decodes_numbers_strings_ranges_and_nested_comments",
+      "original": "core-s/tests/b3_input.rs:173",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "tokens"
+        ]
+      }
+    },
+    {
+      "test": "target_manifest_limits_and_source_aliases_preserve_inputs",
+      "original": "core-s/tests/b3_input.rs:235",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "bad-manifest-*",
+          "output-alias",
+          "source-limit"
+        ],
+        "interfaces": [
+          "input-capacities-exact",
+          "source-capacity-over",
+          "assembly-capacity-over",
+          "manifest-*"
+        ]
+      }
+    },
+    {
+      "test": "target_preserves_semantic_ir_and_reuses_sparse_label_ranges",
+      "original": "core-s/tests/b3_machine.rs:358",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-labels_reuse",
+          "ir-labels_high"
+        ]
+      }
+    },
+    {
+      "test": "target_rejects_bad_numeric_tokens_utf8_and_unsupported_identifiers",
+      "original": "core-s/tests/b3_input.rs:211",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "input": [
+          "bad-token-*"
+        ]
+      }
+    },
+    {
+      "test": "target_rejects_invalid_ir_and_link_data_before_output",
+      "original": "core-s/tests/b3_machine.rs:293",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-bad*",
+          "link-*"
+        ]
+      }
+    },
+    {
+      "test": "target_requires_label_one_and_finite_value_layouts",
+      "original": "core-s/tests/b3_machine.rs:336",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-label_two",
+          "ir-labels_zero",
+          "ir-nolabel",
+          "layout-*"
+        ]
+      }
+    },
+    {
+      "test": "target_s0_all_operations_far_fixups_match_independent_bytes",
+      "original": "core-s/tests/b3_machine.rs:252",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "s0-all-operations-far-fixups"
+        ]
+      }
+    },
+    {
+      "test": "target_s0_rejects_syntax_ranges_and_unsupported_grammar",
+      "original": "core-s/tests/b3_machine.rs:391",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "s0-invalid-*",
+          "s0-unsupported-*"
+        ]
+      }
+    },
+    {
+      "test": "text_capacity_is_checked_before_output_allocation",
+      "original": "core-s/tests/image.rs:629",
+      "original_disposition": "保留规则",
+      "migration": "Q 文本上限8MiB，旧 Rust 64MiB文本容量不继承；新的边界与超一条指令均实测。",
+      "scenario_selectors": {
+        "machine": [
+          "machine-text-capacity",
+          "machine-text-overflow"
+        ]
+      }
+    },
+    {
+      "test": "typed_address_rendering_and_generated_labels_execute_without_collisions",
+      "original": "core-s/tests/backend.rs:1062",
+      "original_disposition": "保留规则",
+      "migration": "旧 Rust renderer 的内部命名接口删除；S0局部标签分文件、符号地址与远边运行承担相应职责。",
+      "scenario_selectors": {
+        "machine": [
+          "s0-all-operations-far-fixups",
+          "machine-far-scratch"
+        ]
+      }
+    },
+    {
+      "test": "typed_control_flow_preserves_live_temporaries_across_far_edges",
+      "original": "core-s/tests/backend.rs:1005",
+      "original_disposition": "保留规则",
+      "migration": "旧 Rust renderer 删除；活跃机器寄存器经远branch/call/address的保存必须实际执行。",
+      "scenario_selectors": {
+        "machine": [
+          "machine-far-scratch"
+        ]
+      }
+    },
+    {
+      "test": "typed_lowering_exposes_checks_and_renderer_rejects_malformed_operations",
+      "original": "core-s/tests/backend.rs:1091",
+      "original_disposition": "保留规则",
+      "migration": "旧 Rust typed lowering/text renderer 接口删除；由具体 IR 验证及 S0非法语法/操作拒绝替代。",
+      "scenario_selectors": {
+        "machine": [
+          "ir-bad*",
+          "ir-overflow",
+          "ir-divzero",
+          "ir-shift",
+          "s0-invalid-*"
+        ]
+      }
+    },
+    {
+      "test": "unary_casts_unit_comparison_and_unreachable_execute",
+      "original": "core-s/tests/backend.rs:356",
+      "original_disposition": "保留规则",
+      "migration": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过",
+      "scenario_selectors": {
+        "machine": [
+          "ir-operators",
+          "pure-rules-explicit-inputs"
+        ],
+        "interfaces": [
+          "constant-value-*"
+        ]
+      }
+    },
+    {
+      "test": "unsupported_features_are_distinct_from_language_errors",
+      "original": "core-s/tests/pipeline.rs:107",
+      "original_disposition": "改变规则",
+      "migration": "变体进入接受集，需要更新分类样本",
+      "scenario_selectors": {
+        "language": [
+          "reject_question",
+          "root_removed"
+        ],
+        "input": [
+          "bad-token-*"
+        ],
+        "interfaces": [
+          "extern-*",
+          "profile-invalid"
+        ]
+      }
+    }
+  ],
+  "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+  "evidence": "build/snext-integration-r1/migration-results.json",
+  "evidence_sha256": "81a2e1ac90c8cd9acb92cd9522ce10c8774870856952e0e0f1fd4ed50ff4a023"
+}

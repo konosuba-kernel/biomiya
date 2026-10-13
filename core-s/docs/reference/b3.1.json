@@ -1,0 +1,131 @@
+{
+  "version": "b3.1",
+  "document_revision": 2,
+  "document": "b3.1.md",
+  "implementation_commit": "51530f9",
+  "layout_commit": "61d10a2",
+  "compiler_sha256": "0793011738def41baca6387a7a6917c690ddbe15ac812340b009866c8aa56ffc",
+  "cases": [
+    {
+      "name": "hello",
+      "entry": "app::run",
+      "exit": 42
+    },
+    {
+      "name": "modules",
+      "entry": "app::run",
+      "exit": 42
+    },
+    {
+      "name": "values",
+      "entry": "run",
+      "exit": 21
+    },
+    {
+      "name": "literal_bad",
+      "entry": "run",
+      "reject": "E_TYPE"
+    },
+    {
+      "name": "literal_good",
+      "entry": "run",
+      "exit": 1
+    },
+    {
+      "name": "arithmetic",
+      "entry": "run",
+      "exit": 2
+    },
+    {
+      "name": "overflow",
+      "entry": "run",
+      "exit": 101
+    },
+    {
+      "name": "assignment_order",
+      "entry": "run",
+      "exit": 12
+    },
+    {
+      "name": "zero_repeat",
+      "entry": "run",
+      "exit": 1
+    },
+    {
+      "name": "control",
+      "entry": "run",
+      "exit": 42
+    },
+    {
+      "name": "cleanup",
+      "entry": "run",
+      "exit": 8
+    },
+    {
+      "name": "defer_bad",
+      "entry": "run",
+      "reject": "E_TYPE"
+    },
+    {
+      "name": "memory",
+      "entry": "run",
+      "exit": 21
+    },
+    {
+      "name": "unsafe_body_bad",
+      "entry": "run",
+      "reject": "E_PERMISSION"
+    },
+    {
+      "name": "statics",
+      "entry": "run",
+      "exit": 42
+    },
+    {
+      "name": "constant_bad",
+      "entry": "run",
+      "reject": "E_TYPE"
+    },
+    {
+      "name": "static_zero_bad",
+      "entry": "run",
+      "reject": "E_TYPE"
+    },
+    {
+      "name": "ffi",
+      "entry": "app::run",
+      "exit": 42,
+      "blocking": {
+        "root": "app::run",
+        "external": "app::answer"
+      }
+    },
+    {
+      "name": "lexemes",
+      "entry": "run",
+      "exit": 8
+    },
+    {
+      "name": "separators_bad",
+      "entry": "run",
+      "reject": "E_PARSE"
+    },
+    {
+      "name": "layout",
+      "entry": "run",
+      "exit": 48
+    },
+    {
+      "name": "cleanup_snapshot",
+      "entry": "run",
+      "exit": 22
+    }
+  ],
+  "compatible_compilers": [
+    {
+      "name": "b3.1-refactored",
+      "sha256": "90c9523de43bebbd0a6932e74abc8cd670b60478c3b4f0fc1eff74fbf4cfb686",
+      "acceptance": "../refactoring.md"
+    }
+  ]
+}

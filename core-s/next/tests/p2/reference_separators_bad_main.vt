@@ -1,0 +1,2 @@
+module sample;
+fn run() -> u32 { return 1__2; }

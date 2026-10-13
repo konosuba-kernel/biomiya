@@ -1,0 +1,3 @@
+static mut cleaned:u32=0;
+fn clean()->(){unsafe{cleaned=cleaned+1_u32;}return();}
+fn run()->u32{var n:u32=0;while n<2048_u32{defer clean();n=n+1_u32;continue;}unsafe{if cleaned==2048_u32{return 42;}}return 0;}

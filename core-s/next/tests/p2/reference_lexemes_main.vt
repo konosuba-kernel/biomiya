@@ -1,0 +1,8 @@
+module sample;
+fn run() -> u32 {
+    let word:[]const u8 = "中文";
+    let empty:[]const u8 = "";
+    let n:u32 = 0b1_0_u32;
+    if core::addr(empty.data) == 0_usize { return 0; }
+    return (word.len as u32) + n;
+}

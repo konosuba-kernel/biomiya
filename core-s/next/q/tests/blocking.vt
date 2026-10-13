@@ -1,0 +1,71 @@
+module blocking_probe;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::types;
+import bootstrap::image;
+import bootstrap::ir;
+import bootstrap::blocking;
+import runtime::linux;
+
+fn declaration(name:[]const u8) -> u32 {
+    var id:u32 = 1;
+    while id <= model::decl_count() {
+        if model::equal(model::get_name(model::get_decl(id).name).bytes, name) {
+            return id;
+        }
+        id = id+1_u32;
+    }
+    return 0;
+}
+
+fn calls(caller:u32, callee:u32, count:u32) -> () {
+    ir::begin_function(caller);
+    ir::locate(make model::Span {file:1, start:0, end:0});
+    let label:ir::LabelId = ir::label_id();
+    ir::append(ir::Instruction::Label(label));
+    let none:[0]ir::SlotId = [ir::no_slot();0];
+    let arguments:ir::ArgumentRange = ir::arguments(core::slice_of(none));
+    var i:u32 = 0;
+    while i < count {
+        ir::call(ir::Destination::Unit, callee, arguments);
+        i = i+1_u32;
+    }
+    ir::return_value(ir::Destination::Unit);
+    ir::finish_ir();
+    blocking::capture(caller);
+    ir::end_function();
+    return ();
+}
+
+fn mode() -> []const u8 {
+    match linux::argument(1) {
+        linux::BytesResult::Value(value) => { return value; },
+        linux::BytesResult::Failed(error) => { return ""; },
+    }
+}
+
+pub fn run() -> u32 {
+    model::reset_all();
+    input::load("sample.build");
+    image::begin_compile();
+    types::collect();
+    if !blocking::load("sample.policy") { return 98; }
+    let selected:[]const u8 = mode();
+    if model::equal(selected, "missing") {
+        if blocking::finish() { return 97; }
+        return 0;
+    }
+    let first:u32 = declaration("run");
+    if model::equal(selected, "bad") {
+        calls(first, declaration("n"), 1);
+        return 96;
+    }
+    if model::equal(selected, "edges") {
+        // First function uses 65,534 calls + label + return = the full IR arena.
+        // Three calls in the next function make the third edge exceed 65,536.
+        calls(first, declaration("sink"), 65534);
+        calls(declaration("other"), declaration("sink"), 3);
+        return 95;
+    }
+    return 94;
+}

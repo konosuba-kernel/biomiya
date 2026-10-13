@@ -1,0 +1,4 @@
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+unsafe fn show(p:*usize)->(){unsafe{note(*p);}return();}
+fn run()->u32{var x:usize=65;unsafe{defer show(core::addr_of_mut(x));x=66;}return 0;}

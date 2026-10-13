@@ -1,0 +1,349 @@
+// Optional read-only direct-call Blocking analysis. See blocking.md for its proof boundary.
+module bootstrap::blocking;
+import bootstrap::model;
+import runtime::linux;
+import runtime::bytes;
+// Bits are independent: a function can reach both a blocking and an unknown call.
+const MAY_BLOCK:u32 = 1;
+const UNKNOWN:u32 = 2;
+const EDGE_CAP:u32 = 65536;
+struct Edge {
+    caller:u32,
+    next:u32
+}
+static mut edges:[65537]Edge = [Edge {
+    caller:0,
+    next:0
+};65537];
+static mut edge_count:u32 = 0;
+// Reverse call edges and a bounded monotone queue; every declaration acquires at most two bits.
+static mut heads:[8193]u32 = [0;8193];
+static mut queue:[16385]u32 = [0;16385];
+static mut effects:[8193]u32 = [0;8193];
+static mut contracts:[8193]bool = [false;8193];
+static mut required:[8193]bool = [false;8193];
+static mut captured:[8193]bool = [false;8193];
+static mut policy_buffer:[16385]u8 = [0;16385];
+static mut policy_offset:usize = 0;
+static mut policy_path:[]const u8 = "";
+static mut requirement_count:u32 = 0;
+fn text(value:[]const u8) -> () {
+    unsafe {
+        match linux::write_all(2, value) {
+            Result::<(), u32>::Ok(unit:()) => {
+            },
+            Result::<(), u32>::Err(error:u32) => {
+            },
+        }
+    }
+    return ();
+}
+fn number(value:usize) -> () {
+    var digits:[20]u8 = [0;20];
+    var n:usize = value;
+    var at:usize = 20;
+    loop {
+        at = at-1_usize;
+        unsafe {
+            digits[at] = ((n%10_usize) as u8)+48_u8;
+        }
+        n = n/10_usize;
+        if n == 0_usize {
+            break;
+        }
+    }
+    unsafe {
+        text(bytes::view(core::slice_of(digits), at, 20));
+    }
+    return ();
+}
+fn invalid() -> bool {
+    text("E_BLOCKING_CONFIG ");
+    unsafe {
+        text(policy_path);
+        text(" byte=");
+        number(policy_offset);
+    }
+    text("\n");
+    return false;
+}
+fn named(decl:model::Decl, name:[]const u8) -> bool {
+    unsafe {
+        var wanted:[]const u8 = name;
+        if wanted.len >= 6_usize && bytes::equal(bytes::view(wanted, 0, 6), "root::") {
+            wanted = bytes::view(wanted, 6, wanted.len);
+        }
+        let mod:[]const u8 = model::names[decl.module_id as usize].bytes;
+        let short:[]const u8 = model::names[decl.name as usize].bytes;
+        if mod.len == 0_usize {
+            return bytes::equal(wanted, short);
+        }
+        if wanted.len != mod.len+2_usize+short.len {
+            return false;
+        }
+        return bytes::equal(bytes::view(wanted, 0, mod.len), mod)
+        && wanted[mod.len] == 58_u8 && wanted[mod.len+1_usize] == 58_u8
+        && bytes::equal(bytes::view(wanted, mod.len+2_usize, wanted.len), short);
+    }
+}
+fn find(name:[]const u8) -> u32 {
+    unsafe {
+        var id:u32 = 1;
+        while id <= model::decl_count() {
+            if named(model::get_decl(id), name) {
+                return id;
+            }
+            id = id+1_u32;
+        }
+    }
+    return 0;
+}
+fn rule(key:[]const u8, value:[]const u8) -> bool {
+    let id:u32 = find(value);
+    if id == 0_u32 {
+        return invalid();
+    }
+    unsafe {
+        let decl:model::Decl = model::get_decl(id);
+        if bytes::equal(key, "require") {
+            if decl.kind != model::DECL_FUNCTION || required[id as usize] {
+                return invalid();
+            }
+            required[id as usize] = true;
+            requirement_count = requirement_count+1_u32;
+            return true;
+        }
+        var effect:u32 = 0;
+        if bytes::equal(key, "may_block") {
+            effect = MAY_BLOCK;
+        } else if !bytes::equal(key, "nonblocking") {
+            return invalid();
+        }
+
+        if decl.kind != model::DECL_EXTERN {
+            return invalid();
+        }
+        // An external linker symbol may have several declarations. Its contract is one fact.
+        var other:u32 = 1;
+        while other <= model::decl_count() {
+            let d:model::Decl = model::get_decl(other);
+            if d.kind == model::DECL_EXTERN && d.symbol == decl.symbol {
+                if contracts[other as usize] {
+                    return invalid();
+                }
+                contracts[other as usize] = true;
+                effects[other as usize] = effect;
+            }
+            other = other+1_u32;
+        }
+    }
+    return true;
+}
+// Called once after declarations are complete. Input storage is private to this analysis.
+pub fn load(path:[]const u8) -> bool {
+    unsafe {
+        policy_path = path;
+        policy_offset = 0;
+        edge_count = 0;
+        requirement_count = 0;
+        var id:u32 = 1;
+        while id <= model::decl_count() {
+            heads[id as usize] = 0;
+            effects[id as usize] = 0;
+            if model::get_decl(id).kind == model::DECL_EXTERN {
+                effects[id as usize] = UNKNOWN;
+            }
+            contracts[id as usize] = false;
+            required[id as usize] = false;
+            captured[id as usize] = false;
+            id = id+1_u32;
+        }
+        var length:usize = 0;
+        match linux::read_file(path, core::slice_of_mut(policy_buffer)) {
+            Result::<usize, u32>::Ok(n:usize) => {
+                length = n;
+            },
+            Result::<usize, u32>::Err(error:u32) => {
+                return invalid();
+            },
+        }
+        if length > 16384_usize {
+            return invalid();
+        }
+        let data:[]const u8 = core::slice_from_raw_parts(core::slice_of(policy_buffer).data, length);
+        var cursor:usize = 0;
+        var format:bool = false;
+        while cursor < length {
+            let first:usize = cursor;
+            while cursor < length && data[cursor] != 10_u8 && data[cursor] != 13_u8 {
+                cursor = cursor+1_usize;
+            }
+            let end:usize = cursor;
+            while cursor < length && (data[cursor] == 10_u8 || data[cursor] == 13_u8) {
+                cursor = cursor+1_usize;
+            }
+            policy_offset = first;
+            var at:usize = first;
+            while at < end && bytes::space(data[at]) {
+                at = at+1_usize;
+            }
+            if at < end && data[at] != 35_u8 {
+                let key_first:usize = at;
+                while at < end && !bytes::space(data[at]) {
+                    at = at+1_usize;
+                }
+                let key:[]const u8 = bytes::view(data, key_first, at);
+                while at < end && bytes::space(data[at]) {
+                    at = at+1_usize;
+                }
+                let value_first:usize = at;
+                while at < end && !bytes::space(data[at]) {
+                    at = at+1_usize;
+                }
+                let value:[]const u8 = bytes::view(data, value_first, at);
+                while at < end && bytes::space(data[at]) {
+                    at = at+1_usize;
+                }
+                if value.len == 0_usize || at != end {
+                    return invalid();
+                }
+                if bytes::equal(key, "format") {
+                    if format || !bytes::equal(value, "1") {
+                        return invalid();
+                    }
+                    format = true;
+                } else {
+                    if !format {
+                        return invalid();
+                    }
+                    if !rule(key, value) {
+                        return false;
+                    }
+                }
+            }
+        }
+        if !format || requirement_count == 0_u32 {
+            return invalid();
+        }
+    }
+    return true;
+}
+// Read the completed IR before its arena is reset. Only stable declaration IDs escape.
+pub fn capture(id:u32) -> () {
+    unsafe {
+        if id == 0_u32 || id > model::decl_count() || model::current_function() != id
+            || model::get_decl(id).kind != model::DECL_FUNCTION || captured[id as usize] {
+            model::fail(model::ERROR_INTERNAL, 0, 0);
+        }
+        captured[id as usize] = true;
+        var at:u32 = 1;
+        while at <= model::inst_count() {
+            let inst:model::Inst = model::get_inst(at);
+            if inst.op == model::IR_CALL {
+                if inst.a == 0_u32 || inst.a > model::decl_count() {
+                    model::fail(model::ERROR_INTERNAL, inst.span.file, inst.span.start as usize);
+                }
+                let kind:u32 = model::get_decl(inst.a).kind;
+                if kind != model::DECL_FUNCTION && kind != model::DECL_EXTERN {
+                    model::fail(model::ERROR_INTERNAL, inst.span.file, inst.span.start as usize);
+                }
+                if edge_count >= EDGE_CAP {
+                    model::limit_at((edge_count as usize)+1_usize, EDGE_CAP as usize, inst.span.file, inst.span.start as usize);
+                }
+                edge_count = edge_count+1_u32;
+                edges[edge_count as usize] = Edge {
+                    caller:id,
+                    next:heads[inst.a as usize]
+                };
+                heads[inst.a as usize] = edge_count;
+            }
+            at = at+1_u32;
+        }
+    }
+    return ();
+}
+fn function_name(id:u32) -> () {
+    unsafe {
+        let decl:model::Decl = model::get_decl(id);
+        let mod:[]const u8 = model::names[decl.module_id as usize].bytes;
+        if mod.len != 0_usize {
+            text(mod);
+            text("::");
+        }
+        text(model::names[decl.name as usize].bytes);
+    }
+    return ();
+}
+// A declaration enters the queue only when it gains an effect bit (at most twice).
+// Reverse edges propagate to callers, including recursive components, in O(V + E).
+pub fn finish() -> bool {
+    unsafe {
+        var id:u32 = 1;
+        var end:u32 = 0;
+        while id <= model::decl_count() {
+            if model::get_decl(id).kind == model::DECL_FUNCTION && !captured[id as usize] {
+                effects[id as usize] = UNKNOWN;
+            }
+            if effects[id as usize] != 0_u32 {
+                end = end+1_u32;
+                queue[end as usize] = id;
+            }
+            id = id+1_u32;
+        }
+        var at:u32 = 1;
+        while at <= end {
+            let callee:u32 = queue[at as usize];
+            at = at+1_u32;
+            var edge:u32 = heads[callee as usize];
+            while edge != 0_u32 {
+                let call:Edge = edges[edge as usize];
+                let merged:u32 = effects[call.caller as usize] | effects[callee as usize];
+                if merged != effects[call.caller as usize] {
+                    effects[call.caller as usize] = merged;
+                    if end >= 16384_u32 {
+                        model::fail(model::ERROR_INTERNAL, 0, 0);
+                    }
+                    end = end+1_u32;
+                    queue[end as usize] = call.caller;
+                }
+                edge = call.next;
+            }
+        }
+        text("Blocking scope: direct-call may-block analysis; not termination or IRQ safety\n");
+        id = 1;
+        while id <= model::decl_count() {
+            if contracts[id as usize] {
+                text("Blocking assumes ");
+                function_name(id);
+                text(": ");
+                if effects[id as usize] == MAY_BLOCK {
+                    text("may_block\n");
+                } else {
+                    text("nonblocking\n");
+                }
+            }
+            id = id+1_u32;
+        }
+        var verified:bool = true;
+        id = 1;
+        while id <= model::decl_count() {
+            if required[id as usize] {
+                text("Blocking ");
+                function_name(id);
+                text(": ");
+                if (effects[id as usize] & MAY_BLOCK) != 0_u32 {
+                    text("Violation\n");
+                    verified = false;
+                } else if (effects[id as usize] & UNKNOWN) != 0_u32 {
+                    text("Unknown\n");
+                    verified = false;
+                } else {
+                    text("Verified\n");
+                }
+
+            }
+            id = id+1_u32;
+        }
+        return verified;
+    }
+}

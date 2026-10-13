@@ -1,0 +1,1 @@
+module values; pub const N:usize=2;

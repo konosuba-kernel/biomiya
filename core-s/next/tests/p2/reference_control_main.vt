@@ -1,0 +1,14 @@
+module sample;
+fn run() -> u32 {
+    var n:u32 = 0;
+    var total:u32 = 0;
+    while n < 4_u32 {
+        n = n + 1_u32;
+        if n == 2_u32 { continue; }
+        total = total + n;
+    }
+    match total {
+        8_u32 => { return 42; },
+        _ => { return 0; },
+    }
+}

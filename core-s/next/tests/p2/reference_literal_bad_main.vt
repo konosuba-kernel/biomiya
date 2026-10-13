@@ -1,0 +1,6 @@
+module sample;
+fn run() -> u32 {
+    let n:u32 = 1;
+    if n == 0 { return 0; }
+    return n;
+}

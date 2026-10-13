@@ -1,0 +1,1 @@
+module sample; struct S{x:u8} static s:[0]S=[make S{x:256};0]; fn run()->u32{return 0;}

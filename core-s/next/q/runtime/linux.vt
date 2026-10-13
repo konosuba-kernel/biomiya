@@ -1,0 +1,143 @@
+module runtime::linux;
+
+pub enum BytesResult { Value([]const u8), Failed(u32) }
+pub enum CountResult { Value(usize), Failed(u32) }
+pub enum WriteResult { Done, Failed(u32) }
+
+extern abi(C) fn __b2_syscall6(n:usize,a:usize,b:usize,c:usize,d:usize,e:usize,f:usize) -> usize;
+extern abi(C) fn __b2_argc() -> usize;
+extern abi(C) fn __b2_argv(index:usize) -> *const u8;
+
+// Linux asm-generic syscall ABI; errno stays an unsigned register bit pattern.
+const ERROR_MIN:usize = 0xfffffffffffff001;
+const EINTR:usize = 0xfffffffffffffffc;
+const AT_FDCWD:usize = 0xffffffffffffff9c;
+
+fn error(value:usize) -> bool { return value >= ERROR_MIN; }
+
+pub fn argc() -> usize { unsafe { return __b2_argc(); } }
+
+pub fn argument(index:usize) -> BytesResult {
+    if index >= argc() { return BytesResult::Failed(10); }
+    unsafe {
+        let p:*const u8 = __b2_argv(index);
+        var n:usize = 0;
+        while n <= 96_usize {
+            if *core::ptr_add(p,n) == 0_u8 {
+                return BytesResult::Value(core::slice_from_raw_parts(p,n));
+            }
+            n = n+1_usize;
+        }
+    }
+    return BytesResult::Failed(10);
+}
+
+fn open(path:[]const u8, flags:usize) -> CountResult {
+    if path.len == 0_usize || path.len > 96_usize { return CountResult::Failed(11); }
+    var name:[97]u8 = [0;97];
+    var i:usize = 0;
+    while i < path.len {
+        unsafe {
+            if path[i] == 0_u8 { return CountResult::Failed(11); }
+            name[i] = path[i];
+        }
+        i = i+1_usize;
+    }
+    unsafe {
+        loop {
+            let fd:usize = __b2_syscall6(56,AT_FDCWD,core::addr(core::slice_of(name).data),flags,384,0,0);
+            if fd != EINTR {
+                if error(fd) { return CountResult::Failed(12); }
+                return CountResult::Value(fd);
+            }
+        }
+    }
+}
+
+pub fn open_read(path:[]const u8) -> CountResult { return open(path,0); }
+pub fn create_new(path:[]const u8) -> CountResult { return open(path,193); }
+
+pub fn close(fd:usize) -> u32 {
+    unsafe { if error(__b2_syscall6(57,fd,0,0,0,0,0)) { return 13; } }
+    return 0;
+}
+
+pub fn remove(path:[]const u8) -> u32 {
+    if path.len == 0_usize || path.len > 96_usize { return 11; }
+    var name:[97]u8 = [0;97];
+    var i:usize = 0;
+    while i < path.len {
+        unsafe { name[i] = path[i]; }
+        i = i+1_usize;
+    }
+    unsafe {
+        if error(__b2_syscall6(35,AT_FDCWD,core::addr(core::slice_of(name).data),0,0,0,0)) { return 14; }
+    }
+    return 0;
+}
+
+pub unsafe fn read(fd:usize, buffer:[]u8) -> CountResult {
+    unsafe {
+        loop {
+            let n:usize = __b2_syscall6(63,fd,core::addr(buffer.data),buffer.len,0,0,0);
+            if n != EINTR {
+                if error(n) || n > buffer.len { return CountResult::Failed(15); }
+                return CountResult::Value(n);
+            }
+        }
+    }
+}
+
+pub unsafe fn write_all(fd:usize, bytes:[]const u8) -> WriteResult {
+    var done:usize = 0;
+    unsafe {
+        while done < bytes.len {
+            let n:usize = __b2_syscall6(64,fd,core::addr(core::ptr_add(bytes.data,done)),bytes.len-done,0,0,0);
+            if n != EINTR {
+                if error(n) || n == 0_usize || n > bytes.len-done { return WriteResult::Failed(16); }
+                done = done+n;
+            }
+        }
+    }
+    return WriteResult::Done;
+}
+
+// A bounded whole-file read. The caller supplies one extra byte to detect overflow.
+unsafe fn read_buffer(fd:usize, buffer:[]u8) -> CountResult {
+    var used:usize = 0;
+    unsafe {
+        while used < buffer.len {
+            var amount:usize = buffer.len-used;
+            if amount > 4096_usize { amount = 4096; }
+            let part:[]u8 = core::slice_from_raw_parts_mut(core::ptr_add(buffer.data,used),amount);
+            var n:usize = 0;
+            match read(fd,part) {
+                CountResult::Value(value) => { n = value; },
+                CountResult::Failed(error) => { return CountResult::Failed(error); },
+            }
+            if n == 0_usize { return CountResult::Value(used); }
+            used = used+n;
+        }
+    }
+    return CountResult::Failed(17);
+}
+
+
+pub unsafe fn read_file(path:[]const u8, buffer:[]u8) -> CountResult {
+    var fd:usize = 0;
+    match open_read(path) {
+        CountResult::Value(value) => { fd = value; },
+        CountResult::Failed(error) => { return CountResult::Failed(error); },
+    }
+    unsafe {
+        let result:CountResult = read_buffer(fd,buffer);
+        let closed:u32 = close(fd);
+        match result {
+            CountResult::Failed(e) => { return CountResult::Failed(e); },
+            CountResult::Value(n) => {
+                if closed != 0_u32 { return CountResult::Failed(closed); }
+                return CountResult::Value(n);
+            },
+        }
+    }
+}

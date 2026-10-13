@@ -1,0 +1,155 @@
+// Storage owner: callers can hold IDs but cannot fabricate their raw bits.
+module trial::arena;
+
+pub struct NodeId { raw:u32 }
+pub struct SlotId { raw:u32 }
+struct Binary { left:NodeId, right:NodeId }
+enum Expr { Empty, Literal(usize), Add(Binary) }
+struct Constant { destination:SlotId, value:usize }
+struct Addition { destination:SlotId, left:SlotId, right:SlotId }
+enum Instruction { Empty, Constant(Constant), Add(Addition), Return(SlotId) }
+
+static mut nodes:[17]Expr = zero;
+static mut instructions:[18]Instruction = zero;
+static mut values:[17]usize = zero;
+static mut node_count:usize = 0;
+static mut instruction_count:usize = 0;
+static mut slot_count:usize = 0;
+static mut epoch:usize = 0;
+static mut active:bool = false;
+
+pub fn begin_function() -> () {
+    unsafe {
+        if active || epoch == 65535_usize { core::panic(); }
+        epoch = epoch+1_usize;
+        node_count = 0;
+        instruction_count = 0;
+        slot_count = 0;
+        active = true;
+    }
+    return ();
+}
+
+pub fn end_function() -> () {
+    unsafe {
+        if !active { core::panic(); }
+        active = false;
+    }
+    return ();
+}
+
+fn live(raw:u32, count:usize) -> bool {
+    unsafe {
+        let index:usize = (raw & 65535_u32) as usize;
+        return active && ((raw >> 16_u32) as usize) == epoch && index > 0_usize && index <= count;
+    }
+}
+pub fn node_is_live(id:NodeId) -> bool { unsafe { return live(id.raw, node_count); } }
+pub fn slot_is_live(id:SlotId) -> bool { unsafe { return live(id.raw, slot_count); } }
+
+fn node_index(id:NodeId) -> usize {
+    if !node_is_live(id) { core::panic(); }
+    return (id.raw & 65535_u32) as usize;
+}
+fn slot_index(id:SlotId) -> usize {
+    if !slot_is_live(id) { core::panic(); }
+    return (id.raw & 65535_u32) as usize;
+}
+
+fn append_node(expr:Expr) -> NodeId {
+    unsafe {
+        if !active || node_count == 16_usize { core::panic(); }
+        node_count = node_count+1_usize;
+        nodes[node_count] = expr;
+        return make NodeId { raw:((epoch << 16_usize) | node_count) as u32 };
+    }
+}
+pub fn literal(value:usize) -> NodeId { return append_node(Expr::Literal(value)); }
+pub fn add(left:NodeId, right:NodeId) -> NodeId {
+    // Only existing nodes may be referenced: construction order rules out cycles.
+    if !node_is_live(left) || !node_is_live(right) { core::panic(); }
+    return append_node(Expr::Add(make Binary { left:left, right:right }));
+}
+
+fn append_instruction(instruction:Instruction) -> () {
+    unsafe {
+        if !active || instruction_count == 17_usize { core::panic(); }
+        instruction_count = instruction_count+1_usize;
+        instructions[instruction_count] = instruction;
+    }
+    return ();
+}
+fn new_slot() -> SlotId {
+    unsafe {
+        if !active || slot_count == 16_usize { core::panic(); }
+        slot_count = slot_count+1_usize;
+        return make SlotId { raw:((epoch << 16_usize) | slot_count) as u32 };
+    }
+}
+
+fn lower(id:NodeId) -> SlotId {
+    unsafe {
+        match nodes[node_index(id)] {
+            Expr::Empty => { core::panic(); return make SlotId { raw:0 }; },
+            Expr::Literal(value) => {
+                let destination:SlotId = new_slot();
+                append_instruction(Instruction::Constant(make Constant { destination:destination, value:value }));
+                return destination;
+            },
+            Expr::Add(binary) => {
+                let left:SlotId = lower(binary.left);
+                let right:SlotId = lower(binary.right);
+                let destination:SlotId = new_slot();
+                append_instruction(Instruction::Add(make Addition { destination:destination, left:left, right:right }));
+                return destination;
+            },
+        }
+    }
+}
+
+pub fn compile(root:NodeId) -> SlotId {
+    unsafe { if instruction_count != 0_usize { core::panic(); } }
+    let result:SlotId = lower(root);
+    append_instruction(Instruction::Return(result));
+    return result;
+}
+
+pub fn execute() -> usize {
+    unsafe {
+        if !active { core::panic(); }
+        var next:usize = 1;
+        var produced:usize = 0;
+        while next <= instruction_count {
+            match instructions[next] {
+                Instruction::Empty => { core::panic(); },
+                Instruction::Constant(constant) => {
+                    let destination:usize = slot_index(constant.destination);
+                    if destination != produced+1_usize { core::panic(); }
+                    values[destination] = constant.value;
+                    produced = destination;
+                },
+                Instruction::Add(addition) => {
+                    let destination:usize = slot_index(addition.destination);
+                    let left:usize = slot_index(addition.left);
+                    let right:usize = slot_index(addition.right);
+                    if destination != produced+1_usize || left > produced || right > produced { core::panic(); }
+                    values[destination] = values[left]+values[right];
+                    produced = destination;
+                },
+                Instruction::Return(result) => {
+                    let index:usize = slot_index(result);
+                    if next != instruction_count || index > produced { core::panic(); }
+                    return values[index];
+                },
+            }
+            next = next+1_usize;
+        }
+    }
+    core::panic();
+    return 0_usize;
+}
+
+pub fn layout_valid() -> bool {
+    return sizeof(NodeId) == 4_usize && sizeof(SlotId) == 4_usize
+        && sizeof(Expr) == 16_usize && sizeof(Instruction) == 24_usize;
+}

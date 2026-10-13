@@ -1,0 +1,1 @@
+module sample; struct S {x:[sizeof(u32)]u8} fn run()->u32{return 0;}

@@ -1,0 +1,263 @@
+module bootstrap::input;
+import bootstrap::model;
+import runtime::linux;
+import runtime::bytes;
+extern abi(C) fn __b2_syscall6(n:usize, a:usize, b:usize, c:usize, d:usize, e:usize, f:usize) -> usize;
+pub static mut entry:[]const u8 = "";
+pub static mut output:[]const u8 = "";
+pub static mut source_bytes:usize = 0;
+pub static mut assembly_bytes:usize = 0;
+static mut manifest_buffer:[16385]u8 = [0;16385];
+static mut source_buffer:[4194305]u8 = [0;4194305];
+static mut assembly_buffer:[1048577]u8 = [0;1048577];
+
+fn read(path:[]const u8,  buffer:[]u8,  file:u32,  used:usize,  capacity:usize) -> usize {
+    unsafe {
+        match linux::read_file(path, buffer) {
+            Result::<usize, u32>::Ok(n:usize) => {
+                return n;
+            },
+            Result::<usize, u32>::Err(e:u32) => {
+                if e == 17_u32 {
+                    model::limit_at(used+buffer.len, capacity, file, buffer.len-1_usize);
+                }
+                model::fail(model::ERROR_IO, file, 0);
+                return 0;
+            },
+        }
+    }
+}
+
+fn source(path:[]const u8,  data:[]const u8) -> model::Source {
+    return model::Source {
+        path:path,
+        bytes:data,
+        module_id:0,
+        import_first:0,
+        import_count:0
+    };
+}
+
+fn utf8(data:[]const u8, file:u32) -> () {
+    var i:usize = 0;
+    unsafe {
+        if data.len >= 3_usize && data[0] == 239_u8 && data[1] == 187_u8 && data[2] == 191_u8 {
+            model::fail(model::ERROR_PARSE, file, 0);
+        }
+        while i < data.len {
+            let c:u8 = data[i];
+            if c < 128_u8 {
+                i = i+1_usize;
+            } else {
+                var n:usize = 0;
+                if c >= 194_u8 && c <= 223_u8 {
+                    n = 2;
+                }
+                if c >= 224_u8 && c <= 239_u8 {
+                    n = 3;
+                }
+                if c >= 240_u8 && c <= 244_u8 {
+                    n = 4;
+                }
+                if n == 0_usize || i+n > data.len {
+                    model::fail(model::ERROR_PARSE, file, i);
+                }
+                var j:usize = 1;
+                while j < n {
+                    if data[i+j] < 128_u8 || data[i+j] > 191_u8 {
+                        model::fail(model::ERROR_PARSE, file, i+j);
+                    }
+                    j = j+1_usize;
+                }
+                let d:u8 = data[i+1_usize];
+                if c == 224_u8 && d < 160_u8 || c == 237_u8 && d >= 160_u8 || c == 240_u8 && d < 144_u8 || c == 244_u8 && d >= 144_u8 {
+                    model::fail(model::ERROR_PARSE, file, i);
+                }
+                i = i+n;
+            }
+        }
+    }
+    return ();
+}
+
+pub fn load(path:[]const u8) -> () {
+    unsafe {
+        model::source_count = 0;
+        model::assembly_count = 0;
+        source_bytes = 0;
+        assembly_bytes = 0;
+        entry = "";
+        output = "";
+        let length:usize = read(path, core::slice_of_mut(manifest_buffer), 0, 0, 16384);
+        let data:[]const u8 = core::slice_from_raw_parts(core::slice_of(manifest_buffer).data, length);
+        utf8(data, 0);
+        var cursor:usize = 0;
+        var seen:u32 = 0;
+        while cursor < data.len {
+            let line:usize = cursor;
+            while cursor < data.len && data[cursor] != 10_u8 && data[cursor] != 13_u8 {
+                cursor = cursor+1_usize;
+            }
+            let end:usize = cursor;
+            if cursor < data.len {
+                cursor = cursor+1_usize;
+            }
+            var i:usize = line;
+            while i < end && bytes::space(data[i]) {
+                i = i+1_usize;
+            }
+            if i == end {
+                continue;
+            }
+            if data[i] == 35_u8 {
+                continue;
+            }
+            let key_start:usize = i;
+            while i < end && !bytes::space(data[i]) {
+                i = i+1_usize;
+            }
+            let key:[]const u8 = bytes::view(data, key_start, i);
+            while i < end && bytes::space(data[i]) {
+                i = i+1_usize;
+            }
+            let value_start:usize = i;
+            while i < end && !bytes::space(data[i]) {
+                i = i+1_usize;
+            }
+            let value:[]const u8 = bytes::view(data, value_start, i);
+            while i < end && bytes::space(data[i]) {
+                i = i+1_usize;
+            }
+            if i != end || value.len == 0_usize {
+                model::fail(model::ERROR_PARSE, 0, line);
+            }
+            var bit:u32 = 0;
+            if bytes::equal(key, "format") {
+                bit = 1;
+                if !bytes::equal(value, "1") {
+                    model::fail(model::ERROR_PARSE, 0, line);
+                }
+            } else if bytes::equal(key, "profile") {
+                bit = 2;
+                if !bytes::equal(value, "linux-user") {
+                    model::fail(model::ERROR_UNSUPPORTED, 0, line);
+                }
+            } else if bytes::equal(key, "entry") {
+                bit = 4;
+                entry = value;
+            } else if bytes::equal(key, "output") {
+                bit = 8;
+                if !bytes::path(value) {
+                    model::fail(model::ERROR_PARSE, 0, line);
+                }
+                output = value;
+            } else {
+                let is_source:bool = bytes::equal(key, "source");
+                if !is_source && !bytes::equal(key, "assembly") {
+                    model::fail(model::ERROR_PARSE, 0, line);
+                }
+                if !bytes::path(value) {
+                    model::fail(model::ERROR_PARSE, 0, line);
+                }
+                var n:u32 = 1;
+                while n <= model::source_count {
+                    if bytes::equal(value, model::sources[n as usize].path) {
+                        model::fail(model::ERROR_PARSE, 0, line);
+                    }
+                    n = n+1_u32;
+                }
+                n = 1;
+                while n <= model::assembly_count {
+                    if bytes::equal(value, model::assemblies[n as usize].path) {
+                        model::fail(model::ERROR_PARSE, 0, line);
+                    }
+                    n = n+1_u32;
+                }
+                if is_source {
+                    if model::source_count == 32_u32 {
+                        model::limit_at(33, 32, 0, line);
+                    }
+                    model::source_count = model::source_count+1_u32;
+                    model::sources[model::source_count as usize] = source(value, "");
+                } else {
+                    if model::assembly_count == 8_u32 {
+                        model::limit_at(9, 8, 0, line);
+                    }
+                    model::assembly_count = model::assembly_count+1_u32;
+                    model::assemblies[model::assembly_count as usize] = source(value, "");
+                }
+            }
+
+            if bit != 0_u32 {
+                if seen & bit != 0_u32 {
+                    model::fail(model::ERROR_PARSE, 0, line);
+                }
+                seen = seen | bit;
+            }
+        }
+        if seen != 15_u32 || model::source_count == 0_u32 {
+            model::fail(model::ERROR_PARSE, 0, length);
+        }
+        var file:u32 = 1;
+        while file <= model::source_count {
+            let buffer:[]u8 = core::slice_from_raw_parts_mut(core::ptr_add(core::slice_of_mut(source_buffer).data, source_bytes), 4194305_usize-source_bytes);
+            let n:usize = read(model::sources[file as usize].path, buffer, file, source_bytes, 4194304);
+            let data:[]const u8 = core::slice_from_raw_parts(core::ptr_const(buffer.data), n);
+            utf8(data, file);
+            model::sources[file as usize].bytes = data;
+            source_bytes = source_bytes+n;
+            model::source_bytes = source_bytes;
+            file = file+1_u32;
+        }
+        file = 1;
+        while file <= model::assembly_count {
+            let buffer:[]u8 = core::slice_from_raw_parts_mut(core::ptr_add(core::slice_of_mut(assembly_buffer).data, assembly_bytes), 1048577_usize-assembly_bytes);
+            let n:usize = read(model::assemblies[file as usize].path, buffer, model::source_count+file, assembly_bytes, 1048576);
+            let data:[]const u8 = core::slice_from_raw_parts(core::ptr_const(buffer.data), n);
+            utf8(data, model::source_count+file);
+            model::assemblies[file as usize].bytes = data;
+            assembly_bytes = assembly_bytes+n;
+            file = file+1_u32;
+        }
+    }
+    return ();
+}
+
+pub fn save(data:[]const u8) -> () {
+    unsafe {
+        var fd:usize = 0;
+        match linux::create_new(output) {
+            Result::<usize, u32>::Ok(value:usize) => {
+                fd = value;
+            },
+            Result::<usize, u32>::Err(e:u32) => {
+                model::fail(model::ERROR_IO, 0, 0);
+            },
+        }
+        let result:Result<(), u32> = linux::write_all(fd, data);
+        var bad:bool = false;
+        loop {
+            let mode:usize = __b2_syscall6(52, fd, 493, 0, 0, 0, 0);
+            if mode != 0xfffffffffffffffc_usize {
+                if mode >= 0xfffffffffffff001_usize {
+                    bad = true;
+                }
+                break;
+            }
+        }
+        let closed:u32 = linux::close(fd);
+        bad = bad || closed != 0_u32;
+        match result {
+            Result::<(), u32>::Ok(unit:()) => {
+            },
+            Result::<(), u32>::Err(e:u32) => {
+                bad = true;
+            },
+        }
+        if bad {
+            let ignored:u32 = linux::remove(output);
+            model::fail(model::ERROR_IO, 0, 0);
+        }
+    }
+    return ();
+}

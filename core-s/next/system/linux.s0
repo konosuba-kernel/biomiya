@@ -1,0 +1,11 @@
+# RV64 Linux ABI, used only by the file rollback slice.
+syscall6:
+addi x17, x10, 0
+addi x10, x11, 0
+addi x11, x12, 0
+addi x12, x13, 0
+addi x13, x14, 0
+addi x14, x15, 0
+addi x15, x16, 0
+ecall
+jalr x0, 0(x1)

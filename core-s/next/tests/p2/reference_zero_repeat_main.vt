@@ -1,0 +1,10 @@
+module sample;
+static mut count:u32 = 0;
+fn next() -> u32 {
+    unsafe { count = count + 1_u32; }
+    return 7;
+}
+fn run() -> u32 {
+    let empty:[0]u32 = [next();0];
+    unsafe { return count; }
+}

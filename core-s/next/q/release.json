@@ -1,0 +1,178 @@
+{
+  "version": "S-next 0.1",
+  "date": "2026-10-13",
+  "status": "independently-accepted",
+  "compiler": {
+    "path": "build/snext-p4-r2/e3.elf",
+    "sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+    "elf_bytes": 999504,
+    "memory": {
+      "rw_bytes": 55135764,
+      "image_span_bytes": 56131092
+    }
+  },
+  "bootstrap": {
+    "record": "build/snext-p4-r2/verification.json",
+    "record_sha256": "7a8dbe9c249f132b683b1e1195acce1f825fceb101df5ce1f0c5ce811dfb506a",
+    "seed_sha256": "90c9523de43bebbd0a6932e74abc8cd670b60478c3b4f0fc1eff74fbf4cfb686",
+    "seed_source_identity": "cd6336297d22dd27efe29cbcc4fe0f0b88c7f4882e9f81fdce6e2f2e5415397d",
+    "q_source_identity_encoding": "SHA256 of sorted path + NUL + hex digest + LF records",
+    "q_source_identity": "60b44ea782a1268f30d37bf6969fc4d53cf4dbb852cbf98cee3fbc87dbeb8d65",
+    "q_source_sha256": {
+      "next/q/blocking.vt": "044a0905e9c54b5c4555165f68c488d99605a9e71f1f15b01e1c3ccebf8cd958",
+      "next/q/check.vt": "b28c596bbdfb6e056b270627259ed143449bf649766e095008533c3d4ab8b205",
+      "next/q/compiler.build": "29d766fd9ccc67b19475c9bb1277ec39be99afb135e068d8f0a9e09173a4375b",
+      "next/q/image.vt": "21a8641c3a5f7d03a50682698969f7b1ad8f300ec0a5be256c7dd6a333e0389a",
+      "next/q/init.vt": "06df249b98ef394495425aba4a60ba44515b676017a03445998d08a96f47f615",
+      "next/q/input.vt": "32d9ce32f8059c110efff67e7f37f8ac7392867ad75f0bfbe1d75adbe4c7028b",
+      "next/q/ir.vt": "083ea475e6871ca1940b66b1c1b6830984564f75d27d3a4b7d049c7d484bc2b8",
+      "next/q/lex.vt": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28",
+      "next/q/main.vt": "f30ba4a2641da8f6a43f4cbc263f9fbfb2b4c49b3fe1d5cdcc8cdcc3572cb5f4",
+      "next/q/model.vt": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+      "next/q/parse.vt": "31fbbeef18ec1564c0a80eef55c8af069a18d3739300168b3e4ed5167f476919",
+      "next/q/rules.vt": "8b3846de0315501e992bfc381653c26dc83122432338a64cc675249e71a90951",
+      "next/q/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+      "next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+      "next/q/runtime/linux.vt": "f50998235c8a049c26f9fa73d3eb724a5db4b7f233d521dceb449a3103f73a3a",
+      "next/q/rv64.vt": "ba613287c9c48eda58de7fe74ea264d5a010e896ca1d9f5089333a3254b6aabf",
+      "next/q/s0.vt": "c90d59a279926a1491fc43307deddc4e04acc0d9754a64aad56fe850fe53d9b7",
+      "next/q/types.vt": "d43ea325af473099d368d5ed350aa5b3727c93d3aa300120fc49fd04ffdf9ee3"
+    },
+    "e1_e2_e3_equal": true,
+    "source_perturbation_observed": true,
+    "empty_guest_path": true,
+    "guest_stack_bytes": 1048576
+  },
+  "compiler_statistics": {
+    "sources": 16,
+    "imports": 50,
+    "assembly_files": 1,
+    "source": 332326,
+    "assembly": 345,
+    "names": 4067,
+    "name_bytes": 81907,
+    "decls": 795,
+    "types": 414,
+    "fields": 355,
+    "params": 619,
+    "max_ast": 1119,
+    "max_ir": 1429,
+    "max_frame": 25808,
+    "max_bindings": 18,
+    "max_defers": 0,
+    "max_loops": 3,
+    "max_slots": 982,
+    "max_args": 185,
+    "max_params": 5,
+    "text": 989896,
+    "data": 1910,
+    "objects": 545,
+    "symbols": 12660,
+    "fixups": 27672,
+    "relocations": 4,
+    "elf": 999504
+  },
+  "suites": {
+    "language": {
+      "record": "build/snext-final-language/verification.json",
+      "record_sha256": "abf68c9953e69ce2257b4d1f501ac60b7f569fe6efad1ded039607252b3e7665",
+      "case_count": 126,
+      "passed": true
+    },
+    "input": {
+      "record": "build/snext-final-input/verification.json",
+      "record_sha256": "e6796e50bc67508a42f36d152e69284f26345824d27eef43ec0056556bece7ef",
+      "case_count": 24,
+      "passed": true
+    },
+    "machine": {
+      "record": "build/snext-final-machine-r2/verification.json",
+      "record_sha256": "c5e815bbea5ef37d7f707d7c2f514981a0164e802f769a71139fd83867420e5d",
+      "case_count": 105,
+      "passed": true
+    },
+    "blocking": {
+      "record": "build/snext-final-blocking/verification.json",
+      "record_sha256": "2dce96ee06a07c49822fddf980ee14b5d6671ccfe96e5e6a1d45c29cc108c600",
+      "case_count": 48,
+      "passed": true
+    },
+    "limits": {
+      "record": "build/snext-final-limits/verification.json",
+      "record_sha256": "dcf9d116c6f5f4b084c7d9f6b259d56f7db65acf370d7b8985316ebd8bce6102",
+      "case_count": 15,
+      "passed": true
+    },
+    "interfaces": {
+      "record": "build/snext-final-interfaces/verification.json",
+      "record_sha256": "aa2b53da683097cff0c02eff3eda7e16bdf62607c080d633cccd2283dfb43b8a",
+      "case_count": 76,
+      "passed": true
+    },
+    "copy": {
+      "record": "build/snext-final-copy/verification.json",
+      "record_sha256": "1f1c27a0ef6182858335cc3de32d81ec969e9ea17eede465800eec11eafeb17a",
+      "case_count": 8,
+      "passed": true
+    },
+    "reference": {
+      "record": "build/snext-final-reference-r2/verification.json",
+      "record_sha256": "de37001d7640e5556574790eaf62f8432c87ec073f8961dd970c4df8ec447984",
+      "case_count": 3,
+      "passed": true
+    },
+    "system": {
+      "record": "build/snext-p5-r3/verification.json",
+      "record_sha256": "3e90825786c1c1abaf6627cc0c1e11308118cf43d5cf12c16248a28e7fe1ca54",
+      "passed": true,
+      "compiled_programs": 2,
+      "platform_negative_cases": 10,
+      "nested_records": {
+        "build/snext-p5-r3/machine/verification.json": "6615aac66c9f949fa725d647fa3b2bcc8320ffee5e89f04c798081daae1fc21b",
+        "build/snext-p5-r3/negative/below-ram/machine/verification.json": "c6e24be09882628bf86cdd99240bd7434548752e016a541f7bd12ed6722cccc8",
+        "build/snext-p5-r3/negative/explicit-failure/machine/verification.json": "e624838f3ef8a3100e25e5baf9429c2cbae90f8acbe4f96933a0057a3b25f786",
+        "build/snext-p5-r3/negative/invalid-flags/machine/verification.json": "bf8e0d29f5610e9622e7ab5a5d71306a45418e68c987bb8e7ca45675628486cb",
+        "build/snext-p5-r3/negative/misaligned-page/machine/verification.json": "4fd06d435b515252c8a189b77bafe9d40f1c4b6d2d2745d4ccc1fb93b474a1a7",
+        "build/snext-p5-r3/negative/ppn-high-bit/machine/verification.json": "e19cddb17f9935cf1438bfd62948e935813f1a09533306106e105b345743c1c7",
+        "build/snext-p5-r3/negative/ram-upper-bound/machine/verification.json": "a3171026bbe842e760462ca73f0116d10e273ec9e752d8e61cea8536e20de7af",
+        "build/snext-p5-r3/negative/reserved-high-bit/machine/verification.json": "0b6e8daffc9f73215c0a94be9f57b39cb0aef0acd0543a80ca8bfb0dcde21410",
+        "build/snext-p5-r3/negative/reserved-low-bit/machine/verification.json": "c40b55815a71ba9929ce3ba2b741b44f531c280c9bff0d6bd75c908537600b52",
+        "build/snext-p5-r3/negative/reserved-slot/machine/verification.json": "689374b6d4fdb2e137ac835937ee4d986b542837a7dcc31206d6c4be0be166cb",
+        "build/snext-p5-r3/negative/unmapped-read/machine/verification.json": "fccc48dc3f4e144c00e9c5701edd61b6c4e7c7b653270a9865d9c8677006f18c",
+        "build/snext-p5-r3/negative/verification.json": "00ebd2c70fe34e7c1b35f0521f5772973b7f82e3fe0e76b3e091238acbcb4ef7"
+      }
+    }
+  },
+  "migration": {
+    "original_tests": 91,
+    "matched": 91,
+    "mapping": "next/migration-coverage.json",
+    "mapping_sha256": "06c867ee0c11cfdb374f7f4ecfc189464c2eae9e9eeef1500b3591822d3c7623",
+    "record": "build/snext-integration-r1/migration-results.json",
+    "record_sha256": "81a2e1ac90c8cd9acb92cd9522ce10c8774870856952e0e0f1fd4ed50ff4a023"
+  },
+  "cost": {
+    "path": "next/q/cost.json",
+    "sha256": "a509a896fe416380dd47b7b1b9e92ca8958b2cb32f676576545f72073d23d636",
+    "compiler_physical_lines": 10991,
+    "compiler_source_bytes": 325234,
+    "soft_budget_lines": 8000,
+    "soft_budget_met": false,
+    "hard_memory_bytes": 67108864,
+    "hard_guest_stack_bytes": 1048576
+  },
+  "boundaries": [
+    "RV64 Linux-user self-hosting; not SOS in-kernel self-hosting.",
+    "P5 is a bounded QEMU two-hart platform experiment, not a complete OS.",
+    "10,991 compiler lines exceed the 8,000-line prototype soft budget.",
+    "Copy close-error injection performs real close before returning synthetic EIO; it does not prove OS failed-close FD semantics."
+  ],
+  "independent_reviews": {
+    "id": "next/reviews/r-id.md",
+    "owner": "next/reviews/r-owner.md",
+    "bootstrap": "next/reviews/p4-r2.md",
+    "system": "next/reviews/p5-r3.md",
+    "migration_tools": "next/reviews/migration-tools.md",
+    "integration": "next/reviews/integration.md"
+  }
+}

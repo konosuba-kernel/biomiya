@@ -1,0 +1,1 @@
+module sample; const N:u8=255+1; fn run()->u32{return 0;}

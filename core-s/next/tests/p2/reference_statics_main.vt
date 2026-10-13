@@ -1,0 +1,11 @@
+module sample;
+const N:usize = 2;
+static message:[]const u8 = "hi";
+static mut data:[N]u32 = [20,22];
+static address:*const [N]u32 = core::addr_of(data);
+fn run() -> u32 {
+    unsafe {
+        let values:[N]u32 = *address;
+        return values[0] + values[1];
+    }
+}

@@ -1,0 +1,1147 @@
+module bootstrap::parse;
+import bootstrap::model;
+import bootstrap::lex;
+static mut token:model::Token = model::Token {
+    kind:model::TOKEN_EOF,
+    file:0,
+    start:0,
+    end:0,
+    number:0,
+    suffix:0
+};
+// Scanner cursor and diagnostic provenance are separate small state. Scanning
+// owns token; AST/checker operations may update diagnostic without moving it.
+static mut diagnostic:model::Span = model::Span {
+    file:0,
+    start:0,
+    end:0
+};
+pub fn span() -> model::Span {
+    unsafe {
+        return model::Span {
+            file:token.file,
+            start:token.start,
+            end:token.end
+        };
+    }
+}
+
+pub fn fail(code:u32) -> () {
+    unsafe {
+        model::fail(code, diagnostic.file, diagnostic.start as usize);
+    }
+    return ();
+}
+
+pub fn locate(location:model::Span) -> () {
+    unsafe {
+        diagnostic = location;
+    }
+    return ();
+}
+
+pub fn limit(actual:usize, capacity:usize) -> () {
+    unsafe {
+        model::limit_at(actual, capacity, diagnostic.file, diagnostic.start as usize);
+    }
+    return ();
+}
+
+pub fn at(word:[]const u8) -> bool {
+    unsafe {
+        return lex::is(token, word);
+    }
+}
+
+pub fn advance() -> () {
+    unsafe {
+        token = lex::next(token.file, token.end as usize);
+        diagnostic = span();
+    }
+    return ();
+}
+
+pub fn seek(file:u32, offset:u32) -> () {
+    unsafe {
+        token = lex::next(file, offset as usize);
+        diagnostic = span();
+    }
+    return ();
+}
+
+pub fn eat(word:[]const u8) -> bool {
+    if at(word) {
+        advance();
+        return true;
+    }
+    return false;
+}
+
+pub fn need(word:[]const u8) -> () {
+    if !eat(word) {
+        fail(model::ERROR_PARSE);
+    }
+    return ();
+}
+
+pub fn text(id:u32) -> []const u8 {
+    unsafe {
+        if id == 0_u32 || id > model::name_count {
+            fail(model::ERROR_INTERNAL);
+        }
+        return model::names[id as usize].bytes;
+    }
+}
+
+pub fn ident() -> u32 {
+    unsafe {
+        if token.kind != model::TOKEN_IDENT {
+            fail(model::ERROR_PARSE);
+        }
+        let word:[]const u8 = lex::bytes(token);
+        if model::equal(word, "fn") || model::equal(word, "struct") || model::equal(word, "module") || model::equal(word, "let") || model::equal(word, "var") || model::equal(word, "return") || model::equal(word, "unsafe") || model::equal(word, "true") || model::equal(word, "false") || model::equal(word, "static") || model::equal(word, "const") || model::equal(word, "pub") || model::equal(word, "if") || model::equal(word, "else") || model::equal(word, "while") || model::equal(word, "loop") || model::equal(word, "match") || model::equal(word, "break") || model::equal(word, "continue") || model::equal(word, "defer") || model::equal(word, "extern") || model::equal(word, "import") || model::equal(word, "null") || model::equal(word, "as") || model::equal(word, "_") || model::equal(word, "make") || model::equal(word, "zero") || model::equal(word, "enum") {
+            fail(model::ERROR_PARSE);
+        }
+        let id:u32 = model::name(word);
+        advance();
+        return id;
+    }
+}
+
+pub fn join(a:[]const u8, b:[]const u8) -> u32 {
+    if a.len == 0_usize {
+        return model::name(b);
+    }
+    var buffer:[1024]u8 = [0;1024];
+    if a.len+b.len+2_usize > 1024_usize {
+        model::limit(a.len+b.len+2_usize, 1024);
+    }
+    unsafe {
+        var i:usize = 0;
+        while i < a.len {
+            buffer[i] = a[i];
+            i = i+1_usize;
+        }
+        buffer[i] = 58;
+        buffer[i+1_usize] = 58;
+        i = i+2_usize;
+        var j:usize = 0;
+        while j < b.len {
+            buffer[i+j] = b[j];
+            j = j+1_usize;
+        }
+        return model::name(core::slice_from_raw_parts(core::slice_of(buffer).data, i+j));
+    }
+}
+
+pub fn view(bytes:[]const u8, start:usize, end:usize) -> []const u8 {
+    if start > end || end > bytes.len {
+        fail(model::ERROR_INTERNAL);
+    }
+    unsafe {
+        return core::slice_from_raw_parts(core::ptr_add(bytes.data, start), end-start);
+    }
+}
+
+pub fn path() -> u32 {
+    var id:u32 = ident();
+    while at("::") {
+        unsafe {
+            let next:model::Token = lex::next(token.file, token.end as usize);
+            if lex::is(next, "<") {
+                return id;
+            }
+        }
+        advance();
+        let part:u32 = ident();
+        id = join(text(id), text(part));
+    }
+    return id;
+}
+
+pub fn close_gt() -> () {
+    if eat(">") {
+        return ();
+    }
+    if at(">>") || at(">=") || at(">>=") {
+        unsafe {
+            token.start = token.start+1_u32;
+            diagnostic = span();
+        }
+        return ();
+    }
+    fail(model::ERROR_PARSE);
+    return ();
+}
+
+pub fn precedence() -> u32 {
+    if at("||") {
+        return 1;
+    }
+    if at("&&") {
+        return 2;
+    }
+    if at("==") || at("!=") {
+        return 3;
+    }
+    if at("<") || at("<=") || at(">") || at(">=") {
+        return 4;
+    }
+    if at("|") {
+        return 5;
+    }
+    if at("^") {
+        return 6;
+    }
+    if at("&") {
+        return 7;
+    }
+    if at("<<") || at(">>") {
+        return 8;
+    }
+    if at("+") || at("-") || at("+%") || at("-%") {
+        return 9;
+    }
+    if at("*") || at("/") || at("%") || at("*%") {
+        return 10;
+    }
+    return 0;
+}
+
+pub fn binop() -> u32 {
+    if at("+") {
+        return model::BIN_ADD;
+    }
+    if at("-") {
+        return model::BIN_SUB;
+    }
+    if at("*") {
+        return model::BIN_MUL;
+    }
+    if at("/") {
+        return model::BIN_DIV;
+    }
+    if at("%") {
+        return model::BIN_REM;
+    }
+    if at("+%") {
+        return model::BIN_WRAP_ADD;
+    }
+    if at("-%") {
+        return model::BIN_WRAP_SUB;
+    }
+    if at("*%") {
+        return model::BIN_WRAP_MUL;
+    }
+    if at("<<") {
+        return model::BIN_SHL;
+    }
+    if at(">>") {
+        return model::BIN_SHR;
+    }
+    if at("&") {
+        return model::BIN_BIT_AND;
+    }
+    if at("|") {
+        return model::BIN_BIT_OR;
+    }
+    if at("^") {
+        return model::BIN_BIT_XOR;
+    }
+    if at("==") {
+        return model::BIN_EQ;
+    }
+    if at("!=") {
+        return model::BIN_NE;
+    }
+    if at("<") {
+        return model::BIN_LT;
+    }
+    if at("<=") {
+        return model::BIN_LE;
+    }
+    if at(">") {
+        return model::BIN_GT;
+    }
+    if at(">=") {
+        return model::BIN_GE;
+    }
+    if at("&&") {
+        return model::BIN_AND;
+    }
+    if at("||") {
+        return model::BIN_OR;
+    }
+    fail(model::ERROR_PARSE);
+    return model::BIN_INVALID;
+}
+
+// Syntax nodes never contain a resolved TypeId except integer suffixes.
+// CAST.b, SIZEOF/ALIGNOF.a, POINTER.a and BIND.b are TypeSyntax IDs.
+// STRUCT.a is a name; REPEAT.b is a length expression. Every node owns its span.
+// next links children. Header nodes survive reset; function nodes do not.
+pub struct Node {
+    pub tag:u32,
+    pub a:u32,
+    pub b:u32,
+    pub c:u32,
+    pub d:u32,
+    pub next:u32,
+    pub start:u32,
+    pub file:u32,
+    pub bits:usize
+}
+
+static mut nodes:[32769]Node = [Node {
+    tag:model::AST_INVALID,
+    a:0,
+    b:0,
+    c:0,
+    d:0,
+    next:0,
+    start:0,
+    file:0,
+    bits:0
+};32769];
+// Function/initializer arena: reset selects its file and expires every NodeId.
+static mut node_used:u32 = 0;
+static mut arena_file:u32 = 0;
+static mut expression_depth:u32 = 0;
+static mut block_depth:u32 = 0;
+static mut statement_depth:u32 = 0;
+static mut header_mark:u32 = 0;
+static mut type_mark:u32 = 0;
+static mut string_buffer:[65536]u8 = [0;65536];
+pub fn get(id:u32) -> Node {
+    unsafe {
+        if id == 0_u32 || id > node_used {
+            fail(model::ERROR_INTERNAL);
+        }
+        return nodes[id as usize];
+    }
+}
+
+pub fn add(tag:u32, a:u32, b:u32, c:u32, d:u32, bits:usize, start:u32) -> u32 {
+    unsafe {
+        if node_used >= 32768_u32 {
+            model::limit((node_used as usize)+1_usize, 32768);
+        }
+        node_used = node_used+1_u32;
+        nodes[node_used as usize] = Node {
+            tag:tag,
+            a:a,
+            b:b,
+            c:c,
+            d:d,
+            next:0,
+            start:start,
+            file:arena_file,
+            bits:bits
+        };
+        return node_used;
+    }
+}
+
+pub fn append(tail:u32, node:u32) -> u32 {
+    if tail != 0_u32 {
+        unsafe {
+            nodes[tail as usize].next = node;
+        }
+    }
+    return node;
+}
+
+pub fn reset(file:u32) -> () {
+    unsafe {
+        if (node_used as usize) > model::max_ast {
+            model::max_ast = node_used as usize;
+        }
+        node_used = header_mark;
+        type_count = type_mark;
+        arena_file = file;
+        expression_depth = 0;
+        block_depth = 0;
+        statement_depth = 0;
+    }
+    return ();
+}
+
+pub fn location(node:u32) -> model::Span {
+    let n:Node = get(node);
+    unsafe {
+        return model::Span {
+            file:n.file,
+            start:n.start,
+            end:n.start+1_u32
+        };
+    }
+}
+
+fn start() -> u32 {
+    unsafe {
+        return token.start;
+    }
+}
+
+pub fn expression(minimum:u32) -> u32 {
+    unsafe {
+        if expression_depth >= 64_u32 {
+            model::limit_at((expression_depth as usize)+1_usize, 64, token.file, token.start as usize);
+        }
+        expression_depth = expression_depth+1_u32;
+    }
+    let result:u32 = expression_inner(minimum);
+    unsafe {
+        expression_depth = expression_depth-1_u32;
+    }
+    return result;
+}
+
+// Opening [ has already been consumed; this function consumes the closing ].
+fn array_expression(sp:u32) -> u32 {
+    var value:u32 = 0;
+    unsafe {
+        if eat("]") {
+            value = add(model::AST_ARRAY, 0, 0, 0, 0, 0, sp);
+        } else {
+            let first:u32 = expression(0);
+            if eat(";") {
+                let length:u32 = expression(0);
+                need("]");
+                value = add(model::AST_REPEAT, first, length, 0, 0, 0, sp);
+            } else {
+                var tail:u32 = first;
+                while eat(",") && !at("]") {
+                    tail = append(tail, expression(0));
+                }
+                need("]");
+                value = add(model::AST_ARRAY, first, 0, 0, 0, 0, sp);
+            }
+        }
+    }
+    return value;
+}
+
+// A name stays a name. Only the explicit make marker starts a record.
+fn named_expression(sp:u32) -> u32 {
+    if at("offsetof") || at("Option") || at("Result") {
+        fail(model::ERROR_UNSUPPORTED);
+    }
+    let name:u32 = path();
+    if model::equal(text(name), "core::ptr") && eat("::") {
+        need("<");
+        let ty:u32 = type_expr();
+        close_gt();
+        need("(");
+        let arg:u32 = expression(0);
+        need(")");
+        return add(model::AST_POINTER, ty, arg, 0, 0, 0, sp);
+    }
+    return add(model::AST_NAME, name, 0, 0, 0, 0, sp);
+}
+
+fn make_expression(sp:u32) -> u32 {
+    let name:u32 = path();
+    need("{");
+    var first:u32 = 0;
+    var tail:u32 = 0;
+    while !eat("}") {
+        let field:u32 = ident();
+        need(":");
+        let value:u32 = expression(0);
+        let pair:u32 = add(model::AST_FIELD_VALUE, field, value, 0, 0, 0, sp);
+        if first == 0_u32 {
+            first = pair;
+        }
+        tail = append(tail, pair);
+        if !eat(",") {
+            need("}");
+            break;
+        }
+    }
+    return add(model::AST_STRUCT, name, first, 0, 0, 0, sp);
+}
+
+fn primary(sp:u32) -> u32 {
+    var value:u32 = 0;
+    unsafe {
+        if token.kind == model::TOKEN_NUMBER {
+            value = add(model::AST_INTEGER, token.suffix, 0, 0, 0, token.number, sp);
+            advance();
+        } else if token.kind == model::TOKEN_STRING {
+            let len:usize = lex::decode(token, core::slice_of_mut(string_buffer));
+            let name:u32 = model::name(core::slice_from_raw_parts(core::slice_of(string_buffer).data, len));
+            value = add(model::AST_STRING, name, 0, 0, 0, 0, sp);
+            advance();
+        } else if eat("true") {
+            value = add(model::AST_BOOL, 0, 0, 0, 0, 1, sp);
+        } else if eat("false") {
+            value = add(model::AST_BOOL, 0, 0, 0, 0, 0, sp);
+        } else if eat("make") {
+            value = make_expression(sp);
+        } else if eat("zero") {
+            value = add(model::AST_ZERO, 0, 0, 0, 0, 0, sp);
+        } else if eat("null") {
+            value = add(model::AST_NULL, 0, 0, 0, 0, 0, sp);
+        } else if eat("(") {
+            if eat(")") {
+                value = add(model::AST_UNIT, 0, 0, 0, 0, 0, sp);
+            } else {
+                value = expression(0);
+                need(")");
+            }
+        } else if eat("[") {
+            value = array_expression(sp);
+        } else if at("!") || at("~") || at("-") || at("*") {
+            var op:u32 = model::UNARY_NOT;
+            if at("~") {
+                op = model::UNARY_BIT_NOT;
+            }
+            if at("-") {
+                op = model::UNARY_NEG;
+            }
+            if at("*") {
+                op = model::UNARY_DEREF;
+            }
+            advance();
+            value = add(model::AST_UNARY, op, expression(12), 0, 0, 0, sp);
+        } else if at("sizeof") || at("alignof") {
+            var kind:u32 = model::AST_SIZEOF;
+            if at("alignof") {
+                kind = model::AST_ALIGNOF;
+            }
+            advance();
+            need("(");
+            let ty:u32 = type_expr();
+            need(")");
+            value = add(kind, ty, 0, 0, 0, 0, sp);
+        } else {
+            value = named_expression(sp);
+        }
+    }
+    return value;
+}
+
+// Precedence climbing extends one primary; recursion budgets stay in expression().
+fn expression_inner(minimum:u32) -> u32 {
+    let sp:u32 = start();
+    var value:u32 = primary(sp);
+    unsafe {
+        loop {
+            if minimum <= 13_u32 && eat(".") {
+                value = add(model::AST_FIELD, value, ident(), 0, 0, 0, sp);
+                continue;
+            }
+            if minimum <= 13_u32 && eat("[") {
+                let index:u32 = expression(0);
+                need("]");
+                value = add(model::AST_INDEX, value, index, 0, 0, 0, sp);
+                continue;
+            }
+            if at("?") {
+                fail(model::ERROR_UNSUPPORTED);
+            }
+            if minimum <= 13_u32 && eat("(") {
+                let target:Node = get(value);
+                if target.tag != model::AST_NAME {
+                    fail(model::ERROR_UNSUPPORTED);
+                }
+                var first:u32 = 0;
+                var tail:u32 = 0;
+                while !eat(")") {
+                    let arg:u32 = expression(0);
+                    if first == 0_u32 {
+                        first = arg;
+                    }
+                    tail = append(tail, arg);
+                    if !eat(",") {
+                        need(")");
+                        break;
+                    }
+                }
+                value = add(model::AST_CALL, target.a, first, 0, 0, 0, sp);
+                continue;
+            }
+            if minimum <= 11_u32 && eat("as") {
+                value = add(model::AST_CAST, value, type_expr(), 0, 0, 0, sp);
+                continue;
+            }
+            let power:u32 = precedence();
+            if power == 0_u32 || power < minimum {
+                break;
+            }
+            let op:u32 = binop();
+            advance();
+            let right:u32 = expression(power+1_u32);
+            value = add(model::AST_BINARY, op, value, right, 0, 0, sp);
+        }
+    }
+    return value;
+}
+
+fn pattern() -> u32 {
+    let sp:u32 = start();
+    if eat("_") {
+        return add(model::AST_WILDCARD, 0, 0, 0, 0, 0, sp);
+    }
+    unsafe {
+        if token.kind == model::TOKEN_NUMBER || at("true") || at("false") {
+            return expression(13);
+        }
+    }
+    let name:u32 = path();
+    var binding:u32 = 0;
+    var has_paren:u32 = 0;
+    if eat("(") {
+        has_paren = 1;
+        if !eat("_") {
+            binding = ident();
+        }
+        need(")");
+    }
+    return add(model::AST_VARIANT_PATTERN, name, binding, has_paren, 0, 0, sp);
+}
+
+pub fn block() -> u32 {
+    unsafe {
+        if block_depth >= 48_u32 {
+            model::limit_at((block_depth as usize)+1_usize, 48, token.file, token.start as usize);
+        }
+        block_depth = block_depth+1_u32;
+    }
+    let result:u32 = block_inner();
+    unsafe {
+        block_depth = block_depth-1_u32;
+    }
+    return result;
+}
+
+fn block_inner() -> u32 {
+    let sp:u32 = start();
+    need("{");
+    var first:u32 = 0;
+    var tail:u32 = 0;
+    while !eat("}") {
+        let item:u32 = statement();
+        if first == 0_u32 {
+            first = item;
+        }
+        tail = append(tail, item);
+    }
+    return add(model::AST_BLOCK, first, 0, 0, 0, 0, sp);
+}
+
+pub fn statement() -> u32 {
+    unsafe {
+        if statement_depth >= 64_u32 {
+            model::limit_at((statement_depth as usize)+1_usize, 64, token.file, token.start as usize);
+        }
+        statement_depth = statement_depth+1_u32;
+    }
+    let result:u32 = statement_inner();
+    unsafe {
+        statement_depth = statement_depth-1_u32;
+    }
+    return result;
+}
+
+fn statement_inner() -> u32 {
+    let sp:u32 = start();
+    if eat(";") {
+        return add(model::AST_EMPTY, 0, 0, 0, 0, 0, sp);
+    }
+    if at("{") {
+        return block();
+    }
+    if eat("unsafe") {
+        return add(model::AST_UNSAFE, block(), 0, 0, 0, 0, sp);
+    }
+    if at("let") || at("var") {
+        var mutable:u32 = 0;
+        if at("var") {
+            mutable = 1;
+        }
+        advance();
+        let name:u32 = ident();
+        var ty:u32 = 0;
+        if eat(":") {
+            ty = type_expr();
+        }
+        if !eat("=") {
+            fail(model::ERROR_TYPE);
+        }
+        let value:u32 = expression(0);
+        need(";");
+        return add(model::AST_BIND, name, ty, value, mutable, 0, sp);
+    }
+    if eat("if") {
+        let condition:u32 = expression(0);
+        let then_:u32 = block();
+        var other:u32 = 0;
+        if eat("else") {
+            if at("if") {
+                let nested:u32 = statement();
+                other = add(model::AST_BLOCK, nested, 0, 0, 0, 0, sp);
+            } else {
+                other = block();
+            }
+        }
+        return add(model::AST_IF, condition, then_, other, 0, 0, sp);
+    }
+    if eat("while") {
+        let condition:u32 = expression(0);
+        return add(model::AST_WHILE, condition, block(), 0, 0, 0, sp);
+    }
+    if eat("loop") {
+        return add(model::AST_LOOP, block(), 0, 0, 0, 0, sp);
+    }
+    if eat("return") {
+        let value:u32 = expression(0);
+        need(";");
+        return add(model::AST_RETURN, value, 0, 0, 0, 0, sp);
+    }
+    if eat("break") {
+        need(";");
+        return add(model::AST_BREAK, 0, 0, 0, 0, 0, sp);
+    }
+    if eat("continue") {
+        need(";");
+        return add(model::AST_CONTINUE, 0, 0, 0, 0, 0, sp);
+    }
+    if eat("defer") {
+        if at("{") {
+            fail(model::ERROR_UNSUPPORTED);
+        }
+        let call:u32 = expression(0);
+        if get(call).tag != model::AST_CALL {
+            fail(model::ERROR_TYPE);
+        }
+        need(";");
+        return add(model::AST_DEFER, call, 0, 0, 0, 0, sp);
+    }
+    if eat("match") {
+        let value:u32 = expression(0);
+        need("{");
+        var first:u32 = 0;
+        var tail:u32 = 0;
+        while !eat("}") {
+            let p:u32 = pattern();
+            need("=>");
+            let body:u32 = block();
+            let arm:u32 = add(model::AST_MATCH_ARM, p, body, 0, 0, 0, sp);
+            if first == 0_u32 {
+                first = arm;
+            }
+            tail = append(tail, arm);
+            if !eat(",") {
+                need("}");
+                break;
+            }
+        }
+        return add(model::AST_MATCH, value, first, 0, 0, 0, sp);
+    }
+    if at("for") || at("resource") || at("enum") || at("type") {
+        fail(model::ERROR_UNSUPPORTED);
+    }
+    let target:u32 = expression(0);
+    if eat("=") {
+        let value:u32 = expression(0);
+        need(";");
+        return add(model::AST_ASSIGN, target, value, 0, 0, 0, sp);
+    }
+    need(";");
+    return add(model::AST_EXPR, target, 0, 0, 0, 0, sp);
+}
+
+pub struct TypeSyntax {
+    pub kind:u32,
+    pub a:u32,
+    pub b:u32,
+    pub flags:u32,
+    pub span:model::Span
+}
+
+pub struct Member {
+    pub name:u32,
+    pub ty:u32,
+    pub flags:u32,
+    pub span:model::Span
+}
+
+pub struct Header {
+    pub kind:u32,
+    pub name:u32,
+    pub file:u32,
+    pub flags:u32,
+    pub ty:u32,
+    pub first:u32,
+    pub count:u32,
+    pub init:u32,
+    pub start:u32,
+    pub end:u32
+}
+
+static mut type_nodes:[32769]TypeSyntax = [TypeSyntax {
+    kind:0,
+    a:0,
+    b:0,
+    flags:0,
+    span:model::Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};32769];
+static mut type_count:u32 = 0;
+static mut type_depth:u32 = 0;
+static mut members:[32769]Member = [Member {
+    name:0,
+    ty:0,
+    flags:0,
+    span:model::Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};32769];
+static mut member_count:u32 = 0;
+static mut headers:[8193]Header = [Header {
+    kind:0,
+    name:0,
+    file:0,
+    flags:0,
+    ty:0,
+    first:0,
+    count:0,
+    init:0,
+    start:0,
+    end:0
+};8193];
+static mut header_used:u32 = 0;
+pub fn type_node(id:u32) -> TypeSyntax {
+    unsafe {
+        if id == 0_u32 || id > type_count {
+            fail(model::ERROR_INTERNAL);
+        }
+        return type_nodes[id as usize];
+    }
+}
+
+pub fn member(id:u32) -> Member {
+    unsafe {
+        if id == 0_u32 || id > member_count {
+            fail(model::ERROR_INTERNAL);
+        }
+        return members[id as usize];
+    }
+}
+
+pub fn header(id:u32) -> Header {
+    unsafe {
+        if id == 0_u32 || id > header_used {
+            fail(model::ERROR_INTERNAL);
+        }
+        return headers[id as usize];
+    }
+}
+
+fn add_type(kind:u32, a:u32, b:u32, flags:u32, sp:model::Span) -> u32 {
+    unsafe {
+        if type_count >= 32768_u32 {
+            limit((type_count as usize)+1_usize, 32768);
+        }
+        type_count = type_count+1_u32;
+        type_nodes[type_count as usize] = TypeSyntax {
+            kind:kind,
+            a:a,
+            b:b,
+            flags:flags,
+            span:sp
+        };
+        return type_count;
+    }
+}
+
+pub fn type_expr() -> u32 {
+    unsafe {
+        if type_depth >= 64_u32 {
+            limit((type_depth as usize)+1_usize, 64);
+        }
+        type_depth = type_depth+1_u32;
+    }
+    let result:u32 = type_inner();
+    unsafe {
+        type_depth = type_depth-1_u32;
+    }
+    return result;
+}
+
+fn type_inner() -> u32 {
+    let sp:model::Span = span();
+    if eat("(") {
+        need(")");
+        return add_type(model::TYPE_UNIT, 0, 0, 0, sp);
+    }
+    if eat("*") {
+        if at("user") || at("phys") || at("mmio") {
+            fail(model::ERROR_UNSUPPORTED);
+        }
+        let ignored:bool = eat("kernel");
+        var flags:u32 = 0;
+        if eat("const") {
+            flags = model::TYPE_CONST;
+        }
+        return add_type(model::TYPE_POINTER, type_expr(), 0, flags, sp);
+    }
+    if eat("[") {
+        if eat("]") {
+            var flags:u32 = 0;
+            if eat("const") {
+                flags = model::TYPE_CONST;
+            }
+            return add_type(model::TYPE_SLICE, type_expr(), 0, flags, sp);
+        }
+        let length:u32 = expression(0);
+        need("]");
+        return add_type(model::TYPE_ARRAY, type_expr(), length, 0, sp);
+    }
+    if at("fn") || at("unsafe") || at("extern") || at("!") || at("Option") || at("Result") {
+        fail(model::ERROR_UNSUPPORTED);
+    }
+    return add_type(model::TYPE_STRUCT, path(), 0, 0, sp);
+}
+
+fn add_member(item:Member) -> () {
+    unsafe {
+        if member_count >= 32768_u32 {
+            limit((member_count as usize)+1_usize, 32768);
+        }
+        member_count = member_count+1_u32;
+        members[member_count as usize] = item;
+    }
+    return ();
+}
+
+fn skip_body() -> u32 {
+    need("{");
+    var depth:u32 = 1;
+    unsafe {
+        while depth != 0_u32 {
+            if token.kind == model::TOKEN_EOF {
+                fail(model::ERROR_PARSE);
+            }
+            if at("{") {
+                depth = depth+1_u32;
+            }
+            if at("}") {
+                depth = depth-1_u32;
+            }
+            advance();
+        }
+        return token.start;
+    }
+}
+
+fn declaration() -> () {
+    unsafe {
+        var h:Header = Header {
+            kind:0,
+            name:0,
+            file:token.file,
+            flags:0,
+            ty:0,
+            first:0,
+            count:0,
+            init:0,
+            start:token.start,
+            end:0
+        };
+        if eat("pub") {
+            h.flags = model::FLAG_PUBLIC;
+        }
+        if eat("struct") {
+            h.kind = model::DECL_STRUCT;
+        } else if eat("enum") {
+            h.kind = model::DECL_ENUM;
+        } else if eat("const") {
+            h.kind = model::DECL_CONST;
+        } else if eat("static") {
+            h.kind = model::DECL_STATIC;
+            if eat("mut") {
+                h.flags = h.flags|model::FLAG_MUTABLE;
+            }
+        } else {
+            if at("type") || at("impl") || at("resource") {
+                fail(model::ERROR_UNSUPPORTED);
+            }
+            h.kind = model::DECL_FUNCTION;
+            if eat("extern") {
+                h.kind = model::DECL_EXTERN;
+                need("abi");
+                need("(");
+                need("C");
+                need(")");
+                h.flags = h.flags|model::FLAG_UNSAFE;
+            }
+            if eat("unsafe") {
+                h.flags = h.flags|model::FLAG_UNSAFE;
+            }
+            need("fn");
+        }
+        h.name = ident();
+        if h.kind == model::DECL_STRUCT || h.kind == model::DECL_ENUM || h.kind == model::DECL_FUNCTION || h.kind == model::DECL_EXTERN {
+            h.first = member_count+1_u32;
+            var close:[]const u8 = ")";
+            if h.kind == model::DECL_STRUCT || h.kind == model::DECL_ENUM {
+                need("{");
+                close = "}";
+            } else {
+                need("(");
+            }
+            while !eat(close) {
+                var flags:u32 = 0;
+                if h.kind == model::DECL_STRUCT && eat("pub") {
+                    flags = model::FLAG_PUBLIC;
+                }
+                let sp:model::Span = span();
+                let name:u32 = ident();
+                var ty:u32 = 0;
+                if h.kind == model::DECL_ENUM {
+                    if eat("(") {
+                        flags = model::FLAG_PAYLOAD;
+                        ty = type_expr();
+                        need(")");
+                    }
+                } else {
+                    need(":");
+                    ty = type_expr();
+                }
+                add_member(Member {
+                    name:name,
+                    ty:ty,
+                    flags:flags,
+                    span:sp
+                });
+                h.count = h.count+1_u32;
+                if h.count > 256_u32 {
+                    limit(h.count as usize, 256);
+                }
+                if !eat(",") {
+                    need(close);
+                    break;
+                }
+            }
+            if h.kind == model::DECL_FUNCTION || h.kind == model::DECL_EXTERN {
+                need("->");
+                h.ty = type_expr();
+                if h.kind == model::DECL_EXTERN {
+                    need(";");
+                } else {
+                    h.start = token.start;
+                    h.end = skip_body();
+                }
+            }
+        } else {
+            need(":");
+            h.ty = type_expr();
+            need("=");
+            h.init = expression(0);
+            need(";");
+        }
+        if h.end == 0_u32 {
+            h.end = token.start;
+        }
+        if header_used >= 8192_u32 {
+            limit((header_used as usize)+1_usize, 8192);
+        }
+        header_used = header_used+1_u32;
+        headers[header_used as usize] = h;
+    }
+    return ();
+}
+
+pub fn headers_collect() -> () {
+    unsafe {
+        node_used = 0;
+        header_mark = 0;
+        type_count = 0;
+        type_mark = 0;
+        header_used = 0;
+        member_count = 0;
+        var file:u32 = 1;
+        while file <= model::source_count {
+            reset(file);
+            seek(file, 0);
+            need("module");
+            var source:model::Source = model::sources[file as usize];
+            source.module_id = path();
+            need(";");
+            source.import_first = model::import_count+1_u32;
+            source.import_count = 0;
+            while eat("import") {
+                let sp:model::Span = span();
+                let name:u32 = path();
+                let raw:[]const u8 = text(name);
+                var cut:usize = 0;
+                var i:usize = 0;
+                while i+1_usize < raw.len {
+                    if raw[i] == 58_u8 && raw[i+1_usize] == 58_u8 {
+                        cut = i+2_usize;
+                    }
+                    i = i+1_usize;
+                }
+                var alias:u32 = model::name(view(raw, cut, raw.len));
+                if eat("as") {
+                    alias = ident();
+                }
+                let ignored:u32 = model::add_import(model::Import {
+                    file:file,
+                    module_id:name,
+                    alias:alias,
+                    span:sp
+                });
+                source.import_count = source.import_count+1_u32;
+                need(";");
+            }
+            model::sources[file as usize] = source;
+            while token.kind != model::TOKEN_EOF {
+                declaration();
+            }
+            header_mark = node_used;
+            type_mark = type_count;
+            file = file+1_u32;
+        }
+    }
+    return ();
+}
+
+// The binder reads these arena boundaries; it never changes the scanner.
+pub fn node_floor() -> u32 {
+    unsafe {
+        return header_mark+1_u32;
+    }
+}
+
+pub fn type_floor() -> u32 {
+    unsafe {
+        return type_mark+1_u32;
+    }
+}
+
+pub fn type_limit() -> u32 {
+    unsafe {
+        return type_count;
+    }
+}
+
+pub fn node_count() -> u32 {
+    unsafe {
+        return node_used;
+    }
+}
+
+pub fn header_count() -> u32 {
+    unsafe {
+        return header_used;
+    }
+}

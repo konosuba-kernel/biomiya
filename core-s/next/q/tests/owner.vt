@@ -1,0 +1,74 @@
+module owner_probe;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::image;
+import runtime::linux;
+
+fn source_test(mode:[]const u8) -> u32 {
+    input::begin_compile();
+    var text:[1]u8 = [65];
+    var path:[1]u8 = [97];
+    let file:u32 = input::add_source(core::slice_of(path), core::slice_of(text));
+    unsafe { text[0] = 66; path[0] = 98; }
+    input::freeze();
+    let before:model::Source = input::source(file);
+    if !model::equal(before.bytes, "A") || !model::equal(before.path, "a") { return 2; }
+    if model::equal(mode, "source-append") {
+        let other:u32 = input::add_source("late", "B");
+    }
+    var snapshot:model::Source = before;
+    snapshot.bytes = "changed";
+    if !model::equal(input::source(file).bytes, "A") { return 3; }
+    let module_name:model::NameId = model::name("example");
+    input::complete_header(file, module_name, 1, 0);
+    if !model::same_name(input::source(file).module_id, module_name) { return 4; }
+    if model::equal(mode, "header-twice") { input::complete_header(file, module_name, 1, 0); }
+    if model::equal(mode, "import-after-header") {
+        let other:u32 = input::add_import(make model::Import {
+            file:file, module_id:module_name, alias:module_name, span:zero
+        });
+    }
+    return 0;
+}
+
+fn image_test(mode:[]const u8) -> u32 {
+    image::begin_compile();
+    let symbol:u32 = image::symbol("data");
+    let object:u32 = image::object(symbol, 3, 8, 8);
+    image::write_scalar(object, 0, 42, 8);
+    if model::equal(mode, "data-overrun") { image::write_scalar(object, 1, 42, 8); }
+    if model::equal(mode, "copy-overrun") { image::copy_data(object, 8, 0, 1); }
+    image::begin_text();
+    let entry:u32 = image::fresh();
+    image::define(entry, 1, 0);
+    image::word(44041491);
+    image::word(97519763);
+    image::word(115);
+    if model::equal(mode, "symbol-twice") { image::define(entry, 1, 0); }
+    if model::equal(mode, "text-twice") { image::begin_text(); }
+    if model::equal(mode, "patch-overrun") { image::patch_word(12, 0); }
+    if model::equal(mode, "patch-unaligned") { image::patch_word(1, 0); }
+    let output:[]const u8 = image::finish(entry);
+    if output.len < 4096_usize || image::get_data(object).size != 8_usize || image::data_size() != 8_usize { return 5; }
+    if model::equal(mode, "word-sealed") { image::word(0); }
+    if model::equal(mode, "patch-sealed") { image::patch_word(0, 0); }
+    if model::equal(mode, "data-sealed") { image::write_scalar(object, 0, 0, 1); }
+    if model::equal(mode, "object-sealed") { let late:u32 = image::object(symbol, 3, 8, 8); }
+    if model::equal(mode, "symbol-sealed") { let late:u32 = image::fresh(); }
+    if model::equal(mode, "finish-twice") { let late:[]const u8 = image::finish(entry); }
+    return 0;
+}
+
+pub fn run() -> u32 {
+    model::reset_all();
+    var mode:[]const u8 = "good";
+    match linux::argument(1) {
+        linux::BytesResult::Value(value) => { mode = value; },
+        linux::BytesResult::Failed(error) => { return error; },
+    }
+    let source:u32 = source_test(mode);
+    if source != 0_u32 { return source; }
+    let joined:model::NameId = model::name_parts("left", "right");
+    if !model::same_name(joined, model::name("leftright")) { return 6; }
+    return image_test(mode);
+}

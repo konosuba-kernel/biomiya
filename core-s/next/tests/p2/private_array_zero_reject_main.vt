@@ -1,0 +1,1 @@
+module sample; import handles; fn run()->u32{let h:[1]handles::H=zero;return 0;}

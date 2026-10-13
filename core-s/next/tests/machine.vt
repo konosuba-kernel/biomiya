@@ -1,0 +1,758 @@
+module machine_test;
+import bootstrap::model;
+import bootstrap::image;
+import bootstrap::rv64;
+import bootstrap::s0;
+import runtime::linux;
+static mut assembly:[1048577]u8 = [0; 1048577];
+// Test-only static snapshots avoid consuming the guest's bounded stack.
+static mut saved_slots:[257]model::Slot = [model::Slot {
+    ty:0,
+    flags:0,
+    span:model::Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};257];
+static mut saved_insts:[1025]model::Inst = [model::Inst {
+    op:0,
+    dst:0,
+    a:0,
+    b:0,
+    c:0,
+    aux:0,
+    bits:0,
+    span:model::Span {
+        file:0,
+        start:0,
+        end:0
+    }
+};1025];
+static mut saved_args:[1025]u32 = [0;1025];
+static mut saved_parameters:[257]u32 = [0;257];
+fn unchanged(ok:bool) -> () {
+    if !ok {
+        // Distinguish a test snapshot failure from malformed IR at byte 17.
+        model::fail(model::ERROR_INTERNAL, 2, 9001);
+    }
+    return ();
+}
+
+fn same_span(a:model::Span, b:model::Span) -> bool {
+    return a.file == b.file && a.start == b.start && a.end == b.end;
+}
+
+fn emit_function(id:u32) -> () {
+    unsafe {
+        let slots:u32 = model::slot_count();
+        let insts:u32 = model::inst_count();
+        let args:u32 = model::arg_count();
+        let parameters:u32 = model::parameter_slot_count();
+        let function:u32 = model::current_function();
+        unchanged(slots <= 256_u32 && insts <= 1024_u32 && args <= 1024_u32 && parameters <= 256_u32);
+        var at:u32 = 1;
+        while at <= slots {
+            saved_slots[at as usize] = model::get_slot(at);
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= insts {
+            saved_insts[at as usize] = model::get_inst(at);
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= args {
+            saved_args[at as usize] = model::get_arg(at);
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= parameters {
+            saved_parameters[at as usize] = model::get_parameter_slot(at);
+            at = at+1_u32;
+        }
+        rv64::function(id);
+        unchanged(model::slot_count() == slots && model::inst_count() == insts && model::arg_count() == args);
+        unchanged(model::parameter_slot_count() == parameters && model::current_function() == function);
+        at = 1;
+        while at <= slots {
+            let before:model::Slot = saved_slots[at as usize];
+            let after:model::Slot = model::get_slot(at);
+            unchanged(before.ty == after.ty && before.flags == after.flags && same_span(before.span, after.span));
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= insts {
+            let before:model::Inst = saved_insts[at as usize];
+            let after:model::Inst = model::get_inst(at);
+            unchanged(before.op == after.op && before.dst == after.dst && before.a == after.a && before.b == after.b && before.c == after.c && before.aux == after.aux && before.bits == after.bits && same_span(before.span, after.span));
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= args {
+            unchanged(saved_args[at as usize] == model::get_arg(at));
+            at = at+1_u32;
+        }
+        at = 1;
+        while at <= parameters {
+            unchanged(saved_parameters[at as usize] == model::get_parameter_slot(at));
+            at = at+1_u32;
+        }
+    }
+    return ();
+}
+
+fn emit(op:u32, dst:u32, a:u32, b:u32, c:u32, aux:u32, bits:usize) -> () {
+    let ignored:u32 = model::add_inst(model::Inst {
+        op:op,
+        dst:dst,
+        a:a,
+        b:b,
+        c:c,
+        aux:aux,
+        bits:bits,
+        span:model::Span {
+            file:2,
+            start:17,
+            end:18
+        }
+    });
+    return ();
+}
+
+fn slot(ty:u32) -> u32 {
+    return model::add_slot(model::Slot {
+        ty:ty,
+        flags:0,
+        span:model::Span {
+            file:2,
+            start:17,
+            end:18
+        }
+    });
+}
+
+fn decl(result:u32, first:u32, count:u32) -> u32 {
+    return model::add_decl(model::Decl {
+        kind:2,
+        name:0,
+        module_id:0,
+        file:2,
+        flags:0,
+        ty:result,
+        first:first,
+        count:count,
+        start:0,
+        end:0,
+        init_start:0,
+        init_end:0,
+        symbol:image::fresh(),
+        bits:0,
+        state:2
+    });
+}
+
+fn param(ty:u32) -> u32 {
+    return model::add_param(model::Param {
+        name:0,
+        ty:ty,
+        span:model::Span {
+            file:2,
+            start:17,
+            end:18
+        }
+    });
+}
+
+fn pointer(ty:u32) -> u32 {
+    return model::add_type(model::Type {
+        kind:6,
+        a:ty,
+        b:0,
+        flags:0,
+        size:8,
+        align:8,
+        first:0,
+        count:0
+    });
+}
+
+fn type_probe(mode:[]const u8) -> () {
+    unsafe {
+        if model::equal(mode, "badcycle") || model::equal(mode, "badmutualcycle") {
+            let first:u32 = model::type_count()+1_u32;
+            var target:u32 = first;
+            if model::equal(mode, "badmutualcycle") {
+                target = first+1_u32;
+            }
+            let field:u32 = model::add_field(model::Field {
+                name:0,
+                ty:target,
+                flags:0,
+                offset:0,
+                span:model::Span {
+                    file:2,
+                    start:17,
+                    end:18
+                }
+            });
+            let ty:u32 = model::add_type(model::Type {
+                kind:9,
+                a:0,
+                b:0,
+                flags:0,
+                size:0,
+                align:1,
+                first:field,
+                count:1
+            });
+            if model::equal(mode, "badmutualcycle") {
+                let other:u32 = model::add_field(model::Field {
+                    name:0,
+                    ty:first,
+                    flags:0,
+                    offset:0,
+                    span:model::Span {
+                        file:2,
+                        start:17,
+                        end:18
+                    }
+                });
+                let added:u32 = model::add_type(model::Type {
+                    kind:9,
+                    a:0,
+                    b:0,
+                    flags:0,
+                    size:0,
+                    align:1,
+                    first:other,
+                    count:1
+                });
+            }
+        }
+        if model::equal(mode, "selfpointer") || model::equal(mode, "selfslice") {
+            let target:u32 = model::type_count()+2_u32;
+            var kind:u32 = 6;
+            var size:usize = 8;
+            if model::equal(mode, "selfslice") {
+                kind = 8;
+                size = 16;
+            }
+            let ptr:u32 = model::add_type(model::Type {
+                kind:kind,
+                a:target,
+                b:0,
+                flags:0,
+                size:size,
+                align:8,
+                first:0,
+                count:0
+            });
+            let field:u32 = model::add_field(model::Field {
+                name:0,
+                ty:ptr,
+                flags:0,
+                offset:0,
+                span:model::Span {
+                    file:2,
+                    start:17,
+                    end:18
+                }
+            });
+            let ty:u32 = model::add_type(model::Type {
+                kind:9,
+                a:0,
+                b:0,
+                flags:0,
+                size:size,
+                align:8,
+                first:field,
+                count:1
+            });
+        }
+    }
+    return ();
+}
+
+fn offset_probe(mode:[]const u8, a:u32) -> () {
+    if model::equal(mode, "badoffsetconst") || model::equal(mode, "badoffsetmut") {
+        let mutable:u32 = pointer(3);
+        let frozen:u32 = model::add_type(model::Type {
+            kind:6,
+            a:3,
+            b:0,
+            flags:1,
+            size:8,
+            align:8,
+            first:0,
+            count:0
+        });
+        var source_type:u32 = mutable;
+        var dest_type:u32 = frozen;
+        if model::equal(mode, "badoffsetmut") {
+            source_type = frozen;
+            dest_type = mutable;
+        }
+        let source:u32 = slot(source_type);
+        let dest:u32 = slot(dest_type);
+        let zero:u32 = slot(5);
+        emit(3, source, a, 0, 0, 0, 0);
+        emit(1, zero, 0, 0, 0, 0, 0);
+        emit(7, dest, source, zero, 0, 0, 0);
+    }
+    return ();
+}
+
+fn simple(mode:[]const u8) -> u32 {
+    let f:u32 = decl(4, 0, 0);
+    unsafe {
+        model::select_function(f);
+    }
+    let start:u32 = rv64::start(unsafe_symbol(f));
+    let a:u32 = slot(3);
+    let b:u32 = slot(3);
+    let c:u32 = slot(3);
+    let result:u32 = slot(4);
+    type_probe(mode);
+    if !model::equal(mode, "badnolabel") {
+        if model::equal(mode, "badlabeltwo") {
+            emit(14, 0, 2, 0, 0, 0, 0);
+        } else {
+            emit(14, 0, 1, 0, 0, 0, 0);
+        }
+    }
+    offset_probe(mode, a);
+    emit(1, a, 0, 0, 0, 0, 255);
+    emit(1, b, 0, 0, 0, 0, 1);
+    if model::equal(mode, "badir") {
+        emit(2, result, a, 0, 0, 0, 0);
+    } else {
+        if model::equal(mode, "badpointer") {
+            emit(5, c, a, 0, 0, 0, 0);
+        } else {
+            if model::equal(mode, "badcall") {
+                emit(13, result, 999, 0, 0, 0, 0);
+            } else {
+                if model::equal(mode, "badreturn") {
+                    emit(17, 0, a, 0, 0, 0, 0);
+                } else {
+                    if model::equal(mode, "badlabel") {
+                        emit(15, 0, 999, 0, 0, 0, 0);
+                    } else {
+                        if model::equal(mode, "duplicatelabel") {
+                            emit(15, 0, 1, 0, 0, 0, 0);
+                            emit(14, 0, 1, 0, 0, 0, 0);
+                        } else {
+                            if model::equal(mode, "badtype") {
+                                unsafe {
+                                    let ignored:u32 = model::add_type(model::Type {
+                                        kind:3,
+                                        a:0,
+                                        b:0,
+                                        flags:0,
+                                        size:2,
+                                        align:1,
+                                        first:0,
+                                        count:0
+                                    });
+                                }
+                            } else {
+                                if model::equal(mode, "frame_limit") {
+                                    let huge:u32 = model::add_type(model::Type {
+                                        kind:7,
+                                        a:3,
+                                        b:262145,
+                                        flags:0,
+                                        size:262145,
+                                        align:1,
+                                        first:0,
+                                        count:0
+                                    });
+                                    let ignored:u32 = slot(huge);
+                                } else {
+                                    var op:u32 = 1;
+                                    if model::equal(mode, "wrap") || model::equal(mode, "selfpointer") || model::equal(mode, "selfslice") {
+                                        op = 6;
+                                    }
+                                    if model::equal(mode, "divzero") {
+                                        op = 4;
+                                        emit(1, b, 0, 0, 0, 0, 0);
+                                    }
+                                    if model::equal(mode, "shift") {
+                                        op = 9;
+                                        emit(1, b, 0, 0, 0, 0, 8);
+                                    }
+                                    emit(8, c, a, b, 0, op, 0);
+                                    emit(10, result, c, 0, 0, 0, 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    emit(17, 0, result, 0, 0, 0, 0);
+    emit_function(f);
+    return start;
+}
+
+fn unsafe_symbol(f:u32) -> u32 {
+    unsafe {
+        return model::get_decl(f).symbol;
+    }
+}
+
+fn program() -> u32 {
+    let array:u32 = model::add_type(model::Type {
+        kind:7,
+        a:4,
+        b:2,
+        flags:0,
+        size:8,
+        align:4,
+        first:0,
+        count:0
+    });
+    let array_ptr:u32 = pointer(array);
+    let ptr:u32 = pointer(4);
+    let byteptr:u32 = pointer(3);
+    let pptr:u32 = pointer(byteptr);
+    let first:u32 = param(4);
+    var p:u32 = 1;
+    while p < 9_u32 {
+        let ignored:u32 = param(4);
+        p = p+1_u32;
+    }
+    let last:u32 = param(array);
+    let callee:u32 = decl(array, first, 10);
+    let caller:u32 = decl(4, 0, 0);
+    let start:u32 = rv64::start(unsafe_symbol(caller));
+    model::reset_function();
+    unsafe {
+        model::select_function(callee);
+    }
+    var params:[10]u32 = [0; 10];
+    p = 0;
+    while p < 10_u32 {
+        var ty:u32 = 4;
+        if p == 9_u32 {
+            ty = array;
+        }
+        let v:u32 = slot(ty);
+        model::mark_parameter(v);
+        unsafe {
+            params[p as usize] = v;
+        }
+        p = p+1_u32;
+    }
+    let result:u32 = slot(array);
+    let dest:u32 = slot(ptr);
+    let loaded:u32 = slot(4);
+    let sum:u32 = slot(4);
+    emit(14, 0, 1, 0, 0, 0, 0);
+    unsafe {
+        emit(2, result, params[9], 0, 0, 0, 0);
+    }
+    emit(3, dest, result, 0, 0, 0, 0);
+    emit(5, loaded, dest, 0, 0, 0, 0);
+    unsafe {
+        emit(8, sum, loaded, params[0], 0, 1, 0);
+    }
+    emit(6, 0, dest, sum, 0, 0, 0);
+    emit(17, 0, result, 0, 0, 0, 0);
+    emit_function(callee);
+    model::reset_function();
+    unsafe {
+        model::select_function(caller);
+    }
+    emit(14, 0, 1, 0, 0, 0, 0);
+    var args:[9]u32 = [0; 9];
+    p = 0;
+    while p < 9_u32 {
+        let v:u32 = slot(4);
+        emit(1, v, 0, 0, 0, 0, (p+1_u32) as usize);
+        unsafe {
+            args[p as usize] = v;
+        }
+        p = p+1_u32;
+    }
+    let original:u32 = slot(array);
+    let snapshot:u32 = slot(array);
+    let output:u32 = slot(array);
+    let place:u32 = slot(ptr);
+    let v:u32 = slot(4);
+    emit(1, v, 0, 0, 0, 0, 10);
+    emit(3, place, original, 0, 0, 0, 0);
+    emit(6, 0, place, v, 0, 0, 0);
+    emit(1, v, 0, 0, 0, 0, 20);
+    // Project *[2]u32 to its second *u32 field without changing pointer permission.
+    let array_address:u32 = slot(array_ptr);
+    let field_offset:u32 = slot(5);
+    emit(3, array_address, original, 0, 0, 0, 0);
+    emit(1, field_offset, 0, 0, 0, 0, 4);
+    emit(7, place, array_address, field_offset, 0, 0, 0);
+    emit(6, 0, place, v, 0, 0, 0);
+    emit(2, snapshot, original, 0, 0, 0, 0);
+    emit(1, v, 0, 0, 0, 0, 99);
+    emit(3, place, original, 0, 0, 0, 0);
+    emit(6, 0, place, v, 0, 0, 0);
+    var arg_first:u32 = 0;
+    p = 0;
+    while p < 9_u32 {
+        unsafe {
+            let index:u32 = model::add_arg(args[p as usize]);
+            if p == 0_u32 {
+                arg_first = index;
+            }
+        }
+        p = p+1_u32;
+    }
+    let ignored:u32 = model::add_arg(snapshot);
+    emit(13, output, callee, arg_first, 10, 0, 0);
+    let a:u32 = slot(4);
+    let b:u32 = slot(4);
+    let total:u32 = slot(4);
+    emit(3, place, output, 0, 0, 0, 0);
+    emit(5, a, place, 0, 0, 0, 0);
+    emit(3, place, output, 0, 0, 0, 4);
+    emit(5, b, place, 0, 0, 0, 0);
+    emit(8, total, a, b, 0, 1, 0);
+    let chars:u32 = image::symbol("chars");
+    let link:u32 = image::symbol("link");
+    let bss:u32 = image::symbol("bss");
+    image::data(chars, false, 1, "AB", 0);
+    image::data(link, true, 8, "00000000", 0);
+    image::data(bss, true, 4096, "", 8192);
+    image::abs64(link, 0, chars, 1);
+    let pp:u32 = slot(pptr);
+    let bp:u32 = slot(byteptr);
+    let byte:u32 = slot(3);
+    emit(4, pp, link, 0, 0, 0, 0);
+    emit(5, bp, pp, 0, 0, 0, 0);
+    emit(5, byte, bp, 0, 0, 0, 0);
+    emit(10, v, byte, 0, 0, 0, 0);
+    emit(8, total, total, v, 0, 1, 0);
+    let displacement:u32 = slot(5);
+    emit(1, displacement, 0, 0, 0, 0, 8191);
+    emit(4, bp, bss, 0, 0, 0, 0);
+    emit(7, bp, bp, displacement, 0, 0, 0);
+    emit(5, byte, bp, 0, 0, 0, 0);
+    emit(10, v, byte, 0, 0, 0, 0);
+    emit(8, total, total, v, 0, 1, 0);
+    emit(17, 0, total, 0, 0, 0, 0);
+    emit_function(caller);
+    return start;
+}
+
+fn label_body(id:u32, last:u32, value:usize, mode:[]const u8, first:u32, second:u32) -> () {
+    model::reset_function();
+    unsafe {
+        model::select_function(id);
+    }
+    let condition:u32 = slot(model::TYPE_BOOL);
+    let a:u32 = slot(model::TYPE_U32);
+    let b:u32 = slot(model::TYPE_U32);
+    let result:u32 = slot(model::TYPE_U32);
+    emit(model::IR_LABEL, 0, 1, 0, 0, 0, 0);
+    emit(model::IR_VALUE, condition, 0, 0, 0, 0, 1);
+    emit(model::IR_VALUE, result, 0, 0, 0, 0, value);
+    if model::equal(mode, "labels_zero") {
+        emit(model::IR_JUMP, 0, 0, 0, 0, 0, 0);
+    } else {
+        if model::equal(mode, "labels_over") {
+            emit(model::IR_JUMP, 0, 65537, 0, 0, 0, 0);
+        } else {
+            if model::equal(mode, "labels_missing") {
+                emit(model::IR_JUMP, 0, 65536, 0, 0, 0, 0);
+            } else {
+                if !model::equal(mode, "labels_unterminated") {
+                    if model::equal(mode, "labels_afterterm") {
+                        emit(model::IR_RETURN, 0, result, 0, 0, 0, 0);
+                        emit(model::IR_VALUE, result, 0, 0, 0, 0, value);
+                    } else {
+                        var yes:u32 = last;
+                        var no:u32 = last;
+                        if model::equal(mode, "labels_yes_missing") {
+                            yes = 65536;
+                        }
+                        if model::equal(mode, "labels_no_missing") {
+                            no = 65536;
+                        }
+                        if !model::equal(mode, "labels_fallthrough") {
+                            emit(model::IR_BRANCH, 0, condition, yes, no, 0, 0);
+                        }
+                        emit(model::IR_LABEL, 0, last, 0, 0, 0, 0);
+                        if first != 0_u32 {
+                            emit(model::IR_CALL, a, first, 0, 0, 0, 0);
+                            emit(model::IR_CALL, b, second, 0, 0, 0, 0);
+                            emit(model::IR_BINARY, result, a, b, 0, model::BIN_ADD, 0);
+                        }
+                        emit(model::IR_RETURN, 0, result, 0, 0, 0, 0);
+                        if model::equal(mode, "labels_duplicate") {
+                            emit(model::IR_LABEL, 0, last, 0, 0, 0, 0);
+                            emit(model::IR_RETURN, 0, result, 0, 0, 0, 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    emit_function(id);
+    return ();
+}
+
+// Exercise all three functions in one backend instance. The third function's
+// missing references must never be satisfied by the first function's definitions.
+fn label_program(mode:[]const u8) -> u32 {
+    let first:u32 = decl(model::TYPE_U32, 0, 0);
+    let second:u32 = decl(model::TYPE_U32, 0, 0);
+    let third:u32 = decl(model::TYPE_U32, 0, 0);
+    let start:u32 = rv64::start(unsafe_symbol(third));
+    label_body(first, 65536, 41, "", 0, 0);
+    label_body(second, 2, 1, "", 0, 0);
+    var last:u32 = 65536;
+    if model::equal(mode, "labels_yes_missing") || model::equal(mode, "labels_no_missing") {
+        last = 2;
+    }
+    label_body(third, last, 0, mode, first, second);
+    return start;
+}
+
+fn label_mode(mode:[]const u8) -> bool {
+    if mode.len < 7_usize {
+        return false;
+    }
+    unsafe {
+        return model::equal(core::slice_from_raw_parts(mode.data, 7), "labels_");
+    }
+}
+
+fn constants() -> u32 {
+    let entry:u32 = image::fresh();
+    image::define(entry, 1, 0);
+    let numbers:[13]usize = [0, 2047, 2048, 4095, 32767, 32768, 268435455, 2147483648, 4294967295, 9223372036854775807, 9223372036854775808, 18446744073709549568, 18446744073709551615];
+    rv64::i(19, 0, 2, 2, 18446744073709551504);
+    var j:usize = 0;
+    while j < 13_usize {
+        unsafe {
+            rv64::constant(5, numbers[j]);
+        }
+        rv64::s(3, 5, 2, j*8_usize);
+        j = j+1_usize;
+    }
+    rv64::constant(10, 1);
+    rv64::i(19, 0, 11, 2, 0);
+    rv64::constant(12, 104);
+    rv64::constant(17, 64);
+    image::word(115);
+    rv64::constant(10, 0);
+    rv64::constant(17, 93);
+    image::word(115);
+    return entry;
+}
+
+fn invalid_data(mode:[]const u8) -> u32 {
+    let entry:u32 = image::fresh();
+    image::define(entry, 1, 0);
+    image::word(3221229683);
+    let data:u32 = image::symbol("data");
+    image::data(data, true, 8, "0000000000000000", 0);
+    if model::equal(mode, "duplicate") {
+        image::data(data, true, 8, "00000000", 0);
+    }
+    if model::equal(mode, "absout") {
+        image::abs64(data, 9, entry, 0);
+    }
+    if model::equal(mode, "absunder") {
+        image::abs64(data, 0, entry, 18446744073709486079);
+    }
+    if model::equal(mode, "overlap") {
+        image::abs64(data, 0, entry, 0);
+        image::abs64(data, 4, entry, 0);
+    }
+    if model::equal(mode, "jumpdata") {
+        rv64::transfer(0, data, true);
+    }
+    if model::equal(mode, "undefined") {
+        rv64::transfer(0, image::symbol("missing"), true);
+    }
+    return entry;
+}
+
+pub fn run() -> u32 {
+    let arg:Result<[]const u8, u32> = linux::argument(1);
+    var mode:[]const u8 = "ir";
+    match arg {
+        Result::<[]const u8,
+        u32>::Ok(value:[]const u8) => {
+            mode = value;
+        },
+        Result::<[]const u8,
+        u32>::Err(error:u32) => {
+            return error;
+        },
+    }
+    model::reset_all();
+    image::reset();
+    var entry:u32 = 0;
+    if model::equal(mode, "asm") {
+        unsafe {
+            let result:Result<usize, u32> = linux::read_file("input.s0", core::slice_of_mut(assembly));
+            match result {
+                Result::<usize,
+                u32>::Ok(n:usize) => {
+                    s0::parse(7, core::slice_from_raw_parts(core::slice_of(assembly).data, n));
+                },
+                Result::<usize,
+                u32>::Err(error:u32) => {
+                    return error;
+                },
+            }
+        }
+        entry = image::symbol("entry");
+    } else {
+        if model::equal(mode, "ir") {
+            entry = program();
+        } else {
+            if model::equal(mode, "constants") {
+                entry = constants();
+            } else {
+                if label_mode(mode) {
+                    entry = label_program(mode);
+                } else {
+                    if !model::equal(mode, "duplicate") && !model::equal(mode, "absout") && !model::equal(mode, "absunder") && !model::equal(mode, "overlap") && !model::equal(mode, "jumpdata") && !model::equal(mode, "undefined") {
+                        entry = simple(mode);
+                    } else {
+                        entry = invalid_data(mode);
+                    }
+                }
+            }
+        }
+    }
+    let output:[]const u8 = image::finish(entry);
+    let created:Result<usize, u32> = linux::create_new("out.elf");
+    match created {
+        Result::<usize,
+        u32>::Err(error:u32) => {
+            return error;
+        },
+        Result::<usize,
+        u32>::Ok(fd:usize) => {
+            unsafe {
+                let written:Result<(), u32> = linux::write_all(fd, output);
+                match written {
+                    Result::<(),
+                    u32>::Err(error:u32) => {
+                        let closed:u32 = linux::close(fd);
+                        return error;
+                    },
+                    Result::<(),
+                    u32>::Ok(unit:()) => {
+                    },
+                }
+            }
+            return linux::close(fd);
+        },
+    }
+}

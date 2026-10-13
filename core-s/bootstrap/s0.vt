@@ -124,19 +124,14 @@ fn immediate(shift:bool) -> usize {
             if negative || n > 63_usize {
                 bad();
             }
-        }
-        else {
-            if negative {
-                if n > 2048_usize {
-                    bad();
-                }
+        } else if negative {
+            if n > 2048_usize {
+                bad();
             }
-            else {
-                if n > 2047_usize {
-                    bad();
-                }
-            }
+        } else if n > 2047_usize {
+            bad();
         }
+
         if negative {
             return 0_usize-%n;
         }
@@ -337,8 +332,7 @@ fn operation(op:[]const u8) -> () {
         done();
         if kind == 3_u32 {
             rv64::i(opcode, f3, rd, base, n);
-        }
-        else {
+        } else {
             rv64::s(f3, rd, base, n);
         }
         return ();
@@ -434,8 +428,7 @@ pub fn parse(file:u32, bytes:[]const u8) -> () {
                         bad();
                     }
                     image::define(id, 1, image::text_position());
-                }
-                else {
+                } else {
                     operation(op);
                 }
             }

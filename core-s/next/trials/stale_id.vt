@@ -1,0 +1,12 @@
+// Must compile, then panic 101: nominal types do not prove arena lifetime.
+module trial::main;
+import trial::arena;
+fn run() -> u32 {
+    arena::begin_function();
+    let old:arena::NodeId = arena::literal(42);
+    arena::end_function();
+    arena::begin_function();
+    let current:arena::NodeId = arena::literal(7);
+    let invalid:arena::NodeId = arena::add(old,current);
+    return 0;
+}

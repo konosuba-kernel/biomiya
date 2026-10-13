@@ -1,0 +1,553 @@
+{
+  "baseline_source_identity": "cd6336297d22dd27efe29cbcc4fe0f0b88c7f4882e9f81fdce6e2f2e5415397d",
+  "baseline_count": 91,
+  "status": "迁移清单；仅描述意图，不是 S-next 的 91 项通过记录",
+  "tests": [
+    {
+      "test": "aggregate_parameters_are_independent_and_results_use_hidden_slots",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "all_generations_resolve_modules_externs_and_reject_without_output",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "arbitrary_u64_constants_execute_and_write_exact_bytes",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "blocking_contracts_propagate_without_changing_generated_elf",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "blocking_long_chains_are_order_independent_and_do_not_skip_core_errors",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "blocking_missing_capture_invalid_ir_and_summary_capacity_fail_closed",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "blocking_policy_is_strict_and_failure_preserves_existing_files",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "branches_loops_and_recursive_calls_preserve_frames",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "checked_arithmetic_and_shifts_really_stop",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "cleanup_reads_exit_values_but_cannot_capture_later_bindings",
+      "disposition": "改变规则",
+      "stage": "P1",
+      "reason": "清理参数改在注册时求值；之后声明的名字仍拒绝"
+    },
+    {
+      "test": "cli_builds_the_target_language_manifest_scanner_and_copy_app",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "compiler_reaches_full_file_fixed_point_and_compiles_changed_behavior",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "constant_walkers_agree_on_values_and_reject_boundaries",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "两个常量结构入口合并，保留溢出和完整验证意图，重写允许节点与上下文期望"
+    },
+    {
+      "test": "data_abs64_bss_and_segment_permissions_execute_against_reference",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "data_and_external_symbol_validation_rejects_malformed_images",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "data_strings_bss_and_root_relocations",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "保留数据/重定位合同，更新构造与模块路径"
+    },
+    {
+      "test": "defer_restrictions_and_raw_permissions_are_enforced",
+      "disposition": "改变规则",
+      "stage": "P1",
+      "reason": "拒绝块式清理，保留 unsafe 权限检查"
+    },
+    {
+      "test": "deferred_slice_checks_and_pointer_operations_remap",
+      "disposition": "改变规则",
+      "stage": "P1",
+      "reason": "块式清理改为调用式，保留切片和指针执行断言"
+    },
+    {
+      "test": "direct_and_external_toolchain_execute_the_same_target_program",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "direct_build_needs_no_external_tools_and_is_deterministic",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "elf_headers_segments_entry_and_padding_are_exact",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "explicit_bounds_pointer_offset_and_raw_storage_execute",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "explicit_returns_and_dead_code_are_checked",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "external_c_calls_symbol_addresses_bitcasts_and_dynamic_bounds_execute",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "externs_are_scalar_unsafe_placeholders",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "failures_preserve_stage_and_source_identity",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "far_control_flow_calls_addresses_and_scratch_contract_execute",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "fixed_grammar_encodes_all_operations_and_localizes_labels",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "frontend_accepts_forward_layout_snapshots_results_and_cleanup",
+      "disposition": "改变规则",
+      "stage": "P1",
+      "reason": "包含块式 defer/旧控制流；改写清理后继续检验原有布局、快照或 arena 意图"
+    },
+    {
+      "test": "frontend_checks_actual_bootstrap_sources_and_ir_block_contract",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "frontend_depth_limits_and_type_shadowing_fail_before_guest_stack_overflow",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图"
+    },
+    {
+      "test": "frontend_merges_module_imports_and_accepts_prefix_namespaces",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图"
+    },
+    {
+      "test": "frontend_rejects_invalid_programs_with_source_diagnostics",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图"
+    },
+    {
+      "test": "frontend_reports_exact_ast_and_recursive_header_locations",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图"
+    },
+    {
+      "test": "frontend_reports_permission_and_capacity_errors_without_target_panics",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图"
+    },
+    {
+      "test": "frontend_separates_cursor_diagnostics_and_reuses_function_arenas",
+      "disposition": "改变规则",
+      "stage": "P1",
+      "reason": "包含块式 defer/旧控制流；改写清理后继续检验原有布局、快照或 arena 意图"
+    },
+    {
+      "test": "frontend_static_layout_keeps_large_zero_arrays_in_bss",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "该场景需按新构造、常量和名字规则改写输入；保留其余检查意图"
+    },
+    {
+      "test": "hidden_result_unit_omission_and_over_eight_positions_follow_lp64",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "instructions_match_independent_clang_lld_bytes",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "integer_widths_wrapping_comparisons_and_lp64_results_execute",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "io_failures_close_files_and_remove_only_the_new_output",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "literals_do_not_unify_across_comparison_operands",
+      "disposition": "改变规则",
+      "stage": "P3",
+      "reason": "比较采用左侧定型后向右侧传递类型"
+    },
+    {
+      "test": "malformed_and_unsupported_inputs_have_file_and_line_spans",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "malformed_externs_slices_and_new_ir_are_rejected",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "malformed_ir_returns_diagnostics_without_source_rechecking",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "malformed_manifest_missing_source_scanner_error_and_limits_fail_cleanly",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "malformed_operands_symbols_entries_and_ranges_are_rejected",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "merged_imports_prefix_modules_and_shadowing",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "模块路径、遮蔽和 root 路径规则重定"
+    },
+    {
+      "test": "modules_merge_and_private_boundaries",
+      "disposition": "改变规则",
+      "stage": "P3",
+      "reason": "允许公开结构的私有字段，重新核对边界"
+    },
+    {
+      "test": "normal_function_named_like_builtin_keeps_its_identity",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "output_failures_and_source_aliases_are_safe",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "overlap_copy_large_stack_offsets_and_zero_size_values_execute",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "project::tests::bounds_manifest_and_input_counts",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "project::tests::preserves_input_order_and_unicode_paths",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "project::tests::rejects_ambiguous_and_escaping_paths",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "project::tests::rejects_duplicates_missing_fields_and_unknowns",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "project_builds_without_tools_is_deterministic_and_resolves_paths_from_root",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "project_cannot_publish_over_any_input_alias",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "project_errors_keep_outputs_and_report_the_correct_source",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "pure_rules_use_only_explicit_scalar_and_layout_inputs",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "real_program_reads_scans_and_copies_multiple_files_and_empty_input",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "real_source_direct_and_reference_paths_agree",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "real_source_resolves_forward_constants_layouts_and_calls",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "删除前向/布局反馈常量，保留前向函数调用"
+    },
+    {
+      "test": "rejected_inputs_never_replace_existing_output",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "return_snapshot_precedes_defer_and_captured_binding_is_stable",
+      "disposition": "改变规则",
+      "stage": "P1",
+      "reason": "保留返回快照，清理改为注册时保存实参"
+    },
+    {
+      "test": "scanner_reports_token_ranges_and_error_offsets",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "self_compiler_diagnostic_change_is_translated_and_check_creates_no_output",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "short_io_and_eintr_are_retried_in_target_code",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "slices_pointer_builtins_and_permissions",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "source_capacity_is_a_resource_diagnostic",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "source_result_construction_propagation_and_match_compose",
+      "disposition": "改变规则",
+      "stage": "P3",
+      "reason": "特殊 Result 和问号退出，换为具体变体及显式分支"
+    },
+    {
+      "test": "source_snapshots_cleanup_and_raw_access_reach_the_checker",
+      "disposition": "改变规则",
+      "stage": "P1",
+      "reason": "赋值求值顺序及清理时机改变，保留值快照和原始访问"
+    },
+    {
+      "test": "static_validation_visits_invalid_tails_and_empty_repeats",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "两个常量结构入口合并，保留溢出和完整验证意图，重写允许节点与上下文期望"
+    },
+    {
+      "test": "statics_validate_arrays_records_constants_and_permissions",
+      "disposition": "改变规则",
+      "stage": "P2",
+      "reason": "布局前常量及新的聚合构造语法"
+    },
+    {
+      "test": "target_constants_match_rust_and_independent_assembler",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_input_keeps_manifest_snapshots_and_handles_short_io",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_ir_aggregate_abi_snapshot_abs64_bss_and_checked_panic",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_lexer_decodes_numbers_strings_ranges_and_nested_comments",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_manifest_limits_and_source_aliases_preserve_inputs",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_preserves_semantic_ir_and_reuses_sparse_label_ranges",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_rejects_bad_numeric_tokens_utf8_and_unsupported_identifiers",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_rejects_invalid_ir_and_link_data_before_output",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_requires_label_one_and_finite_value_layouts",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_s0_all_operations_far_fixups_match_independent_bytes",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "target_s0_rejects_syntax_ranges_and_unsupported_grammar",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "text_capacity_is_checked_before_output_allocation",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "typed_address_rendering_and_generated_labels_execute_without_collisions",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "typed_control_flow_preserves_live_temporaries_across_far_edges",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "typed_lowering_exposes_checks_and_renderer_rejects_malformed_operations",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "unary_casts_unit_comparison_and_unreachable_execute",
+      "disposition": "保留规则",
+      "stage": "P4",
+      "reason": "保留所测合同；移植测试驱动或输入语法后独立验收，旧通过结果不等于新语言通过"
+    },
+    {
+      "test": "unsupported_features_are_distinct_from_language_errors",
+      "disposition": "改变规则",
+      "stage": "P3",
+      "reason": "变体进入接受集，需要更新分类样本"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+module sample;
+struct Pair { small:u8, wide:usize }
+fn run() -> u32 {
+    return (sizeof(Pair) + alignof(Pair) + sizeof(Result<u8,usize>) + alignof([0]usize)) as u32;
+}

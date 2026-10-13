@@ -1,0 +1,8 @@
+module sample;
+struct Pair { x:u32, y:u32 }
+fn run() -> u32 {
+    var first:Pair = make Pair { x:20, y:1 };
+    let saved:Pair = first;
+    first.x = 99;
+    return saved.x + saved.y;
+}

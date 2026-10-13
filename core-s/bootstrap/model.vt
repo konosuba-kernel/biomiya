@@ -141,7 +141,6 @@ pub const SYMBOL_DATA:u32 = 2;
 pub const RESULT_OK:u32 = 0;
 pub const RESULT_ERR:u32 = 1;
 
-
 extern abi(C) fn __b2_syscall6(n:usize, a:usize, b:usize, c:usize, d:usize, e:usize, f:usize) -> usize;
 
 pub struct Span {
@@ -523,45 +522,24 @@ pub fn fail(code:u32,  file:u32,  offset:usize) -> () {
     }
     if code == ERROR_PARSE {
         output("E_PARSE");
+    } else if code == ERROR_NAME {
+        output("E_NAME");
+    } else if code == ERROR_TYPE {
+        output("E_TYPE");
+    } else if code == ERROR_PERMISSION {
+        output("E_PERMISSION");
+    } else if code == ERROR_UNSUPPORTED {
+        output("I_UNSUPPORTED");
+    } else if code == ERROR_LIMIT {
+        output("I_LIMIT");
+    } else if code == ERROR_INTERNAL {
+        output("I_INTERNAL");
+    } else if code == ERROR_IO {
+        output("E_IO");
+    } else {
+        output("E_LINK");
     }
-    else {
-        if code == ERROR_NAME {
-            output("E_NAME");
-        }
-        else {
-            if code == ERROR_TYPE {
-                output("E_TYPE");
-            }
-            else {
-                if code == ERROR_PERMISSION {
-                    output("E_PERMISSION");
-                }
-                else {
-                    if code == ERROR_UNSUPPORTED {
-                        output("I_UNSUPPORTED");
-                    }
-                    else {
-                        if code == ERROR_LIMIT {
-                            output("I_LIMIT");
-                        }
-                        else {
-                            if code == ERROR_INTERNAL {
-                                output("I_INTERNAL");
-                            }
-                            else {
-                                if code == ERROR_IO {
-                                    output("E_IO");
-                                }
-                                else {
-                                    output("E_LINK");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+
     output(" file=");
     decimal(file as usize);
     output(" byte=");

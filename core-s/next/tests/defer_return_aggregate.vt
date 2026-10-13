@@ -1,0 +1,6 @@
+extern abi(C) fn emit(c:usize)->();
+fn note(c:usize)->(){unsafe{emit(c);}return();}
+struct Box{value:u32}
+unsafe fn change(p:*Box)->(){unsafe{(*p).value=9;}return();}
+fn saved()->Box{var x:Box=Box{value:7};unsafe{defer change(core::addr_of_mut(x));return x;}}
+fn run()->u32{return saved().value;}

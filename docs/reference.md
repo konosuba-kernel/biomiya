@@ -1,5 +1,7 @@
 # biomiya 语言参考手册
 
+> 本页对应旧 0.5 实现。当前 Core S 编译器使用 [S-next 0.1 参考](../core-s/docs/reference/s-next-0.1.md)，两者不承诺源码兼容。
+
 **版本** 0.5
 **配置** Core；Extend 按需启用；首个目标配置为 RV64
 **状态** Core 实现基线；Extend 按章节声明支持范围；尚待编译器合规范验证

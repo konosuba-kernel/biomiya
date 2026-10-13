@@ -1,0 +1,1820 @@
+module bootstrap::parse;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::lex;
+static mut token:model::Token = make model::Token {
+    kind:model::TOKEN_EOF,
+    file:0,
+    start:0,
+    end:0,
+    number:0,
+    suffix:0
+};
+// Scanner cursor and diagnostic provenance are separate small state. Scanning
+// owns token; AST/checker operations may update diagnostic without moving it.
+static mut diagnostic:model::Span = zero;
+pub fn span() -> model::Span {
+    unsafe {
+        return make model::Span {
+            file:token.file,
+            start:token.start,
+            end:token.end
+        };
+    }
+}
+
+pub fn fail(code:u32) -> () {
+    unsafe {
+        model::diagnose(code, diagnostic);
+    }
+    return ();
+}
+
+pub fn locate(location:model::Span) -> () {
+    unsafe {
+        diagnostic = location;
+    }
+    return ();
+}
+
+pub fn limit(actual:usize, capacity:usize) -> () {
+    unsafe {
+        model::limit_at(actual, capacity, diagnostic.file, diagnostic.start as usize);
+    }
+    return ();
+}
+
+pub fn at(word:[]const u8) -> bool {
+    unsafe {
+        return lex::is(token, word);
+    }
+}
+
+pub fn advance() -> () {
+    unsafe {
+        token = lex::next(token.file, token.end as usize);
+        diagnostic = span();
+    }
+    return ();
+}
+
+pub fn seek(file:u32, offset:u32) -> () {
+    unsafe {
+        token = lex::next(file, offset as usize);
+        diagnostic = span();
+    }
+    return ();
+}
+
+pub fn eat(word:[]const u8) -> bool {
+    if at(word) {
+        advance();
+        return true;
+    }
+    return false;
+}
+
+pub fn need(word:[]const u8) -> () {
+    if !eat(word) {
+        fail(model::ERROR_PARSE);
+    }
+    return ();
+}
+
+pub fn text(id:model::NameId) -> []const u8 {
+    return model::get_name(id).bytes;
+}
+
+pub fn ident() -> model::NameId {
+    unsafe {
+        if token.kind != model::TOKEN_IDENT {
+            fail(model::ERROR_PARSE);
+        }
+        let word:[]const u8 = lex::bytes(token);
+        if model::equal(word, "fn") || model::equal(word, "struct") || model::equal(word, "module") || model::equal(word, "let") || model::equal(word, "var") || model::equal(word, "return") || model::equal(word, "unsafe") || model::equal(word, "true") || model::equal(word, "false") || model::equal(word, "static") || model::equal(word, "const") || model::equal(word, "pub") || model::equal(word, "if") || model::equal(word, "else") || model::equal(word, "while") || model::equal(word, "loop") || model::equal(word, "match") || model::equal(word, "break") || model::equal(word, "continue") || model::equal(word, "defer") || model::equal(word, "extern") || model::equal(word, "import") || model::equal(word, "null") || model::equal(word, "as") || model::equal(word, "_") || model::equal(word, "make") || model::equal(word, "zero") || model::equal(word, "enum") {
+            fail(model::ERROR_PARSE);
+        }
+        let id:model::NameId = model::name(word);
+        advance();
+        return id;
+    }
+}
+
+pub fn join(a:[]const u8, b:[]const u8) -> model::NameId {
+    if a.len == 0_usize {
+        return model::name(b);
+    }
+    var buffer:[1024]u8 = [0;1024];
+    if a.len+b.len+2_usize > 1024_usize {
+        model::limit(a.len+b.len+2_usize, 1024);
+    }
+    unsafe {
+        var i:usize = 0;
+        while i < a.len {
+            buffer[i] = a[i];
+            i = i+1_usize;
+        }
+        buffer[i] = 58;
+        buffer[i+1_usize] = 58;
+        i = i+2_usize;
+        var j:usize = 0;
+        while j < b.len {
+            buffer[i+j] = b[j];
+            j = j+1_usize;
+        }
+        return model::name(core::slice_from_raw_parts(core::slice_of(buffer).data, i+j));
+    }
+}
+
+pub fn view(bytes:[]const u8, start:usize, end:usize) -> []const u8 {
+    if start > end || end > bytes.len {
+        fail(model::ERROR_INTERNAL);
+    }
+    unsafe {
+        return core::slice_from_raw_parts(core::ptr_add(bytes.data, start), end-start);
+    }
+}
+
+pub fn path() -> model::NameId {
+    var id:model::NameId = ident();
+    while at("::") {
+        unsafe {
+            let next:model::Token = lex::next(token.file, token.end as usize);
+            if lex::is(next, "<") {
+                return id;
+            }
+        }
+        advance();
+        let part:model::NameId = ident();
+        id = join(text(id), text(part));
+    }
+    return id;
+}
+
+pub fn close_gt() -> () {
+    if eat(">") {
+        return ();
+    }
+    if at(">>") || at(">=") || at(">>=") {
+        unsafe {
+            token.start = token.start+1_u32;
+            diagnostic = span();
+        }
+        return ();
+    }
+    fail(model::ERROR_PARSE);
+    return ();
+}
+
+pub fn precedence() -> u32 {
+    if at("||") {
+        return 1;
+    }
+    if at("&&") {
+        return 2;
+    }
+    if at("==") || at("!=") {
+        return 3;
+    }
+    if at("<") || at("<=") || at(">") || at(">=") {
+        return 4;
+    }
+    if at("|") {
+        return 5;
+    }
+    if at("^") {
+        return 6;
+    }
+    if at("&") {
+        return 7;
+    }
+    if at("<<") || at(">>") {
+        return 8;
+    }
+    if at("+") || at("-") || at("+%") || at("-%") {
+        return 9;
+    }
+    if at("*") || at("/") || at("%") || at("*%") {
+        return 10;
+    }
+    return 0;
+}
+
+pub fn binop() -> u32 {
+    if at("+") {
+        return model::BIN_ADD;
+    }
+    if at("-") {
+        return model::BIN_SUB;
+    }
+    if at("*") {
+        return model::BIN_MUL;
+    }
+    if at("/") {
+        return model::BIN_DIV;
+    }
+    if at("%") {
+        return model::BIN_REM;
+    }
+    if at("+%") {
+        return model::BIN_WRAP_ADD;
+    }
+    if at("-%") {
+        return model::BIN_WRAP_SUB;
+    }
+    if at("*%") {
+        return model::BIN_WRAP_MUL;
+    }
+    if at("<<") {
+        return model::BIN_SHL;
+    }
+    if at(">>") {
+        return model::BIN_SHR;
+    }
+    if at("&") {
+        return model::BIN_BIT_AND;
+    }
+    if at("|") {
+        return model::BIN_BIT_OR;
+    }
+    if at("^") {
+        return model::BIN_BIT_XOR;
+    }
+    if at("==") {
+        return model::BIN_EQ;
+    }
+    if at("!=") {
+        return model::BIN_NE;
+    }
+    if at("<") {
+        return model::BIN_LT;
+    }
+    if at("<=") {
+        return model::BIN_LE;
+    }
+    if at(">") {
+        return model::BIN_GT;
+    }
+    if at(">=") {
+        return model::BIN_GE;
+    }
+    if at("&&") {
+        return model::BIN_AND;
+    }
+    if at("||") {
+        return model::BIN_OR;
+    }
+    fail(model::ERROR_PARSE);
+    return model::BIN_INVALID;
+}
+
+// Opaque arena handles distinguish expressions from type syntax. Generation zero
+// belongs to persistent headers; each function receives a new generation.
+pub struct NodeId {
+    raw:u32
+}
+
+pub struct TypeSyntaxId {
+    raw:u32
+}
+
+pub struct Literal {
+    pub bits:usize,
+    pub suffix:u32,
+}
+
+pub struct Unary {
+    pub op:u32,
+    pub operand:NodeId,
+}
+
+pub struct Binary {
+    pub op:u32,
+    pub left:NodeId,
+    pub right:NodeId,
+}
+
+pub struct Cast {
+    pub value:NodeId,
+    pub target:TypeSyntaxId,
+}
+
+pub struct Call {
+    pub callee:model::NameId,
+    pub arguments:NodeId,
+}
+
+pub struct FieldAccess {
+    pub base:NodeId,
+    pub name:model::NameId,
+}
+
+pub struct IndexAccess {
+    pub base:NodeId,
+    pub index:NodeId,
+}
+
+pub struct RecordValue {
+    pub type_name:model::NameId,
+    pub fields:NodeId,
+}
+
+pub struct FieldValue {
+    pub name:model::NameId,
+    pub value:NodeId,
+}
+
+pub struct RepeatValue {
+    pub value:NodeId,
+    pub length:NodeId,
+}
+
+pub struct PointerValue {
+    pub target:TypeSyntaxId,
+    pub address:NodeId,
+}
+
+pub struct VariantPattern {
+    pub path:model::NameId,
+    pub binding:model::NameId,
+    pub has_payload:bool,
+}
+
+pub struct MatchArm {
+    pub pattern:NodeId,
+    pub body:NodeId,
+}
+
+pub struct Binding {
+    pub name:model::NameId,
+    pub declared:TypeSyntaxId,
+    pub initializer:NodeId,
+    pub mutable:bool,
+}
+
+pub struct Assignment {
+    pub target:NodeId,
+    pub value:NodeId,
+}
+
+pub struct Conditional {
+    pub condition:NodeId,
+    pub then_body:NodeId,
+    pub else_body:NodeId,
+}
+
+pub struct WhileLoop {
+    pub condition:NodeId,
+    pub body:NodeId,
+}
+
+pub struct MatchValue {
+    pub value:NodeId,
+    pub arms:NodeId,
+}
+
+pub struct IndirectSyntax {
+    pub element:TypeSyntaxId,
+    pub flags:u32,
+}
+
+pub struct ArraySyntax {
+    pub element:TypeSyntaxId,
+    pub length:NodeId,
+}
+
+pub enum Syntax {
+    Empty,
+    Integer(Literal),
+    Boolean(bool),
+    Unit,
+    Null,
+    Zero,
+    Name(model::NameId),
+    String(model::NameId),
+    Unary(Unary),
+    Binary(Binary),
+    Cast(Cast),
+    Call(Call),
+    Field(FieldAccess),
+    Index(IndexAccess),
+    Record(RecordValue),
+    FieldValue(FieldValue),
+    Array(NodeId),
+    Repeat(RepeatValue),
+    SizeOf(TypeSyntaxId),
+    AlignOf(TypeSyntaxId),
+    Pointer(PointerValue),
+    VariantPattern(VariantPattern),
+    Wildcard,
+    MatchArm(MatchArm),
+    Block(NodeId),
+    Bind(Binding),
+    Assign(Assignment),
+    Expression(NodeId),
+    Unsafe(NodeId),
+    If(Conditional),
+    While(WhileLoop),
+    Loop(NodeId),
+    Return(NodeId),
+    Break,
+    Continue,
+    Defer(Call),
+    Match(MatchValue),
+    EmptyStatement,
+}
+
+pub enum TypeForm {
+    Empty,
+    Unit,
+    Named(model::NameId),
+    Pointer(IndirectSyntax),
+    Slice(IndirectSyntax),
+    Array(ArraySyntax)
+}
+
+pub struct Node {
+    pub span:model::Span,
+    pub next:NodeId,
+    pub syntax:Syntax
+}
+
+static mut nodes:[32769]Node = zero;
+static mut node_used:u32 = 0;
+static mut arena_file:u32 = 0;
+static mut expression_depth:u32 = 0;
+static mut block_depth:u32 = 0;
+static mut statement_depth:u32 = 0;
+static mut header_mark:u32 = 0;
+static mut type_mark:u32 = 0;
+static mut generation:u32 = 0;
+static mut collecting:bool = false;
+static mut active:bool = false;
+static mut string_buffer:[65536]u8 = zero;
+pub fn nil() -> NodeId {
+    return make NodeId {
+        raw:0
+    };
+}
+
+pub fn no_type() -> TypeSyntaxId {
+    return make TypeSyntaxId {
+        raw:0
+    };
+}
+
+pub fn is_none(id:NodeId) -> bool {
+    return id.raw == 0_u32;
+}
+
+pub fn has_type(id:TypeSyntaxId) -> bool {
+    return id.raw != 0_u32;
+}
+
+fn valid(raw:u32, used:u32, mark:u32) -> u32 {
+    let slot:u32 = raw&65535_u32;
+    let epoch:u32 = raw>>16_u32;
+    unsafe {
+        if slot == 0_u32 || slot > used {
+            fail(model::ERROR_INTERNAL);
+        }
+        if slot <= mark {
+            if epoch != 0_u32 {
+                fail(model::ERROR_INTERNAL);
+            }
+        } else if collecting {
+            if epoch != 0_u32 {
+                fail(model::ERROR_INTERNAL);
+            }
+        } else if !active || epoch != generation {
+            fail(model::ERROR_INTERNAL);
+        }
+    }
+    return slot;
+}
+
+pub fn index(id:NodeId) -> u32 {
+    unsafe {
+        return valid(id.raw, node_used, header_mark);
+    }
+}
+
+pub fn type_index(id:TypeSyntaxId) -> u32 {
+    unsafe {
+        return valid(id.raw, type_count, type_mark);
+    }
+}
+
+fn node_id(slot:u32) -> NodeId {
+    unsafe {
+        var epoch:u32 = 0;
+        if slot > header_mark && !collecting {
+            epoch = generation;
+        }
+        return make NodeId {
+            raw:slot|(epoch<<16_u32)
+        };
+    }
+}
+
+fn type_id(slot:u32) -> TypeSyntaxId {
+    unsafe {
+        var epoch:u32 = 0;
+        if slot > type_mark && !collecting {
+            epoch = generation;
+        }
+        return make TypeSyntaxId {
+            raw:slot|(epoch<<16_u32)
+        };
+    }
+}
+
+pub fn get(id:NodeId) -> Node {
+    unsafe {
+        return nodes[index(id) as usize];
+    }
+}
+
+pub fn next(id:NodeId) -> NodeId {
+    return get(id).next;
+}
+
+fn add(syntax:Syntax, start:u32) -> NodeId {
+    unsafe {
+        if !collecting && !active {
+            fail(model::ERROR_INTERNAL);
+        }
+        if node_used >= 32768_u32 {
+            model::limit((node_used as usize)+1_usize, 32768);
+        }
+        node_used = node_used+1_u32;
+        nodes[node_used as usize] = make Node {
+            span:make model::Span {
+                file:arena_file,
+                start:start,
+                end:start+1_u32
+            },
+            next:nil(),
+            syntax:syntax
+        };
+        return node_id(node_used);
+    }
+}
+
+fn append(tail:NodeId, node:NodeId) -> NodeId {
+    let checked:u32 = index(node);
+    if !is_none(tail) {
+        unsafe {
+            nodes[index(tail) as usize].next = node;
+        }
+    }
+    return node;
+}
+
+pub fn reset(file:u32) -> () {
+    unsafe {
+        if (node_used as usize) > model::max_ast {
+            model::max_ast = node_used as usize;
+        }
+        node_used = header_mark;
+        type_count = type_mark;
+        arena_file = file;
+        expression_depth = 0;
+        block_depth = 0;
+        statement_depth = 0;
+        type_depth = 0;
+        if !collecting {
+            if generation == 65535_u32 {
+                limit(65536, 65535);
+            }
+            generation = generation+1_u32;
+            active = file != 0_u32;
+        }
+    }
+    return ();
+}
+
+pub fn location(node:NodeId) -> model::Span {
+    return get(node).span;
+}
+
+fn start() -> u32 {
+    unsafe {
+        return token.start;
+    }
+}
+
+pub fn expression(minimum:u32) -> NodeId {
+    unsafe {
+        if expression_depth >= 64_u32 {
+            model::limit_at((expression_depth as usize)+1_usize, 64, token.file, token.start as usize);
+        }
+        expression_depth = expression_depth+1_u32;
+    }
+    let result:NodeId = expression_inner(minimum);
+    unsafe {
+        expression_depth = expression_depth-1_u32;
+    }
+    return result;
+}
+
+// Opening [ has already been consumed; this function consumes the closing ].
+fn array_expression(sp:u32) -> NodeId {
+    var value:NodeId = nil();
+    unsafe {
+        if eat("]") {
+            value = add(Syntax::Array(nil()), sp);
+        } else {
+            let first:NodeId = expression(0);
+            if eat(";") {
+                let length:NodeId = expression(0);
+                need("]");
+                value = add(Syntax::Repeat(make RepeatValue {
+                    value:first,
+                    length:length
+                }), sp);
+            } else {
+                var tail:NodeId = first;
+                while eat(",") && !at("]") {
+                    tail = append(tail, expression(0));
+                }
+                need("]");
+                value = add(Syntax::Array(first), sp);
+            }
+        }
+    }
+    return value;
+}
+
+// A name stays a name. Only the explicit make marker starts a record.
+fn named_expression(sp:u32) -> NodeId {
+    if at("offsetof") || at("Option") || at("Result") {
+        fail(model::ERROR_UNSUPPORTED);
+    }
+    let name:model::NameId = path();
+    if model::equal(text(name), "core::ptr") && eat("::") {
+        need("<");
+        let ty:TypeSyntaxId = type_expr();
+        close_gt();
+        need("(");
+        let arg:NodeId = expression(0);
+        need(")");
+        return add(Syntax::Pointer(make PointerValue {
+            target:ty,
+            address:arg
+        }), sp);
+    }
+    return add(Syntax::Name(name), sp);
+}
+
+fn make_expression(sp:u32) -> NodeId {
+    let name:model::NameId = path();
+    need("{");
+    var first:NodeId = nil();
+    var tail:NodeId = nil();
+    while !eat("}") {
+        let field:model::NameId = ident();
+        need(":");
+        let value:NodeId = expression(0);
+        let pair:NodeId = add(Syntax::FieldValue(make FieldValue {
+            name:field,
+            value:value
+        }), sp);
+        if is_none(first) {
+            first = pair;
+        }
+        tail = append(tail, pair);
+        if !eat(",") {
+            need("}");
+            break;
+        }
+    }
+    return add(Syntax::Record(make RecordValue {
+        type_name:name,
+        fields:first
+    }), sp);
+}
+
+fn primary(sp:u32) -> NodeId {
+    var value:NodeId = nil();
+    unsafe {
+        if token.kind == model::TOKEN_NUMBER {
+            value = add(Syntax::Integer(make Literal {
+                suffix:token.suffix,
+                bits:token.number
+            }), sp);
+            advance();
+        } else if token.kind == model::TOKEN_STRING {
+            let len:usize = lex::decode(token, core::slice_of_mut(string_buffer));
+            let name:model::NameId = model::name(core::slice_from_raw_parts(core::slice_of(string_buffer).data, len));
+            value = add(Syntax::String(name), sp);
+            advance();
+        } else if eat("true") {
+            value = add(Syntax::Boolean(true), sp);
+        } else if eat("false") {
+            value = add(Syntax::Boolean(false), sp);
+        } else if eat("make") {
+            value = make_expression(sp);
+        } else if eat("zero") {
+            value = add(Syntax::Zero, sp);
+        } else if eat("null") {
+            value = add(Syntax::Null, sp);
+        } else if eat("(") {
+            if eat(")") {
+                value = add(Syntax::Unit, sp);
+            } else {
+                value = expression(0);
+                need(")");
+            }
+        } else if eat("[") {
+            value = array_expression(sp);
+        } else if at("!") || at("~") || at("-") || at("*") {
+            var op:u32 = model::UNARY_NOT;
+            if at("~") {
+                op = model::UNARY_BIT_NOT;
+            }
+            if at("-") {
+                op = model::UNARY_NEG;
+            }
+            if at("*") {
+                op = model::UNARY_DEREF;
+            }
+            advance();
+            value = add(Syntax::Unary(make Unary {
+                op:op,
+                operand:expression(12)
+            }), sp);
+        } else if at("sizeof") || at("alignof") {
+            let alignment:bool = at("alignof");
+            advance();
+            need("(");
+            let ty:TypeSyntaxId = type_expr();
+            need(")");
+            if alignment {
+                value = add(Syntax::AlignOf(ty), sp);
+            } else {
+                value = add(Syntax::SizeOf(ty), sp);
+            }
+        } else {
+            value = named_expression(sp);
+        }
+    }
+    return value;
+}
+
+// Precedence climbing extends one primary; recursion budgets stay in expression().
+fn expression_inner(minimum:u32) -> NodeId {
+    let sp:u32 = start();
+    var value:NodeId = primary(sp);
+    unsafe {
+        loop {
+            if minimum <= 13_u32 && eat(".") {
+                value = add(Syntax::Field(make FieldAccess {
+                    base:value,
+                    name:ident()
+                }), sp);
+                continue;
+            }
+            if minimum <= 13_u32 && eat("[") {
+                let index:NodeId = expression(0);
+                need("]");
+                value = add(Syntax::Index(make IndexAccess {
+                    base:value,
+                    index:index
+                }), sp);
+                continue;
+            }
+            if at("?") {
+                fail(model::ERROR_UNSUPPORTED);
+            }
+            if minimum <= 13_u32 && eat("(") {
+                let target:model::NameId = name_of(value);
+                if model::is_no_name(target) {
+                    fail(model::ERROR_UNSUPPORTED);
+                }
+                var first:NodeId = nil();
+                var tail:NodeId = nil();
+                while !eat(")") {
+                    let arg:NodeId = expression(0);
+                    if is_none(first) {
+                        first = arg;
+                    }
+                    tail = append(tail, arg);
+                    if !eat(",") {
+                        need(")");
+                        break;
+                    }
+                }
+                value = add(Syntax::Call(make Call {
+                    callee:target,
+                    arguments:first
+                }), sp);
+                continue;
+            }
+            if minimum <= 11_u32 && eat("as") {
+                value = add(Syntax::Cast(make Cast {
+                    value:value,
+                    target:type_expr()
+                }), sp);
+                continue;
+            }
+            let power:u32 = precedence();
+            if power == 0_u32 || power < minimum {
+                break;
+            }
+            let op:u32 = binop();
+            advance();
+            let right:NodeId = expression(power+1_u32);
+            value = add(Syntax::Binary(make Binary {
+                op:op,
+                left:value,
+                right:right
+            }), sp);
+        }
+    }
+    return value;
+}
+
+fn pattern() -> NodeId {
+    let sp:u32 = start();
+    if eat("_") {
+        return add(Syntax::Wildcard, sp);
+    }
+    unsafe {
+        if token.kind == model::TOKEN_NUMBER || at("true") || at("false") {
+            return expression(13);
+        }
+    }
+    let name:model::NameId = path();
+    var binding:model::NameId = model::no_name();
+    var has_paren:bool = false;
+    if eat("(") {
+        has_paren = true;
+        if !eat("_") {
+            binding = ident();
+        }
+        need(")");
+    }
+    return add(Syntax::VariantPattern(make VariantPattern {
+        path:name,
+        binding:binding,
+        has_payload:has_paren
+    }), sp);
+}
+
+pub fn block() -> NodeId {
+    unsafe {
+        if block_depth >= 48_u32 {
+            model::limit_at((block_depth as usize)+1_usize, 48, token.file, token.start as usize);
+        }
+        block_depth = block_depth+1_u32;
+    }
+    let result:NodeId = block_inner();
+    unsafe {
+        block_depth = block_depth-1_u32;
+    }
+    return result;
+}
+
+fn block_inner() -> NodeId {
+    let sp:u32 = start();
+    need("{");
+    var first:NodeId = nil();
+    var tail:NodeId = nil();
+    while !eat("}") {
+        let item:NodeId = statement();
+        if is_none(first) {
+            first = item;
+        }
+        tail = append(tail, item);
+    }
+    return add(Syntax::Block(first), sp);
+}
+
+pub fn statement() -> NodeId {
+    unsafe {
+        if statement_depth >= 64_u32 {
+            model::limit_at((statement_depth as usize)+1_usize, 64, token.file, token.start as usize);
+        }
+        statement_depth = statement_depth+1_u32;
+    }
+    let result:NodeId = statement_inner();
+    unsafe {
+        statement_depth = statement_depth-1_u32;
+    }
+    return result;
+}
+
+fn statement_inner() -> NodeId {
+    let sp:u32 = start();
+    if eat(";") {
+        return add(Syntax::EmptyStatement, sp);
+    }
+    if at("{") {
+        return block();
+    }
+    if eat("unsafe") {
+        return add(Syntax::Unsafe(block()), sp);
+    }
+    if at("let") || at("var") {
+        var mutable:bool = false;
+        if at("var") {
+            mutable = true;
+        }
+        advance();
+        let name:model::NameId = ident();
+        var ty:TypeSyntaxId = no_type();
+        if eat(":") {
+            ty = type_expr();
+        }
+        if !eat("=") {
+            fail(model::ERROR_TYPE);
+        }
+        let value:NodeId = expression(0);
+        need(";");
+        return add(Syntax::Bind(make Binding {
+            name:name,
+            declared:ty,
+            initializer:value,
+            mutable:mutable
+        }), sp);
+    }
+    if eat("if") {
+        let condition:NodeId = expression(0);
+        let then_:NodeId = block();
+        var other:NodeId = nil();
+        if eat("else") {
+            if at("if") {
+                let nested:NodeId = statement();
+                other = add(Syntax::Block(nested), sp);
+            } else {
+                other = block();
+            }
+        }
+        return add(Syntax::If(make Conditional {
+            condition:condition,
+            then_body:then_,
+            else_body:other
+        }), sp);
+    }
+    if eat("while") {
+        let condition:NodeId = expression(0);
+        return add(Syntax::While(make WhileLoop {
+            condition:condition,
+            body:block()
+        }), sp);
+    }
+    if eat("loop") {
+        return add(Syntax::Loop(block()), sp);
+    }
+    if eat("return") {
+        let value:NodeId = expression(0);
+        need(";");
+        return add(Syntax::Return(value), sp);
+    }
+    if eat("break") {
+        need(";");
+        return add(Syntax::Break, sp);
+    }
+    if eat("continue") {
+        need(";");
+        return add(Syntax::Continue, sp);
+    }
+    if eat("defer") {
+        if at("{") {
+            fail(model::ERROR_UNSUPPORTED);
+        }
+        let call:NodeId = expression(0);
+        let checked:Call = call_of(call);
+        need(";");
+        return add(Syntax::Defer(checked), sp);
+    }
+    if eat("match") {
+        let value:NodeId = expression(0);
+        need("{");
+        var first:NodeId = nil();
+        var tail:NodeId = nil();
+        while !eat("}") {
+            let p:NodeId = pattern();
+            need("=>");
+            let body:NodeId = block();
+            let arm:NodeId = add(Syntax::MatchArm(make MatchArm {
+                pattern:p,
+                body:body
+            }), sp);
+            if is_none(first) {
+                first = arm;
+            }
+            tail = append(tail, arm);
+            if !eat(",") {
+                need("}");
+                break;
+            }
+        }
+        return add(Syntax::Match(make MatchValue {
+            value:value,
+            arms:first
+        }), sp);
+    }
+    if at("for") || at("resource") || at("enum") || at("type") {
+        fail(model::ERROR_UNSUPPORTED);
+    }
+    let target:NodeId = expression(0);
+    if eat("=") {
+        let value:NodeId = expression(0);
+        need(";");
+        return add(Syntax::Assign(make Assignment {
+            target:target,
+            value:value
+        }), sp);
+    }
+    need(";");
+    return add(Syntax::Expression(target), sp);
+}
+
+pub struct TypeSyntax {
+    pub span:model::Span,
+    pub form:TypeForm
+}
+
+pub struct Member {
+    pub name:model::NameId,
+    pub ty:TypeSyntaxId,
+    pub flags:u32,
+    pub span:model::Span
+}
+
+pub struct Header {
+    pub kind:u32,
+    pub name:model::NameId,
+    pub file:u32,
+    pub flags:u32,
+    pub ty:TypeSyntaxId,
+    pub first:u32,
+    pub count:u32,
+    pub init:NodeId,
+    pub start:u32,
+    pub end:u32
+}
+
+static mut type_nodes:[32769]TypeSyntax = zero;
+static mut type_count:u32 = 0;
+static mut type_depth:u32 = 0;
+enum MemberEntry {
+    Empty,
+    Value(Member)
+}
+
+static mut members:[32769]MemberEntry = zero;
+static mut member_count:u32 = 0;
+enum HeaderEntry {
+    Empty,
+    Value(Header)
+}
+
+static mut headers:[8193]HeaderEntry = zero;
+static mut header_used:u32 = 0;
+pub fn type_node(id:TypeSyntaxId) -> TypeSyntax {
+    unsafe {
+        return type_nodes[type_index(id) as usize];
+    }
+}
+
+pub fn member(id:u32) -> Member {
+    unsafe {
+        if id == 0_u32 || id > member_count {
+            fail(model::ERROR_INTERNAL);
+        }
+        loop {
+            match members[id as usize] {
+                MemberEntry::Empty => {
+                    fail(model::ERROR_INTERNAL);
+                },
+                MemberEntry::Value(value) => {
+                    return value;
+                }
+            }
+        }
+    }
+}
+
+pub fn header(id:u32) -> Header {
+    unsafe {
+        if id == 0_u32 || id > header_used {
+            fail(model::ERROR_INTERNAL);
+        }
+        loop {
+            match headers[id as usize] {
+                HeaderEntry::Empty => {
+                    fail(model::ERROR_INTERNAL);
+                },
+                HeaderEntry::Value(value) => {
+                    return value;
+                }
+            }
+        }
+    }
+}
+
+fn add_type(form:TypeForm, sp:model::Span) -> TypeSyntaxId {
+    unsafe {
+        if !collecting && !active {
+            fail(model::ERROR_INTERNAL);
+        }
+        if type_count >= 32768_u32 {
+            limit((type_count as usize)+1_usize, 32768);
+        }
+        type_count = type_count+1_u32;
+        type_nodes[type_count as usize] = make TypeSyntax {
+            span:sp,
+            form:form
+        };
+        return type_id(type_count);
+    }
+}
+
+pub fn type_expr() -> TypeSyntaxId {
+    unsafe {
+        if type_depth >= 64_u32 {
+            limit((type_depth as usize)+1_usize, 64);
+        }
+        type_depth = type_depth+1_u32;
+    }
+    let result:TypeSyntaxId = type_inner();
+    unsafe {
+        type_depth = type_depth-1_u32;
+    }
+    return result;
+}
+
+fn type_inner() -> TypeSyntaxId {
+    let sp:model::Span = span();
+    if eat("(") {
+        need(")");
+        return add_type(TypeForm::Unit, sp);
+    }
+    if eat("*") {
+        if at("user") || at("phys") || at("mmio") {
+            fail(model::ERROR_UNSUPPORTED);
+        }
+        let ignored:bool = eat("kernel");
+        var flags:u32 = 0;
+        if eat("const") {
+            flags = model::TYPE_CONST;
+        }
+        return add_type(TypeForm::Pointer(make IndirectSyntax {
+            element:type_expr(),
+            flags:flags
+        }), sp);
+    }
+    if eat("[") {
+        if eat("]") {
+            var flags:u32 = 0;
+            if eat("const") {
+                flags = model::TYPE_CONST;
+            }
+            return add_type(TypeForm::Slice(make IndirectSyntax {
+                element:type_expr(),
+                flags:flags
+            }), sp);
+        }
+        let length:NodeId = expression(0);
+        need("]");
+        return add_type(TypeForm::Array(make ArraySyntax {
+            element:type_expr(),
+            length:length
+        }), sp);
+    }
+    if at("fn") || at("unsafe") || at("extern") || at("!") || at("Option") || at("Result") {
+        fail(model::ERROR_UNSUPPORTED);
+    }
+    return add_type(TypeForm::Named(path()), sp);
+}
+
+fn add_member(item:Member) -> () {
+    unsafe {
+        if member_count >= 32768_u32 {
+            limit((member_count as usize)+1_usize, 32768);
+        }
+        member_count = member_count+1_u32;
+        members[member_count as usize] = MemberEntry::Value(item);
+    }
+    return ();
+}
+
+fn skip_body() -> u32 {
+    need("{");
+    var depth:u32 = 1;
+    unsafe {
+        while depth != 0_u32 {
+            if token.kind == model::TOKEN_EOF {
+                fail(model::ERROR_PARSE);
+            }
+            if at("{") {
+                depth = depth+1_u32;
+            }
+            if at("}") {
+                depth = depth-1_u32;
+            }
+            advance();
+        }
+        return token.start;
+    }
+}
+
+fn declaration() -> () {
+    unsafe {
+        var h:Header = make Header {
+            kind:0,
+            name:model::no_name(),
+            file:token.file,
+            flags:0,
+            ty:no_type(),
+            first:0,
+            count:0,
+            init:nil(),
+            start:token.start,
+            end:0
+        };
+        if eat("pub") {
+            h.flags = model::FLAG_PUBLIC;
+        }
+        if eat("struct") {
+            h.kind = model::DECL_STRUCT;
+        } else if eat("enum") {
+            h.kind = model::DECL_ENUM;
+        } else if eat("const") {
+            h.kind = model::DECL_CONST;
+        } else if eat("static") {
+            h.kind = model::DECL_STATIC;
+            if eat("mut") {
+                h.flags = h.flags|model::FLAG_MUTABLE;
+            }
+        } else {
+            if at("type") || at("impl") || at("resource") {
+                fail(model::ERROR_UNSUPPORTED);
+            }
+            h.kind = model::DECL_FUNCTION;
+            if eat("extern") {
+                h.kind = model::DECL_EXTERN;
+                need("abi");
+                need("(");
+                need("C");
+                need(")");
+                h.flags = h.flags|model::FLAG_UNSAFE;
+            }
+            if eat("unsafe") {
+                h.flags = h.flags|model::FLAG_UNSAFE;
+            }
+            need("fn");
+        }
+        h.name = ident();
+        if h.kind == model::DECL_STRUCT || h.kind == model::DECL_ENUM || h.kind == model::DECL_FUNCTION || h.kind == model::DECL_EXTERN {
+            h.first = member_count+1_u32;
+            var close:[]const u8 = ")";
+            if h.kind == model::DECL_STRUCT || h.kind == model::DECL_ENUM {
+                need("{");
+                close = "}";
+            } else {
+                need("(");
+            }
+            while !eat(close) {
+                var flags:u32 = 0;
+                if h.kind == model::DECL_STRUCT && eat("pub") {
+                    flags = model::FLAG_PUBLIC;
+                }
+                let sp:model::Span = span();
+                let name:model::NameId = ident();
+                var ty:TypeSyntaxId = no_type();
+                if h.kind == model::DECL_ENUM {
+                    if eat("(") {
+                        flags = model::FLAG_PAYLOAD;
+                        ty = type_expr();
+                        need(")");
+                    }
+                } else {
+                    need(":");
+                    ty = type_expr();
+                }
+                add_member(make Member {
+                    name:name,
+                    ty:ty,
+                    flags:flags,
+                    span:sp
+                });
+                h.count = h.count+1_u32;
+                if h.count > 256_u32 {
+                    limit(h.count as usize, 256);
+                }
+                if !eat(",") {
+                    need(close);
+                    break;
+                }
+            }
+            if h.kind == model::DECL_FUNCTION || h.kind == model::DECL_EXTERN {
+                need("->");
+                h.ty = type_expr();
+                if h.kind == model::DECL_EXTERN {
+                    need(";");
+                } else {
+                    h.start = token.start;
+                    h.end = skip_body();
+                }
+            }
+        } else {
+            need(":");
+            h.ty = type_expr();
+            need("=");
+            h.init = expression(0);
+            need(";");
+        }
+        if h.end == 0_u32 {
+            h.end = token.start;
+        }
+        if header_used >= 8192_u32 {
+            limit((header_used as usize)+1_usize, 8192);
+        }
+        header_used = header_used+1_u32;
+        headers[header_used as usize] = HeaderEntry::Value(h);
+    }
+    return ();
+}
+
+pub fn headers_collect() -> () {
+    unsafe {
+        collecting = true;
+        active = false;
+        node_used = 0;
+        header_mark = 0;
+        type_count = 0;
+        type_mark = 0;
+        header_used = 0;
+        member_count = 0;
+        var file:u32 = 1;
+        while file <= input::source_count() {
+            reset(file);
+            seek(file, 0);
+            need("module");
+            let module_id:model::NameId = path();
+            need(";");
+            let first:u32 = input::import_count()+1_u32;
+            var count:u32 = 0;
+            while eat("import") {
+                let sp:model::Span = span();
+                let name:model::NameId = path();
+                let raw:[]const u8 = text(name);
+                var cut:usize = 0;
+                var i:usize = 0;
+                while i+1_usize < raw.len {
+                    if raw[i] == 58_u8 && raw[i+1_usize] == 58_u8 {
+                        cut = i+2_usize;
+                    }
+                    i = i+1_usize;
+                }
+                var alias:model::NameId = model::name(view(raw, cut, raw.len));
+                if eat("as") {
+                    alias = ident();
+                }
+                let ignored:u32 = input::add_import(make model::Import {
+                    file:file,
+                    module_id:name,
+                    alias:alias,
+                    span:sp
+                });
+                count = count+1_u32;
+                need(";");
+            }
+            input::complete_header(file, module_id, first, count);
+            while token.kind != model::TOKEN_EOF {
+                declaration();
+            }
+            header_mark = node_used;
+            type_mark = type_count;
+            file = file+1_u32;
+        }
+        collecting = false;
+    }
+    return ();
+}
+
+// Iterators manufacture only live handles; raw indices never enter public APIs.
+pub fn first_node(headers:bool) -> NodeId {
+    unsafe {
+        var first:u32 = header_mark+1_u32;
+        if headers {
+            first = 1;
+        }
+        if first > node_used {
+            return nil();
+        }
+        return node_id(first);
+    }
+}
+
+pub fn following_node(id:NodeId) -> NodeId {
+    let slot:u32 = index(id)+1_u32;
+    unsafe {
+        if slot > node_used {
+            return nil();
+        }
+    }
+    return node_id(slot);
+}
+
+pub fn first_type(headers:bool) -> TypeSyntaxId {
+    unsafe {
+        var first:u32 = type_mark+1_u32;
+        if headers {
+            first = 1;
+        }
+        if first > type_count {
+            return no_type();
+        }
+        return type_id(first);
+    }
+}
+
+pub fn following_type(id:TypeSyntaxId) -> TypeSyntaxId {
+    let slot:u32 = type_index(id)+1_u32;
+    unsafe {
+        if slot > type_count {
+            return no_type();
+        }
+    }
+    return type_id(slot);
+}
+
+pub fn node_count() -> u32 {
+    unsafe {
+        return node_used;
+    }
+}
+
+pub fn header_count() -> u32 {
+    unsafe {
+        return header_used;
+    }
+}
+
+pub fn name_of(id:NodeId) -> model::NameId {
+    match get(id).syntax {
+        Syntax::Empty => {
+            return model::no_name();
+        },
+        Syntax::Integer(_) => {
+            return model::no_name();
+        },
+        Syntax::Boolean(_) => {
+            return model::no_name();
+        },
+        Syntax::Unit => {
+            return model::no_name();
+        },
+        Syntax::Null => {
+            return model::no_name();
+        },
+        Syntax::Zero => {
+            return model::no_name();
+        },
+        Syntax::Name(value) => {
+            return value;
+        },
+        Syntax::String(_) => {
+            return model::no_name();
+        },
+        Syntax::Unary(_) => {
+            return model::no_name();
+        },
+        Syntax::Binary(_) => {
+            return model::no_name();
+        },
+        Syntax::Cast(_) => {
+            return model::no_name();
+        },
+        Syntax::Call(_) => {
+            return model::no_name();
+        },
+        Syntax::Field(_) => {
+            return model::no_name();
+        },
+        Syntax::Index(_) => {
+            return model::no_name();
+        },
+        Syntax::Record(_) => {
+            return model::no_name();
+        },
+        Syntax::FieldValue(_) => {
+            return model::no_name();
+        },
+        Syntax::Array(_) => {
+            return model::no_name();
+        },
+        Syntax::Repeat(_) => {
+            return model::no_name();
+        },
+        Syntax::SizeOf(_) => {
+            return model::no_name();
+        },
+        Syntax::AlignOf(_) => {
+            return model::no_name();
+        },
+        Syntax::Pointer(_) => {
+            return model::no_name();
+        },
+        Syntax::VariantPattern(_) => {
+            return model::no_name();
+        },
+        Syntax::Wildcard => {
+            return model::no_name();
+        },
+        Syntax::MatchArm(_) => {
+            return model::no_name();
+        },
+        Syntax::Block(_) => {
+            return model::no_name();
+        },
+        Syntax::Bind(_) => {
+            return model::no_name();
+        },
+        Syntax::Assign(_) => {
+            return model::no_name();
+        },
+        Syntax::Expression(_) => {
+            return model::no_name();
+        },
+        Syntax::Unsafe(_) => {
+            return model::no_name();
+        },
+        Syntax::If(_) => {
+            return model::no_name();
+        },
+        Syntax::While(_) => {
+            return model::no_name();
+        },
+        Syntax::Loop(_) => {
+            return model::no_name();
+        },
+        Syntax::Return(_) => {
+            return model::no_name();
+        },
+        Syntax::Break => {
+            return model::no_name();
+        },
+        Syntax::Continue => {
+            return model::no_name();
+        },
+        Syntax::Defer(_) => {
+            return model::no_name();
+        },
+        Syntax::Match(_) => {
+            return model::no_name();
+        },
+        Syntax::EmptyStatement => {
+            return model::no_name();
+        },
+    }
+}
+
+fn call_of(id:NodeId) -> Call {
+    match get(id).syntax {
+        Syntax::Empty => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Integer(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Boolean(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Unit => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Null => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Zero => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Name(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::String(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Unary(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Binary(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Cast(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Call(value) => {
+            return value;
+        },
+        Syntax::Field(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Index(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Record(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::FieldValue(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Array(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Repeat(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::SizeOf(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::AlignOf(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Pointer(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::VariantPattern(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Wildcard => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::MatchArm(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Block(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Bind(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Assign(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Expression(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Unsafe(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::If(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::While(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Loop(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Return(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Break => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Continue => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Defer(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::Match(_) => {
+            fail(model::ERROR_TYPE);
+        },
+        Syntax::EmptyStatement => {
+            fail(model::ERROR_TYPE);
+        },
+    }
+    loop {
+        fail(model::ERROR_TYPE);
+    }
+}
+
+pub fn field_value(id:NodeId) -> FieldValue {
+    match get(id).syntax {
+        Syntax::FieldValue(value) => {
+            return value;
+        },
+        Syntax::Empty => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Integer(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Boolean(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Unit => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Null => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Zero => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Name(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::String(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Unary(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Binary(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Cast(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Call(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Field(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Index(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Record(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Array(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Repeat(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::SizeOf(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::AlignOf(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Pointer(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::VariantPattern(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Wildcard => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::MatchArm(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Block(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Bind(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Assign(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Expression(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Unsafe(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::If(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::While(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Loop(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Return(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Break => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Continue => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Defer(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::Match(_) => {
+            fail(model::ERROR_INTERNAL);
+        },
+        Syntax::EmptyStatement => {
+            fail(model::ERROR_INTERNAL);
+        },
+    }
+    loop {
+        fail(model::ERROR_INTERNAL);
+    }
+}

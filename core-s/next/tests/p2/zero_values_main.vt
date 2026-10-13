@@ -1,0 +1,1 @@
+module sample; struct S{p:*u32,n:u32,a:[4]u8,s:[]u8} static g:S=zero; fn run()->u32{let x:S=zero;let a:[0]S=zero;unsafe{if core::addr(x.p)!=0 || x.n!=0 || x.a[3]!=0 || x.s.len!=0 || g.n!=0{return 1;}}return 42;}

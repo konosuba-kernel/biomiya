@@ -1,0 +1,1 @@
+module sample; const A:usize=B; const B:usize=2; fn run()->u32{return 0;}

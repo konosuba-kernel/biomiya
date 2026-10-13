@@ -1,0 +1,315 @@
+module bootstrap::lex;
+import bootstrap::model;
+
+fn space(c:u8) -> bool {
+    return c == 32_u8 || c >= 9_u8 && c <= 13_u8;
+}
+
+fn letter(c:u8) -> bool {
+    return c >= 65_u8 && c <= 90_u8 || c >= 97_u8 && c <= 122_u8 || c == 95_u8;
+}
+
+fn digit(c:u8) -> usize {
+    if c >= 48_u8 && c <= 57_u8 {
+        return (c-48_u8) as usize;
+    }
+    if c >= 65_u8 && c <= 70_u8 {
+        return (c-55_u8) as usize;
+    }
+    if c >= 97_u8 && c <= 102_u8 {
+        return (c-87_u8) as usize;
+    }
+    return 255;
+}
+
+fn text(file:u32) -> []const u8 {
+    unsafe {
+        if file == 0_u32 || file > model::source_count {
+            model::fail(model::ERROR_INTERNAL, file, 0);
+        }
+        return model::sources[file as usize].bytes;
+    }
+}
+
+pub fn bytes(token:model::Token) -> []const u8 {
+    let input:[]const u8 = text(token.file);
+    let start:usize = token.start as usize;
+    let end:usize = token.end as usize;
+    if start > end || end > input.len {
+        model::fail(model::ERROR_INTERNAL, token.file, start);
+    }
+    unsafe {
+        return core::slice_from_raw_parts(core::ptr_add(input.data, start), end-start);
+    }
+}
+
+pub fn is(token:model::Token,  word:[]const u8) -> bool {
+    let raw:[]const u8 = bytes(token);
+    if raw.len != word.len {
+        return false;
+    }
+    var i:usize = 0;
+    unsafe {
+        while i < raw.len {
+            if raw[i] != word[i] {
+                return false;
+            }
+            i = i+1_usize;
+        }
+    }
+    return true;
+}
+
+fn number(file:u32, start:usize, end:usize) -> model::Token {
+    let input:[]const u8 = text(file);
+    var base:usize = 10;
+    var i:usize = start;
+    var value:usize = 0;
+    var have:bool = false;
+    var separator:bool = false;
+    var suffix:u32 = 0;
+    unsafe {
+        if end-start >= 2_usize && input[start] == 48_u8 {
+            if input[start+1_usize] == 120_u8 {
+                base = 16;
+                i = i+2_usize;
+            } else if input[start+1_usize] == 98_u8 {
+                base = 2;
+                i = i+2_usize;
+            }
+
+        }
+        while i < end {
+            let c:u8 = input[i];
+            if c == 95_u8 {
+                if !have || separator || i+1_usize == end {
+                    model::fail(model::ERROR_PARSE, file, i);
+                }
+                if input[i+1_usize] == 117_u8 || input[i+1_usize] == 105_u8 {
+                    let token:model::Token = model::Token {
+                        kind:model::TOKEN_IDENT,
+                        file:file,
+                        start:(i+1_usize) as u32,
+                        end:end as u32,
+                        number:0,
+                        suffix:0
+                    };
+                    if is(token, "u8") {
+                        suffix = model::TYPE_U8;
+                    } else if is(token, "u32") {
+                        suffix = model::TYPE_U32;
+                    } else if is(token, "usize") {
+                        suffix = model::TYPE_USIZE;
+                    } else {
+                        model::fail(model::ERROR_UNSUPPORTED, file, i);
+                    }
+
+                    i = end;
+                } else {
+                    separator = true;
+                    i = i+1_usize;
+                }
+            } else {
+                let d:usize = digit(c);
+                if d >= base {
+                    model::fail(model::ERROR_PARSE, file, i);
+                }
+                if value > (0xffffffffffffffff_usize-d)/base {
+                    model::fail(model::ERROR_TYPE, file, start);
+                }
+                value = value*base+d;
+                have = true;
+                separator = false;
+                i = i+1_usize;
+            }
+        }
+    }
+    if !have || separator {
+        model::fail(model::ERROR_PARSE, file, start);
+    }
+    if suffix == model::TYPE_U8 && value > 255_usize || suffix == model::TYPE_U32 && value > 4294967295_usize {
+        model::fail(model::ERROR_TYPE, file, start);
+    }
+    return model::Token {
+        kind:model::TOKEN_NUMBER,
+        file:file,
+        start:start as u32,
+        end:end as u32,
+        number:value,
+        suffix:suffix
+    };
+}
+
+pub fn next(file:u32, offset:usize) -> model::Token {
+    let input:[]const u8 = text(file);
+    var i:usize = offset;
+    if i > input.len {
+        model::fail(model::ERROR_INTERNAL, file, i);
+    }
+    unsafe {
+        loop {
+            while i < input.len && space(input[i]) {
+                i = i+1_usize;
+            }
+            if i+1_usize >= input.len {
+                break;
+            }
+            if input[i] == 47_u8 && input[i+1_usize] == 47_u8 {
+                i = i+2_usize;
+                while i < input.len && input[i] != 10_u8 && input[i] != 13_u8 {
+                    i = i+1_usize;
+                }
+                continue;
+            }
+            if input[i] == 47_u8 && input[i+1_usize] == 42_u8 {
+                let start:usize = i;
+                var depth:usize = 1;
+                i = i+2_usize;
+                while depth != 0_usize {
+                    if i+1_usize >= input.len {
+                        model::fail(model::ERROR_PARSE, file, start);
+                    }
+                    if input[i] == 47_u8 && input[i+1_usize] == 42_u8 {
+                        depth = depth+1_usize;
+                        i = i+2_usize;
+                    } else if input[i] == 42_u8 && input[i+1_usize] == 47_u8 {
+                        depth = depth-1_usize;
+                        i = i+2_usize;
+                    } else {
+                        i = i+1_usize;
+                    }
+
+                }
+                continue;
+            }
+            break;
+        }
+        let start:usize = i;
+        if i == input.len {
+            return model::Token {
+                kind:model::TOKEN_EOF,
+                file:file,
+                start:i as u32,
+                end:i as u32,
+                number:0,
+                suffix:0
+            };
+        }
+        let c:u8 = input[i];
+        if c >= 128_u8 {
+            model::fail(model::ERROR_UNSUPPORTED, file, i);
+        }
+        var kind:u32 = 4;
+        i = i+1_usize;
+        if letter(c) || c >= 48_u8 && c <= 57_u8 {
+            while i < input.len && (letter(input[i]) || input[i] >= 48_u8 && input[i] <= 57_u8) {
+                i = i+1_usize;
+            }
+            if c >= 48_u8 && c <= 57_u8 {
+                return number(file, start, i);
+            }
+            kind = 1;
+        } else if c == 34_u8 {
+            kind = 3;
+            loop {
+                if i >= input.len {
+                    model::fail(model::ERROR_PARSE, file, start);
+                }
+                let b:u8 = input[i];
+                if b == 10_u8 || b == 13_u8 {
+                    model::fail(model::ERROR_PARSE, file, i);
+                }
+                if b == 34_u8 {
+                    i = i+1_usize;
+                    break;
+                }
+                if b == 92_u8 {
+                    i = i+1_usize;
+                    if i >= input.len {
+                        model::fail(model::ERROR_PARSE, file, start);
+                    }
+                    let e:u8 = input[i];
+                    if e == 120_u8 {
+                        if i+2_usize >= input.len {
+                            model::fail(model::ERROR_PARSE, file, i);
+                        }
+                        if digit(input[i+1_usize]) >= 16_usize || digit(input[i+2_usize]) >= 16_usize {
+                            model::fail(model::ERROR_PARSE, file, i);
+                        }
+                        i = i+2_usize;
+                    } else if e != 48_u8 && e != 110_u8 && e != 114_u8 && e != 116_u8 && e != 92_u8 && e != 34_u8 {
+                        model::fail(model::ERROR_PARSE, file, i);
+                    }
+
+                }
+                i = i+1_usize;
+            }
+        } else {
+            let punctuation:[]const u8 = "{}()[];,:.+-*/%&|^!~=<>?";
+            var found:bool = false;
+            var p:usize = 0;
+            while p < punctuation.len {
+                if punctuation[p] == c {
+                    found = true;
+                }
+                p = p+1_usize;
+            }
+            if !found {
+                model::fail(model::ERROR_PARSE, file, start);
+            }
+            if i < input.len {
+                let d:u8 = input[i];
+                if c == 58_u8 && d == 58_u8 || c == 45_u8 && d == 62_u8 || c == 61_u8 && d == 62_u8 || c == 38_u8 && d == 38_u8 || c == 124_u8 && d == 124_u8 || (c == 61_u8 || c == 33_u8 || c == 60_u8 || c == 62_u8) && d == 61_u8 || (c == 43_u8 || c == 45_u8 || c == 42_u8) && d == 37_u8 || (c == 60_u8 || c == 62_u8) && d == c {
+                    i = i+1_usize;
+                }
+            }
+        }
+
+        return model::Token {
+            kind:kind,
+            file:file,
+            start:start as u32,
+            end:i as u32,
+            number:0,
+            suffix:0
+        };
+    }
+}
+
+pub fn decode(token:model::Token,  output:[]u8) -> usize {
+    if token.kind != model::TOKEN_STRING {
+        model::fail(model::ERROR_INTERNAL, token.file, token.start as usize);
+    }
+    let raw:[]const u8 = bytes(token);
+    var i:usize = 1;
+    var n:usize = 0;
+    unsafe {
+        while i+1_usize < raw.len {
+            var c:u8 = raw[i];
+            if c == 92_u8 {
+                i = i+1_usize;
+                c = raw[i];
+                if c == 48_u8 {
+                    c = 0;
+                } else if c == 110_u8 {
+                    c = 10;
+                } else if c == 114_u8 {
+                    c = 13;
+                } else if c == 116_u8 {
+                    c = 9;
+                } else if c == 120_u8 {
+                    c = (digit(raw[i+1_usize])*16_usize+digit(raw[i+2_usize])) as u8;
+                    i = i+2_usize;
+                }
+
+            }
+            if n >= output.len {
+                model::limit_at(n+1_usize, output.len, token.file, token.start as usize);
+            }
+            output[n] = c;
+            n = n+1_usize;
+            i = i+1_usize;
+        }
+    }
+    return n;
+}

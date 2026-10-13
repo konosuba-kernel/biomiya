@@ -1,0 +1,442 @@
+// Bounded assembly adapter grammar; no source-language parser dependency.
+module bootstrap::s0;
+import bootstrap::model;
+import bootstrap::image;
+import bootstrap::rv64;
+static mut input:[]const u8 = "";
+static mut at:usize = 0;
+static mut end:usize = 0;
+static mut file_id:u32 = 0;
+static mut line_start:usize = 0;
+
+fn bad() -> () {
+    unsafe {
+        model::fail(model::ERROR_PARSE, file_id, line_start);
+    }
+    return ();
+}
+
+fn space(ch:u8) -> bool {
+    return ch == 32_u8 || ch == 9_u8 || ch == 13_u8;
+}
+
+fn skip() -> () {
+    unsafe {
+        while at < end && space(input[at]) {
+            at = at+1_usize;
+        }
+    }
+    return ();
+}
+
+fn token() -> []const u8 {
+    skip();
+    unsafe {
+        let first:usize = at;
+        while at < end && !space(input[at]) && input[at] != 44_u8 && input[at] != 40_u8 && input[at] != 41_u8 && input[at] != 58_u8 {
+            at = at+1_usize;
+        }
+        if at == first {
+            bad();
+        }
+        return core::slice_from_raw_parts(core::ptr_add(input.data, first), at-first);
+    }
+}
+
+fn punct(ch:u8) -> () {
+    skip();
+    unsafe {
+        if at >= end || input[at] != ch {
+            bad();
+        }
+        at = at+1_usize;
+    }
+    return ();
+}
+
+fn done() -> () {
+    skip();
+    unsafe {
+        if at != end {
+            bad();
+        }
+    }
+    return ();
+}
+
+fn register() -> u32 {
+    let text:[]const u8 = token();
+    unsafe {
+        if text.len < 2_usize || text[0] != 120_u8 {
+            bad();
+        }
+        var n:u32 = 0;
+        var j:usize = 1;
+        while j < text.len {
+            let ch:u8 = text[j];
+            if ch < 48_u8 || ch > 57_u8 {
+                bad();
+            }
+            n = n*10_u32+((ch-48_u8) as u32);
+            if n > 31_u32 {
+                bad();
+            }
+            j = j+1_usize;
+        }
+        return n;
+    }
+}
+
+fn immediate(shift:bool) -> usize {
+    let text:[]const u8 = token();
+    var j:usize = 0;
+    var negative:bool = false;
+    var base:usize = 10;
+    unsafe {
+        if text[0] == 45_u8 {
+            negative = true;
+            j = 1;
+        }
+        if j+2_usize <= text.len && text[j] == 48_u8 && text[j+1_usize] == 120_u8 {
+            base = 16;
+            j = j+2_usize;
+        }
+        if j == text.len {
+            bad();
+        }
+        var n:usize = 0;
+        while j < text.len {
+            let ch:u8 = text[j];
+            var digit:usize = 99;
+            if ch >= 48_u8 && ch <= 57_u8 {
+                digit = (ch-48_u8) as usize;
+            }
+            if ch >= 97_u8 && ch <= 102_u8 {
+                digit = (ch-87_u8) as usize;
+            }
+            if digit >= base || n > 2048_usize {
+                bad();
+            }
+            n = n*base+digit;
+            j = j+1_usize;
+        }
+        if shift {
+            if negative || n > 63_usize {
+                bad();
+            }
+        } else if negative {
+            if n > 2048_usize {
+                bad();
+            }
+        } else if n > 2047_usize {
+            bad();
+        }
+
+        if negative {
+            return 0_usize-%n;
+        }
+        return n;
+    }
+}
+
+fn letter(ch:u8) -> bool {
+    return (ch >= 65_u8 && ch <= 90_u8) || (ch >= 97_u8 && ch <= 122_u8) || ch == 95_u8 || ch == 46_u8;
+}
+
+fn named(text:[]const u8) -> u32 {
+    unsafe {
+        if text.len == 0_usize || !letter(text[0]) || (text.len == 1_usize && text[0] == 46_u8) {
+            bad();
+        }
+        var j:usize = 1;
+        while j < text.len {
+            if !letter(text[j]) && !(text[j] >= 48_u8 && text[j] <= 57_u8) {
+                bad();
+            }
+            j = j+1_usize;
+        }
+        if text.len >= 2_usize && text[0] == 46_u8 && text[1] == 76_u8 {
+            let first:usize = model::name_byte_count;
+            if text.len+9_usize > 2097152_usize-first {
+                model::limit(first+text.len+9_usize, 2097152);
+            }
+            model::name_bytes[first] = 46;
+            model::name_bytes[first+1_usize] = 76;
+            j = 0;
+            while j < 8_usize {
+                let nibble:u8 = (((file_id as usize) >> ((7_usize-j)*4_usize)) & 15_usize) as u8;
+                var ch:u8 = nibble+48_u8;
+                if nibble >= 10_u8 {
+                    ch = nibble+87_u8;
+                }
+                model::name_bytes[first+2_usize+j] = ch;
+                j = j+1_usize;
+            }
+            model::name_bytes[first+10_usize] = 95;
+            j = 2;
+            while j < text.len {
+                model::name_bytes[first+9_usize+j] = text[j];
+                j = j+1_usize;
+            }
+            let saved:[]const u8 = core::slice_from_raw_parts(core::ptr_add(core::slice_of(model::name_bytes).data, first), text.len+9_usize);
+            return image::symbol(saved);
+        }
+        return image::symbol(text);
+    }
+}
+
+fn target() -> u32 {
+    return named(token());
+}
+
+fn operation(op:[]const u8) -> () {
+    var f3:u32 = 0;
+    var f7:u32 = 0;
+    var kind:u32 = 0;
+    if model::equal(op, "add") {
+        kind = 1;
+    }
+    if model::equal(op, "sub") {
+        kind = 1;
+        f7 = 32;
+    }
+    if model::equal(op, "mul") {
+        kind = 1;
+        f7 = 1;
+    }
+    if model::equal(op, "mulhu") {
+        kind = 1;
+        f7 = 1;
+        f3 = 3;
+    }
+    if model::equal(op, "divu") {
+        kind = 1;
+        f7 = 1;
+        f3 = 5;
+    }
+    if model::equal(op, "remu") {
+        kind = 1;
+        f7 = 1;
+        f3 = 7;
+    }
+    if model::equal(op, "and") {
+        kind = 1;
+        f3 = 7;
+    }
+    if model::equal(op, "or") {
+        kind = 1;
+        f3 = 6;
+    }
+    if model::equal(op, "xor") {
+        kind = 1;
+        f3 = 4;
+    }
+    if model::equal(op, "sltu") {
+        kind = 1;
+        f3 = 3;
+    }
+    if model::equal(op, "sll") {
+        kind = 1;
+        f3 = 1;
+    }
+    if model::equal(op, "srl") {
+        kind = 1;
+        f3 = 5;
+    }
+    if kind == 1_u32 {
+        let rd:u32 = register();
+        punct(44);
+        let a:u32 = register();
+        punct(44);
+        let b:u32 = register();
+        done();
+        rv64::r(f7, f3, rd, a, b);
+        return ();
+    }
+    var opcode:u32 = 19;
+    var shift:bool = false;
+    if model::equal(op, "addi") {
+        kind = 2;
+    }
+    if model::equal(op, "addiw") {
+        kind = 2;
+        opcode = 27;
+    }
+    if model::equal(op, "xori") {
+        kind = 2;
+        f3 = 4;
+    }
+    if model::equal(op, "sltiu") {
+        kind = 2;
+        f3 = 3;
+    }
+    if model::equal(op, "slli") {
+        kind = 2;
+        f3 = 1;
+        shift = true;
+    }
+    if model::equal(op, "srli") {
+        kind = 2;
+        f3 = 5;
+        shift = true;
+    }
+    if kind == 2_u32 {
+        let rd:u32 = register();
+        punct(44);
+        let a:u32 = register();
+        punct(44);
+        let n:usize = immediate(shift);
+        done();
+        rv64::i(opcode, f3, rd, a, n);
+        return ();
+    }
+    if model::equal(op, "lbu") {
+        kind = 3;
+        f3 = 4;
+        opcode = 3;
+    }
+    if model::equal(op, "lwu") {
+        kind = 3;
+        f3 = 6;
+        opcode = 3;
+    }
+    if model::equal(op, "ld") {
+        kind = 3;
+        f3 = 3;
+        opcode = 3;
+    }
+    if model::equal(op, "jalr") {
+        kind = 3;
+        f3 = 0;
+        opcode = 103;
+    }
+    if model::equal(op, "sb") {
+        kind = 4;
+        f3 = 0;
+    }
+    if model::equal(op, "sw") {
+        kind = 4;
+        f3 = 2;
+    }
+    if model::equal(op, "sd") {
+        kind = 4;
+        f3 = 3;
+    }
+    if kind == 3_u32 || kind == 4_u32 {
+        let rd:u32 = register();
+        punct(44);
+        let n:usize = immediate(false);
+        punct(40);
+        let base:u32 = register();
+        punct(41);
+        done();
+        if kind == 3_u32 {
+            rv64::i(opcode, f3, rd, base, n);
+        } else {
+            rv64::s(f3, rd, base, n);
+        }
+        return ();
+    }
+    if model::equal(op, "beq") {
+        kind = 5;
+        f3 = 0;
+    }
+    if model::equal(op, "bne") {
+        kind = 5;
+        f3 = 1;
+    }
+    if model::equal(op, "bltu") {
+        kind = 5;
+        f3 = 6;
+    }
+    if model::equal(op, "bgeu") {
+        kind = 5;
+        f3 = 7;
+    }
+    if kind == 5_u32 {
+        let a:u32 = register();
+        punct(44);
+        let b:u32 = register();
+        punct(44);
+        let id:u32 = target();
+        done();
+        rv64::branch(f3, a, b, id);
+        return ();
+    }
+    if model::equal(op, "address") {
+        let rd:u32 = register();
+        punct(44);
+        let id:u32 = target();
+        done();
+        if rd == 0_u32 {
+            bad();
+        }
+        rv64::transfer(rd, id, false);
+        return ();
+    }
+    if model::equal(op, "call") || model::equal(op, "jump") {
+        let id:u32 = target();
+        done();
+        var rd:u32 = 0;
+        if model::equal(op, "call") {
+            rd = 1;
+        }
+        rv64::transfer(rd, id, true);
+        return ();
+    }
+    if model::equal(op, "ecall") {
+        done();
+        image::word(115);
+        return ();
+    }
+    if model::equal(op, "unimp") {
+        done();
+        image::word(3221229683);
+        return ();
+    }
+    unsafe {
+        model::fail(model::ERROR_UNSUPPORTED, file_id, line_start);
+    }
+    return ();
+}
+
+pub fn parse(file:u32, bytes:[]const u8) -> () {
+    unsafe {
+        input = bytes;
+        file_id = file;
+        var first:usize = 0;
+        while first < input.len {
+            var next:usize = first;
+            while next < input.len && input[next] != 10_u8 {
+                next = next+1_usize;
+            }
+            end = first;
+            while end < next && input[end] != 35_u8 {
+                end = end+1_usize;
+            }
+            line_start = first;
+            at = first;
+            skip();
+            if at < end {
+                let op:[]const u8 = token();
+                skip();
+                if at < end && input[at] == 58_u8 {
+                    at = at+1_usize;
+                    done();
+                    let id:u32 = named(op);
+                    if model::symbols[id as usize].defined != 0_u32 {
+                        bad();
+                    }
+                    image::define(id, 1, image::text_position());
+                } else {
+                    operation(op);
+                }
+            }
+            first = next;
+            if first < input.len {
+                first = first+1_usize;
+            }
+        }
+    }
+    return ();
+}

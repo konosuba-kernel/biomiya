@@ -1,0 +1,15 @@
+module sample;
+static mut trace:u32 = 0;
+fn value() -> u32 {
+    unsafe { trace = trace * 10_u32 + 1_u32; }
+    return 7;
+}
+fn index() -> usize {
+    unsafe { trace = trace * 10_u32 + 2_u32; }
+    return 0;
+}
+fn run() -> u32 {
+    var data:[1]u32 = [0];
+    data[index()] = value();
+    unsafe { return trace; }
+}

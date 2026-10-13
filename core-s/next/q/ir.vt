@@ -1,0 +1,867 @@
+// Function-local semantic storage. Stable declaration/type/symbol IDs remain model IDs.
+module bootstrap::ir;
+import bootstrap::model;
+import bootstrap::types;
+// The 17-bit index includes capacity 65,536 and an empty range's end position.
+// Epochs never wrap; zero is a sentinel, never a readable slot or label.
+pub struct SlotId {
+    raw:u32
+}
+
+pub struct LabelId {
+    raw:u32
+}
+
+pub struct ArgumentRange {
+    first:u32,
+    count:u32
+}
+
+pub enum Destination {
+    Unit,
+    Slot(SlotId)
+}
+
+pub enum BinaryOperator {
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Rem,
+    WrapAdd,
+    WrapSub,
+    WrapMul,
+    Shl,
+    Shr,
+    BitAnd,
+    BitOr,
+    BitXor,
+    Eq,
+    Ne,
+    Lt,
+    Le,
+    Gt,
+    Ge
+}
+
+pub enum UnaryOperator {
+    Not,
+    BitNot,
+    Neg
+}
+
+pub struct Value {
+    pub destination:SlotId,
+    pub bits:usize
+}
+
+pub struct Copy {
+    pub destination:SlotId,
+    pub source:SlotId
+}
+
+pub struct LocalAddress {
+    pub destination:SlotId,
+    pub source:SlotId,
+    pub offset:usize
+}
+
+pub struct SymbolAddress {
+    pub destination:SlotId,
+    pub symbol:u32
+}
+
+pub struct Load {
+    pub destination:SlotId,
+    pub address:SlotId
+}
+
+pub struct Store {
+    pub address:SlotId,
+    pub value:SlotId
+}
+
+pub struct Offset {
+    pub destination:SlotId,
+    pub address:SlotId,
+    pub bytes:SlotId
+}
+
+pub struct Binary {
+    pub destination:SlotId,
+    pub left:SlotId,
+    pub right:SlotId,
+    pub operator:BinaryOperator
+}
+
+pub struct Unary {
+    pub destination:SlotId,
+    pub operand:SlotId,
+    pub operator:UnaryOperator
+}
+
+pub struct Cast {
+    pub destination:SlotId,
+    pub source:SlotId
+}
+
+pub struct Bitcast {
+    pub destination:SlotId,
+    pub source:SlotId
+}
+
+pub struct Bounds {
+    pub index:SlotId,
+    pub length:SlotId
+}
+
+pub struct Call {
+    pub result:Destination,
+    pub callee:u32,
+    pub arguments:ArgumentRange
+}
+
+pub struct Branch {
+    pub condition:SlotId,
+    pub yes:LabelId,
+    pub no:LabelId
+}
+
+pub enum Instruction {
+    Empty,
+    Value(Value),
+    Copy(Copy),
+    LocalAddress(LocalAddress),
+    SymbolAddress(SymbolAddress),
+    Load(Load),
+    Store(Store),
+    Offset(Offset),
+    Binary(Binary),
+    Unary(Unary),
+    Cast(Cast),
+    Bitcast(Bitcast),
+    Bounds(Bounds),
+    Call(Call),
+    Label(LabelId),
+    Jump(LabelId),
+    Branch(Branch),
+    Return(Destination),
+    Panic,
+}
+
+pub struct Inst {
+    pub span:model::Span,
+    pub instruction:Instruction
+}
+
+pub struct Slot {
+    pub ty:model::TypeId,
+    pub flags:u32,
+    pub span:model::Span
+}
+
+pub struct CallSite {
+    pub next:u32,
+    pub callee:u32,
+    pub span:model::Span
+}
+
+enum SlotEntry {
+    Empty,
+    Value(Slot)
+}
+
+static mut slots:[32769]SlotEntry = zero;
+static mut insts:[65537]Inst = zero;
+static mut args:[65537]SlotId = zero;
+static mut parameters:[257]SlotId = zero;
+static mut slot_used:u32 = 0;
+static mut inst_used:u32 = 0;
+static mut arg_used:u32 = 0;
+static mut parameter_used:u32 = 0;
+static mut labels:u32 = 0;
+static mut function_decl:u32 = 0;
+static mut epoch:u32 = 0;
+static mut revision:u32 = 0;
+static mut sealed:bool = true;
+static mut closed:bool = true;
+static mut location:model::Span = zero;
+fn bad() -> () {
+    unsafe {
+        model::fail(model::ERROR_INTERNAL, location.file, location.start as usize);
+    }
+    return ();
+}
+
+fn building() -> () {
+    unsafe {
+        if function_decl == 0_u32 || sealed {
+            bad();
+        }
+    }
+    return ();
+}
+
+fn index(raw:u32, count:u32) -> u32 {
+    unsafe {
+        let n:u32 = raw & 131071_u32;
+        if function_decl == 0_u32 || (raw >> 17_u32) != epoch || n == 0_u32 || n > count {
+            bad();
+        }
+        return n;
+    }
+}
+
+pub fn no_slot() -> SlotId {
+    return make SlotId {
+        raw:0
+    };
+}
+
+pub fn no_label() -> LabelId {
+    return make LabelId {
+        raw:0
+    };
+}
+
+pub fn slot_index(id:SlotId) -> u32 {
+    unsafe {
+        return index(id.raw, slot_used);
+    }
+}
+
+pub fn label_index(id:LabelId) -> u32 {
+    unsafe {
+        return index(id.raw, labels);
+    }
+}
+
+pub fn slot_id(n:u32) -> SlotId {
+    unsafe {
+        if n == 0_u32 || n > slot_used {
+            bad();
+        }
+        let id:SlotId = make SlotId {
+            raw:(epoch << 17_u32) | n
+        };
+        let checked:u32 = slot_index(id);
+        return id;
+    }
+}
+
+pub fn get_slot(id:SlotId) -> Slot {
+    unsafe {
+        loop {
+            match slots[slot_index(id) as usize] {
+                SlotEntry::Empty => {
+                    bad();
+                },
+                SlotEntry::Value(value) => {
+                    return value;
+                }
+            }
+        }
+    }
+}
+
+pub fn get_inst(n:u32) -> Inst {
+    unsafe {
+        if function_decl == 0_u32 || n == 0_u32 || n > inst_used {
+            bad();
+        }
+        return insts[n as usize];
+    }
+}
+
+pub fn get_parameter_slot(n:u32) -> SlotId {
+    unsafe {
+        if function_decl == 0_u32 || n == 0_u32 || n > parameter_used {
+            bad();
+        }
+        return parameters[n as usize];
+    }
+}
+
+pub fn begin_function(decl:u32) -> () {
+    let d:model::Decl = model::get_decl(decl);
+    unsafe {
+        if function_decl != 0_u32 || d.kind != model::DECL_FUNCTION || d.state != 2_u32 {
+            bad();
+        }
+        if epoch == 32767_u32 {
+            model::limit(32768, 32767);
+        }
+        epoch = epoch+1_u32;
+        revision = revision+1_u32;
+        function_decl = decl;
+        slot_used = 0;
+        inst_used = 0;
+        arg_used = 0;
+        parameter_used = 0;
+        labels = 0;
+        sealed = false;
+        closed = true;
+        location = zero;
+    }
+    return ();
+}
+
+pub fn finish_ir() -> () {
+    building();
+    unsafe {
+        if !closed {
+            bad();
+        }
+        sealed = true;
+        if (inst_used as usize) > model::max_ir {
+            model::max_ir = inst_used as usize;
+        }
+    }
+    return ();
+}
+
+pub fn end_function() -> () {
+    unsafe {
+        if function_decl == 0_u32 {
+            bad();
+        }
+        function_decl = 0;
+        sealed = true;
+        closed = true;
+        slot_used = 0;
+        inst_used = 0;
+        arg_used = 0;
+        parameter_used = 0;
+        labels = 0;
+        revision = revision+1_u32;
+    }
+    return ();
+}
+
+pub fn slot(ty:model::TypeId) -> SlotId {
+    building();
+    types::layout(ty);
+    unsafe {
+        if slot_used == 32768_u32 {
+            model::limit(32769, 32768);
+        }
+        slot_used = slot_used+1_u32;
+        slots[slot_used as usize] = SlotEntry::Value(make Slot {
+            ty:ty,
+            flags:0,
+            span:location
+        });
+        revision = revision+1_u32;
+        return slot_id(slot_used);
+    }
+}
+
+pub fn type_of(id:SlotId) -> model::TypeId {
+    return get_slot(id).ty;
+}
+
+pub fn label_id() -> LabelId {
+    building();
+    unsafe {
+        if labels == 65536_u32 {
+            model::limit(65537, 65536);
+        }
+        labels = labels+1_u32;
+        revision = revision+1_u32;
+        return make LabelId {
+            raw:(epoch << 17_u32) | labels
+        };
+    }
+}
+
+pub fn mark_parameter(id:SlotId) -> () {
+    building();
+    let n:u32 = slot_index(id);
+    unsafe {
+        var value:Slot = get_slot(id);
+        if value.flags != 0_u32 {
+            bad();
+        }
+        if parameter_used == 256_u32 {
+            model::limit(257, 256);
+        }
+        value.flags = model::SLOT_PARAMETER;
+        slots[n as usize] = SlotEntry::Value(value);
+        parameter_used = parameter_used+1_u32;
+        parameters[parameter_used as usize] = id;
+        revision = revision+1_u32;
+    }
+    return ();
+}
+
+pub fn arguments(values:[]const SlotId) -> ArgumentRange {
+    building();
+    unsafe {
+        if values.len > (65536_u32-arg_used) as usize {
+            model::limit((arg_used as usize)+values.len, 65536);
+        }
+        let range:ArgumentRange = make ArgumentRange {
+            first:(epoch << 17_u32) | (arg_used+1_u32),
+            count:values.len as u32
+        };
+        var n:usize = 0;
+        while n < values.len {
+            let checked:u32 = slot_index(values[n]);
+            arg_used = arg_used+1_u32;
+            args[arg_used as usize] = values[n];
+            n = n+1_usize;
+        }
+        revision = revision+1_u32;
+        return range;
+    }
+}
+
+pub fn argument_count(range:ArgumentRange) -> u32 {
+    unsafe {
+        let first:u32 = index(range.first, arg_used+1_u32);
+        if range.count > arg_used+1_u32-first {
+            bad();
+        }
+        return range.count;
+    }
+}
+
+pub fn argument(range:ArgumentRange, n:u32) -> SlotId {
+    if n >= argument_count(range) {
+        bad();
+    }
+    unsafe {
+        return args[((range.first & 131071_u32)+n) as usize];
+    }
+}
+
+// This low-level typed entry also permits tests to submit semantically invalid IR.
+// The backend still verifies types, labels, calls and termination before emission.
+pub fn append(instruction:Instruction) -> () {
+    building();
+    unsafe {
+        if inst_used == 65536_u32 {
+            model::limit(65537, 65536);
+        }
+        inst_used = inst_used+1_u32;
+        insts[inst_used as usize] = make Inst {
+            span:location,
+            instruction:instruction
+        };
+        revision = revision+1_u32;
+    }
+    return ();
+}
+
+pub fn slot_count() -> u32 {
+    unsafe {
+        return slot_used;
+    }
+}
+
+pub fn inst_count() -> u32 {
+    unsafe {
+        return inst_used;
+    }
+}
+
+pub fn arg_count() -> u32 {
+    unsafe {
+        return arg_used;
+    }
+}
+
+pub fn parameter_slot_count() -> u32 {
+    unsafe {
+        return parameter_used;
+    }
+}
+
+pub fn label_count() -> u32 {
+    unsafe {
+        return labels;
+    }
+}
+
+pub fn current_function() -> u32 {
+    unsafe {
+        return function_decl;
+    }
+}
+
+pub fn function_revision() -> u32 {
+    unsafe {
+        return revision;
+    }
+}
+
+pub fn is_closed() -> bool {
+    unsafe {
+        return closed;
+    }
+}
+
+pub fn is_sealed() -> bool {
+    unsafe {
+        return sealed;
+    }
+}
+
+pub fn at() -> model::Span {
+    unsafe {
+        return location;
+    }
+}
+
+pub fn locate(value:model::Span) -> () {
+    building();
+    unsafe {
+        location = value;
+    }
+    return ();
+}
+
+pub fn label(id:LabelId) -> () {
+    unsafe {
+        if !closed {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        append(Instruction::Label(id));
+        closed = false;
+    }
+    return ();
+}
+
+pub fn ensure() -> () {
+    unsafe {
+        if closed {
+            label(label_id());
+        }
+    }
+    return ();
+}
+
+pub fn jump(id:LabelId) -> () {
+    unsafe {
+        if !closed {
+            append(Instruction::Jump(id));
+            unsafe {
+                closed = true;
+            }
+        }
+    }
+    return ();
+}
+
+pub fn branch(condition:SlotId, yes:LabelId, no:LabelId) -> () {
+    if !model::same_type(type_of(condition), model::bool_type()) {
+        types::fail(model::ERROR_INTERNAL);
+    }
+    append(Instruction::Branch(make Branch {
+        condition:condition,
+        yes:yes,
+        no:no
+    }));
+    unsafe {
+        closed = true;
+    }
+    return ();
+}
+
+pub fn value(ty:model::TypeId, bits:usize) -> SlotId {
+    let s:SlotId = slot(ty);
+    append(Instruction::Value(make Value {
+        destination:s,
+        bits:bits
+    }));
+    return s;
+}
+
+pub fn snapshot(source:SlotId) -> SlotId {
+    let s:SlotId = slot(type_of(source));
+    copy_to(s, source);
+    return s;
+}
+
+pub fn local_address(source:SlotId, ty:model::TypeId, offset:usize, const_:bool) -> SlotId {
+    let s:SlotId = slot(types::pointer(ty, const_));
+    append(Instruction::LocalAddress(make LocalAddress {
+        destination:s,
+        source:source,
+        offset:offset
+    }));
+    return s;
+}
+
+pub fn symbol_address(symbol:u32, ty:model::TypeId, const_:bool) -> SlotId {
+    let s:SlotId = slot(types::pointer(ty, const_));
+    append(Instruction::SymbolAddress(make SymbolAddress {
+        destination:s,
+        symbol:symbol
+    }));
+    return s;
+}
+
+pub fn load(address:SlotId, ty:model::TypeId) -> SlotId {
+    let s:SlotId = slot(ty);
+    append(Instruction::Load(make Load {
+        destination:s,
+        address:address
+    }));
+    return s;
+}
+
+pub fn store(address:SlotId, source:SlotId) -> () {
+    append(Instruction::Store(make Store {
+        address:address,
+        value:source
+    }));
+    return ();
+}
+
+pub fn offset(address:SlotId, bytes:SlotId, ty:model::TypeId, const_:bool) -> SlotId {
+    let source:model::Type = types::info(type_of(address));
+    if source.kind != model::TYPE_POINTER {
+        types::fail(model::ERROR_INTERNAL);
+    }
+    var base:SlotId = address;
+    if source.flags != model::TYPE_MUTABLE && !const_ {
+        types::fail(model::ERROR_INTERNAL);
+    }
+    if source.flags == model::TYPE_MUTABLE && const_ {
+        base = bitcast(base, types::pointer(source.element, true));
+    }
+    let s:SlotId = slot(types::pointer(ty, const_));
+    append(Instruction::Offset(make Offset {
+        destination:s,
+        address:base,
+        bytes:bytes
+    }));
+    return s;
+}
+
+pub fn binary(op:u32, a:SlotId, b:SlotId, result:model::TypeId) -> SlotId {
+    let s:SlotId = slot(result);
+    append(Instruction::Binary(make Binary {
+        destination:s,
+        left:a,
+        right:b,
+        operator:binary_operator(op)
+    }));
+    return s;
+}
+
+pub fn cast(value:SlotId, ty:model::TypeId) -> SlotId {
+    let s:SlotId = slot(ty);
+    append(Instruction::Cast(make Cast {
+        destination:s,
+        source:value
+    }));
+    return s;
+}
+
+pub fn bitcast(value:SlotId, ty:model::TypeId) -> SlotId {
+    let s:SlotId = slot(ty);
+    append(Instruction::Bitcast(make Bitcast {
+        destination:s,
+        source:value
+    }));
+    return s;
+}
+
+// Semantic constructors keep operand placement in one place. The existing
+// backend validator remains responsible for checking the completed typed IR.
+pub fn copy_to(destination:SlotId, source:SlotId) -> () {
+    append(Instruction::Copy(make Copy {
+        destination:destination,
+        source:source
+    }));
+    return ();
+}
+
+pub fn bounds(index:SlotId, length:SlotId) -> () {
+    append(Instruction::Bounds(make Bounds {
+        index:index,
+        length:length
+    }));
+    return ();
+}
+
+pub fn call(destination:Destination, declaration:u32, arguments:ArgumentRange) -> () {
+    append(Instruction::Call(make Call {
+        result:destination,
+        callee:declaration,
+        arguments:arguments
+    }));
+    return ();
+}
+
+pub fn return_value(value:Destination) -> () {
+    append(Instruction::Return(value));
+    unsafe {
+        closed = true;
+    }
+    return ();
+}
+
+pub fn panic_() -> () {
+    append(Instruction::Panic);
+    unsafe {
+        closed = true;
+    }
+    return ();
+}
+
+pub fn unary(op:u32, operand:SlotId, result_type:model::TypeId) -> SlotId {
+    let result:SlotId = slot(result_type);
+    append(Instruction::Unary(make Unary {
+        destination:result,
+        operand:operand,
+        operator:unary_operator(op)
+    }));
+    return result;
+}
+
+fn binary_operator(op:u32) -> BinaryOperator {
+    if op == model::BIN_ADD {
+        return BinaryOperator::Add;
+    }
+    if op == model::BIN_SUB {
+        return BinaryOperator::Sub;
+    }
+    if op == model::BIN_MUL {
+        return BinaryOperator::Mul;
+    }
+    if op == model::BIN_DIV {
+        return BinaryOperator::Div;
+    }
+    if op == model::BIN_REM {
+        return BinaryOperator::Rem;
+    }
+    if op == model::BIN_WRAP_ADD {
+        return BinaryOperator::WrapAdd;
+    }
+    if op == model::BIN_WRAP_SUB {
+        return BinaryOperator::WrapSub;
+    }
+    if op == model::BIN_WRAP_MUL {
+        return BinaryOperator::WrapMul;
+    }
+    if op == model::BIN_SHL {
+        return BinaryOperator::Shl;
+    }
+    if op == model::BIN_SHR {
+        return BinaryOperator::Shr;
+    }
+    if op == model::BIN_BIT_AND {
+        return BinaryOperator::BitAnd;
+    }
+    if op == model::BIN_BIT_OR {
+        return BinaryOperator::BitOr;
+    }
+    if op == model::BIN_BIT_XOR {
+        return BinaryOperator::BitXor;
+    }
+    if op == model::BIN_EQ {
+        return BinaryOperator::Eq;
+    }
+    if op == model::BIN_NE {
+        return BinaryOperator::Ne;
+    }
+    if op == model::BIN_LT {
+        return BinaryOperator::Lt;
+    }
+    if op == model::BIN_LE {
+        return BinaryOperator::Le;
+    }
+    if op == model::BIN_GT {
+        return BinaryOperator::Gt;
+    }
+    if op == model::BIN_GE {
+        return BinaryOperator::Ge;
+    }
+    bad();
+    return BinaryOperator::Add;
+}
+
+fn unary_operator(op:u32) -> UnaryOperator {
+    if op == model::UNARY_NOT {
+        return UnaryOperator::Not;
+    }
+    if op == model::UNARY_BIT_NOT {
+        return UnaryOperator::BitNot;
+    }
+    if op == model::UNARY_NEG {
+        return UnaryOperator::Neg;
+    }
+    bad();
+    return UnaryOperator::Not;
+}
+
+pub fn next_call(start:u32) -> CallSite {
+    unsafe {
+        if !sealed || function_decl == 0_u32 {
+            bad();
+        }
+    }
+    var at:u32 = start;
+    while at <= inst_count() {
+        let inst:Inst = get_inst(at);
+        match inst.instruction {
+            Instruction::Empty => {
+                bad();
+            },
+            Instruction::Value(item) => {
+            },
+            Instruction::Copy(item) => {
+            },
+            Instruction::LocalAddress(item) => {
+            },
+            Instruction::SymbolAddress(item) => {
+            },
+            Instruction::Load(item) => {
+            },
+            Instruction::Store(item) => {
+            },
+            Instruction::Offset(item) => {
+            },
+            Instruction::Binary(item) => {
+            },
+            Instruction::Unary(item) => {
+            },
+            Instruction::Cast(item) => {
+            },
+            Instruction::Bitcast(item) => {
+            },
+            Instruction::Bounds(item) => {
+            },
+            Instruction::Call(item) => {
+                return make CallSite {
+                    next:at+1_u32,
+                    callee:item.callee,
+                    span:inst.span
+                };
+            },
+            Instruction::Label(item) => {
+            },
+            Instruction::Jump(item) => {
+            },
+            Instruction::Branch(item) => {
+            },
+            Instruction::Return(item) => {
+            },
+            Instruction::Panic => {
+            },
+        }
+        at = at+1_u32;
+    }
+    return make CallSite {
+        next:0,
+        callee:0,
+        span:location_span()
+    };
+}
+
+fn location_span() -> model::Span {
+    return at();
+}

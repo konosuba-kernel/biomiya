@@ -1,0 +1,10 @@
+emit:
+addi x2, x2, -16
+sb x10, 0(x2)
+addi x10, x0, 1
+addi x11, x2, 0
+addi x12, x0, 1
+addi x17, x0, 64
+ecall
+addi x2, x2, 16
+jalr x0, 0(x1)

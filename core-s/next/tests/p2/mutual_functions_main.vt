@@ -1,0 +1,1 @@
+module sample; fn a(n:u32)->u32{if n==0{return 42;}return b(n-1);} fn b(n:u32)->u32{return a(n);} fn run()->u32{return a(2);}

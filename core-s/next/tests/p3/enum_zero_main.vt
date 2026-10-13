@@ -1,0 +1,1 @@
+module sample; enum E{Empty,Value(u32)} static mut values:[16]E=zero; fn run()->u32{let e:E=zero;unsafe{values[3]=E::Value(42);match values[3]{E::Empty=>{return 0;},E::Value(n)=>{return n;},}}}

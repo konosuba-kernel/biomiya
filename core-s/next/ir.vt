@@ -1,0 +1,237 @@
+module bootstrap::ir;
+import bootstrap::model;
+import bootstrap::types;
+static mut location:model::Span = model::Span {
+    file:0,
+    start:0,
+    end:0
+};
+static mut labels:u32 = 0;
+static mut closed:bool = true;
+// IR builder owns labels and block termination; the checker resets it at entry.
+pub fn reset() -> () {
+    unsafe {
+        location = model::Span {
+            file:0,
+            start:0,
+            end:0
+        };
+        labels = 0;
+        closed = true;
+    }
+    return ();
+}
+
+pub fn slot(ty:u32) -> u32 {
+    types::layout(ty);
+    unsafe {
+        return model::add_slot(model::Slot {
+            ty:ty,
+            flags:0,
+            span:location
+        });
+    }
+}
+
+pub fn type_of(slot:u32) -> u32 {
+    unsafe {
+        if slot == 0_u32 || slot > model::slot_count() {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        return model::get_slot(slot).ty;
+    }
+}
+
+pub fn label_id() -> u32 {
+    unsafe {
+        if labels >= 65536_u32 {
+            model::limit((labels as usize)+1_usize, 65536);
+        }
+        labels = labels+1_u32;
+        return labels;
+    }
+}
+
+pub fn emit(op:u32, dst:u32, a:u32, b:u32, c:u32, aux:u32, bits:usize) -> () {
+    unsafe {
+        let ignored:u32 = model::add_inst(model::Inst {
+            op:op,
+            dst:dst,
+            a:a,
+            b:b,
+            c:c,
+            aux:aux,
+            bits:bits,
+            span:location
+        });
+        if op >= model::IR_JUMP && op <= model::IR_PANIC {
+            closed = true;
+        }
+    }
+    return ();
+}
+
+pub fn label(id:u32) -> () {
+    unsafe {
+        if !closed {
+            types::fail(model::ERROR_INTERNAL);
+        }
+        emit(model::IR_LABEL, 0, id, 0, 0, 0, 0);
+        closed = false;
+    }
+    return ();
+}
+
+pub fn ensure() -> () {
+    unsafe {
+        if closed {
+            label(label_id());
+        }
+    }
+    return ();
+}
+
+pub fn jump(id:u32) -> () {
+    unsafe {
+        if !closed {
+            emit(model::IR_JUMP, 0, id, 0, 0, 0, 0);
+        }
+    }
+    return ();
+}
+
+pub fn branch(condition:u32, yes:u32, no:u32) -> () {
+    if type_of(condition) != model::TYPE_BOOL {
+        types::fail(model::ERROR_INTERNAL);
+    }
+    emit(model::IR_BRANCH, 0, condition, yes, no, 0, 0);
+    return ();
+}
+
+pub fn value(ty:u32, bits:usize) -> u32 {
+    let s:u32 = slot(ty);
+    emit(model::IR_VALUE, s, 0, 0, 0, 0, bits);
+    return s;
+}
+
+pub fn snapshot(source:u32) -> u32 {
+    let s:u32 = slot(type_of(source));
+    copy_to(s, source);
+    return s;
+}
+
+pub fn local_address(source:u32, ty:u32, offset:usize, const_:bool) -> u32 {
+    let s:u32 = slot(types::pointer(ty, const_));
+    emit(model::IR_LOCAL_ADDRESS, s, source, 0, 0, 0, offset);
+    return s;
+}
+
+pub fn symbol_address(symbol:u32, ty:u32, const_:bool) -> u32 {
+    let s:u32 = slot(types::pointer(ty, const_));
+    emit(model::IR_SYMBOL_ADDRESS, s, symbol, 0, 0, 0, 0);
+    return s;
+}
+
+pub fn load(address:u32, ty:u32) -> u32 {
+    let s:u32 = slot(ty);
+    emit(model::IR_LOAD, s, address, 0, 0, 0, 0);
+    return s;
+}
+
+pub fn store(address:u32, source:u32) -> () {
+    emit(model::IR_STORE, 0, address, source, 0, 0, 0);
+    return ();
+}
+
+pub fn offset(address:u32, bytes:u32, ty:u32, const_:bool) -> u32 {
+    let source:model::Type = types::info(type_of(address));
+    if source.kind != model::TYPE_POINTER {
+        types::fail(model::ERROR_INTERNAL);
+    }
+    var base:u32 = address;
+    if source.flags != model::TYPE_MUTABLE && !const_ {
+        types::fail(model::ERROR_INTERNAL);
+    }
+    if source.flags == model::TYPE_MUTABLE && const_ {
+        base = bitcast(base, types::pointer(source.a, true));
+    }
+    let s:u32 = slot(types::pointer(ty, const_));
+    emit(model::IR_OFFSET, s, base, bytes, 0, 0, 0);
+    return s;
+}
+
+pub fn binary(op:u32, a:u32, b:u32, result:u32) -> u32 {
+    let s:u32 = slot(result);
+    emit(model::IR_BINARY, s, a, b, 0, op, 0);
+    return s;
+}
+
+pub fn cast(value:u32, ty:u32) -> u32 {
+    let s:u32 = slot(ty);
+    emit(model::IR_CAST, s, value, 0, 0, 0, 0);
+    return s;
+}
+
+pub fn bitcast(value:u32, ty:u32) -> u32 {
+    let s:u32 = slot(ty);
+    emit(model::IR_BITCAST, s, value, 0, 0, 0, 0);
+    return s;
+}
+
+// Semantic constructors keep operand placement in one place. The existing
+// backend validator remains responsible for checking the completed typed IR.
+pub fn copy_to(destination:u32, source:u32) -> () {
+    emit(model::IR_COPY, destination, source, 0, 0, 0, 0);
+    return ();
+}
+
+pub fn bounds(index:u32, length:u32) -> () {
+    emit(model::IR_BOUNDS, 0, index, length, 0, 0, 0);
+    return ();
+}
+
+pub fn call(destination:u32, declaration:u32, first:u32, count:u32) -> () {
+    emit(model::IR_CALL, destination, declaration, first, count, 0, 0);
+    return ();
+}
+
+pub fn return_value(value:u32) -> () {
+    emit(model::IR_RETURN, 0, value, 0, 0, 0, 0);
+    return ();
+}
+
+pub fn panic_() -> () {
+    emit(model::IR_PANIC, 0, 0, 0, 0, 0, 0);
+    return ();
+}
+
+pub fn unary(op:u32, operand:u32, result_type:u32) -> u32 {
+    let result:u32 = slot(result_type);
+    emit(model::IR_UNARY, result, operand, 0, 0, op, 0);
+    return result;
+}
+
+pub fn at() -> model::Span {
+    unsafe {
+        return location;
+    }
+}
+
+pub fn locate(value:model::Span) -> () {
+    unsafe {
+        location = value;
+    }
+    return ();
+}
+
+pub fn label_count() -> u32 {
+    unsafe {
+        return labels;
+    }
+}
+
+pub fn is_closed() -> bool {
+    unsafe {
+        return closed;
+    }
+}

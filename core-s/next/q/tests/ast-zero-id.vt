@@ -1,0 +1,3 @@
+module frontprobe;
+import bootstrap::parse;
+pub fn run() -> u32 { let n:parse::NodeId = zero; return 0; }

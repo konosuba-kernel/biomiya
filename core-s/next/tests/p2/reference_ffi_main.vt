@@ -1,0 +1,3 @@
+module app;
+extern abi(C) fn answer() -> u32;
+pub fn run() -> u32 { unsafe { return answer(); } }

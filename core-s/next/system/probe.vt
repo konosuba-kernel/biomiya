@@ -1,0 +1,28 @@
+// Preliminary environment probe, valid before S-next variants arrive.
+// This file is not evidence of Q-generated system code or completion of P5.
+module system::probe;
+extern abi(C) fn p5_uart(c:usize) -> ();
+extern abi(C) fn p5_exchange(value:usize) -> usize;
+extern abi(C) fn p5_install(index:usize, pte:usize) -> usize;
+extern abi(C) fn p5_inspect(index:usize) -> usize;
+fn run() -> u32 {
+    unsafe {
+        let pte:usize = ((0x85000000_usize >> 12_usize) << 10_usize) | 199_usize;
+        if p5_install(64, pte) != pte { return 1; }
+        if p5_inspect(64) != pte { return 2; }
+        let alias:*usize = core::ptr::<usize>(0x08000000);
+        let physical:*usize = core::ptr::<usize>(0x85000000);
+        *alias = 0x1122334455667788;
+        if *physical != 0x1122334455667788_usize { return 3; }
+        *physical = 0x8877665544332211;
+        if *alias != 0x8877665544332211_usize { return 4; }
+        var i:usize = 0;
+        while i < 4096_usize {
+            if p5_exchange(i) != i+17_usize { return 5; }
+            i = i+1_usize;
+        }
+        p5_uart(80); p5_uart(53); p5_uart(32);
+        p5_uart(79); p5_uart(75); p5_uart(10);
+    }
+    return 0;
+}

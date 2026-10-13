@@ -1,0 +1,199 @@
+// Linux driver: immutable inputs, one function arena at a time, direct ELF output.
+module bootstrap::main;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::types;
+import bootstrap::init;
+import bootstrap::check;
+import bootstrap::image;
+import bootstrap::rv64;
+import bootstrap::s0;
+import bootstrap::blocking;
+import runtime::linux;
+import runtime::bytes;
+
+fn text(value:[]const u8) -> () {
+    unsafe {
+        match linux::write_all(2, value) {
+            Result::<(), u32>::Ok(unit:()) => {
+            },
+            Result::<(), u32>::Err(error:u32) => {
+            },
+        }
+    }
+    return ();
+}
+
+fn number(value:usize) -> () {
+    var digits:[20]u8 = [0;20];
+    var n:usize = value;
+    var at:usize = 20;
+    loop {
+        at = at-1_usize;
+        unsafe {
+            digits[at] = ((n%10_usize) as u8)+48_u8;
+        }
+        n = n/10_usize;
+        if n == 0_usize {
+            break;
+        }
+    }
+    unsafe {
+        text(bytes::view(core::slice_of(digits), at, 20));
+    }
+    return ();
+}
+
+fn metric(key:[]const u8, value:usize) -> () {
+    text(" ");
+    text(key);
+    text("=");
+    number(value);
+    return ();
+}
+
+fn argument(index:usize) -> []const u8 {
+    match linux::argument(index) {
+        Result::<[]const u8, u32>::Ok(value:[]const u8) => {
+            return value;
+        },
+        Result::<[]const u8, u32>::Err(error:u32) => {
+            model::fail(model::ERROR_PARSE, 0, 0);
+            return "";
+        },
+    }
+}
+
+fn selected_entry() -> u32 {
+    unsafe {
+        var entry:[]const u8 = input::entry;
+        var id:u32 = 1;
+        while id <= model::decl_count() {
+            let d:model::Decl = model::get_decl(id);
+            if d.kind == model::DECL_FUNCTION {
+                if d.name == 0_u32 || d.name > model::name_count || d.module_id == 0_u32 || d.module_id > model::name_count {
+                    model::fail(model::ERROR_INTERNAL, d.file, d.start as usize);
+                }
+                let mod:[]const u8 = model::names[d.module_id as usize].bytes;
+                let name:[]const u8 = model::names[d.name as usize].bytes;
+                var matches:bool = false;
+                if mod.len == 0_usize {
+                    matches = model::equal(entry, name);
+                } else if entry.len == mod.len+2_usize+name.len {
+                    matches = model::equal(bytes::view(entry, 0, mod.len), mod) && entry[mod.len] == 58_u8 && entry[mod.len+1_usize] == 58_u8 && model::equal(bytes::view(entry, mod.len+2_usize, entry.len), name);
+                }
+
+                if matches {
+                    if d.count != 0_u32 || d.ty != model::TYPE_U32 || (d.flags & model::FLAG_UNSAFE) != 0_u32 {
+                        model::fail(model::ERROR_TYPE, d.file, d.start as usize);
+                    }
+                    return id;
+                }
+            }
+            id = id+1_u32;
+        }
+    }
+    model::fail(model::ERROR_NAME, 0, 0);
+    return 0;
+}
+
+pub fn run() -> u32 {
+    if linux::argc() != 3_usize && linux::argc() != 5_usize {
+        text("usage: bmc build|check MANIFEST [--blocking POLICY]\n");
+        return 2;
+    }
+    let mode:[]const u8 = argument(1);
+    let build:bool = model::equal(mode, "build");
+    if !build && !model::equal(mode, "check") {
+        text("usage: bmc build|check MANIFEST [--blocking POLICY]\n");
+        return 2;
+    }
+    let analyze:bool = linux::argc() == 5_usize;
+    if analyze && !model::equal(argument(3), "--blocking") {
+        text("usage: bmc build|check MANIFEST [--blocking POLICY]\n");
+        return 2;
+    }
+    model::reset_all();
+    input::load(argument(2));
+    types::collect();
+    init::collect();
+    let entry:u32 = selected_entry();
+    if analyze && !blocking::load(argument(4)) {
+        return 1;
+    }
+    image::reset();
+    unsafe {
+        let start:u32 = rv64::start(model::get_decl(entry).symbol);
+        var id:u32 = 1;
+        var max_slots:usize = 0;
+        var max_args:usize = 0;
+        var max_params:usize = 0;
+        while id <= model::decl_count() {
+            if model::get_decl(id).kind == model::DECL_FUNCTION {
+                let body:u32 = check::begin_function(id);
+                check::check_body(body);
+                rv64::verify_function(id);
+                if analyze {
+                    blocking::capture(id);
+                }
+                rv64::emit_function(id);
+                if (model::slot_count() as usize) > max_slots {
+                    max_slots = model::slot_count() as usize;
+                }
+                if (model::arg_count() as usize) > max_args {
+                    max_args = model::arg_count() as usize;
+                }
+                if (model::parameter_slot_count() as usize) > max_params {
+                    max_params = model::parameter_slot_count() as usize;
+                }
+                check::end_function();
+            }
+            id = id+1_u32;
+        }
+        // End the source-function phase before assembly: discard the last
+        // semantic arena and function identity, preserving global symbols/data.
+        model::reset_function();
+        id = 1;
+        while id <= model::assembly_count {
+            s0::parse(model::source_count+id, model::assemblies[id as usize].bytes);
+            id = id+1_u32;
+        }
+        let elf:[]const u8 = image::finish(start);
+        if analyze && !blocking::finish() {
+            return 1;
+        }
+        if build {
+            input::save(elf);
+        }
+        text("S-next-P3");
+        metric("sources", model::source_count as usize);
+        metric("imports", model::import_count as usize);
+        metric("assembly_files", model::assembly_count as usize);
+        metric("source", model::source_bytes);
+        metric("assembly", input::assembly_bytes);
+        metric("names", model::name_count as usize);
+        metric("name_bytes", model::name_byte_count);
+        metric("decls", model::decl_count() as usize);
+        metric("types", model::type_count() as usize);
+        metric("fields", model::field_count() as usize);
+        metric("params", model::param_count() as usize);
+        metric("max_ast", model::max_ast);
+        metric("max_ir", model::max_ir);
+        metric("max_frame", model::max_frame);
+        metric("max_bindings", check::max_bindings);
+        metric("max_defers", check::max_defers);
+        metric("max_loops", check::max_loops);
+        metric("max_slots", max_slots);
+        metric("max_args", max_args);
+        metric("max_params", max_params);
+        metric("text", image::text_position());
+        metric("data", model::data_byte_count);
+        metric("objects", model::data_count as usize);
+        metric("symbols", model::symbol_count as usize);
+        metric("fixups", model::fixup_count as usize);
+        metric("relocations", model::data_relocation_count as usize);
+        metric("elf", elf.len);
+        text("\n");
+    }
+    return 0;
+}

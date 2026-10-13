@@ -1,0 +1,9 @@
+// Accepted with untyped IDs: the compiler cannot distinguish these roles.
+module trial::main;
+import trial::arena;
+fn run() -> u32 {
+    arena::begin_function();
+    let node:u32 = arena::literal(42);
+    let unused:bool = arena::slot_is_live(node);
+    return 0;
+}

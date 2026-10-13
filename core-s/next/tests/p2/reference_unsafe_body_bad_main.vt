@@ -1,0 +1,3 @@
+module sample;
+unsafe fn get(pointer:*const u32) -> u32 { return *pointer; }
+fn run() -> u32 { return 0; }
