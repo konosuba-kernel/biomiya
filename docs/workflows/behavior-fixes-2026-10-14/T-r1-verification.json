@@ -1,0 +1,917 @@
+{
+  "passed": true,
+  "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+  "tool_sha256": {
+    "check_next.py": "19f909947ba24348757800e3b331169fd4e1d5e252d7b637cb9446395346ab8c",
+    "check_next_reference.py": "d642668e7155c14da1e872841608102106fcf7544a24865743529e7dc82b79f9",
+    "check_next_trials.py": "30d8553a40635528e05f31c2e100a5321d6e8d56d31e41f484411167eb4ed94f",
+    "check_q.py": "1b191289a128d96c7098d04ec8e6e6f5b56fc65eca351564587b9917c7310b4b",
+    "check_q_blocking.py": "5125b935cad3796f0cc4d63d5881e81dd507d47275e4eaf4c62e27fd9cad02c8",
+    "check_q_copy.py": "1b48317f925c66fb7cf979096a32bce19ade3fdb26356e01e818d22d55875058",
+    "check_q_input.py": "13970e7afa6d01dcf0e4a2459bc9645131fd7286bc72bf6f7287da6b72db109f",
+    "check_q_interfaces.py": "e720d7c25f7703d7e69ce47862fb53fd8bf9eb9efd584f5ba35417e695f1e5b2",
+    "check_q_limits.py": "a2c8efdecc58312893072330f4a0ed18116bc94ed4b738d85fa3d70293f2907f",
+    "check_q_machine.py": "282d33d0ebdc15a0f432df3d13af1212fe422cbf8b30a5e33be509e4f145cd95",
+    "selfhost_next.py": "985a39b2efc1ed9f6c454e45adb6a6d81ca2fa0c6f08b54d9bb27f3190d6827c",
+    "verify.py": "5ad1be0497e6918ec198f7fe7fac1a1bda223906ea8a95deddd9fc2fdf9f7b92",
+    "check_reference.py": "b566ab040b2ee370d5b54a0e30ee343a00286f33929d6ace4553ec18c855b901",
+    "check_q_tool_guards.py": "b47f2048eafa5ee8c555f4c091ee9ed3070600f16ab4849329c947f161021478"
+  },
+  "frozen_inputs_unchanged": 71,
+  "entry_points": [
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_next.py [-h] [--seed SEED] [--record-dir RECORD_DIR]\n                     [--stage {P1,P2,P3}]\n\nBuild the S-next prototype compiler with its frozen B3.1 seed and verify\nbehavior.\n\noptions:\n  -h, --help            show this help message and exit\n  --seed SEED\n  --record-dir RECORD_DIR\n  --stage {P1,P2,P3}\n",
+      "stderr": "",
+      "tool": "check_next",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_next",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_next_reference.py [-h] --compiler COMPILER\n                               --record-dir RECORD_DIR\n\nCompile and execute every complete example in the S-next 0.1 reference.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "check_next_reference",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_reference",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_reference",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_reference",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_next_reference",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_reference",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_reference",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_reference",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_next_trials.py [-h] --compiler COMPILER --record-dir RECORD_DIR\n\nExecute the P3 representation comparison with a named compiler candidate.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "check_next_trials",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_trials",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_trials",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_trials",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_next_trials",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_trials",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_trials",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_next_trials",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_q.py [-h] --compiler COMPILER --record-dir RECORD_DIR\n\nCheck the complete migrated language corpus against a named Q executable.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "check_q",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_q",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_q_blocking.py [-h] --compiler COMPILER --record-dir RECORD_DIR\n                           [--external-only]\n\nReplay retained Blocking contracts on the specified Q compiler and actual Q\nanalysis.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n  --external-only       development probe; does not accept internal contracts\n",
+      "stderr": "",
+      "tool": "check_q_blocking",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_blocking",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_blocking",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_blocking",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_q_blocking",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_blocking",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_blocking",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_blocking",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_q_copy.py [-h] --compiler COMPILER --record-dir RECORD_DIR\n\nRun a real Q manifest/lexer/copy application, including explicit syscall fault\ninjection.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "check_q_copy",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_copy",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_copy",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_copy",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_q_copy",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_copy",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_copy",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_copy",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_q_input.py [-h] --compiler COMPILER [--record-dir RECORD_DIR]\n\nCompile actual Q input/lexer modules with a specified target compiler and\nreplay b3_input identities.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "check_q_input",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_input",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_input",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_input",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_q_input",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_input",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_input",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_input",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_q_interfaces.py [-h] --compiler COMPILER --record-dir RECORD_DIR\n\nExercise retained manifest, source diagnostic, constant and publication\ncontracts.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "check_q_interfaces",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_interfaces",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_interfaces",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_interfaces",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_q_interfaces",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_interfaces",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_interfaces",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_interfaces",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_q_limits.py [-h] --compiler COMPILER --record-dir RECORD_DIR\n\nRetained frontend recursion and layout limits must fail before target\npanic/stack overflow.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "check_q_limits",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_limits",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_limits",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_limits",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_q_limits",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_limits",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_limits",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_limits",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: check_q_machine.py [-h] --compiler COMPILER --record-dir RECORD_DIR\n\nBuild Q's IR/backend and AST fixtures with an explicit compiler and replay\nthem.\n\noptions:\n  -h, --help            show this help message and exit\n  --compiler COMPILER\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "check_q_machine",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_machine",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_machine",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_machine",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "check_q_machine",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_machine",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_machine",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "check_q_machine",
+      "imported": true
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "usage: selfhost_next.py [-h] --p3-record P3_RECORD --seed SEED\n                        --q-manifest Q_MANIFEST --record-dir RECORD_DIR\n\nProduce P4 bootstrap evidence; independent language acceptance remains\nexternal. B(P)=E0 must reproduce an accepted P3 candidate. E0(Q)=E1, E1(Q)=E2,\nE2(Q)=E3 must stabilize as complete ELF files. A separate Q source mutation\nmust change the resulting compiler's observable statistics prefix.\n\noptions:\n  -h, --help            show this help message and exit\n  --p3-record P3_RECORD\n  --seed SEED\n  --q-manifest Q_MANIFEST\n  --record-dir RECORD_DIR\n",
+      "stderr": "",
+      "tool": "selfhost_next",
+      "imported": false
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "selfhost_next",
+      "imported": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "selfhost_next",
+      "imported": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "selfhost_next",
+      "imported": false
+    },
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "tool": "selfhost_next",
+      "imported": true
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "selfhost_next",
+      "imported": true
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "selfhost_next",
+      "imported": true
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "tool": "selfhost_next",
+      "imported": true
+    }
+  ],
+  "corpus": [
+    {
+      "mode": "normal",
+      "exit": 0,
+      "stdout": "PASS exit_expectation\nAll 1 Q language cases passed.\n",
+      "stderr": "",
+      "expected_exit": 0,
+      "verification": {
+        "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+        "memory": {
+          "rw_bytes": 55135764,
+          "image_span_bytes": 56131092
+        },
+        "input_sha256": {
+          "tools/check_q.py": "1b191289a128d96c7098d04ec8e6e6f5b56fc65eca351564587b9917c7310b4b",
+          "tools/check_next.py": "19f909947ba24348757800e3b331169fd4e1d5e252d7b637cb9446395346ab8c",
+          "tools/verify.py": "5ad1be0497e6918ec198f7fe7fac1a1bda223906ea8a95deddd9fc2fdf9f7b92",
+          "next/q/compiler.build": "003482d55f54f156c067d4320459ce7f7520977d2472cf6fe250f402a740acb3",
+          "next/tests/p3/cases.json": "81d62ea91cbdf40e72dd7b9f4294ef7aa08ced9e442224aaa906e2d05f4de533",
+          "next/tests/p2/cases.json": "81d62ea91cbdf40e72dd7b9f4294ef7aa08ced9e442224aaa906e2d05f4de533",
+          "next/tests/main.vt": "72f7b66d221b823b90919a8f39ab734df099d825f998b0049009894c2e1f7a5a"
+        },
+        "guest_stack_bytes": 1048576,
+        "cases": [
+          {
+            "name": "exit_expectation",
+            "expected": {
+              "name": "exit_expectation",
+              "source": "main.vt",
+              "entry": "sample::run",
+              "exit": 0
+            },
+            "source_sha256": {
+              "main.vt": "72f7b66d221b823b90919a8f39ab734df099d825f998b0049009894c2e1f7a5a"
+            },
+            "commands": [
+              {
+                "command": [
+                  "/usr/bin/qemu-riscv64",
+                  "-s",
+                  "1048576",
+                  "/tmp/verification-modes-n0zwrrpj/fixture/0-normal/compiler.elf",
+                  "check",
+                  "program.build"
+                ],
+                "exit": 0,
+                "stdout": "",
+                "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+              },
+              {
+                "command": [
+                  "/usr/bin/qemu-riscv64",
+                  "-s",
+                  "1048576",
+                  "/tmp/verification-modes-n0zwrrpj/fixture/0-normal/compiler.elf",
+                  "build",
+                  "program.build"
+                ],
+                "exit": 0,
+                "stdout": "",
+                "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+              },
+              {
+                "command": [
+                  "/usr/bin/qemu-riscv64",
+                  "-s",
+                  "1048576",
+                  "program.elf"
+                ],
+                "exit": 0,
+                "stdout": "",
+                "stderr": ""
+              }
+            ],
+            "elf_sha256": "a03b2c010a7a716e3acaca41b79ec96cf19d4df2169336b7a8f48abb4e904bdc",
+            "passed": true
+          }
+        ],
+        "failed": [],
+        "passed": 1
+      }
+    },
+    {
+      "mode": "normal",
+      "exit": 1,
+      "stdout": "FAIL exit_expectation\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/verification-modes-n0zwrrpj/fixture/tools/check_q.py\", line 140, in <module>\n    main()\n    ~~~~^^\n  File \"/tmp/verification-modes-n0zwrrpj/fixture/tools/check_q.py\", line 135, in main\n    assert not evidence['failed'], evidence['failed']\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ['exit_expectation']\n",
+      "expected_exit": 7,
+      "verification": {
+        "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+        "memory": {
+          "rw_bytes": 55135764,
+          "image_span_bytes": 56131092
+        },
+        "input_sha256": {
+          "tools/check_q.py": "1b191289a128d96c7098d04ec8e6e6f5b56fc65eca351564587b9917c7310b4b",
+          "tools/check_next.py": "19f909947ba24348757800e3b331169fd4e1d5e252d7b637cb9446395346ab8c",
+          "tools/verify.py": "5ad1be0497e6918ec198f7fe7fac1a1bda223906ea8a95deddd9fc2fdf9f7b92",
+          "next/q/compiler.build": "003482d55f54f156c067d4320459ce7f7520977d2472cf6fe250f402a740acb3",
+          "next/tests/p3/cases.json": "8450f132f304ee682614ea3f34840b5b8abb4ec22d492ad60b2b048b3d2b938b",
+          "next/tests/p2/cases.json": "8450f132f304ee682614ea3f34840b5b8abb4ec22d492ad60b2b048b3d2b938b",
+          "next/tests/main.vt": "72f7b66d221b823b90919a8f39ab734df099d825f998b0049009894c2e1f7a5a"
+        },
+        "guest_stack_bytes": 1048576,
+        "cases": [
+          {
+            "name": "exit_expectation",
+            "expected": {
+              "name": "exit_expectation",
+              "source": "main.vt",
+              "entry": "sample::run",
+              "exit": 7
+            },
+            "source_sha256": {
+              "main.vt": "72f7b66d221b823b90919a8f39ab734df099d825f998b0049009894c2e1f7a5a"
+            },
+            "commands": [
+              {
+                "command": [
+                  "/usr/bin/qemu-riscv64",
+                  "-s",
+                  "1048576",
+                  "/tmp/verification-modes-n0zwrrpj/fixture/7-normal/compiler.elf",
+                  "check",
+                  "program.build"
+                ],
+                "exit": 0,
+                "stdout": "",
+                "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+              },
+              {
+                "command": [
+                  "/usr/bin/qemu-riscv64",
+                  "-s",
+                  "1048576",
+                  "/tmp/verification-modes-n0zwrrpj/fixture/7-normal/compiler.elf",
+                  "build",
+                  "program.build"
+                ],
+                "exit": 0,
+                "stdout": "",
+                "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+              },
+              {
+                "command": [
+                  "/usr/bin/qemu-riscv64",
+                  "-s",
+                  "1048576",
+                  "program.elf"
+                ],
+                "exit": 0,
+                "stdout": "",
+                "stderr": ""
+              }
+            ],
+            "failure": "{'name': 'exit_expectation', 'expected': {'name': 'exit_expectation', 'source': 'main.vt', 'entry': 'sample::run', 'exit': 7}, 'source_sha256': {'main.vt': '72f7b66d221b823b90919a8f39ab734df099d825f998b0049009894c2e1f7a5a'}, 'commands': [{'command': ['/usr/bin/qemu-riscv64', '-s', '1048576', '/tmp/verification-modes-n0zwrrpj/fixture/7-normal/compiler.elf', 'check', 'program.build'], 'exit': 0, 'stdout': '', 'stderr': 'S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\\n'}, {'command': ['/usr/bin/qemu-riscv64', '-s', '1048576', '/tmp/verification-modes-n0zwrrpj/fixture/7-normal/compiler.elf', 'build', 'program.build'], 'exit': 0, 'stdout': '', 'stderr': 'S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\\n'}, {'command': ['/usr/bin/qemu-riscv64', '-s', '1048576', 'program.elf'], 'exit': 0, 'stdout': '', 'stderr': ''}]}"
+          }
+        ],
+        "failed": [
+          "exit_expectation"
+        ],
+        "passed": 0
+      }
+    },
+    {
+      "mode": "-O",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "expected_exit": 7,
+      "record_created": false
+    },
+    {
+      "mode": "-OO",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "expected_exit": 7,
+      "record_created": false
+    },
+    {
+      "mode": "PYTHONOPTIMIZE",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO\n",
+      "expected_exit": 7,
+      "record_created": false
+    }
+  ],
+  "scope": "Maintained verifier modules, including their import paths. Frozen verify.py and check_reference.py are preserved; invoke those legacy tools without optimization."
+}

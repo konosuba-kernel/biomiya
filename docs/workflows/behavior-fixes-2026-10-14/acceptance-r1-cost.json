@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "groups": {
+    "compiler_vt": {
+      "file_count": 14,
+      "lines": 11018,
+      "bytes": 326623
+    },
+    "runtime_vt": {
+      "file_count": 2,
+      "lines": 290,
+      "bytes": 10615
+    },
+    "runtime_s0": {
+      "file_count": 1,
+      "lines": 19,
+      "bytes": 345
+    },
+    "host_tools": {
+      "file_count": 18,
+      "lines": 2917,
+      "bytes": 149927
+    },
+    "new_behavior_fixtures": {
+      "file_count": 4,
+      "lines": 401,
+      "bytes": 10981
+    }
+  },
+  "elf_memory": {
+    "rw_bytes": 55135764,
+    "image_span_bytes": 56143380
+  }
+}

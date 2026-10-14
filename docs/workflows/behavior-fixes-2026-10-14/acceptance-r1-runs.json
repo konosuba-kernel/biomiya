@@ -1,0 +1,26 @@
+{
+  "candidate_sha256": "e0acbc4679dd83464fb62ebac5d9d113df506df94fc431542b77481abdd5133d",
+  "candidate_hashes_rechecked": 58,
+  "independent_runs": {
+    "io": {
+      "record": "core-s/build/behavior-fixes-acceptance-io-r1/verification.json",
+      "sha256": "f1bf91b77494126feba2b2b7d04f47cc411a233c39afec404c22f5ee8ea2bd1b",
+      "cases": 12,
+      "passed": true
+    },
+    "diagnostics": {
+      "record": "core-s/build/behavior-fixes-acceptance-diagnostics-r1/verification.json",
+      "sha256": "34eb45865cafe6cc6d615d6c0d0c6c26ef0709634949f255f4bc08bbe0b79e70",
+      "cases": 18,
+      "passed": true
+    },
+    "guards": {
+      "record": "core-s/build/behavior-fixes-acceptance-tool-guards-r1.json",
+      "sha256": "944c7e840bd272c773325af3a900375b8b3b964a9f939610eab07c6047484e79",
+      "passed": true,
+      "entry_modes": 88,
+      "corpus_invocations": 5,
+      "normal_compiling_invocations": 2
+    }
+  }
+}

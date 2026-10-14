@@ -1,0 +1,16 @@
+{
+  "node": "R",
+  "revision": "r1",
+  "author": "/root/fix_io_failures",
+  "baseline": "2c7061cbed13959697369879e5717a8ad0c9fb21",
+  "status": "frozen awaiting independent acceptance",
+  "files": {
+    "core-s/next/q/runtime/linux.vt": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0",
+    "core-s/next/q/input.vt": "067f66b18ff628f3b6a0b463df8b96b676f70b2cb4529b34e92a91f8f97e7ff4",
+    "core-s/tools/check_q_io_failures.py": "d53249aa5acc4da66007096b5eeb02d65c5bca9efaf0fb8a6a6c49379de94592",
+    "core-s/next/q/tests/behavior-io-save.vt": "816257c42e16a13500a4279f8967edfd7c516e343c0501075cf16aa0d80963b4",
+    "core-s/next/q/tests/behavior-io-shim.s0": "53c084d4f9a15fecd989192bb97c9eae6613e2b81ea459dd62e4efc6d713c155",
+    "docs/workflows/behavior-fixes-2026-10-14/R-r1-verification.json": "b8b26c7935be943221661b7ed1e707ad29269d7e0f1ba279292108096ed3f4cc",
+    "docs/workflows/behavior-fixes-2026-10-14/R-r1.md": "b43841bfc4d2239f734a0e3c8bf45a1075f26e2fe89cc9259c57225244caf668"
+  }
+}

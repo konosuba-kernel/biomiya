@@ -1,0 +1,12 @@
+{
+  "status": "failed; retained before r2",
+  "reason": "FieldValue AST spans start at the enclosing make, not each field name. check/init cannot recover a missing AST position.",
+  "files": {
+    "core-s/next/q/check.vt": "7fbd67385fcc3de9c68cd6056a281a48409d48fbd4a8a17fb3eaca2aad2adff0",
+    "core-s/next/q/init.vt": "f4987677b55d793df25f648881f34cfa7717f2affb0ee6915d967bdb1739a6b2",
+    "core-s/tools/check_q_diagnostics.py": "6b8a76b4fb6a72d197e776c692ee0dcd64cc5749a7f43f321b5e8d47205a17db",
+    "core-s/next/q/tests/behavior-diagnostic-cases.json": "227cc6b52ccde5393090344bac2c31af151f52abdf5e4eda45a51cba58b0281a",
+    "core-s/next/q/tests/behavior-diagnostic-ir.vt": "3aa88c2c9d2d2aed84fa7db69b59420d9514ae903ed5f972d0c3ec31cea94b91"
+  },
+  "tests_sha256": "2d201bd7e4aca2dd552718d3b24a4ab5cfb66521df8b287e5012c95aeefea1d9"
+}

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Compile actual Q input/lexer modules with a specified target compiler and replay b3_input identities."""
 
+# Assertions are verification checks, including in imported helpers.
+if not __debug__:
+    raise SystemExit("verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO")
+
 import argparse
 import hashlib
 import json

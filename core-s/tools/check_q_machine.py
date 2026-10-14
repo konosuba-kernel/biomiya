@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """Build Q's IR/backend and AST fixtures with an explicit compiler and replay them."""
+
+# Assertions are verification checks, including in imported helpers.
+if not __debug__:
+    raise SystemExit("verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO")
+
 import argparse
 import hashlib
 import io

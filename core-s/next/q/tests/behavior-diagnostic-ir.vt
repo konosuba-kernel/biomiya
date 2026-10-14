@@ -1,0 +1,71 @@
+// Exercise the real checker: parent restoration must not relabel child instructions.
+module diagnostic_ir;
+import bootstrap::model;
+import bootstrap::input;
+import bootstrap::image;
+import bootstrap::types;
+import bootstrap::init;
+import bootstrap::parse;
+import bootstrap::check;
+import bootstrap::ir;
+
+pub fn run() -> u32 {
+    model::reset_all();
+    input::begin_compile();
+    let file:u32 = input::add_source("memory", "module demo;struct Pair{a:u32,b:u32}fn f()->u32{let a:[1_usize]u32=[7];let p=make Pair{a:11,b:a[99_usize]};return p.b;}");
+    input::freeze();
+    image::begin_compile();
+    types::collect();
+    init::collect();
+    var declaration:u32 = 1;
+    while declaration <= model::decl_count() {
+        if model::get_decl(declaration).kind == model::DECL_FUNCTION {
+            break;
+        }
+        declaration = declaration + 1_u32;
+    }
+    let body:parse::NodeId = check::begin_function(declaration);
+    check::check_body(body);
+    var bounds:u32 = 0;
+    var record_stores:u32 = 0;
+    var index:u32 = 1;
+    while index <= ir::inst_count() {
+        let instruction:ir::Inst = ir::get_inst(index);
+        match instruction.instruction {
+            ir::Instruction::Bounds(_) => {
+                if instruction.span.file != file || instruction.span.start != 96_u32 {
+                    return 1;
+                }
+                bounds = bounds + 1_u32;
+            },
+            ir::Instruction::Store(_) => {
+                if instruction.span.file == file && instruction.span.start == 77_u32 {
+                    record_stores = record_stores + 1_u32;
+                }
+            },
+            ir::Instruction::Empty => {},
+            ir::Instruction::Value(_) => {},
+            ir::Instruction::Copy(_) => {},
+            ir::Instruction::LocalAddress(_) => {},
+            ir::Instruction::SymbolAddress(_) => {},
+            ir::Instruction::Load(_) => {},
+            ir::Instruction::Offset(_) => {},
+            ir::Instruction::Binary(_) => {},
+            ir::Instruction::Unary(_) => {},
+            ir::Instruction::Cast(_) => {},
+            ir::Instruction::Bitcast(_) => {},
+            ir::Instruction::Call(_) => {},
+            ir::Instruction::Label(_) => {},
+            ir::Instruction::Jump(_) => {},
+            ir::Instruction::Branch(_) => {},
+            ir::Instruction::Return(_) => {},
+            ir::Instruction::Panic => {},
+        }
+        index = index + 1_u32;
+    }
+    check::end_function();
+    if bounds != 1_u32 || record_stores != 2_u32 {
+        return 2;
+    }
+    return 0;
+}

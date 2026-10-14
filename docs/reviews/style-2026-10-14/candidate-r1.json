@@ -1,0 +1,23 @@
+{
+  "revision": "r1",
+  "baseline": "2c7061cbed13959697369879e5717a8ad0c9fb21",
+  "artifacts": {
+    "REPORT.md": "024b273e391945631570e273a83c4412dd263100574d564f91500e9070a978c0",
+    "acceptance-ab.md": "53a189b03f92a9804e710f116e92bb747abd6061076e69e747571287b79e3f5e",
+    "asserts-evidence.json": "dcbfa0ca287a6cf56871f61c8b847df527a95335c069226f7fbacd4e60ae9e01",
+    "boundaries-cleanup-probe.json": "aa0ed6ddb337a3e03699799938e4b5a36e283441f696203c11a5ac305b4d37e8",
+    "boundaries-cleanup-probe.py": "b8bc0bc675314ef0360330a12de227f12386a1b0ea40cbb10d0d29666eb534ef",
+    "boundaries-freeze.json": "136108498e3eb7addea813c084b55ec0a9d50e1bc8c663db27223c2a192ef1aa",
+    "boundaries-probe.json": "b0a13f65de5972e885e533c68aee627e5f85f02f9ad94dd8351ffcf0f0607776",
+    "boundaries-probe.py": "b9a063158422c18d7f982bc902cdb026ed59477650f1c45444f804ed3766c9bc",
+    "boundaries-root-cleanup.json": "aa0ed6ddb337a3e03699799938e4b5a36e283441f696203c11a5ac305b4d37e8",
+    "boundaries-root-remove.json": "b0a13f65de5972e885e533c68aee627e5f85f02f9ad94dd8351ffcf0f0607776",
+    "boundaries.md": "e9c7cf3b22054a4f55cca58bbf37bc138ef3c19f8d133dcdd14b3777e5c4874c",
+    "frontend-probes.json": "eee316066a7567991ffb533365e15c9ffa7787d3bb5220d359ddb803dbf7184b",
+    "frontend-root-verification.json": "19c94c54b4af7ecba95b00a0c2f40646f32e1b4e9819830791a398d7867a4a42",
+    "frontend.md": "08462830c3d0464dc63581fee9900aec37b65e0c8c08a77e437ad49615832fa9",
+    "measure_audit.py": "92ae067dbf9c5755be87b79b830c5a0fcfbdfffafa55e8a1a9916824ae8d6a42",
+    "metrics.json": "eb3a8d004d8a5e3fc9f86a5cb3eca2fdd69850626ba01b1ea739924ddef978c7",
+    "probe_asserts.py": "73d05892c7a6c1ca78581bd72d7619de7a1cf5d2a9e7a358b1422fbbd9082c92"
+  }
+}

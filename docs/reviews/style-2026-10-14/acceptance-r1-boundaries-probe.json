@@ -1,0 +1,43 @@
+{
+  "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+  "inputs": {
+    "core-s/next/q/runtime/linux.vt": "f50998235c8a049c26f9fa73d3eb724a5db4b7f233d521dceb449a3103f73a3a",
+    "core-s/next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+  },
+  "source": "module boundary_probe;\nimport runtime::linux;\npub fn run() -> u32 {\n    let path:[8]u8 = [118,105,99,116,105,109,0,120];\n    if linux::argc() == 1_usize {\n        return linux::remove(core::slice_of(path));\n    }\n    match linux::open_read(core::slice_of(path)) {\n        linux::CountResult::Value(fd) => { return linux::close(fd); },\n        linux::CountResult::Failed(error) => { return error; },\n    }\n}\n",
+  "compile": {
+    "argv": [
+      "qemu-riscv64",
+      "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+      "build",
+      "probe.build"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "S-next-0.1 sources=2 imports=1 assembly_files=1 source=5166 assembly=345 names=145 name_bytes=2277 decls=22 types=29 fields=6 params=24 max_ast=94 max_ir=247 max_frame=1488 max_bindings=7 max_defers=0 max_loops=1 max_slots=159 max_args=8 max_params=2 text=16380 data=0 objects=0 symbols=296 fixups=518 relocations=0 elf=24577\n"
+  },
+  "probe_sha256": "9a568fc12d83c589b04f13af975d8f9f3c4fe358b46065038017ed8a1b886527",
+  "open_embedded_nul": {
+    "argv": [
+      "qemu-riscv64",
+      "probe.elf",
+      "open"
+    ],
+    "returncode": 11,
+    "stdout": "",
+    "stderr": ""
+  },
+  "exists_after_open": true,
+  "remove_embedded_nul": {
+    "argv": [
+      "qemu-riscv64",
+      "probe.elf"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "exists_after_remove": false,
+  "observed_defect": true,
+  "scope": "Only fresh temporary victim file; production sources untouched. Successful probe confirms rejection mismatch, not compiler pipeline reachability."
+}

@@ -1,0 +1,189 @@
+{
+  "language_version": "S-next 0.1",
+  "documentation_revision": 3,
+  "date": "2026-10-14",
+  "paths_relative_to": "core-s",
+  "baseline_release": "next/q/release.json",
+  "baseline_release_sha256": "9195f147afe7b74543bb36928f59bfee55ab8b61fc07f7afbe665c4217c10118",
+  "mechanical_checks_passed": true,
+  "compiler": {
+    "path": "build/behavior-fixes-p4-r1/e3.elf",
+    "sha256": "8051f3599704a6bf180496b14632691c3463f1239946893641f65aae21969904",
+    "elf_bytes": 1011792,
+    "memory": {
+      "rw_bytes": 55135764,
+      "image_span_bytes": 56143380
+    }
+  },
+  "bootstrap": {
+    "record": "build/behavior-fixes-p4-r1/verification.json",
+    "record_sha256": "cf5689f8a50b342cf097eee590a4bdf53c6891e63ad3874e83f38eba76da615d",
+    "p3_record": "build/behavior-fixes-p3-r1/verification.json",
+    "p3_record_sha256": "07fcaaab982d86cf6c724ed4cbacde0a8cb6c22ddc10866914f822db12677aa4",
+    "seed_sha256": "90c9523de43bebbd0a6932e74abc8cd670b60478c3b4f0fc1eff74fbf4cfb686",
+    "frozen_inputs_unchanged": 71,
+    "e1_e2_e3_equal": true,
+    "source_perturbation_observed": true,
+    "guest_stack_bytes": 1048576,
+    "q_source_identity_encoding": "SHA256 of sorted path + NUL + hex digest + LF records",
+    "q_source_identity": "e736dd2b960a47067007660b40c5cd4fe6a97c9d2bbea11e804c24717f8f5624",
+    "q_source_sha256": {
+      "next/q/blocking.vt": "044a0905e9c54b5c4555165f68c488d99605a9e71f1f15b01e1c3ccebf8cd958",
+      "next/q/check.vt": "7fbd67385fcc3de9c68cd6056a281a48409d48fbd4a8a17fb3eaca2aad2adff0",
+      "next/q/compiler.build": "29d766fd9ccc67b19475c9bb1277ec39be99afb135e068d8f0a9e09173a4375b",
+      "next/q/image.vt": "21a8641c3a5f7d03a50682698969f7b1ad8f300ec0a5be256c7dd6a333e0389a",
+      "next/q/init.vt": "f4987677b55d793df25f648881f34cfa7717f2affb0ee6915d967bdb1739a6b2",
+      "next/q/input.vt": "067f66b18ff628f3b6a0b463df8b96b676f70b2cb4529b34e92a91f8f97e7ff4",
+      "next/q/ir.vt": "083ea475e6871ca1940b66b1c1b6830984564f75d27d3a4b7d049c7d484bc2b8",
+      "next/q/lex.vt": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28",
+      "next/q/main.vt": "f30ba4a2641da8f6a43f4cbc263f9fbfb2b4c49b3fe1d5cdcc8cdcc3572cb5f4",
+      "next/q/model.vt": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+      "next/q/parse.vt": "d2cff4e7f2fcd7a66968a34eb8c116c815ee477bbb9d606d626a373793fa8b7c",
+      "next/q/rules.vt": "8b3846de0315501e992bfc381653c26dc83122432338a64cc675249e71a90951",
+      "next/q/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+      "next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+      "next/q/runtime/linux.vt": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0",
+      "next/q/rv64.vt": "ba613287c9c48eda58de7fe74ea264d5a010e896ca1d9f5089333a3254b6aabf",
+      "next/q/s0.vt": "c90d59a279926a1491fc43307deddc4e04acc0d9754a64aad56fe850fe53d9b7",
+      "next/q/types.vt": "d43ea325af473099d368d5ed350aa5b3727c93d3aa300120fc49fd04ffdf9ee3"
+    }
+  },
+  "compiler_statistics": {
+    "sources": 16,
+    "imports": 50,
+    "assembly_files": 1,
+    "source": 337238,
+    "assembly": 345,
+    "names": 4139,
+    "name_bytes": 83273,
+    "decls": 808,
+    "types": 423,
+    "fields": 365,
+    "params": 628,
+    "max_ast": 1119,
+    "max_ir": 1429,
+    "max_frame": 25808,
+    "max_bindings": 18,
+    "max_defers": 0,
+    "max_loops": 3,
+    "max_slots": 982,
+    "max_args": 185,
+    "max_params": 5,
+    "text": 1000592,
+    "data": 1994,
+    "objects": 556,
+    "symbols": 12804,
+    "fixups": 27962,
+    "relocations": 4,
+    "elf": 1011792
+  },
+  "suites": {
+    "language": {
+      "record": "build/behavior-fixes-language-r1/verification.json",
+      "record_sha256": "691d4f37c503ade770d702ff73278ddf3f527f9681f7a70d4a0876d00eb57c05",
+      "case_count": 126,
+      "passed": true
+    },
+    "input": {
+      "record": "build/behavior-fixes-input-r1/verification.json",
+      "record_sha256": "12642e2082e7c532739ce2fc9cbcefbcabbe6b853acd253e84825fbd74b9732f",
+      "case_count": 24,
+      "passed": true
+    },
+    "machine": {
+      "record": "build/behavior-fixes-machine-r1/verification.json",
+      "record_sha256": "5a59261fad30a9e7e34a2acb87305486e9ed83aa5ff8fe1909473b9f28b83f40",
+      "case_count": 105,
+      "passed": true
+    },
+    "blocking": {
+      "record": "build/behavior-fixes-blocking-r1/verification.json",
+      "record_sha256": "fd0cf351d8fb0fe5e1cac4bcb056bf79c22cb3ca095c587a2cb93d8b7baad882",
+      "case_count": 48,
+      "passed": true
+    },
+    "limits": {
+      "record": "build/behavior-fixes-limits-r1/verification.json",
+      "record_sha256": "1fd50123e715dca30adf9d228da63d0326eb0d25636c26c44daff82d3c4b502b",
+      "case_count": 15,
+      "passed": true
+    },
+    "interfaces": {
+      "record": "build/behavior-fixes-interfaces-r1/verification.json",
+      "record_sha256": "4d80000ba2e8d6155d87014cef719ca2f2558ab4137be4df6dfa2047e71fa6ac",
+      "case_count": 76,
+      "passed": true
+    },
+    "copy": {
+      "record": "build/behavior-fixes-copy-r1/verification.json",
+      "record_sha256": "100573a8496b6e3794c85a7a88db658b5afd5815ae5e4ab10102540ea54ab0b8",
+      "case_count": 8,
+      "passed": true
+    },
+    "reference": {
+      "record": "build/behavior-fixes-reference-r1/verification.json",
+      "record_sha256": "1b2660f87305f30a8a0df0e4aa90a5744421ca93eded960a48abcc1bea1f90fd",
+      "case_count": 3,
+      "passed": true
+    },
+    "io": {
+      "record": "build/behavior-fixes-io-r1/verification.json",
+      "record_sha256": "92b3ad71051bd8b35f40bf22bc3cb27fff45c654b70ad3cfe4e4e9252d6f5d05",
+      "case_count": 12,
+      "passed": true
+    },
+    "diagnostics": {
+      "record": "build/behavior-fixes-diagnostics-r1/verification.json",
+      "record_sha256": "19de2ab311f8967593262868029090e07d7e0d426960acfcf3e079b8f5deb962",
+      "case_count": 18,
+      "passed": true
+    },
+    "system": {
+      "record": "build/behavior-fixes-system-r1/verification.json",
+      "record_sha256": "731bf1034f3be03d891d55f6c42bdac664951b18e85e62b83b285530257fb513",
+      "case_count": 0,
+      "passed": true,
+      "compiled_programs": 2,
+      "nested_records": {
+        "build/behavior-fixes-system-r1/machine/verification.json": "c3c79fd89c8370d3e12fb1f0162bbde458a2705aaa3ed42dea96719ff7f43e82",
+        "build/behavior-fixes-system-r1/negative/below-ram/machine/verification.json": "ea133f50288199d3a66d9539c3ac9e9fc9a008a87b712be4d28dc587dee27025",
+        "build/behavior-fixes-system-r1/negative/explicit-failure/machine/verification.json": "a4672281093e71ed2cb79416732e9dfb59a2c9c9976e72484b7e34deaa599e90",
+        "build/behavior-fixes-system-r1/negative/invalid-flags/machine/verification.json": "8b4f3207126fb9ea9e06e4bf41ac79e6ff2939df431187e81690fe965feec68c",
+        "build/behavior-fixes-system-r1/negative/misaligned-page/machine/verification.json": "258100299923d5a708c56a9e651b3b518c411bce6f550fbfd3ff2188b2579c14",
+        "build/behavior-fixes-system-r1/negative/ppn-high-bit/machine/verification.json": "5031402c1241b6bfc1ccc7400897bc9d3d38fe345775011c10b0424f416add1d",
+        "build/behavior-fixes-system-r1/negative/ram-upper-bound/machine/verification.json": "6f78d970aa1fdcbbe5cbdb12be9fb088f3c1e13c413747a62167691e2187d248",
+        "build/behavior-fixes-system-r1/negative/reserved-high-bit/machine/verification.json": "1e9c62a1a154c7b03c5425418f6521d296273b982c961a95cca2127dca6adcc8",
+        "build/behavior-fixes-system-r1/negative/reserved-low-bit/machine/verification.json": "44b3e6e06b8b642f3b5615e40e14b1e2c5a9bf09741c1c1519316023d2abe084",
+        "build/behavior-fixes-system-r1/negative/reserved-slot/machine/verification.json": "42057dffbc0d5652e7b3aab3a8188dfb5885aeaae609f2f05e9fd3a7b9145d2b",
+        "build/behavior-fixes-system-r1/negative/unmapped-read/machine/verification.json": "3cae13fd38fceedb9d2e15ff183a54eb024031f896641dddc3e8459e1948541d",
+        "build/behavior-fixes-system-r1/negative/verification.json": "035a9ee51962aa6e426ee833b625552a052b8a13e5e3a0b62981771b3847fdb4"
+      },
+      "platform_negative_cases": 10
+    }
+  },
+  "tool_guards": {
+    "record": "build/behavior-fixes-tool-guards-r1.json",
+    "record_sha256": "a0cba7d45e58420f2b172263297b247f7cfe351c778e245d8ccc76be610639d8",
+    "entry_import_checks": 88,
+    "real_compiler_corpus_runs": 5,
+    "passed": true
+  },
+  "cost": {
+    "record": "../docs/workflows/behavior-fixes-2026-10-14/I-cost.json",
+    "record_sha256": "907885cdf321d275bf76c38f428942886bbb3f3969b8eb36060b1fc27c5265f9",
+    "compiler_physical_lines": 11018,
+    "runtime_vt_lines": 290,
+    "runtime_s0_lines": 19
+  },
+  "independent_acceptance": {
+    "record": "../docs/workflows/behavior-fixes-2026-10-14/acceptance-r1.md",
+    "status_source": "Read the independent review record; mechanical checks do not imply independent acceptance."
+  },
+  "boundaries": [
+    "RV64 Linux-user only; K0/suba self-hosting is not implemented.",
+    "Frozen verify.py/check_reference.py must be invoked without Python optimization; maintained callers reject optimization before importing them.",
+    "Save cleanup can fail; residual path and primary/secondary errno are reported. No concurrent pathname replacement or power-loss transaction guarantee.",
+    "P5 remains a bounded platform experiment, not a complete operating system.",
+    "Writable reservation is not peak RSS; largest frame is not whole-call-chain stack."
+  ]
+}

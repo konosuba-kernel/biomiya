@@ -165,10 +165,10 @@ fn build_variant(arguments:parse::NodeId, called:bool, ty:model::TypeId, offset:
     return result;
 }
 
-fn build_record(value:parse::RecordValue, file:u32, ty:model::TypeId, offset:usize) -> u32 {
+fn build_record(value:parse::RecordValue, span:model::Span, ty:model::TypeId, offset:usize) -> u32 {
     let t:model::Type = types::info(ty);
-    if t.kind != model::TYPE_STRUCT || !model::same_type(types::named_type(file, value.type_name, false), ty) {
-        types::fail(model::ERROR_TYPE);
+    if t.kind != model::TYPE_STRUCT || !model::same_type(types::named_type(span.file, value.type_name, false), ty) {
+        model::diagnose(model::ERROR_TYPE, span);
     }
     let result:u32 = add(GROUP, ty, offset, 0, 0);
     var tail:u32 = 0;
@@ -184,17 +184,19 @@ fn build_record(value:parse::RecordValue, file:u32, ty:model::TypeId, offset:usi
                 index = index+1_u32;
             }
             if index == t.count {
-                types::fail(model::ERROR_NAME);
+                model::diagnose(model::ERROR_NAME, parse::location(item));
             }
             if seen[index as usize] != 0_u32 {
-                types::fail(model::ERROR_TYPE);
+                model::diagnose(model::ERROR_TYPE, parse::location(item));
             }
             seen[index as usize] = 1;
             let f:model::Field = model::get_field((t.first+index));
-            if !types::field_visible(ty, f.flags, file) {
-                types::fail(model::ERROR_NAME);
+            if !types::field_visible(ty, f.flags, span.file) {
+                model::diagnose(model::ERROR_NAME, parse::location(item));
             }
             let child:u32 = build(pair.value, f.ty, f.offset);
+            // Recursive initializers locate their own errors; resume this record afterward.
+            types::locate(span);
             tail = append(result, tail, child);
             if !record(child).all_zero {
                 all = false;
@@ -203,7 +205,7 @@ fn build_record(value:parse::RecordValue, file:u32, ty:model::TypeId, offset:usi
             item = parse::next(item);
         }
         if found != t.count {
-            types::fail(model::ERROR_TYPE);
+            model::diagnose(model::ERROR_TYPE, span);
         }
         {
             var data:InitData = record(result);
@@ -320,7 +322,7 @@ fn build_inner(node:parse::NodeId, ty:model::TypeId, offset:usize) -> u32 {
             return add(ADDRESS, ty, offset, 0, static_address(call, n.span.file, ty));
         },
         parse::Syntax::Record(value) => {
-            return build_record(value, n.span.file, ty, offset);
+            return build_record(value, n.span, ty, offset);
         },
         parse::Syntax::Array(first) => {
             return build_array(first, ty, offset);

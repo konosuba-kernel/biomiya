@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """Run a real Q manifest/lexer/copy application, including explicit syscall fault injection."""
+
+# Assertions are verification checks, including in imported helpers.
+if not __debug__:
+    raise SystemExit("verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO")
+
 import argparse
 import hashlib
 import json

@@ -1,0 +1,114 @@
+{
+  "candidate_sha256": "6630b2405fdf77939141b39edb558a690ee729d5441ebfa5d8732b7b573f2505",
+  "candidate_hashes_match": {
+    "REPORT.md": true,
+    "acceptance-ab.md": true,
+    "asserts-evidence.json": true,
+    "boundaries-cleanup-probe.json": true,
+    "boundaries-cleanup-probe.py": true,
+    "boundaries-freeze.json": true,
+    "boundaries-probe.json": true,
+    "boundaries-probe.py": true,
+    "boundaries-root-cleanup.json": true,
+    "boundaries-root-remove.json": true,
+    "boundaries.md": true,
+    "frontend-probes.json": true,
+    "frontend-root-verification.json": true,
+    "frontend.md": true,
+    "measure_audit.py": true,
+    "metrics.json": true,
+    "probe_asserts.py": true
+  },
+  "metrics_equal": true,
+  "baseline": "2c7061cbed13959697369879e5717a8ad0c9fb21",
+  "tracked_diff": "",
+  "links": {
+    "REPORT.md": {
+      "broken": []
+    },
+    "frontend.md": {
+      "broken": []
+    },
+    "boundaries.md": {
+      "broken": []
+    }
+  },
+  "frontend": [
+    {
+      "name": "local_unknown",
+      "prior_value": "11",
+      "field": "missing",
+      "runs": [
+        {
+          "exit": 1,
+          "stderr": "E_NAME file=1 byte=85\n",
+          "output_exists": false,
+          "matches": true
+        },
+        {
+          "exit": 1,
+          "stderr": "E_NAME file=1 byte=85\n",
+          "output_exists": false,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "name": "local_duplicate",
+      "prior_value": "11",
+      "field": "a:22 };",
+      "runs": [
+        {
+          "exit": 1,
+          "stderr": "E_TYPE file=1 byte=85\n",
+          "output_exists": false,
+          "matches": true
+        },
+        {
+          "exit": 1,
+          "stderr": "E_TYPE file=1 byte=85\n",
+          "output_exists": false,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "name": "static_unknown",
+      "prior_value": "11",
+      "field": "missing",
+      "runs": [
+        {
+          "exit": 1,
+          "stderr": "E_NAME file=1 byte=71\n",
+          "output_exists": false,
+          "matches": true
+        },
+        {
+          "exit": 1,
+          "stderr": "E_NAME file=1 byte=71\n",
+          "output_exists": false,
+          "matches": true
+        }
+      ]
+    },
+    {
+      "name": "static_duplicate",
+      "prior_value": "11",
+      "field": "a:22 };",
+      "runs": [
+        {
+          "exit": 1,
+          "stderr": "E_TYPE file=1 byte=71\n",
+          "output_exists": false,
+          "matches": true
+        },
+        {
+          "exit": 1,
+          "stderr": "E_TYPE file=1 byte=71\n",
+          "output_exists": false,
+          "matches": true
+        }
+      ]
+    }
+  ]
+}

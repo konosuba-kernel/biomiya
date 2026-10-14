@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 """Replay retained Blocking contracts on the specified Q compiler and actual Q analysis."""
+
+# Assertions are verification checks, including in imported helpers.
+if not __debug__:
+    raise SystemExit("verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO")
+
 import argparse
 import hashlib
 import json

@@ -1,0 +1,541 @@
+{
+  "baseline_commit": "2c7061cbed13959697369879e5717a8ad0c9fb21",
+  "standard_sha256": "980c0a8e13a63e990dd7800bca9315aeac30d892622c8ea28e227e12c949c968",
+  "method": "Physical lines including comments/blanks. VT spans use masked strings/comments and matched braces; >60 is a review signal, not a failure. No nesting/complexity rating. Runtime counted separately.",
+  "groups": {
+    "q_production": {
+      "file_count": 14,
+      "lines": 10991,
+      "bytes": 325234,
+      "files": [
+        {
+          "path": "core-s/next/q/blocking.vt",
+          "lines": 355,
+          "bytes": 12022,
+          "sha256": "044a0905e9c54b5c4555165f68c488d99605a9e71f1f15b01e1c3ccebf8cd958",
+          "function_count": 10,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "load",
+              "start": 145,
+              "end": 232,
+              "physical_span": 88
+            },
+            {
+              "name": "finish",
+              "start": 286,
+              "end": 355,
+              "physical_span": 70
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/check.vt",
+          "lines": 2090,
+          "bytes": 68783,
+          "sha256": "b28c596bbdfb6e056b270627259ed143449bf649766e095008533c3d4ab8b205",
+          "function_count": 50,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "is_place",
+              "start": 250,
+              "end": 377,
+              "physical_span": 128
+            },
+            {
+              "name": "place_inner",
+              "start": 431,
+              "end": 587,
+              "physical_span": 157
+            },
+            {
+              "name": "builtin",
+              "start": 632,
+              "end": 740,
+              "physical_span": 109
+            },
+            {
+              "name": "expr_inner",
+              "start": 1107,
+              "end": 1251,
+              "physical_span": 145
+            },
+            {
+              "name": "statement",
+              "start": 1253,
+              "end": 1425,
+              "physical_span": 173
+            },
+            {
+              "name": "block_first",
+              "start": 1488,
+              "end": 1607,
+              "physical_span": 120
+            },
+            {
+              "name": "match_arm",
+              "start": 1637,
+              "end": 1756,
+              "physical_span": 120
+            },
+            {
+              "name": "checked_pattern",
+              "start": 1766,
+              "end": 1916,
+              "physical_span": 151
+            },
+            {
+              "name": "match_statement",
+              "start": 1918,
+              "end": 2002,
+              "physical_span": 85
+            }
+          ],
+          "public_mutable_statics": [
+            {
+              "name": "max_bindings",
+              "line": 74
+            },
+            {
+              "name": "max_defers",
+              "line": 75
+            },
+            {
+              "name": "max_loops",
+              "line": 76
+            }
+          ]
+        },
+        {
+          "path": "core-s/next/q/image.vt",
+          "lines": 578,
+          "bytes": 18512,
+          "sha256": "21a8641c3a5f7d03a50682698969f7b1ad8f300ec0a5be256c7dd6a333e0389a",
+          "function_count": 36,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "finish",
+              "start": 428,
+              "end": 578,
+              "physical_span": 151
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/init.vt",
+          "lines": 552,
+          "bytes": 17719,
+          "sha256": "06df249b98ef394495425aba4a60ba44515b676017a03445998d08a96f47f615",
+          "function_count": 16,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "build_inner",
+              "start": 285,
+              "end": 432,
+              "physical_span": 148
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/input.vt",
+          "lines": 391,
+          "bytes": 15149,
+          "sha256": "32d9ce32f8059c110efff67e7f37f8ac7392867ad75f0bfbe1d75adbe4c7028b",
+          "function_count": 22,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "load",
+              "start": 212,
+              "end": 351,
+              "physical_span": 140
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/ir.vt",
+          "lines": 867,
+          "bytes": 18524,
+          "sha256": "083ea475e6871ca1940b66b1c1b6830984564f75d27d3a4b7d049c7d484bc2b8",
+          "function_count": 57,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "binary_operator",
+              "start": 725,
+              "end": 785,
+              "physical_span": 61
+            },
+            {
+              "name": "next_call",
+              "start": 801,
+              "end": 863,
+              "physical_span": 63
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/lex.vt",
+          "lines": 309,
+          "bytes": 10159,
+          "sha256": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28",
+          "function_count": 9,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "number",
+              "start": 63,
+              "end": 139,
+              "physical_span": 77
+            },
+            {
+              "name": "next",
+              "start": 141,
+              "end": 272,
+              "physical_span": 132
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/main.vt",
+          "lines": 199,
+          "bytes": 7024,
+          "sha256": "f30ba4a2641da8f6a43f4cbc263f9fbfb2b4c49b3fe1d5cdcc8cdcc3572cb5f4",
+          "function_count": 6,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "run",
+              "start": 100,
+              "end": 199,
+              "physical_span": 100
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/model.vt",
+          "lines": 730,
+          "bytes": 18598,
+          "sha256": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+          "function_count": 48,
+          "functions_over_60_physical_lines": [],
+          "public_mutable_statics": [
+            {
+              "name": "max_ast",
+              "line": 381
+            },
+            {
+              "name": "max_ir",
+              "line": 382
+            },
+            {
+              "name": "max_frame",
+              "line": 383
+            },
+            {
+              "name": "error_code",
+              "line": 384
+            },
+            {
+              "name": "error_file",
+              "line": 385
+            },
+            {
+              "name": "error_offset",
+              "line": 386
+            }
+          ]
+        },
+        {
+          "path": "core-s/next/q/parse.vt",
+          "lines": 1820,
+          "bytes": 46215,
+          "sha256": "31fbbeef18ec1564c0a80eef55c8af069a18d3739300168b3e4ed5167f476919",
+          "function_count": 63,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "binop",
+              "start": 203,
+              "end": 269,
+              "physical_span": 67
+            },
+            {
+              "name": "primary",
+              "start": 698,
+              "end": 763,
+              "physical_span": 66
+            },
+            {
+              "name": "expression_inner",
+              "start": 766,
+              "end": 836,
+              "physical_span": 71
+            },
+            {
+              "name": "statement_inner",
+              "start": 908,
+              "end": 1033,
+              "physical_span": 126
+            },
+            {
+              "name": "declaration",
+              "start": 1225,
+              "end": 1341,
+              "physical_span": 117
+            },
+            {
+              "name": "name_of",
+              "start": 1459,
+              "end": 1576,
+              "physical_span": 118
+            },
+            {
+              "name": "call_of",
+              "start": 1578,
+              "end": 1698,
+              "physical_span": 121
+            },
+            {
+              "name": "field_value",
+              "start": 1700,
+              "end": 1820,
+              "physical_span": 121
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/rules.vt",
+          "lines": 225,
+          "bytes": 5644,
+          "sha256": "8b3846de0315501e992bfc381653c26dc83122432338a64cc675249e71a90951",
+          "function_count": 11,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "binary",
+              "start": 128,
+              "end": 225,
+              "physical_span": 98
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/rv64.vt",
+          "lines": 1316,
+          "bytes": 40608,
+          "sha256": "ba613287c9c48eda58de7fe74ea264d5a010e896ca1d9f5089333a3254b6aabf",
+          "function_count": 50,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "layouts",
+              "start": 285,
+              "end": 376,
+              "physical_span": 92
+            },
+            {
+              "name": "validate",
+              "start": 633,
+              "end": 842,
+              "physical_span": 210
+            },
+            {
+              "name": "binary",
+              "start": 849,
+              "end": 947,
+              "physical_span": 99
+            },
+            {
+              "name": "instruction",
+              "start": 1018,
+              "end": 1117,
+              "physical_span": 100
+            },
+            {
+              "name": "verify_function",
+              "start": 1119,
+              "end": 1240,
+              "physical_span": 122
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/s0.vt",
+          "lines": 430,
+          "bytes": 10078,
+          "sha256": "c90d59a279926a1491fc43307deddc4e04acc0d9754a64aad56fe850fe53d9b7",
+          "function_count": 13,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "operation",
+              "start": 180,
+              "end": 389,
+              "physical_span": 210
+            }
+          ],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/types.vt",
+          "lines": 1129,
+          "bytes": 36199,
+          "sha256": "d43ea325af473099d368d5ed350aa5b3727c93d3aa300120fc49fd04ffdf9ee3",
+          "function_count": 42,
+          "functions_over_60_physical_lines": [
+            {
+              "name": "constant_inner",
+              "start": 509,
+              "end": 676,
+              "physical_span": 168
+            },
+            {
+              "name": "prepare",
+              "start": 794,
+              "end": 954,
+              "physical_span": 161
+            },
+            {
+              "name": "collect",
+              "start": 1039,
+              "end": 1129,
+              "physical_span": 91
+            }
+          ],
+          "public_mutable_statics": []
+        }
+      ]
+    },
+    "q_runtime": {
+      "file_count": 3,
+      "lines": 220,
+      "bytes": 7437,
+      "files": [
+        {
+          "path": "core-s/next/q/runtime/bytes.vt",
+          "lines": 58,
+          "bytes": 2333,
+          "sha256": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+          "function_count": 4,
+          "functions_over_60_physical_lines": [],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/runtime/linux.vt",
+          "lines": 143,
+          "bytes": 4759,
+          "sha256": "f50998235c8a049c26f9fa73d3eb724a5db4b7f233d521dceb449a3103f73a3a",
+          "function_count": 12,
+          "functions_over_60_physical_lines": [],
+          "public_mutable_statics": []
+        },
+        {
+          "path": "core-s/next/q/runtime/linux.s0",
+          "lines": 19,
+          "bytes": 345,
+          "sha256": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+        }
+      ]
+    },
+    "maintained_tools": {
+      "file_count": 15,
+      "lines": 2416,
+      "bytes": 126937,
+      "files": [
+        {
+          "path": "core-s/tools/check_next.py",
+          "lines": 239,
+          "bytes": 12489,
+          "sha256": "8a50d7a387f409304b3fb6b0277d0afb32ba74cff831049ed5f804307eff01da"
+        },
+        {
+          "path": "core-s/tools/check_next_reference.py",
+          "lines": 73,
+          "bytes": 3188,
+          "sha256": "49bca19e74661f2990a89bd8f4bc75159187a6cd894b8da69ed97a9876dbadaf"
+        },
+        {
+          "path": "core-s/tools/check_next_trials.py",
+          "lines": 77,
+          "bytes": 3199,
+          "sha256": "af901df85425b41dfce680ebcb91d283e8c74fb6527d6373c4caf53cae34a9ce"
+        },
+        {
+          "path": "core-s/tools/check_q.py",
+          "lines": 135,
+          "bytes": 6162,
+          "sha256": "18bf00973185d746b29ad8c0e2ba9b48f5b8b6693cf9c7dcd69b3cea31558dab"
+        },
+        {
+          "path": "core-s/tools/check_q_blocking.py",
+          "lines": 235,
+          "bytes": 14102,
+          "sha256": "1aba5f7de3057d7cc6414e688385692bb47c0d38b1a8f0f4868c0fe7cc87d1ac"
+        },
+        {
+          "path": "core-s/tools/check_q_copy.py",
+          "lines": 187,
+          "bytes": 9730,
+          "sha256": "679b539b12526e1596029db9f692c391946346f8e2165d1470547091e25d5ce8"
+        },
+        {
+          "path": "core-s/tools/check_q_input.py",
+          "lines": 154,
+          "bytes": 8142,
+          "sha256": "f098b66040fa01ab35b019dc540764ae3c36b8fb8fda9983470f53566ec47df3"
+        },
+        {
+          "path": "core-s/tools/check_q_interfaces.py",
+          "lines": 151,
+          "bytes": 9279,
+          "sha256": "9ce4e41241a11e6439be78990eb6dc53a65264a4b1f1fda3804d298fff0eaf4e"
+        },
+        {
+          "path": "core-s/tools/check_q_limits.py",
+          "lines": 84,
+          "bytes": 4871,
+          "sha256": "281b0c400a3173b59517be336f56a2521c73af2b10f0d26d4c1c9d366548d28e"
+        },
+        {
+          "path": "core-s/tools/check_q_machine.py",
+          "lines": 319,
+          "bytes": 15630,
+          "sha256": "87d01f69cc6b1daf1b2dc08c93c0a09a7033ad922386ab6307a8355c46afeaf4"
+        },
+        {
+          "path": "core-s/tools/check_reference.py",
+          "lines": 131,
+          "bytes": 6815,
+          "sha256": "b566ab040b2ee370d5b54a0e30ee343a00286f33929d6ace4553ec18c855b901"
+        },
+        {
+          "path": "core-s/tools/measure_next.py",
+          "lines": 105,
+          "bytes": 5465,
+          "sha256": "f4e8e7fa161f9422900520811acb7d392ca97af45dd50d9a2739b9d205a3ea34"
+        },
+        {
+          "path": "core-s/tools/selfhost_next.py",
+          "lines": 362,
+          "bytes": 20245,
+          "sha256": "47cdc6102c6f16700bd112865d4725e13184aca470e31021a386af89dacc5e82"
+        },
+        {
+          "path": "core-s/tools/verify.py",
+          "lines": 106,
+          "bytes": 4997,
+          "sha256": "5ad1be0497e6918ec198f7fe7fac1a1bda223906ea8a95deddd9fc2fdf9f7b92"
+        },
+        {
+          "path": "core-s/tools/q_machine_oracle.rs",
+          "lines": 58,
+          "bytes": 2623,
+          "sha256": "7e6a2e2003f9d50650f41afb8b91b90b115c8af2229304888da7221301161f33"
+        }
+      ]
+    }
+  }
+}

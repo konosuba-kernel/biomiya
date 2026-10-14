@@ -1,0 +1,24 @@
+{
+  "node": "T",
+  "revision": "r1",
+  "author": "/root/fix_verification_tools",
+  "baseline": "2c7061cbed13959697369879e5717a8ad0c9fb21",
+  "status": "frozen awaiting independent acceptance",
+  "files": {
+    "core-s/tools/check_next.py": "19f909947ba24348757800e3b331169fd4e1d5e252d7b637cb9446395346ab8c",
+    "core-s/tools/check_next_reference.py": "d642668e7155c14da1e872841608102106fcf7544a24865743529e7dc82b79f9",
+    "core-s/tools/check_next_trials.py": "30d8553a40635528e05f31c2e100a5321d6e8d56d31e41f484411167eb4ed94f",
+    "core-s/tools/check_q.py": "1b191289a128d96c7098d04ec8e6e6f5b56fc65eca351564587b9917c7310b4b",
+    "core-s/tools/check_q_blocking.py": "5125b935cad3796f0cc4d63d5881e81dd507d47275e4eaf4c62e27fd9cad02c8",
+    "core-s/tools/check_q_copy.py": "1b48317f925c66fb7cf979096a32bce19ade3fdb26356e01e818d22d55875058",
+    "core-s/tools/check_q_input.py": "13970e7afa6d01dcf0e4a2459bc9645131fd7286bc72bf6f7287da6b72db109f",
+    "core-s/tools/check_q_interfaces.py": "e720d7c25f7703d7e69ce47862fb53fd8bf9eb9efd584f5ba35417e695f1e5b2",
+    "core-s/tools/check_q_limits.py": "a2c8efdecc58312893072330f4a0ed18116bc94ed4b738d85fa3d70293f2907f",
+    "core-s/tools/check_q_machine.py": "282d33d0ebdc15a0f432df3d13af1212fe422cbf8b30a5e33be509e4f145cd95",
+    "core-s/tools/selfhost_next.py": "985a39b2efc1ed9f6c454e45adb6a6d81ca2fa0c6f08b54d9bb27f3190d6827c",
+    "core-s/tools/check_q_tool_guards.py": "b47f2048eafa5ee8c555f4c091ee9ed3070600f16ab4849329c947f161021478",
+    "docs/workflows/behavior-fixes-2026-10-14/T-r1-verification.json": "f9b199270c4a92e8ce10461fa03afda260d44d432fae3e82dbb15e6f658c4506",
+    "docs/workflows/behavior-fixes-2026-10-14/T-r1.md": "d9ae73b284d7b6354b660a7f3ed772dc31d21862a1184943da192f385d63ea8e"
+  },
+  "frozen_seed_inputs_unchanged": 71
+}

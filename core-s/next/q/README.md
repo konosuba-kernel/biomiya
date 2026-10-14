@@ -2,7 +2,21 @@
 
 语言使用者从 [版本参考](../../docs/reference/s-next-0.1.md) 开始；实现者从 `main.vt` 的阶段顺序开始。目录名是显式构建清单的路径，不形成自动模块搜索规则。模块名暂为 `bootstrap::*`，本目录与旧 bootstrap 不可同时选入一个清单。
 
-## 已运行的编译链
+## 当前维护修订（2026-10-14）
+
+四项行为修复的当前编译器为 `core-s/build/behavior-fixes-p4-r1/e3.elf`，SHA-256 `8051f3599704a6bf180496b14632691c3463f1239946893641f65aae21969904`。E1=E2=E3；ELF 1,011,792字节，RW预留55,135,764字节，映像跨度56,143,380字节，最大单函数frame仍25,808字节。
+
+修复验证工具优化模式假通过、NUL删除路径、保存错误与清理结果丢失、记录字段诊断错位。当前生产VT为11,018行，VT runtime另290行、S0仍19行。证据与最终独立判定见[维护记录](maintenance-2026-10-14.json)及[组合说明](../../../docs/workflows/behavior-fixes-2026-10-14/I-summary.md)；下面保留前一基线的原始身份和统计。没有新增语言特性，K0尚未实施。
+
+新增回归入口（在core-s下，使用不存在的证据目录）：
+
+```sh
+python3 tools/check_q_io_failures.py --compiler build/behavior-fixes-p4-r1/e3.elf --record-dir build/io-new
+python3 tools/check_q_diagnostics.py --compiler build/behavior-fixes-p4-r1/e3.elf --record-dir build/diagnostics-new
+python3 tools/check_q_tool_guards.py --compiler build/behavior-fixes-p4-r1/e3.elf
+```
+
+## 2026-10-13的基线编译链
 
 `build/snext-p4-r2/verification.json` 记录 B(P)=E0、E0(Q)=E1、E1(Q)=E2、E2(Q)=E3。E1/E2/E3 完整文件一致：
 
@@ -25,7 +39,7 @@ E3 为 `core-s/build/snext-p4-r2/e3.elf`。产物 999,504 字节；目标 RW 55,
 7. `rv64.vt`：只读语义 IR，验证后领取一次性发射票据；独立维护帧/标签/修补侧表。`image.vt`、`s0.vt` 完成机器映像和有限汇编适配。
 8. `blocking.vt`：在 arena 释放前提取稳定的直接调用摘要；开启分析不改变 ELF。
 
-`rules.vt` 是纯标量/尺寸规则；`runtime/` 是明确的 Linux I/O 和三类具体结果枚举。没有 HIR、SSA、visitor 框架、通用上下文、借用检查或用户泛型。
+`rules.vt` 是纯标量/尺寸规则；`runtime/` 是明确的 Linux I/O 和具体结果枚举，当前另有保存阶段/错误结果。没有 HIR、SSA、visitor 框架、通用上下文、借用检查或用户泛型。
 
 ## 生命周期与实际边界
 
@@ -37,7 +51,7 @@ Node 为 40 B，TypeSyntax 为 24 B；Inst 为 48 B、Instruction 为 32 B，Slo
 
 ## 规模与复现
 
-生产 Q 为 **10,991 物理行 / 325,234 字节**，其中非空非注释行 10,404。VT 运行库另 201 行，S0 运行适配 19 行；系统应用 228 行、平台 207 行均另行计账。原型的 8,000 行目标未达。枚举闭合分派、私有句柄、世代检查与具体载荷带来实际增加；源码没有为凑预算压行或移出未计账算法。完整分类和逐文件哈希见 [cost.json](cost.json)，用 `python3 tools/measure_next.py` 从 `core-s/` 重算。
+2026-10-13基线生产 Q 为 **10,991 物理行 / 325,234 字节**，其中非空非注释行 10,404。VT 运行库另 201 行，S0 运行适配 19 行；系统应用 228 行、平台 207 行均另行计账。原型的 8,000 行目标未达。枚举闭合分派、私有句柄、世代检查与具体载荷带来实际增加；源码没有为凑预算压行或移出未计账算法。该基线分类和哈希保留在 [cost.json](cost.json)，当前修订另见上方维护成本；`python3 tools/measure_next.py` 会按当前源码重写cost.json，复核旧证据时不要覆盖它。
 
 从 `core-s/` 使用新的证据目录执行：
 
@@ -58,4 +72,4 @@ python3 next/system/check_system.py --compiler build/p4-new/e3.elf --out build/s
 
 P3 的验收工具固定 P，Q 的工具按指定 ELF 测试真实 Q 源码；不得以 P 后端测试替代 Q 的变体 IR 验证。B 的重建仍用 `tools/verify.py`；`seed.json` 会核对身份。独立验收不由脚本自行宣布。
 
-系统样本在真实 QEMU 设备/双 hart 上运行，平台监控层和宿主 LLVM/QEMU 依赖单列成本。当前没有 SOS 内自举或完整 OS 的声明。
+系统样本在真实 QEMU 设备/双 hart 上运行，平台监控层和宿主 LLVM/QEMU 依赖单列成本。当前没有 suba 内自举或完整 OS 的声明。

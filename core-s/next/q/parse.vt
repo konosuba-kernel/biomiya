@@ -673,13 +673,14 @@ fn make_expression(sp:u32) -> NodeId {
     var first:NodeId = nil();
     var tail:NodeId = nil();
     while !eat("}") {
+        let field_start:u32 = span().start;
         let field:model::NameId = ident();
         need(":");
         let value:NodeId = expression(0);
         let pair:NodeId = add(Syntax::FieldValue(make FieldValue {
             name:field,
             value:value
-        }), sp);
+        }), field_start);
         if is_none(first) {
             first = pair;
         }

@@ -1023,11 +1023,11 @@ fn field_value(n:parse::FieldAccess) -> ir::SlotId {
     return value;
 }
 
-fn struct_value(n:parse::RecordValue, file:u32) -> ir::SlotId {
-    let ty:model::TypeId = types::named_type(file, n.type_name, false);
+fn struct_value(n:parse::RecordValue, span:model::Span) -> ir::SlotId {
+    let ty:model::TypeId = types::named_type(span.file, n.type_name, false);
     let t:model::Type = types::info(ty);
     if t.kind != model::TYPE_STRUCT {
-        types::fail(model::ERROR_TYPE);
+        model::diagnose(model::ERROR_TYPE, span);
     }
     let value:ir::SlotId = ir::slot(ty);
     var seen:[256]u32 = [0;256];
@@ -1042,25 +1042,28 @@ fn struct_value(n:parse::RecordValue, file:u32) -> ir::SlotId {
             }
         }
         if index == t.count {
-            types::fail(model::ERROR_NAME);
+            model::diagnose(model::ERROR_NAME, parse::location(p));
         }
         unsafe {
             if seen[index as usize] != 0_u32 {
-                types::fail(model::ERROR_TYPE);
+                model::diagnose(model::ERROR_TYPE, parse::location(p));
             }
             seen[index as usize] = 1;
             let f:model::Field = model::get_field((t.first+index));
-            if !types::field_visible(ty, f.flags, file) {
-                types::fail(model::ERROR_NAME);
+            if !types::field_visible(ty, f.flags, span.file) {
+                model::diagnose(model::ERROR_NAME, parse::location(p));
             }
             let v:ir::SlotId = expr(pair.value, f.ty);
+            // Child expressions own their instructions; construction resumes at its record.
+            types::locate(span);
+            ir::locate(span);
             ir::store(ir::local_address(value, f.ty, f.offset, false), v);
         }
         found = found+1_u32;
         p = parse::next(p);
     }
     if found != t.count {
-        types::fail(model::ERROR_TYPE);
+        model::diagnose(model::ERROR_TYPE, span);
     }
     return value;
 }
@@ -1170,7 +1173,7 @@ fn expr_inner(node:parse::NodeId, expected:model::TypeId) -> ir::SlotId {
             value = read(index(base_place(part.base), part.index));
         },
         parse::Syntax::Record(part) => {
-            value = struct_value(part, n.span.file);
+            value = struct_value(part, n.span);
         },
         parse::Syntax::FieldValue(part) => {
             types::fail(model::ERROR_INTERNAL);

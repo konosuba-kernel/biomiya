@@ -4,6 +4,15 @@ pub enum BytesResult { Value([]const u8), Failed(u32) }
 pub enum CountResult { Value(usize), Failed(u32) }
 pub enum WriteResult { Done, Failed(u32) }
 
+pub enum SavePhase { Create, Write, Mode, Close }
+pub struct SaveError {
+    pub phase: SavePhase,
+    pub errno: u32,
+    pub close_errno: u32,
+    pub cleanup_errno: u32,
+}
+pub enum SaveResult { Done, Failed(SaveError) }
+
 extern abi(C) fn __b2_syscall6(n:usize,a:usize,b:usize,c:usize,d:usize,e:usize,f:usize) -> usize;
 extern abi(C) fn __b2_argc() -> usize;
 extern abi(C) fn __b2_argv(index:usize) -> *const u8;
@@ -32,47 +41,70 @@ pub fn argument(index:usize) -> BytesResult {
     return BytesResult::Failed(10);
 }
 
-fn open(path:[]const u8, flags:usize) -> CountResult {
-    if path.len == 0_usize || path.len > 96_usize { return CountResult::Failed(11); }
-    var name:[97]u8 = [0;97];
-    var i:usize = 0;
+// Linux errors occupy -4095..-1; conversion below intentionally negates the ABI bits.
+fn errno(value: usize) -> u32 {
+    if error(value) { return (0_usize -% value) as u32; }
+    return 0;
+}
+
+// Callers supply a zero-filled 97-byte local array and a live readable path.
+fn copy_path(path: []const u8, name: []u8) -> bool {
+    if path.len == 0_usize || path.len > 96_usize { return false; }
+    var i: usize = 0;
     while i < path.len {
+        // SAFETY: the caller keeps path readable; both indices fit the checked lengths.
         unsafe {
-            if path[i] == 0_u8 { return CountResult::Failed(11); }
+            if path[i] == 0_u8 { return false; }
             name[i] = path[i];
         }
-        i = i+1_usize;
+        i = i + 1_usize;
     }
+    return true;
+}
+
+// name is a live, NUL-terminated local path for the duration of these syscalls.
+fn open_name(name: []const u8, flags: usize) -> CountResult {
     unsafe {
         loop {
-            let fd:usize = __b2_syscall6(56,AT_FDCWD,core::addr(core::slice_of(name).data),flags,384,0,0);
+            let fd: usize = __b2_syscall6(56, AT_FDCWD, core::addr(name.data), flags, 384, 0, 0);
             if fd != EINTR {
-                if error(fd) { return CountResult::Failed(12); }
+                if error(fd) { return CountResult::Failed(errno(fd)); }
                 return CountResult::Value(fd);
             }
         }
     }
 }
 
+fn open(path: []const u8, flags: usize) -> CountResult {
+    var name: [97]u8 = [0;97];
+    if !copy_path(path, core::slice_of_mut(name)) { return CountResult::Failed(11); }
+    match open_name(core::slice_of(name), flags) {
+        CountResult::Value(fd) => { return CountResult::Value(fd); },
+        CountResult::Failed(code) => { return CountResult::Failed(12); },
+    }
+}
+
 pub fn open_read(path:[]const u8) -> CountResult { return open(path,0); }
 pub fn create_new(path:[]const u8) -> CountResult { return open(path,193); }
 
+fn close_errno(fd: usize) -> u32 {
+    // Linux releases fd even on a close error; retrying could close a reused descriptor.
+    unsafe { return errno(__b2_syscall6(57, fd, 0, 0, 0, 0, 0)); }
+}
+
 pub fn close(fd:usize) -> u32 {
-    unsafe { if error(__b2_syscall6(57,fd,0,0,0,0,0)) { return 13; } }
+    if close_errno(fd) != 0_u32 { return 13; }
     return 0;
 }
 
-pub fn remove(path:[]const u8) -> u32 {
-    if path.len == 0_usize || path.len > 96_usize { return 11; }
-    var name:[97]u8 = [0;97];
-    var i:usize = 0;
-    while i < path.len {
-        unsafe { name[i] = path[i]; }
-        i = i+1_usize;
-    }
-    unsafe {
-        if error(__b2_syscall6(35,AT_FDCWD,core::addr(core::slice_of(name).data),0,0,0,0)) { return 14; }
-    }
+fn remove_name(name: []const u8) -> u32 {
+    unsafe { return errno(__b2_syscall6(35, AT_FDCWD, core::addr(name.data), 0, 0, 0, 0)); }
+}
+
+pub fn remove(path: []const u8) -> u32 {
+    var name: [97]u8 = [0;97];
+    if !copy_path(path, core::slice_of_mut(name)) { return 11; }
+    if remove_name(core::slice_of(name)) != 0_u32 { return 14; }
     return 0;
 }
 
@@ -88,18 +120,75 @@ pub unsafe fn read(fd:usize, buffer:[]u8) -> CountResult {
     }
 }
 
-pub unsafe fn write_all(fd:usize, bytes:[]const u8) -> WriteResult {
-    var done:usize = 0;
+// SAFETY: caller keeps bytes readable until this synchronous operation returns.
+// A failure can follow a partial write. EIO (5) also denotes an impossible count/zero progress.
+unsafe fn write_errno(fd: usize, bytes: []const u8) -> u32 {
+    var done: usize = 0;
     unsafe {
         while done < bytes.len {
-            let n:usize = __b2_syscall6(64,fd,core::addr(core::ptr_add(bytes.data,done)),bytes.len-done,0,0,0);
+            let remaining: usize = bytes.len - done;
+            let n: usize = __b2_syscall6(64, fd, core::addr(core::ptr_add(bytes.data, done)), remaining, 0, 0, 0);
             if n != EINTR {
-                if error(n) || n == 0_usize || n > bytes.len-done { return WriteResult::Failed(16); }
-                done = done+n;
+                if error(n) { return errno(n); }
+                if n == 0_usize || n > remaining { return 5; }
+                done = done + n;
             }
         }
     }
+    return 0;
+}
+
+pub unsafe fn write_all(fd:usize, bytes:[]const u8) -> WriteResult {
+    unsafe { if write_errno(fd, bytes) != 0_u32 { return WriteResult::Failed(16); } }
     return WriteResult::Done;
+}
+
+fn executable_errno(fd: usize) -> u32 {
+    loop {
+        unsafe {
+            let result: usize = __b2_syscall6(52, fd, 493, 0, 0, 0, 0);
+            if result != EINTR { return errno(result); }
+        }
+    }
+}
+
+// Creates exclusively at mode 0600, writes completely, then sets 0755 and closes.
+// Caller keeps path/data readable across blocking I/O and owns the output pathname
+// (no concurrent replacement). Failed saves attempt unlink only after a successful create.
+// No durability/transaction guarantee: cleanup_errno != 0 means the path may remain.
+// Primary failure is preserved; close_errno records an additional close failure.
+pub unsafe fn save_new(path: []const u8, data: []const u8) -> SaveResult {
+    var failure: SaveError = make SaveError {
+        phase: SavePhase::Create, errno: 0, close_errno: 0, cleanup_errno: 0
+    };
+    var name: [97]u8 = [0;97];
+    if !copy_path(path, core::slice_of_mut(name)) {
+        failure.errno = 22;
+        return SaveResult::Failed(failure);
+    }
+    var fd: usize = 0;
+    match open_name(core::slice_of(name), 193) {
+        CountResult::Value(value) => { fd = value; },
+        CountResult::Failed(code) => {
+            failure.errno = code;
+            return SaveResult::Failed(failure);
+        },
+    }
+    failure.phase = SavePhase::Write;
+    // SAFETY: public caller supplies live readable data throughout this synchronous write.
+    unsafe { failure.errno = write_errno(fd, data); }
+    if failure.errno == 0_u32 {
+        failure.phase = SavePhase::Mode;
+        failure.errno = executable_errno(fd);
+    }
+    failure.close_errno = close_errno(fd);
+    if failure.errno == 0_u32 {
+        failure.phase = SavePhase::Close;
+        failure.errno = failure.close_errno;
+    }
+    if failure.errno == 0_u32 { return SaveResult::Done; }
+    failure.cleanup_errno = remove_name(core::slice_of(name));
+    return SaveResult::Failed(failure);
 }
 
 // A bounded whole-file read. The caller supplies one extra byte to detect overflow.

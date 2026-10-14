@@ -1,0 +1,37 @@
+{
+  "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+  "inputs": {
+    "core-s/next/q/model.vt": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+    "core-s/next/q/input.vt": "32d9ce32f8059c110efff67e7f37f8ac7392867ad75f0bfbe1d75adbe4c7028b",
+    "core-s/next/q/runtime/linux.vt": "f50998235c8a049c26f9fa73d3eb724a5db4b7f233d521dceb449a3103f73a3a",
+    "core-s/next/q/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "core-s/next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+  },
+  "source": "module cleanup_probe;\nimport bootstrap::model;\nimport bootstrap::input;\npub fn run() -> u32 {\n    model::reset_all();\n    input::load(\"input.build\");\n    input::save(input::source(1).bytes);\n    return 0;\n}\n",
+  "shim": "# Test only: deny unlink; first 32-byte write writes seven bytes, next write fails.\n__b2_syscall6:\naddi x5,x0,35\nbeq x10,x5,.Ldeny\naddi x5,x0,64\nbne x10,x5,.Lreal\nsltiu x5,x11,3\nbne x5,x0,.Lreal\naddi x5,x0,32\nbne x13,x5,.Lfail\naddi x13,x0,7\njump __b2_real\n.Lfail:\naddi x10,x0,-5\njalr x0,0(x1)\n.Ldeny:\naddi x10,x0,-13\njalr x0,0(x1)\n.Lreal:\njump __b2_real\n",
+  "compile": {
+    "argv": [
+      "qemu-riscv64",
+      "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+      "build",
+      "probe.build"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "S-next-0.1 sources=5 imports=5 assembly_files=1 source=41046 assembly=695 names=804 name_bytes=14080 decls=233 types=106 fields=90 params=117 max_ast=799 max_ir=1252 max_frame=7856 max_bindings=15 max_defers=0 max_loops=2 max_slots=869 max_args=102 max_params=5 text=115180 data=200 objects=67 symbols=1710 fixups=3302 relocations=2 elf=127008\n"
+  },
+  "probe_sha256": "01fbe81cc04ec7d16261bc0e6803843768cb68dbd724a4d291804ab7fa30956c",
+  "run": {
+    "argv": [
+      "qemu-riscv64",
+      "probe.elf"
+    ],
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "E_IO file=0 byte=0\n"
+  },
+  "partial_exists": true,
+  "partial_bytes": "0123456",
+  "partial_mode": "0o755",
+  "scope": "Injected external failures confirm cleanup-result diagnostic loss; does not demand impossible cleanup when filesystem rejects unlink."
+}

@@ -1,0 +1,88 @@
+{
+  "date": "2026-10-14",
+  "author": "/root/biomiya_style_boundaries",
+  "status": "candidate-awaiting-independent-review",
+  "baseline": "2c7061cbed13959697369879e5717a8ad0c9fb21",
+  "coverage": "Targeted storage/public entry/lifetime/error/emission review; not exhaustive opcode or historical source verification. parse/check read only metrics references.",
+  "source_files": {
+    "suba/CODE_STYLE.md": {
+      "sha256": "980c0a8e13a63e990dd7800bca9315aeac30d892622c8ea28e227e12c949c968",
+      "lines": 163
+    },
+    "biomiya/core-s/next/q/model.vt": {
+      "sha256": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+      "lines": 730
+    },
+    "biomiya/core-s/next/q/input.vt": {
+      "sha256": "32d9ce32f8059c110efff67e7f37f8ac7392867ad75f0bfbe1d75adbe4c7028b",
+      "lines": 391
+    },
+    "biomiya/core-s/next/q/image.vt": {
+      "sha256": "21a8641c3a5f7d03a50682698969f7b1ad8f300ec0a5be256c7dd6a333e0389a",
+      "lines": 578
+    },
+    "biomiya/core-s/next/q/ir.vt": {
+      "sha256": "083ea475e6871ca1940b66b1c1b6830984564f75d27d3a4b7d049c7d484bc2b8",
+      "lines": 867
+    },
+    "biomiya/core-s/next/q/rv64.vt": {
+      "sha256": "ba613287c9c48eda58de7fe74ea264d5a010e896ca1d9f5089333a3254b6aabf",
+      "lines": 1316
+    },
+    "biomiya/core-s/next/q/s0.vt": {
+      "sha256": "c90d59a279926a1491fc43307deddc4e04acc0d9754a64aad56fe850fe53d9b7",
+      "lines": 430
+    },
+    "biomiya/core-s/next/q/blocking.vt": {
+      "sha256": "044a0905e9c54b5c4555165f68c488d99605a9e71f1f15b01e1c3ccebf8cd958",
+      "lines": 355
+    },
+    "biomiya/core-s/next/q/main.vt": {
+      "sha256": "f30ba4a2641da8f6a43f4cbc263f9fbfb2b4c49b3fe1d5cdcc8cdcc3572cb5f4",
+      "lines": 199
+    },
+    "biomiya/core-s/next/q/runtime/linux.vt": {
+      "sha256": "f50998235c8a049c26f9fa73d3eb724a5db4b7f233d521dceb449a3103f73a3a",
+      "lines": 143
+    },
+    "biomiya/core-s/next/q/runtime/bytes.vt": {
+      "sha256": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+      "lines": 58
+    },
+    "biomiya/core-s/next/q/runtime/linux.s0": {
+      "sha256": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+      "lines": 19
+    },
+    "biomiya/core-s/next/q/ownership.md": {
+      "sha256": "35bfa9b510ce29a048e7088df3c56e0fa0bd0ff5a95ea473fc2a33c413fb5a55",
+      "lines": 23
+    },
+    "biomiya/core-s/next/q/tests/owner.vt": {
+      "sha256": "be6b6bc2272718706ca7d4377145ac2df7059c14ed356924fbbb0fc2544dd632",
+      "lines": 74
+    },
+    "biomiya/core-s/next/q/tests/input-tests.md": {
+      "sha256": "bce2b547e01a5e150e67f37129ace132368f815b9880f48a1c397f274d2f0fb8",
+      "lines": 16
+    },
+    "biomiya/core-s/next/q/tests/input-write-failure.s0": {
+      "sha256": "eb4a353dfac5daeae0ad9a0fc79eb5f85b0994364f4572e93ddaf72ffdb02237",
+      "lines": 16
+    },
+    "biomiya/core-s/next/q/parse.vt": {
+      "sha256": "31fbbeef18ec1564c0a80eef55c8af069a18d3739300168b3e4ed5167f476919",
+      "lines": 1820
+    },
+    "biomiya/core-s/next/q/check.vt": {
+      "sha256": "b28c596bbdfb6e056b270627259ed143449bf649766e095008533c3d4ab8b205",
+      "lines": 2090
+    }
+  },
+  "artifacts": {
+    "boundaries-cleanup-probe.json": "aa0ed6ddb337a3e03699799938e4b5a36e283441f696203c11a5ac305b4d37e8",
+    "boundaries-cleanup-probe.py": "b8bc0bc675314ef0360330a12de227f12386a1b0ea40cbb10d0d29666eb534ef",
+    "boundaries-probe.json": "b0a13f65de5972e885e533c68aee627e5f85f02f9ad94dd8351ffcf0f0607776",
+    "boundaries-probe.py": "b9a063158422c18d7f982bc902cdb026ed59477650f1c45444f804ed3766c9bc",
+    "boundaries.md": "e9c7cf3b22054a4f55cca58bbf37bc138ef3c19f8d133dcdd14b3777e5c4874c"
+  }
+}

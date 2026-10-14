@@ -1,0 +1,456 @@
+{
+  "input_sha256": {
+    "tool.py": "6b8a76b4fb6a72d197e776c692ee0dcd64cc5749a7f43f321b5e8d47205a17db",
+    "cases.json": "227cc6b52ccde5393090344bac2c31af151f52abdf5e4eda45a51cba58b0281a",
+    "compiler.elf": "af3616d85cda2f073dd57f47a027d64bc039b82ef0b4e1031ec015a0426dc249"
+  },
+  "guest_stack_bytes": 1048576,
+  "cases": [
+    {
+      "name": "local_unknown",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=1 byte=71\n"
+        }
+      ],
+      "passed": false,
+      "expected_diagnostic": "E_NAME file=1 byte=89\n",
+      "failure": "check: diagnostic mismatch"
+    },
+    {
+      "name": "local_duplicate",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=71\n"
+        }
+      ],
+      "passed": false,
+      "expected_diagnostic": "E_TYPE file=1 byte=89\n",
+      "failure": "check: diagnostic mismatch"
+    },
+    {
+      "name": "local_omitted",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=71\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=71\n"
+        }
+      ],
+      "passed": true,
+      "expected_diagnostic": "E_TYPE file=1 byte=71\n"
+    },
+    {
+      "name": "local_child_type",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=91\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=91\n"
+        }
+      ],
+      "passed": true,
+      "expected_diagnostic": "E_TYPE file=1 byte=91\n"
+    },
+    {
+      "name": "local_private",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=2 byte=49\n"
+        }
+      ],
+      "passed": false,
+      "expected_diagnostic": "E_NAME file=2 byte=73\n",
+      "failure": "check: diagnostic mismatch"
+    },
+    {
+      "name": "static_unknown",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=1 byte=57\n"
+        }
+      ],
+      "passed": false,
+      "expected_diagnostic": "E_NAME file=1 byte=75\n",
+      "failure": "check: diagnostic mismatch"
+    },
+    {
+      "name": "static_duplicate",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=57\n"
+        }
+      ],
+      "passed": false,
+      "expected_diagnostic": "E_TYPE file=1 byte=75\n",
+      "failure": "check: diagnostic mismatch"
+    },
+    {
+      "name": "static_omitted",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=57\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=57\n"
+        }
+      ],
+      "passed": true,
+      "expected_diagnostic": "E_TYPE file=1 byte=57\n"
+    },
+    {
+      "name": "static_child_type",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=77\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=77\n"
+        }
+      ],
+      "passed": true,
+      "expected_diagnostic": "E_TYPE file=1 byte=77\n"
+    },
+    {
+      "name": "static_private",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=2 byte=47\n"
+        }
+      ],
+      "passed": false,
+      "expected_diagnostic": "E_NAME file=2 byte=71\n",
+      "failure": "check: diagnostic mismatch"
+    },
+    {
+      "name": "local_record_type",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=101\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=101\n"
+        }
+      ],
+      "passed": true,
+      "expected_diagnostic": "E_TYPE file=1 byte=101\n"
+    },
+    {
+      "name": "nested_unknown",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=1 byte=99\n"
+        }
+      ],
+      "passed": false,
+      "expected_diagnostic": "E_NAME file=1 byte=140\n",
+      "failure": "check: diagnostic mismatch"
+    },
+    {
+      "name": "valid_local_and_static",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=153 assembly=0 names=12 name_bytes=46 decls=3 types=9 fields=2 params=0 max_ast=20 max_ir=24 max_frame=192 max_bindings=1 max_defers=0 max_loops=0 max_slots=21 max_args=0 max_params=0 text=624 data=8 objects=1 symbols=16 fixups=21 relocations=0 elf=12289\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=153 assembly=0 names=12 name_bytes=46 decls=3 types=9 fields=2 params=0 max_ast=20 max_ir=24 max_frame=192 max_bindings=1 max_defers=0 max_loops=0 max_slots=21 max_args=0 max_params=0 text=624 data=8 objects=1 symbols=16 fixups=21 relocations=0 elf=12289\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/valid_local_and_static/program.elf"
+          ],
+          "exit": 31,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "child_ir_bounds",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=138 assembly=0 names=11 name_bytes=45 decls=2 types=11 fields=2 params=0 max_ast=16 max_ir=24 max_frame=176 max_bindings=2 max_defers=0 max_loops=0 max_slots=20 max_args=0 max_params=0 text=544 data=0 objects=0 symbols=13 fixups=16 relocations=0 elf=12289\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=138 assembly=0 names=11 name_bytes=45 decls=2 types=11 fields=2 params=0 max_ast=16 max_ir=24 max_frame=176 max_bindings=2 max_defers=0 max_loops=0 max_slots=20 max_args=0 max_params=0 text=544 data=0 objects=0 symbols=13 fixups=16 relocations=0 elf=12289\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/child_ir_bounds/program.elf"
+          ],
+          "exit": 101,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "passed": true
+    },
+    {
+      "name": "ir_ownership",
+      "commands": [
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/compiler.elf",
+            "build",
+            "probe.build"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=13 imports=35 assembly_files=1 source=265665 assembly=345 names=3372 name_bytes=67209 decls=679 types=387 fields=349 params=509 max_ast=1069 max_ir=1424 max_frame=25808 max_bindings=18 max_defers=0 max_loops=3 max_slots=982 max_args=185 max_params=5 text=759200 data=1251 objects=419 symbols=9746 fixups=21445 relocations=2 elf=770082\n"
+        },
+        {
+          "command": [
+            "/usr/bin/qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/behavior-fixes-D-r1-tests/ir_ownership/probe.elf"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "input_sha256": {
+        "next/q/model.vt": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+        "next/q/input.vt": "32d9ce32f8059c110efff67e7f37f8ac7392867ad75f0bfbe1d75adbe4c7028b",
+        "next/q/image.vt": "21a8641c3a5f7d03a50682698969f7b1ad8f300ec0a5be256c7dd6a333e0389a",
+        "next/q/rules.vt": "8b3846de0315501e992bfc381653c26dc83122432338a64cc675249e71a90951",
+        "next/q/lex.vt": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28",
+        "next/q/parse.vt": "31fbbeef18ec1564c0a80eef55c8af069a18d3739300168b3e4ed5167f476919",
+        "next/q/types.vt": "d43ea325af473099d368d5ed350aa5b3727c93d3aa300120fc49fd04ffdf9ee3",
+        "next/q/init.vt": "f4987677b55d793df25f648881f34cfa7717f2affb0ee6915d967bdb1739a6b2",
+        "next/q/ir.vt": "083ea475e6871ca1940b66b1c1b6830984564f75d27d3a4b7d049c7d484bc2b8",
+        "next/q/check.vt": "7fbd67385fcc3de9c68cd6056a281a48409d48fbd4a8a17fb3eaca2aad2adff0",
+        "next/q/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+        "next/q/runtime/linux.vt": "f50998235c8a049c26f9fa73d3eb724a5db4b7f233d521dceb449a3103f73a3a",
+        "next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+        "next/q/tests/behavior-diagnostic-ir.vt": "3aa88c2c9d2d2aed84fa7db69b59420d9514ae903ed5f972d0c3ec31cea94b91"
+      },
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "failure": "one or more diagnostic cases failed"
+}

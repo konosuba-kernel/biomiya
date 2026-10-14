@@ -1,0 +1,75 @@
+{
+  "purpose": "Tool counterexample, not a release suite rerun",
+  "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+  "fixture": "module sample;\nfn run() -> u32 { return 0; }\n",
+  "expected_exit_deliberately_wrong": 7,
+  "tools_sha256": {
+    "check_q_machine.py": "87d01f69cc6b1daf1b2dc08c93c0a09a7033ad922386ab6307a8355c46afeaf4",
+    "check_next_trials.py": "af901df85425b41dfce680ebcb91d283e8c74fb6527d6373c4caf53cae34a9ce",
+    "selfhost_next.py": "47cdc6102c6f16700bd112865d4725e13184aca470e31021a386af89dacc5e82",
+    "check_next_reference.py": "49bca19e74661f2990a89bd8f4bc75159187a6cd894b8da69ed97a9876dbadaf",
+    "check_q_limits.py": "281b0c400a3173b59517be336f56a2521c73af2b10f0d26d4c1c9d366548d28e",
+    "verify.py": "5ad1be0497e6918ec198f7fe7fac1a1bda223906ea8a95deddd9fc2fdf9f7b92",
+    "check_reference.py": "b566ab040b2ee370d5b54a0e30ee343a00286f33929d6ace4553ec18c855b901",
+    "check_q_input.py": "f098b66040fa01ab35b019dc540764ae3c36b8fb8fda9983470f53566ec47df3",
+    "check_q.py": "18bf00973185d746b29ad8c0e2ba9b48f5b8b6693cf9c7dcd69b3cea31558dab",
+    "check_next.py": "8a50d7a387f409304b3fb6b0277d0afb32ba74cff831049ed5f804307eff01da",
+    "check_q_blocking.py": "1aba5f7de3057d7cc6414e688385692bb47c0d38b1a8f0f4868c0fe7cc87d1ac",
+    "measure_next.py": "f4e8e7fa161f9422900520811acb7d392ca97af45dd50d9a2739b9d205a3ea34",
+    "check_q_interfaces.py": "9ce4e41241a11e6439be78990eb6dc53a65264a4b1f1fda3804d298fff0eaf4e",
+    "check_q_copy.py": "679b539b12526e1596029db9f692c391946346f8e2165d1470547091e25d5ce8"
+  },
+  "runs": [
+    {
+      "mode": "normal",
+      "tool_exit": 1,
+      "stdout": "FAIL wrong_expected_exit\n",
+      "reported_passed": 0,
+      "failed": [
+        "wrong_expected_exit"
+      ],
+      "commands": [
+        {
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+        },
+        {
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+        },
+        {
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "mode": "optimized",
+      "tool_exit": 0,
+      "stdout": "PASS wrong_expected_exit\nAll 1 Q language cases passed.\n",
+      "reported_passed": 1,
+      "failed": [],
+      "commands": [
+        {
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+        },
+        {
+          "exit": 0,
+          "stdout": "",
+          "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=45 assembly=0 names=4 name_bytes=23 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+        },
+        {
+          "exit": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ]
+    }
+  ],
+  "false_pass_reproduced": true
+}

@@ -1,0 +1,145 @@
+{
+  "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+  "cases": [
+    {
+      "name": "local_unknown",
+      "source": "module app;\nstruct Pair { a:u32, b:u32 }\nfn run() -> u32 {\n    let p = make Pair { a:11, missing:22 };\n    return 0;\n}\n",
+      "expected_fixed_byte": 89,
+      "commands": [
+        {
+          "command": [
+            "qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=1 byte=85\n",
+          "output_exists": false
+        },
+        {
+          "command": [
+            "qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=1 byte=85\n",
+          "output_exists": false
+        }
+      ]
+    },
+    {
+      "name": "local_duplicate",
+      "source": "module app;\nstruct Pair { a:u32, b:u32 }\nfn run() -> u32 {\n    let p = make Pair { a:11, a:22 };\n    return 0;\n}\n",
+      "expected_fixed_byte": 89,
+      "commands": [
+        {
+          "command": [
+            "qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=85\n",
+          "output_exists": false
+        },
+        {
+          "command": [
+            "qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=85\n",
+          "output_exists": false
+        }
+      ]
+    },
+    {
+      "name": "static_unknown",
+      "source": "module app;\nstruct Pair { a:u32, b:u32 }\nstatic p:Pair = make Pair { a:11, missing:22 };\nfn run() -> u32 { return 0; }\n",
+      "expected_fixed_byte": 75,
+      "commands": [
+        {
+          "command": [
+            "qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=1 byte=71\n",
+          "output_exists": false
+        },
+        {
+          "command": [
+            "qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_NAME file=1 byte=71\n",
+          "output_exists": false
+        }
+      ]
+    },
+    {
+      "name": "static_duplicate",
+      "source": "module app;\nstruct Pair { a:u32, b:u32 }\nstatic p:Pair = make Pair { a:11, a:22 };\nfn run() -> u32 { return 0; }\n",
+      "expected_fixed_byte": 75,
+      "commands": [
+        {
+          "command": [
+            "qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+            "check",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=71\n",
+          "output_exists": false
+        },
+        {
+          "command": [
+            "qemu-riscv64",
+            "-s",
+            "1048576",
+            "/home/mii/code/konOSuba/biomiya/core-s/build/snext-p4-r2/e3.elf",
+            "build",
+            "program.build"
+          ],
+          "exit": 1,
+          "stdout": "",
+          "stderr": "E_TYPE file=1 byte=71\n",
+          "output_exists": false
+        }
+      ]
+    }
+  ]
+}

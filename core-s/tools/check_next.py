@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """Build the S-next prototype compiler with its frozen B3.1 seed and verify behavior."""
 
+# Assertions are verification checks, including in imported helpers.
+if not __debug__:
+    raise SystemExit("verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO")
+
 import argparse
 import hashlib
 import io

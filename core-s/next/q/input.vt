@@ -2,7 +2,6 @@ module bootstrap::input;
 import bootstrap::model;
 import runtime::linux;
 import runtime::bytes;
-extern abi(C) fn __b2_syscall6(n:usize, a:usize, b:usize, c:usize, d:usize, e:usize, f:usize) -> usize;
 // Input owns immutable byte snapshots and one-time module header completion.
 enum SourceEntry { Empty, Value(model::Source) }
 enum ImportEntry { Empty, Value(model::Import) }
@@ -350,41 +349,63 @@ pub fn load(path:[]const u8) -> () {
     return ();
 }
 
+// Best effort terminal diagnostic: stderr failure must not replace the save error.
+fn save_text(text: []const u8) -> () {
+    // SAFETY: all diagnostic strings/views remain readable until this blocking write returns.
+    unsafe { let ignored: linux::WriteResult = linux::write_all(2, text); }
+    return ();
+}
+
+fn save_number(value: u32) -> () {
+    var digits: [10]u8 = [0;10];
+    var number: u32 = value;
+    var at: usize = 10;
+    loop {
+        at = at - 1_usize;
+        unsafe { digits[at] = ((number % 10_u32) as u8) + 48_u8; }
+        number = number / 10_u32;
+        if number == 0_u32 { break; }
+    }
+    // SAFETY: at is in 0..10 and this view expires before the local array does.
+    unsafe {
+        save_text(core::slice_from_raw_parts(core::ptr_add(core::slice_of(digits).data, at), 10_usize - at));
+    }
+    return ();
+}
+
+fn save_failure(path: []const u8, failure: linux::SaveError) -> () {
+    save_text("save path=");
+    save_text(path);
+    save_text(" phase=");
+    match failure.phase {
+        linux::SavePhase::Create => { save_text("create"); },
+        linux::SavePhase::Write => { save_text("write"); },
+        linux::SavePhase::Mode => { save_text("chmod"); },
+        linux::SavePhase::Close => { save_text("close"); },
+    }
+    save_text(" errno=");
+    save_number(failure.errno);
+    save_text(" close_errno=");
+    save_number(failure.close_errno);
+    save_text(" cleanup_errno=");
+    save_number(failure.cleanup_errno);
+    if failure.cleanup_errno != 0_u32 {
+        save_text(" residual=");
+        save_text(path);
+    }
+    save_text(" ");
+    model::fail(model::ERROR_IO, 0, 0);
+    return ();
+}
+
 pub fn save(data:[]const u8) -> () {
     require_phase(2);
+    // SAFETY: output is owned immutable input storage; the driver keeps the sealed
+    // image data readable throughout save and owns the output path exclusively.
     unsafe {
-        var fd:usize = 0;
-        match linux::create_new(output) {
-            linux::CountResult::Value(value) => {
-                fd = value;
-            },
-            linux::CountResult::Failed(e) => {
-                model::fail(model::ERROR_IO, 0, 0);
-            },
-        }
-        let result:linux::WriteResult = linux::write_all(fd, data);
-        var bad:bool = false;
-        loop {
-            let mode:usize = __b2_syscall6(52, fd, 493, 0, 0, 0, 0);
-            if mode != 0xfffffffffffffffc_usize {
-                if mode >= 0xfffffffffffff001_usize {
-                    bad = true;
-                }
-                break;
-            }
-        }
-        let closed:u32 = linux::close(fd);
-        bad = bad || closed != 0_u32;
-        match result {
-            linux::WriteResult::Done => {
-            },
-            linux::WriteResult::Failed(e) => {
-                bad = true;
-            },
-        }
-        if bad {
-            let ignored:u32 = linux::remove(output);
-            model::fail(model::ERROR_IO, 0, 0);
+        match linux::save_new(output, data) {
+            linux::SaveResult::Done => {},
+            linux::SaveResult::Failed(failure) => { save_failure(output, failure); },
         }
     }
     return ();

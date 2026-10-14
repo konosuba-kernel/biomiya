@@ -5,6 +5,11 @@ B(P)=E0 must reproduce an accepted P3 candidate. E0(Q)=E1, E1(Q)=E2,
 E2(Q)=E3 must stabilize as complete ELF files. A separate Q source mutation
 must change the resulting compiler's observable statistics prefix.
 """
+
+# Assertions are verification checks, including in imported helpers.
+if not __debug__:
+    raise SystemExit("verification requires assertions; unset PYTHONOPTIMIZE and omit -O/-OO")
+
 import argparse
 import hashlib
 import io
@@ -177,7 +182,6 @@ def image_info(data):
 
 
 def main():
-    require(__debug__, 'run without python -O; imported memory() uses assertions')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--p3-record', type=Path, required=True)
     parser.add_argument('--seed', type=Path, required=True)

@@ -1,0 +1,75 @@
+{
+  "records": [
+    {
+      "path": "core-s/build/behavior-fixes-r-io-r1/verification.json",
+      "sha256": "e0259852c7dd531be9ece2a90b474a938d145d7534bc4294f85edc24d1c3f034",
+      "passed": true,
+      "cases": 12,
+      "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+      "source_binding": {
+        "next/q/model.vt": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+        "next/q/input.vt": "067f66b18ff628f3b6a0b463df8b96b676f70b2cb4529b34e92a91f8f97e7ff4",
+        "next/q/runtime/linux.vt": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0",
+        "next/q/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+        "next/q/tests/behavior-io-save.vt": "816257c42e16a13500a4279f8967edfd7c516e343c0501075cf16aa0d80963b4",
+        "next/q/tests/behavior-io-shim.s0": "53c084d4f9a15fecd989192bb97c9eae6613e2b81ea459dd62e4efc6d713c155",
+        "next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+        "tools/check_q_io_failures.py": "d53249aa5acc4da66007096b5eeb02d65c5bca9efaf0fb8a6a6c49379de94592"
+      }
+    },
+    {
+      "path": "core-s/build/behavior-fixes-R-io-optimized-r1/verification.json",
+      "sha256": "824336d99a3a437c147bb0519f8d1a3c57ec632e5191b81cee14d4f828ccb847",
+      "passed": true,
+      "cases": 12,
+      "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+      "source_binding": {
+        "next/q/model.vt": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+        "next/q/input.vt": "067f66b18ff628f3b6a0b463df8b96b676f70b2cb4529b34e92a91f8f97e7ff4",
+        "next/q/runtime/linux.vt": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0",
+        "next/q/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+        "next/q/tests/behavior-io-save.vt": "816257c42e16a13500a4279f8967edfd7c516e343c0501075cf16aa0d80963b4",
+        "next/q/tests/behavior-io-shim.s0": "53c084d4f9a15fecd989192bb97c9eae6613e2b81ea459dd62e4efc6d713c155",
+        "next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+        "tools/check_q_io_failures.py": "d53249aa5acc4da66007096b5eeb02d65c5bca9efaf0fb8a6a6c49379de94592"
+      }
+    },
+    {
+      "path": "core-s/build/behavior-fixes-R-input-r1/verification.json",
+      "sha256": "96cf8da343dc55c9ccd4cbb0d82de98608d77e07c6c568563970ea8d15e14f6e",
+      "passed": true,
+      "cases": 24,
+      "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+      "source_binding": {
+        "next/q/model.vt": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+        "next/q/lex.vt": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28",
+        "next/q/input.vt": "067f66b18ff628f3b6a0b463df8b96b676f70b2cb4529b34e92a91f8f97e7ff4",
+        "next/q/runtime/linux.vt": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0",
+        "next/q/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+        "next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+        "next/q/tests/input.vt": "7e4f287f9a4ea86018f46bf9efc808772f3511cc17db83c1cc3f42b6958aacaa",
+        "next/q/tests/input-short.s0": "1c2ca777c78ee841e90b88d7477b2a87faadb51d91df3cd1910d90802ecd9614",
+        "next/q/tests/input-write-failure.s0": "eb4a353dfac5daeae0ad9a0fc79eb5f85b0994364f4572e93ddaf72ffdb02237",
+        "tools/check_q_input.py": "13970e7afa6d01dcf0e4a2459bc9645131fd7286bc72bf6f7287da6b72db109f"
+      }
+    },
+    {
+      "path": "core-s/build/behavior-fixes-R-copy-r1/verification.json",
+      "sha256": "4b962bfb0727ea0d0efddf306345eed3c491026af2ece9c558c0ef1fed6100f1",
+      "passed": true,
+      "cases": 8,
+      "compiler_sha256": "7e1de550da39c31e203c83d0bce7e13dd5deb64923f3c5e4428aad8fbd7d7d20",
+      "source_binding": {
+        "next/q/model.vt": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf",
+        "next/q/input.vt": "067f66b18ff628f3b6a0b463df8b96b676f70b2cb4529b34e92a91f8f97e7ff4",
+        "next/q/lex.vt": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28",
+        "next/q/runtime/linux.vt": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0",
+        "next/q/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+        "next/q/tests/copy.vt": "5d2312f83c7904790a851520c4f8d00db610fbce87e9b3153283211ba3e489b5",
+        "next/q/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+        "tools/check_q_copy.py": "1b48317f925c66fb7cf979096a32bce19ade3fdb26356e01e818d22d55875058"
+      }
+    }
+  ],
+  "passed": true
+}

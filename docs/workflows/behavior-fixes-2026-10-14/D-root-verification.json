@@ -1,0 +1,256 @@
+{
+  "compiler_sha256": "ae3a7caf8cc7aeed0ebf882c4025b22bb691a33c70dbe817b04c831322083a42",
+  "passed": true,
+  "commands": [
+    {
+      "case": "local_unknown",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=89\n"
+    },
+    {
+      "case": "local_unknown",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=89\n"
+    },
+    {
+      "case": "local_duplicate",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=89\n"
+    },
+    {
+      "case": "local_duplicate",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=89\n"
+    },
+    {
+      "case": "local_omitted",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=71\n"
+    },
+    {
+      "case": "local_omitted",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=71\n"
+    },
+    {
+      "case": "local_child_type",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=91\n"
+    },
+    {
+      "case": "local_child_type",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=91\n"
+    },
+    {
+      "case": "local_private",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=2 byte=73\n"
+    },
+    {
+      "case": "local_private",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=2 byte=73\n"
+    },
+    {
+      "case": "static_unknown",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=75\n"
+    },
+    {
+      "case": "static_unknown",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=75\n"
+    },
+    {
+      "case": "static_duplicate",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=75\n"
+    },
+    {
+      "case": "static_duplicate",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=75\n"
+    },
+    {
+      "case": "static_omitted",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=57\n"
+    },
+    {
+      "case": "static_omitted",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=57\n"
+    },
+    {
+      "case": "static_child_type",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=77\n"
+    },
+    {
+      "case": "static_child_type",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=77\n"
+    },
+    {
+      "case": "static_private",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=2 byte=71\n"
+    },
+    {
+      "case": "static_private",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=2 byte=71\n"
+    },
+    {
+      "case": "local_record_type",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=101\n"
+    },
+    {
+      "case": "local_record_type",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_TYPE file=1 byte=101\n"
+    },
+    {
+      "case": "nested_unknown",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=140\n"
+    },
+    {
+      "case": "nested_unknown",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=140\n"
+    },
+    {
+      "case": "valid_local_and_static",
+      "mode": "check",
+      "passed": true,
+      "exit": 0,
+      "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=153 assembly=0 names=12 name_bytes=46 decls=3 types=9 fields=2 params=0 max_ast=20 max_ir=24 max_frame=192 max_bindings=1 max_defers=0 max_loops=0 max_slots=21 max_args=0 max_params=0 text=624 data=8 objects=1 symbols=16 fixups=21 relocations=0 elf=12289\n"
+    },
+    {
+      "case": "valid_local_and_static",
+      "mode": "build",
+      "passed": true,
+      "exit": 0,
+      "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=153 assembly=0 names=12 name_bytes=46 decls=3 types=9 fields=2 params=0 max_ast=20 max_ir=24 max_frame=192 max_bindings=1 max_defers=0 max_loops=0 max_slots=21 max_args=0 max_params=0 text=624 data=8 objects=1 symbols=16 fixups=21 relocations=0 elf=12289\n"
+    },
+    {
+      "case": "valid_local_and_static",
+      "mode": "run",
+      "passed": true,
+      "exit": 31
+    },
+    {
+      "case": "child_ir_bounds",
+      "mode": "check",
+      "passed": true,
+      "exit": 0,
+      "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=138 assembly=0 names=11 name_bytes=45 decls=2 types=11 fields=2 params=0 max_ast=16 max_ir=24 max_frame=176 max_bindings=2 max_defers=0 max_loops=0 max_slots=20 max_args=0 max_params=0 text=544 data=0 objects=0 symbols=13 fixups=16 relocations=0 elf=12289\n"
+    },
+    {
+      "case": "child_ir_bounds",
+      "mode": "build",
+      "passed": true,
+      "exit": 0,
+      "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=138 assembly=0 names=11 name_bytes=45 decls=2 types=11 fields=2 params=0 max_ast=16 max_ir=24 max_frame=176 max_bindings=2 max_defers=0 max_loops=0 max_slots=20 max_args=0 max_params=0 text=544 data=0 objects=0 symbols=13 fixups=16 relocations=0 elf=12289\n"
+    },
+    {
+      "case": "child_ir_bounds",
+      "mode": "run",
+      "passed": true,
+      "exit": 101
+    },
+    {
+      "case": "local_unknown_utf8_prefix",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=121\n"
+    },
+    {
+      "case": "local_unknown_utf8_prefix",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=121\n"
+    },
+    {
+      "case": "static_unknown_utf8_prefix",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=107\n"
+    },
+    {
+      "case": "static_unknown_utf8_prefix",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=107\n"
+    },
+    {
+      "case": "static_nested_unknown",
+      "mode": "check",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=133\n"
+    },
+    {
+      "case": "static_nested_unknown",
+      "mode": "build",
+      "passed": true,
+      "exit": 1,
+      "stderr": "E_NAME file=1 byte=133\n"
+    }
+  ]
+}

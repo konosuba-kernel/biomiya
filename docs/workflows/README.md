@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | B0/B1、B2、B3 | `1c0f143`（包含当时累计实现） | bootstrap-prototype/、bootstrap-b2/、bootstrap-b3/ |
 | B3.1 | `51530f9` | [bootstrap-b31/workflow.json](bootstrap-b31/workflow.json) |
+| S-next 0.1 行为修复 | `2c7061c` + 内容哈希 | [2026-10-14交付与独立验收](behavior-fixes-2026-10-14/DELIVERY.md) |
 
 旧脚本可能依赖当时的 `core-s/app/`、`core-s/compiler/`、文件哈希或测试数量。复现历史记录时使用对应 Git 版本；不要把历史快照脚本当作当前构建入口。运行某个旧阶段的脚本前还需核对它自己的输入合同。
 

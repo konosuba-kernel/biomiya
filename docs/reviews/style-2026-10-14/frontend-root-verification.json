@@ -1,0 +1,74 @@
+[
+  {
+    "name": "local_unknown",
+    "mode": "check",
+    "exit": 1,
+    "stderr": "E_NAME file=1 byte=85\n",
+    "output_exists": false,
+    "previous_value_byte": 85,
+    "offending_field_byte": 89
+  },
+  {
+    "name": "local_unknown",
+    "mode": "build",
+    "exit": 1,
+    "stderr": "E_NAME file=1 byte=85\n",
+    "output_exists": false,
+    "previous_value_byte": 85,
+    "offending_field_byte": 89
+  },
+  {
+    "name": "local_duplicate",
+    "mode": "check",
+    "exit": 1,
+    "stderr": "E_TYPE file=1 byte=85\n",
+    "output_exists": false,
+    "previous_value_byte": 85,
+    "offending_field_byte": 89
+  },
+  {
+    "name": "local_duplicate",
+    "mode": "build",
+    "exit": 1,
+    "stderr": "E_TYPE file=1 byte=85\n",
+    "output_exists": false,
+    "previous_value_byte": 85,
+    "offending_field_byte": 89
+  },
+  {
+    "name": "static_unknown",
+    "mode": "check",
+    "exit": 1,
+    "stderr": "E_NAME file=1 byte=71\n",
+    "output_exists": false,
+    "previous_value_byte": 71,
+    "offending_field_byte": 75
+  },
+  {
+    "name": "static_unknown",
+    "mode": "build",
+    "exit": 1,
+    "stderr": "E_NAME file=1 byte=71\n",
+    "output_exists": false,
+    "previous_value_byte": 71,
+    "offending_field_byte": 75
+  },
+  {
+    "name": "static_duplicate",
+    "mode": "check",
+    "exit": 1,
+    "stderr": "E_TYPE file=1 byte=71\n",
+    "output_exists": false,
+    "previous_value_byte": 71,
+    "offending_field_byte": 75
+  },
+  {
+    "name": "static_duplicate",
+    "mode": "build",
+    "exit": 1,
+    "stderr": "E_TYPE file=1 byte=71\n",
+    "output_exists": false,
+    "previous_value_byte": 71,
+    "offending_field_byte": 75
+  }
+]

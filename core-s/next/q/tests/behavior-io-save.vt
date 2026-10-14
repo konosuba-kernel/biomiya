@@ -1,0 +1,24 @@
+module behavior_io;
+import bootstrap::model;
+import bootstrap::input;
+import runtime::linux;
+extern abi(C) fn __behavior_arm() -> ();
+
+pub fn save() -> u32 {
+    model::reset_all();
+    input::load("input.build");
+    // Test shim only: arm failures after ordinary manifest/source loading completes.
+    unsafe { __behavior_arm(); }
+    input::save(input::source(1).bytes);
+    return 0;
+}
+
+pub fn nul() -> u32 {
+    let path: []const u8 = "victim\0x";
+    match linux::open_read(path) {
+        linux::CountResult::Value(fd) => { let ignored: u32 = linux::close(fd); return 1; },
+        linux::CountResult::Failed(code) => { if code != 11_u32 { return 2; } },
+    }
+    if linux::remove(path) != 11_u32 { return 3; }
+    return 0;
+}

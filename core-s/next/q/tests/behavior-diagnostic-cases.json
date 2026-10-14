@@ -1,0 +1,153 @@
+[
+  {
+    "name": "local_unknown",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nfn run() -> u32 {\n    let p = make Pair { a:11, missing:22 };\n    return 0;\n}\n"
+    },
+    "error": "E_NAME",
+    "file": 1,
+    "marker": "missing:22"
+  },
+  {
+    "name": "local_duplicate",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nfn run() -> u32 {\n    let p = make Pair { a:11, a:22 };\n    return 0;\n}\n"
+    },
+    "error": "E_TYPE",
+    "file": 1,
+    "marker": "a:22"
+  },
+  {
+    "name": "local_omitted",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nfn run() -> u32 {\n    let p = make Pair { a:11 };\n    return 0;\n}\n"
+    },
+    "error": "E_TYPE",
+    "file": 1,
+    "marker": "make Pair"
+  },
+  {
+    "name": "local_child_type",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nfn run() -> u32 {\n    let p = make Pair { a:11, b:true };\n    return 0;\n}\n"
+    },
+    "error": "E_TYPE",
+    "file": 1,
+    "marker": "true"
+  },
+  {
+    "name": "local_private",
+    "files": {
+      "pair.vt": "module pair;\npub struct Pair { pub a:u32, hidden:u32 }\n",
+      "main.vt": "module app;\nimport pair;\nfn run()->u32 { let p = make pair::Pair { a:11, hidden:22 }; return 0; }\n"
+    },
+    "error": "E_NAME",
+    "file": 2,
+    "marker": "hidden:22"
+  },
+  {
+    "name": "static_unknown",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nstatic p:Pair = make Pair { a:11, missing:22 };\nfn run() -> u32 { return 0; }\n"
+    },
+    "error": "E_NAME",
+    "file": 1,
+    "marker": "missing:22"
+  },
+  {
+    "name": "static_duplicate",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nstatic p:Pair = make Pair { a:11, a:22 };\nfn run() -> u32 { return 0; }\n"
+    },
+    "error": "E_TYPE",
+    "file": 1,
+    "marker": "a:22"
+  },
+  {
+    "name": "static_omitted",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nstatic p:Pair = make Pair { a:11 };\nfn run() -> u32 { return 0; }\n"
+    },
+    "error": "E_TYPE",
+    "file": 1,
+    "marker": "make Pair"
+  },
+  {
+    "name": "static_child_type",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nstatic p:Pair = make Pair { a:11, b:true };\nfn run() -> u32 { return 0; }\n"
+    },
+    "error": "E_TYPE",
+    "file": 1,
+    "marker": "true"
+  },
+  {
+    "name": "static_private",
+    "files": {
+      "pair.vt": "module pair;\npub struct Pair { pub a:u32, hidden:u32 }\n",
+      "main.vt": "module app;\nimport pair;\nstatic p:pair::Pair = make pair::Pair { a:11, hidden:22 }; fn run()->u32 { return 0; }\n"
+    },
+    "error": "E_NAME",
+    "file": 2,
+    "marker": "hidden:22"
+  },
+  {
+    "name": "local_record_type",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nstruct Other { a:u32, b:u32 }\nfn run()->u32 { let p:Other = make Pair { a:11, b:22 }; return 0; }\n"
+    },
+    "error": "E_TYPE",
+    "file": 1,
+    "marker": "make Pair"
+  },
+  {
+    "name": "nested_unknown",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nstruct Outer { p:Pair, tail:u32 }\nfn run()->u32 { let x = make Outer { p:make Pair { a:11, b:22 }, missing:3 }; return 0; }\n"
+    },
+    "error": "E_NAME",
+    "file": 1,
+    "marker": "missing:3"
+  },
+  {
+    "name": "valid_local_and_static",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nstatic p:Pair = make Pair { b:20, a:11 };\nfn run()->u32 { let q = make Pair { a:p.a, b:p.b }; return q.a+q.b; }\n"
+    },
+    "exit": 31
+  },
+  {
+    "name": "child_ir_bounds",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nfn run()->u32 { let a:[1_usize]u32=[7]; let p = make Pair { a:11, b:a[99_usize] }; return p.b; }\n"
+    },
+    "exit": 101
+  },
+  {
+    "name": "local_unknown_utf8_prefix",
+    "files": {
+      "main.vt": "module app;\n// 中文字节偏移\nstruct Pair { a:u32, b:u32 }\nfn run() -> u32 {\n    let p = make Pair { a:10_u32+1_u32, missing:22 };\n    return 0;\n}\n"
+    },
+    "error": "E_NAME",
+    "file": 1,
+    "marker": "missing:22"
+  },
+  {
+    "name": "static_unknown_utf8_prefix",
+    "files": {
+      "main.vt": "module app;\n// 中文字节偏移\nstruct Pair { a:u32, b:u32 }\nstatic p:Pair = make Pair { a:10_u32+1_u32, missing:22 };\nfn run() -> u32 { return 0; }\n"
+    },
+    "error": "E_NAME",
+    "file": 1,
+    "marker": "missing:22"
+  },
+  {
+    "name": "static_nested_unknown",
+    "files": {
+      "main.vt": "module app;\nstruct Pair { a:u32, b:u32 }\nstruct Outer { p:Pair, tail:u32 }\nstatic x:Outer = make Outer { p:make Pair { a:11, b:22 }, missing:3 }; fn run()->u32 { return 0; }\n"
+    },
+    "error": "E_NAME",
+    "file": 1,
+    "marker": "missing:3"
+  }
+]

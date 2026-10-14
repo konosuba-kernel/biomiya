@@ -1,0 +1,274 @@
+{
+  "method": "Physical lines including blanks/comments; compiler, runtime, tools and new test data separated. All maintained tools counted, including guard/IO/diagnostic tests. JSON fixture contents counted as test data, not compiler.",
+  "groups": {
+    "compiler_vt": {
+      "file_count": 14,
+      "lines": 11018,
+      "bytes": 326623,
+      "files": [
+        {
+          "path": "core-s/next/q/blocking.vt",
+          "lines": 355,
+          "bytes": 12022,
+          "sha256": "044a0905e9c54b5c4555165f68c488d99605a9e71f1f15b01e1c3ccebf8cd958"
+        },
+        {
+          "path": "core-s/next/q/check.vt",
+          "lines": 2093,
+          "bytes": 69044,
+          "sha256": "7fbd67385fcc3de9c68cd6056a281a48409d48fbd4a8a17fb3eaca2aad2adff0"
+        },
+        {
+          "path": "core-s/next/q/image.vt",
+          "lines": 578,
+          "bytes": 18512,
+          "sha256": "21a8641c3a5f7d03a50682698969f7b1ad8f300ec0a5be256c7dd6a333e0389a"
+        },
+        {
+          "path": "core-s/next/q/init.vt",
+          "lines": 554,
+          "bytes": 17959,
+          "sha256": "f4987677b55d793df25f648881f34cfa7717f2affb0ee6915d967bdb1739a6b2"
+        },
+        {
+          "path": "core-s/next/q/input.vt",
+          "lines": 412,
+          "bytes": 15984,
+          "sha256": "067f66b18ff628f3b6a0b463df8b96b676f70b2cb4529b34e92a91f8f97e7ff4"
+        },
+        {
+          "path": "core-s/next/q/ir.vt",
+          "lines": 867,
+          "bytes": 18524,
+          "sha256": "083ea475e6871ca1940b66b1c1b6830984564f75d27d3a4b7d049c7d484bc2b8"
+        },
+        {
+          "path": "core-s/next/q/lex.vt",
+          "lines": 309,
+          "bytes": 10159,
+          "sha256": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28"
+        },
+        {
+          "path": "core-s/next/q/main.vt",
+          "lines": 199,
+          "bytes": 7024,
+          "sha256": "f30ba4a2641da8f6a43f4cbc263f9fbfb2b4c49b3fe1d5cdcc8cdcc3572cb5f4"
+        },
+        {
+          "path": "core-s/next/q/model.vt",
+          "lines": 730,
+          "bytes": 18598,
+          "sha256": "d3f90f15c19bfc51c97c903db696b5ca4313e2126ff0d5ca6c5e0b5e83de2caf"
+        },
+        {
+          "path": "core-s/next/q/parse.vt",
+          "lines": 1821,
+          "bytes": 46268,
+          "sha256": "d2cff4e7f2fcd7a66968a34eb8c116c815ee477bbb9d606d626a373793fa8b7c"
+        },
+        {
+          "path": "core-s/next/q/rules.vt",
+          "lines": 225,
+          "bytes": 5644,
+          "sha256": "8b3846de0315501e992bfc381653c26dc83122432338a64cc675249e71a90951"
+        },
+        {
+          "path": "core-s/next/q/rv64.vt",
+          "lines": 1316,
+          "bytes": 40608,
+          "sha256": "ba613287c9c48eda58de7fe74ea264d5a010e896ca1d9f5089333a3254b6aabf"
+        },
+        {
+          "path": "core-s/next/q/s0.vt",
+          "lines": 430,
+          "bytes": 10078,
+          "sha256": "c90d59a279926a1491fc43307deddc4e04acc0d9754a64aad56fe850fe53d9b7"
+        },
+        {
+          "path": "core-s/next/q/types.vt",
+          "lines": 1129,
+          "bytes": 36199,
+          "sha256": "d43ea325af473099d368d5ed350aa5b3727c93d3aa300120fc49fd04ffdf9ee3"
+        }
+      ]
+    },
+    "runtime_vt": {
+      "file_count": 2,
+      "lines": 290,
+      "bytes": 10615,
+      "files": [
+        {
+          "path": "core-s/next/q/runtime/bytes.vt",
+          "lines": 58,
+          "bytes": 2333,
+          "sha256": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5"
+        },
+        {
+          "path": "core-s/next/q/runtime/linux.vt",
+          "lines": 232,
+          "bytes": 8282,
+          "sha256": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0"
+        }
+      ]
+    },
+    "runtime_s0": {
+      "file_count": 1,
+      "lines": 19,
+      "bytes": 345,
+      "files": [
+        {
+          "path": "core-s/next/q/runtime/linux.s0",
+          "lines": 19,
+          "bytes": 345,
+          "sha256": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a"
+        }
+      ]
+    },
+    "host_tools": {
+      "file_count": 18,
+      "lines": 2917,
+      "bytes": 149927,
+      "files": [
+        {
+          "path": "core-s/tools/check_next.py",
+          "lines": 243,
+          "bytes": 12672,
+          "sha256": "19f909947ba24348757800e3b331169fd4e1d5e252d7b637cb9446395346ab8c"
+        },
+        {
+          "path": "core-s/tools/check_next_reference.py",
+          "lines": 78,
+          "bytes": 3372,
+          "sha256": "d642668e7155c14da1e872841608102106fcf7544a24865743529e7dc82b79f9"
+        },
+        {
+          "path": "core-s/tools/check_next_trials.py",
+          "lines": 82,
+          "bytes": 3383,
+          "sha256": "30d8553a40635528e05f31c2e100a5321d6e8d56d31e41f484411167eb4ed94f"
+        },
+        {
+          "path": "core-s/tools/check_q.py",
+          "lines": 140,
+          "bytes": 6346,
+          "sha256": "1b191289a128d96c7098d04ec8e6e6f5b56fc65eca351564587b9917c7310b4b"
+        },
+        {
+          "path": "core-s/tools/check_q_blocking.py",
+          "lines": 240,
+          "bytes": 14286,
+          "sha256": "5125b935cad3796f0cc4d63d5881e81dd507d47275e4eaf4c62e27fd9cad02c8"
+        },
+        {
+          "path": "core-s/tools/check_q_copy.py",
+          "lines": 192,
+          "bytes": 9914,
+          "sha256": "1b48317f925c66fb7cf979096a32bce19ade3fdb26356e01e818d22d55875058"
+        },
+        {
+          "path": "core-s/tools/check_q_diagnostics.py",
+          "lines": 148,
+          "bytes": 7119,
+          "sha256": "6b8a76b4fb6a72d197e776c692ee0dcd64cc5749a7f43f321b5e8d47205a17db"
+        },
+        {
+          "path": "core-s/tools/check_q_input.py",
+          "lines": 158,
+          "bytes": 8325,
+          "sha256": "13970e7afa6d01dcf0e4a2459bc9645131fd7286bc72bf6f7287da6b72db109f"
+        },
+        {
+          "path": "core-s/tools/check_q_interfaces.py",
+          "lines": 156,
+          "bytes": 9463,
+          "sha256": "e720d7c25f7703d7e69ce47862fb53fd8bf9eb9efd584f5ba35417e695f1e5b2"
+        },
+        {
+          "path": "core-s/tools/check_q_io_failures.py",
+          "lines": 171,
+          "bytes": 8318,
+          "sha256": "d53249aa5acc4da66007096b5eeb02d65c5bca9efaf0fb8a6a6c49379de94592"
+        },
+        {
+          "path": "core-s/tools/check_q_limits.py",
+          "lines": 89,
+          "bytes": 5055,
+          "sha256": "a2c8efdecc58312893072330f4a0ed18116bc94ed4b738d85fa3d70293f2907f"
+        },
+        {
+          "path": "core-s/tools/check_q_machine.py",
+          "lines": 324,
+          "bytes": 15814,
+          "sha256": "282d33d0ebdc15a0f432df3d13af1212fe422cbf8b30a5e33be509e4f145cd95"
+        },
+        {
+          "path": "core-s/tools/check_q_tool_guards.py",
+          "lines": 130,
+          "bytes": 5614,
+          "sha256": "b47f2048eafa5ee8c555f4c091ee9ed3070600f16ab4849329c947f161021478"
+        },
+        {
+          "path": "core-s/tools/check_reference.py",
+          "lines": 131,
+          "bytes": 6815,
+          "sha256": "b566ab040b2ee370d5b54a0e30ee343a00286f33929d6ace4553ec18c855b901"
+        },
+        {
+          "path": "core-s/tools/measure_next.py",
+          "lines": 105,
+          "bytes": 5465,
+          "sha256": "f4e8e7fa161f9422900520811acb7d392ca97af45dd50d9a2739b9d205a3ea34"
+        },
+        {
+          "path": "core-s/tools/q_machine_oracle.rs",
+          "lines": 58,
+          "bytes": 2623,
+          "sha256": "7e6a2e2003f9d50650f41afb8b91b90b115c8af2229304888da7221301161f33"
+        },
+        {
+          "path": "core-s/tools/selfhost_next.py",
+          "lines": 366,
+          "bytes": 20346,
+          "sha256": "985a39b2efc1ed9f6c454e45adb6a6d81ca2fa0c6f08b54d9bb27f3190d6827c"
+        },
+        {
+          "path": "core-s/tools/verify.py",
+          "lines": 106,
+          "bytes": 4997,
+          "sha256": "5ad1be0497e6918ec198f7fe7fac1a1bda223906ea8a95deddd9fc2fdf9f7b92"
+        }
+      ]
+    },
+    "new_behavior_fixtures": {
+      "file_count": 4,
+      "lines": 401,
+      "bytes": 10981,
+      "files": [
+        {
+          "path": "core-s/next/q/tests/behavior-diagnostic-cases.json",
+          "lines": 153,
+          "bytes": 4824,
+          "sha256": "420ef7017ebf3c20190b6de24ddd2ea06d4517ba6ff7442af034826077499fe1"
+        },
+        {
+          "path": "core-s/next/q/tests/behavior-diagnostic-ir.vt",
+          "lines": 71,
+          "bytes": 2570,
+          "sha256": "3aa88c2c9d2d2aed84fa7db69b59420d9514ae903ed5f972d0c3ec31cea94b91"
+        },
+        {
+          "path": "core-s/next/q/tests/behavior-io-save.vt",
+          "lines": 24,
+          "bytes": 735,
+          "sha256": "816257c42e16a13500a4279f8967edfd7c516e343c0501075cf16aa0d80963b4"
+        },
+        {
+          "path": "core-s/next/q/tests/behavior-io-shim.s0",
+          "lines": 153,
+          "bytes": 2852,
+          "sha256": "53c084d4f9a15fecd989192bb97c9eae6613e2b81ea459dd62e4efc6d713c155"
+        }
+      ]
+    }
+  }
+}

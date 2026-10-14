@@ -1,0 +1,31 @@
+{
+  "candidate": "D-r2",
+  "status": "author complete; frozen for independent root acceptance",
+  "baseline": "2c7061cbed13959697369879e5717a8ad0c9fb21",
+  "scope": "F4 only; baseline inputs outside parse/check/init",
+  "compiler": "core-s/build/behavior-fixes-D-r2/compiler.elf",
+  "compiler_sha256": "ae3a7caf8cc7aeed0ebf882c4025b22bb691a33c70dbe817b04c831322083a42",
+  "files": {
+    "core-s/next/q/check.vt": "7fbd67385fcc3de9c68cd6056a281a48409d48fbd4a8a17fb3eaca2aad2adff0",
+    "core-s/next/q/init.vt": "f4987677b55d793df25f648881f34cfa7717f2affb0ee6915d967bdb1739a6b2",
+    "core-s/next/q/parse.vt": "d2cff4e7f2fcd7a66968a34eb8c116c815ee477bbb9d606d626a373793fa8b7c",
+    "core-s/tools/check_q_diagnostics.py": "6b8a76b4fb6a72d197e776c692ee0dcd64cc5749a7f43f321b5e8d47205a17db",
+    "core-s/next/q/tests/behavior-diagnostic-cases.json": "420ef7017ebf3c20190b6de24ddd2ea06d4517ba6ff7442af034826077499fe1",
+    "core-s/next/q/tests/behavior-diagnostic-ir.vt": "3aa88c2c9d2d2aed84fa7db69b59420d9514ae903ed5f972d0c3ec31cea94b91"
+  },
+  "evidence": {
+    "D-r2.md": "91d1f115e073831cf9288b87acbcd9aec9fdfb611bd9cc888b309069e4dcc939",
+    "D-r2-build.json": "37422a7f6afe88447e20375f5ca0741d9c029b759e7c9b5fceb1634f4da912f0",
+    "D-r2-tests.json": "a0bed4357bdf250009cbcc7034f0dcc2d8f47c234372d8f025922b8b2a138c63",
+    "D-r2-optimized-reject.json": "920772dff67aed020b76838916343a50548e78432aea3f2ed1083a29990b5af3",
+    "D-baseline.json": "d8f8c341843d1878efc53a4dac9125361cb5f7acd5b3d34b40ba0ab6f446dccf"
+  },
+  "verification": {
+    "cases": 18,
+    "passed": 18,
+    "command_count": 38,
+    "python_mode": "-O",
+    "negative_tool_exit": 1,
+    "full_integration": "not claimed; root I node"
+  }
+}
