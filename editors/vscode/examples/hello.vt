@@ -1,0 +1,15 @@
+module app;
+
+// 中文注释与字符串；块注释允许嵌套。
+/* outer /* nested */ still a comment */
+struct Point { x: u32, y: u32 }
+enum Answer { Empty, Value(Point) }
+
+fn run() -> u32 {
+    let message: []const u8 = "你好 biomiya\n\x21";
+    let answer = Answer::Value(make Point { x: 0x14_u32, y: 0b10110_u32 });
+    match answer {
+        Answer::Empty => { return 0; },
+        Answer::Value(point) => { return point.x + point.y; },
+    }
+}

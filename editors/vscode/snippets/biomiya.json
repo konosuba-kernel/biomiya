@@ -1,0 +1,7 @@
+{
+  "Module": { "prefix": "module", "body": ["module ${1:app};", "$0"], "description": "S-next module declaration" },
+  "Function": { "prefix": "fn", "body": ["fn ${1:run}() -> ${2:u32} {", "    $0", "    return ${3:0};", "}"], "description": "Function with an explicit return" },
+  "Structure": { "prefix": "struct", "body": ["struct ${1:Point} {", "    ${2:x}: ${3:u32}", "}"], "description": "Concrete structure" },
+  "Enumeration": { "prefix": "enum", "body": ["enum ${1:Outcome} {", "    ${2:Empty},", "    ${3:Value}(${4:u32})", "}"], "description": "Concrete enum with a payload" },
+  "Unsafe block": { "prefix": "unsafe", "body": ["unsafe {", "    $0", "}"], "description": "Explicit unsafe block" }
+}

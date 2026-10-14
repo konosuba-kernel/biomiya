@@ -1,0 +1,63 @@
+{
+  "name": "biomiya-language",
+  "displayName": "biomiya (S-next)",
+  "description": "Lightweight S-next syntax highlighting and editing support for biomiya.",
+  "version": "0.1.0",
+  "publisher": "biomiya-local",
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "biomiya",
+    "S-next",
+    "vt"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.cjs",
+    "package": "npm test && vsce package --no-dependencies --allow-missing-repository --skip-license"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "biomiya",
+        "aliases": [
+          "biomiya (S-next)",
+          "biomiya"
+        ],
+        "extensions": [
+          ".vt"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "biomiya",
+        "scopeName": "source.biomiya",
+        "path": "./syntaxes/biomiya.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "biomiya",
+        "path": "./snippets/biomiya.json"
+      }
+    ],
+    "configurationDefaults": {
+      "[biomiya]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4
+      }
+    }
+  },
+  "devDependencies": {
+    "@vscode/vsce": "4.0.0",
+    "vscode-oniguruma": "2.0.1",
+    "vscode-textmate": "9.3.2"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "biomiya (S-next)",
+  "scopeName": "source.biomiya",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    {
+      "match": "\\b(fn)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": { "1": { "name": "storage.type.function.biomiya" }, "2": { "name": "entity.name.function.biomiya" } }
+    },
+    {
+      "match": "\\b(struct|enum)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": { "1": { "name": "storage.type.biomiya" }, "2": { "name": "entity.name.type.biomiya" } }
+    },
+    { "name": "keyword.control.biomiya", "match": "\\b(?:if|else|while|loop|match|break|continue|return|defer)\\b" },
+    { "name": "keyword.other.biomiya", "match": "\\b(?:module|import|as|make)\\b" },
+    { "name": "storage.type.biomiya", "match": "\\b(?:fn|struct|enum|let|var|static|const)\\b" },
+    { "name": "storage.modifier.biomiya", "match": "\\b(?:pub|unsafe|extern|mut|kernel|abi)\\b" },
+    { "name": "storage.type.primitive.biomiya", "match": "\\b(?:bool|u8|u32|usize)\\b" },
+    { "name": "constant.language.biomiya", "match": "\\b(?:true|false|zero)\\b" },
+    { "name": "variable.language.wildcard.biomiya", "match": "\\b_\\b" },
+    { "name": "support.function.biomiya", "match": "\\b(?:sizeof|alignof)\\b(?=\\s*\\()" },
+    { "name": "support.function.biomiya", "match": "\\bcore::(?:addr_of_mut|addr_of|addr|ptr_const|ptr_add_bytes|ptr_add|ptr|slice_of_mut|slice_of|slice_from_raw_parts_mut|slice_from_raw_parts|slice_const|panic)\\b" },
+    { "name": "constant.numeric.integer.biomiya", "match": "\\b(?:0x[0-9A-Fa-f](?:_?[0-9A-Fa-f])*|0b[01](?:_?[01])*|[0-9](?:_?[0-9])*)(?:_(?:u8|u32|usize))?\\b" },
+    { "name": "entity.name.function.biomiya", "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*\\()" },
+    { "name": "entity.name.type.biomiya", "match": "\\b[A-Z][A-Za-z0-9_]*\\b" },
+    { "name": "keyword.operator.biomiya", "match": "->|=>|[+*%-]%|<<|>>|==|!=|<=|>=|&&|\\|\\||[-+*/%=&|^~!<>]" },
+    { "name": "punctuation.separator.biomiya", "match": "::|[,:;.]" },
+    { "name": "punctuation.section.biomiya", "match": "[{}()\\[\\]]" },
+    { "name": "variable.other.biomiya", "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.biomiya", "begin": "//", "end": "$" },
+        { "include": "#block-comment" }
+      ]
+    },
+    "block-comment": {
+      "name": "comment.block.biomiya",
+      "begin": "/\\*",
+      "end": "\\*/",
+      "patterns": [{ "include": "#block-comment" }]
+    },
+    "strings": {
+      "name": "string.quoted.double.biomiya",
+      "begin": "\"",
+      "end": "\"|$",
+      "patterns": [
+        { "name": "constant.character.escape.biomiya", "match": "\\\\(?:[0nrt\\\\\"]|x[0-9A-Fa-f]{2})" },
+        { "name": "invalid.illegal.escape.biomiya", "match": "\\\\(?:.|$)" }
+      ]
+    }
+  }
+}

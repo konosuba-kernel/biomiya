@@ -4,6 +4,8 @@ konOSuba 的教学系统语言与自举编译器。当前开发实现是 **Core 
 
 ## 当前入口
 
+编辑 `.vt` 可使用 [VS Code 轻量插件](editors/vscode/README.md)，提供 S-next 语法高亮、括号与注释操作、基础缩进和代码片段。
+
 | 目录 | 职责 |
 | --- | --- |
 | [core-s/next/q/](core-s/next/q/) | S-next 编写的当前编译器：前端、IR、RV64、汇编适配、ELF 和可选 Blocking 分析 |
