@@ -1,0 +1,178 @@
+[
+  {
+    "name": "owner-good",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "good"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "owner-source-append",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "source-append"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-header-twice",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "header-twice"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-import-after-header",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "import-after-header"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-data-overrun",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "data-overrun"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "E_LINK file=0 byte=0\n"
+  },
+  {
+    "name": "owner-copy-overrun",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "copy-overrun"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "E_LINK file=0 byte=0\n"
+  },
+  {
+    "name": "owner-symbol-twice",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "symbol-twice"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "E_LINK file=0 byte=0\n"
+  },
+  {
+    "name": "owner-text-twice",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "text-twice"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-patch-overrun",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "patch-overrun"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "E_LINK file=0 byte=0\n"
+  },
+  {
+    "name": "owner-patch-unaligned",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "patch-unaligned"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "E_LINK file=0 byte=0\n"
+  },
+  {
+    "name": "owner-word-sealed",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "word-sealed"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-patch-sealed",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "patch-sealed"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-data-sealed",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "data-sealed"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-object-sealed",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "object-sealed"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-symbol-sealed",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "symbol-sealed"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  },
+  {
+    "name": "owner-finish-twice",
+    "manifest": "tests/compiler/owner.build",
+    "compile_exit": 0,
+    "arguments": [
+      "finish-twice"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=0 byte=0\n"
+  }
+]

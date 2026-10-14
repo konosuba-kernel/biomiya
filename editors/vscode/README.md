@@ -37,4 +37,4 @@ npm run package
 
 在 VS Code 中以本目录为工作区按 F5，可打开带本插件和示例文件的 Extension Development Host。手动检查主题着色、注释快捷键、括号配对与回车缩进。
 
-语法依据仓库 `core-s/docs/reference/s-next-0.1.md` 与当前 Q 词法器。扩展结构遵循 VS Code 的 [Syntax Highlight Guide](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide) 和 [Language Configuration Guide](https://code.visualstudio.com/api/language-extensions/language-configuration-guide)。
+语法依据仓库 `docs/reference/s-next-0.1.md` 与当前 Q 词法器。扩展结构遵循 VS Code 的 [Syntax Highlight Guide](https://code.visualstudio.com/api/language-extensions/syntax-highlight-guide) 和 [Language Configuration Guide](https://code.visualstudio.com/api/language-extensions/language-configuration-guide)。

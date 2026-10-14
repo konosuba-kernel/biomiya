@@ -1,0 +1,16 @@
+format 1
+profile linux-user
+entry frontprobe::run
+source compiler/model.vt
+source compiler/input.vt
+source compiler/image.vt
+source compiler/rules.vt
+source compiler/lex.vt
+source compiler/parse.vt
+source compiler/types.vt
+source compiler/init.vt
+source compiler/runtime/bytes.vt
+source compiler/runtime/linux.vt
+source tests/compiler/ast-cross-id.vt
+assembly compiler/runtime/linux.s0
+output build/q-ast-cross-id.elf

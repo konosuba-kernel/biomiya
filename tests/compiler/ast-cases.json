@@ -1,0 +1,58 @@
+[
+  {
+    "name": "ast-good",
+    "manifest": "tests/compiler/ast-lifecycle.build",
+    "compile_exit": 0,
+    "arguments": [
+      "good"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "name": "ast-end-node",
+    "manifest": "tests/compiler/ast-lifecycle.build",
+    "compile_exit": 0,
+    "arguments": [
+      "end-node"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=1 byte=66\n"
+  },
+  {
+    "name": "ast-stale-node",
+    "manifest": "tests/compiler/ast-lifecycle.build",
+    "compile_exit": 0,
+    "arguments": [
+      "stale-node"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=1 byte=66\n"
+  },
+  {
+    "name": "ast-stale-type",
+    "manifest": "tests/compiler/ast-lifecycle.build",
+    "compile_exit": 0,
+    "arguments": [
+      "stale-type"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "I_INTERNAL file=1 byte=66\n"
+  },
+  {
+    "name": "ast-cross-id",
+    "manifest": "tests/compiler/ast-cross-id.build",
+    "compile_exit": 1,
+    "compile_stderr": "E_TYPE file=11 byte=97\n"
+  },
+  {
+    "name": "ast-zero-id",
+    "manifest": "tests/compiler/ast-zero-id.build",
+    "compile_exit": 1,
+    "compile_stderr": "E_NAME file=11 byte=88\n"
+  }
+]

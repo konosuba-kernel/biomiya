@@ -1,0 +1,12 @@
+format 1
+profile linux-user
+entry owner_probe::run
+source compiler/model.vt
+source compiler/rules.vt
+source compiler/input.vt
+source compiler/image.vt
+source compiler/runtime/bytes.vt
+source compiler/runtime/linux.vt
+source tests/compiler/owner.vt
+assembly compiler/runtime/linux.s0
+output build/q-owner.elf

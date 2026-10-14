@@ -1,0 +1,2 @@
+module app;
+fn run() -> u32 { return 42; }

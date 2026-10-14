@@ -1,0 +1,6 @@
+format 1
+profile linux-user
+entry system::files::run
+source experiments/system/file_rollback.vt
+assembly experiments/system/linux.s0
+output build/p5-file-rollback.elf

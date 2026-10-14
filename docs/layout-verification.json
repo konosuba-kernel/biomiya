@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-14",
+  "scope": "Layout migration validation performed on the working tree including uncommitted K0 changes; not validation of a committed K0 implementation.",
+  "git_base": "0460ad7ba82837d52c26cc21b2204655cbe75966",
+  "layout": {
+    "passed": true,
+    "frozen_inputs": 71,
+    "manifests": 21,
+    "local_links": 53
+  },
+  "preservation": {
+    "original_files": 1085,
+    "moved_files": 1041,
+    "missing": [],
+    "source_changes": [],
+    "history_changes": [],
+    "legacy_changes": []
+  },
+  "backup": "build/layout-migration-backup/before-live.tar",
+  "backup_sha256": "92278634dfafb0b60effe9ecf3da689174910757e087b2f7c451b47e8d7292ae",
+  "mapping": "build/layout-migration-backup/mapping.json",
+  "frozen_seed_sha256": "90c9523de43bebbd0a6932e74abc8cd670b60478c3b4f0fc1eff74fbf4cfb686",
+  "selfhost": {
+    "record": "build/layout-p4-r1/verification.json",
+    "record_sha256": "da171f3fb8cacf3126f9640422d7e7b2cb22b95d5df591f5f3747dcdb76dd5ed",
+    "images": {
+      "e1": "049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144",
+      "e2": "049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144",
+      "e3": "049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144"
+    },
+    "matches_pre_migration_k0": true,
+    "source_perturbation_observed": true
+  },
+  "checks": [
+    {
+      "record": "build/layout-seed-r1/verification.json",
+      "sha256": "d5fb57539fb2ef049f8c964e0778f557544064f6e6f9589c262948b8b85bd3d1",
+      "passed": true,
+      "passed_count": 91
+    },
+    {
+      "record": "build/layout-p3-r1/verification.json",
+      "sha256": "171f7c18cdcc7392c9ce1ad79ae579c901cfa64a6b948dbb1f89286bd0d791ec",
+      "passed": true,
+      "cases": 126,
+      "passed_count": 126
+    },
+    {
+      "record": "build/layout-check_q-r1/verification.json",
+      "sha256": "68a259a237f00878bba22f617fdf9b8e2c22eb0f04977b81fbde782d4c31d14a",
+      "passed": true,
+      "cases": 126,
+      "passed_count": 126
+    },
+    {
+      "record": "build/layout-machine-r2/verification.json",
+      "sha256": "ea57cf364cd71a457addc7e4bedc157a2936ae7bb3264dd127708036e31efacb",
+      "passed": true,
+      "cases": 105
+    },
+    {
+      "record": "build/layout-check_q_input-r1/verification.json",
+      "sha256": "6bce8197b287a2afdcad4ed19e0085658ce46b5c0f880f0ec9dc2aef89aaeefd",
+      "passed": true,
+      "tests": 24
+    },
+    {
+      "record": "build/layout-check_q_copy-r1/verification.json",
+      "sha256": "9846bcb4d92c42c0199a43d786c912b95ad6751e41511bd06a1356b74505140f",
+      "passed": true,
+      "cases": 8
+    },
+    {
+      "record": "build/layout-check_q_io_failures-r1/verification.json",
+      "sha256": "347f0fd146b4352d481a8e374886c77034d08c5e0e2c1133a4f71f3deaf36f38",
+      "passed": true,
+      "tests": 12
+    },
+    {
+      "record": "build/layout-check_q_diagnostics-r1/verification.json",
+      "sha256": "ca6470b7b08df4a41475e805ac8dd2df93b92a386a94a744a0868ed98f662d27",
+      "passed": true,
+      "cases": 18
+    },
+    {
+      "record": "build/layout-check_q_blocking-r1/verification.json",
+      "sha256": "0f75738ec663e44064235dc178d31655444b269074c498f59c7cb4ed3e995aaa",
+      "passed": true,
+      "cases": 48
+    },
+    {
+      "record": "build/layout-check_q_interfaces-r1/verification.json",
+      "sha256": "42a9d26975b763912098cf1824974774901715e770875c957d59c8d4b1050cda",
+      "passed": true,
+      "cases": 76
+    },
+    {
+      "record": "build/layout-check_q_limits-r1/verification.json",
+      "sha256": "565e645a4c5d6a667326e55d3520da5480f0555b217c2a47d4a01e3e4c95a67d",
+      "passed": true,
+      "cases": 15
+    },
+    {
+      "record": "build/layout-host-r2/verification.json",
+      "sha256": "d62be7d06eee3ac1a89da5f4113e4102698c10e81d4f512b6149a9bad2ea396f",
+      "passed": true,
+      "cases": 3
+    },
+    {
+      "record": "build/layout-check_q_profiles-r1/verification.json",
+      "sha256": "01e0458f23c3b513c693e07911b8cf4723c3f0976a78d751856ef3688f275604",
+      "passed": true,
+      "cases": 26
+    },
+    {
+      "record": "build/layout-check_q_s0_system-r1/verification.json",
+      "sha256": "5ae010059a010cbd3d35b592c1a614eb8725aec0462d5a642d28f63f76245dae",
+      "passed": true,
+      "cases": 167
+    },
+    {
+      "record": "build/layout-check_next_reference-r1/verification.json",
+      "sha256": "4b468babe5cee796aaf2d04066db4af635d7ec52674ef0f1460e7c784712c16d",
+      "passed": true,
+      "cases": 3,
+      "passed_count": 3
+    },
+    {
+      "record": "build/layout-trials-r2/verification.json",
+      "sha256": "395ece3a0d40a28229afa10f0d8d0488b040c66bb3484baae8b780dc3b4bd628",
+      "passed": true,
+      "cases": 8
+    },
+    {
+      "record": "build/layout-system-r1/verification.json",
+      "sha256": "457a92ae6360e5e9c5cfccbe152c15e4565c0800f0e9fde03c3d68b013276a1c",
+      "passed": true,
+      "commands": 5
+    },
+    {
+      "record": "build/layout-frozen-reference-r1/verification.json",
+      "sha256": "cc4cb2cf8bab6ab061e6f4badf56d34098d5515ddc51a7331467a8c2a47d57f3",
+      "passed": true,
+      "cases": 22,
+      "passed_count": 22
+    }
+  ],
+  "verifier_guards": {
+    "record": "build/layout-guards.log",
+    "entry_checks": 88,
+    "corpus_runs": 5
+  },
+  "suba_abi": {
+    "record": "../suba/build/layout-abi-r1/verification.json",
+    "sha256": "dedf4a272c619492c731f1ea69e8788bd562a0c8c4dabf328d04307532510684",
+    "passed": true
+  },
+  "example": {
+    "passed": true,
+    "commands": [
+      {
+        "command": [
+          "qemu-riscv64",
+          "-s",
+          "1048576",
+          "build/k0-p4-r2/e3.elf",
+          "check",
+          "examples/hello/program.build"
+        ],
+        "exit": 0,
+        "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=43 assembly=0 names=4 name_bytes=17 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+      },
+      {
+        "command": [
+          "qemu-riscv64",
+          "-s",
+          "1048576",
+          "build/k0-p4-r2/e3.elf",
+          "build",
+          "examples/hello/program.build"
+        ],
+        "exit": 0,
+        "stderr": "S-next-0.1 sources=1 imports=0 assembly_files=0 source=43 assembly=0 names=4 name_bytes=17 decls=1 types=5 fields=0 params=0 max_ast=3 max_ir=3 max_frame=32 max_bindings=0 max_defers=0 max_loops=0 max_slots=1 max_args=0 max_params=0 text=208 data=0 objects=0 symbols=9 fixups=6 relocations=0 elf=12289\n"
+      }
+    ],
+    "run_exit": 42
+  },
+  "editor": {
+    "tests_passed": 5,
+    "package": "editors/vscode/biomiya-language-0.1.0.vsix",
+    "sha256": "8ce4e3dfe1db8c65d6b65574ca3b5ef3aee1c54e89627745278c92a04f5e5bcd"
+  },
+  "corrected_attempts": [
+    {
+      "record": "build/layout-check_q_machine-r1/verification.json",
+      "reason": "Rust oracle still referenced old src paths; fixed paths and verified in layout-machine-r2."
+    },
+    {
+      "log": "build/layout-check_q_host.log",
+      "reason": "Invocation omitted required pre-host baseline; corrected invocation and documentation, verified in layout-host-r2."
+    }
+  ],
+  "notes": [
+    "Historical evidence bytes and hashes were not rewritten. Old relative paths remain historical.",
+    "These are mechanical migration checks, not new language or independent K0 acceptance.",
+    "The source backup and full selfhost records include uncommitted K0 work, which is excluded from the directory migration commit."
+  ]
+}

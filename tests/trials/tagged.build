@@ -1,0 +1,6 @@
+format 1
+profile linux-user
+entry trial::main::run
+source tests/trials/tagged.vt
+source tests/trials/tagged_program.vt
+output build/trial-tagged.elf

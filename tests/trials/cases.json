@@ -1,0 +1,12 @@
+{
+  "status": "regression-input",
+  "cases": [
+    {"manifest": "tests/trials/typed.build", "exit": 42},
+    {"manifest": "tests/trials/tagged.build", "exit": 42},
+    {"manifest": "tests/trials/wrong_id.build", "reject": "E_TYPE"},
+    {"manifest": "tests/trials/tagged_wrong_id.build", "exit": 0},
+    {"manifest": "tests/trials/private_id.build", "reject": "E_NAME", "reason": "private field construction"},
+    {"manifest": "tests/trials/stale_id.build", "exit": 101},
+    {"manifest": "tests/trials/tagged_stale_id.build", "exit": 101}
+  ]
+}

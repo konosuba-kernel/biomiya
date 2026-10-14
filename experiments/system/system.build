@@ -1,0 +1,6 @@
+format 1
+profile linux-user
+entry system::main::run
+source experiments/system/system.vt
+assembly experiments/system/machine.s0
+output build/p5-system.elf

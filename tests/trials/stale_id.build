@@ -1,0 +1,6 @@
+format 1
+profile linux-user
+entry trial::main::run
+source tests/trials/typed.vt
+source tests/trials/stale_id.vt
+output build/trial-stale_id.elf

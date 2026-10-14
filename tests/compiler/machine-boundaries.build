@@ -1,0 +1,14 @@
+format 1
+profile linux-user
+entry machine_boundaries::run
+source compiler/model.vt
+source compiler/rules.vt
+source compiler/image.vt
+source tests/compiler/layout.vt
+source compiler/ir.vt
+source compiler/rv64.vt
+source compiler/s0.vt
+source tests/compiler/machine-boundaries.vt
+source compiler/runtime/linux.vt
+assembly compiler/runtime/linux.s0
+output build/q-machine.elf

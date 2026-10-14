@@ -1,3 +1,9 @@
 /target/
 /build/
 __pycache__/
+
+**/target/
+**/build/
+**/__pycache__/
+**/.ruff_cache/
+qemu_*.core

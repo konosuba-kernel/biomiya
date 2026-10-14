@@ -1,6 +1,0 @@
-format 1
-profile linux-user
-entry system::main::run
-source next/system/system.vt
-assembly next/system/machine.s0
-output build/p5-system.elf

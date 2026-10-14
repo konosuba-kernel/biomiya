@@ -1,0 +1,8 @@
+format 1
+profile linux-user
+entry pure_rules::run
+source compiler/model.vt
+source compiler/rules.vt
+source tests/compiler/pure-rules.vt
+assembly compiler/runtime/linux.s0
+output build/pure-rules.elf
