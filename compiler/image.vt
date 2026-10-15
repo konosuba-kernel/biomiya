@@ -2,6 +2,7 @@
 module bootstrap::image;
 import bootstrap::model;
 import bootstrap::rules;
+import bootstrap::target;
 const CAP:usize = 16789504;
 static mut bytes:[16789504]u8 = zero;
 static mut text:usize = 0;
@@ -23,6 +24,8 @@ static mut fixup_used:u32 = 0;
 static mut data_bytes:[8388608]u8 = zero;
 static mut data_byte_used:usize = 0;
 static mut phase:u32 = 0;
+static mut bss_first: u32 = 0;
+static mut bss_end: u32 = 0;
 
 fn building() -> () {
     unsafe { if phase != 1_u32 && phase != 2_u32 { model::fail(model::ERROR_INTERNAL, 0, 0); } }
@@ -42,6 +45,8 @@ pub fn begin_compile() -> () {
         fixup_used = 0;
         data_byte_used = 0;
         text = 0;
+        bss_first = 0;
+        bss_end = 0;
     }
     return ();
 }
@@ -408,7 +413,7 @@ fn pair(item:model::Fixup) -> () {
             scratch = 31;
             opcode = 103;
         }
-        let pc:usize = 65536_usize+item.offset;
+        let pc:usize = target::layout().base + item.offset;
         if target >= pc {
             if target-pc > 2147481599_usize {
                 bad();
@@ -423,6 +428,19 @@ fn pair(item:model::Fixup) -> () {
         patch_word(item.offset+4_usize, ((lo << 20_usize) | (scratch << 15_usize) | (rd << 7_usize) | opcode) as u32);
     }
     return ();
+}
+
+// Private linker-owned boundary symbols cannot be supplied by assembly.
+pub fn bss_boundary(end: bool) -> u32 {
+    emitting();
+    unsafe {
+        if bss_first == 0_u32 {
+            bss_first = fresh();
+            bss_end = fresh();
+        }
+        if end { return bss_end; }
+        return bss_first;
+    }
 }
 
 pub fn finish(entry:u32) -> []const u8 {
@@ -471,12 +489,16 @@ pub fn finish(entry:u32) -> []const u8 {
         if lengths[4] != 0_usize {
             rw_memory = bss_start+lengths[4];
         }
-        bases[1] = 65536;
-        bases[2] = aligned(bases[1]+text, 4096);
-        bases[3] = aligned(bases[2]+lengths[2], 4096);
+        let layout: target::Layout = target::layout();
+        bases[1] = layout.base;
+        bases[2] = layout.base + aligned(text, 4096);
+        bases[3] = layout.base + aligned(bases[2] - layout.base + lengths[2], 4096);
         bases[4] = bases[3]+bss_start;
-        if bases[3]+rw_memory-65536_usize > 67108864_usize {
-            model::limit(bases[3]+rw_memory-65536_usize, 67108864);
+        let span: usize = bases[3] + rw_memory - layout.base;
+        if span > layout.window { model::limit(span, layout.window); }
+        if bss_first != 0_u32 {
+            define(bss_first, 4, 0);
+            define(bss_end, 4, lengths[4]);
         }
         offsets[1] = 4096;
         offsets[2] = aligned(4096_usize+text, 4096);
@@ -536,9 +558,10 @@ pub fn finish(entry:u32) -> []const u8 {
             i = i+1_u32;
         }
         let start:usize = address(entry);
-        if get_symbol(entry).region != 1_u32 || start < 65536_usize || start >= 65536_usize+text {
+        if get_symbol(entry).region != 1_u32 || start < layout.base || start >= layout.base + text {
             bad();
         }
+        if target::machine() && start != layout.base { bad(); }
         put(0, 0x00010102464c457f, 8);
         put(16, 2, 2);
         put(18, 243, 2);

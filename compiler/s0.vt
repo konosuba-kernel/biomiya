@@ -137,6 +137,92 @@ fn immediate(shift:bool) -> usize {
     }
 }
 
+// CSR addresses and zimm are unsigned fields, not signed I-format immediates.
+fn unsigned_field(maximum:usize) -> u32 {
+    let text:[]const u8 = token();
+    var at_digit:usize = 0;
+    var base:usize = 10;
+    // SAFETY: token borrows the source for this parse call. Each access below
+    // is bounded by the token length; parsing does not replace its storage.
+    unsafe {
+        if text.len >= 2_usize && text[0] == 48_u8 && text[1] == 120_u8 {
+            base = 16;
+            at_digit = 2;
+        }
+        if at_digit == text.len { bad(); }
+        var value:usize = 0;
+        while at_digit < text.len {
+            let ch:u8 = text[at_digit];
+            var digit:usize = 99;
+            if ch >= 48_u8 && ch <= 57_u8 { digit = (ch-48_u8) as usize; }
+            if ch >= 97_u8 && ch <= 102_u8 { digit = (ch-87_u8) as usize; }
+            if digit >= base || digit > maximum { bad(); }
+            if value > (maximum-digit)/base { bad(); }
+            value = value*base+digit;
+            at_digit = at_digit+1_usize;
+        }
+        return value as u32;
+    }
+}
+
+// A bounded machine-boundary extension. Encodings are checked against Clang
+// by check_q_s0_system.py; that assembler is never used to build a Q image.
+fn system_operation(op:[]const u8) -> bool {
+    var function:u32 = 0;
+    if model::equal(op, "csrrw") { function = 1; }
+    if model::equal(op, "csrrs") { function = 2; }
+    if model::equal(op, "csrrc") { function = 3; }
+    if model::equal(op, "csrrwi") { function = 5; }
+    if model::equal(op, "csrrsi") { function = 6; }
+    if model::equal(op, "csrrci") { function = 7; }
+    if function != 0_u32 {
+        let destination:u32 = register();
+        punct(44);
+        let csr:u32 = unsigned_field(4095);
+        punct(44);
+        var source:u32 = 0;
+        if function < 4_u32 { source = register(); }
+        else { source = unsigned_field(31); }
+        done();
+        image::word((csr << 20_u32) | (source << 15_u32) | (function << 12_u32) |
+            (destination << 7_u32) | 115_u32);
+        return true;
+    }
+    if model::equal(op, "sfence.vma") {
+        let address:u32 = register();
+        punct(44);
+        let asid:u32 = register();
+        done();
+        image::word(301990003_u32 | (asid << 20_u32) | (address << 15_u32));
+        return true;
+    }
+    if model::equal(op, "align") {
+        let alignment:usize = unsigned_field(4096) as usize;
+        done();
+        if alignment < 4_usize || (alignment & (alignment-1_usize)) != 0_usize {
+            bad();
+        }
+        // Text begins at a 4096-byte aligned VA for every supported profile.
+        // Emit at most 1023 whole RV64 NOPs; labels after this line see padding.
+        while (image::text_position() & (alignment-1_usize)) != 0_usize {
+            image::word(19);
+        }
+        return true;
+    }
+    var word:u32 = 0;
+    if model::equal(op, "sret") { word = 270532723; }
+    if model::equal(op, "wfi") { word = 273678451; }
+    // The only fence form is the conservative full iorw,iorw barrier.
+    if model::equal(op, "fence") { word = 267386895; }
+    if model::equal(op, "fence.i") { word = 4111; }
+    if word != 0_u32 {
+        done();
+        image::word(word);
+        return true;
+    }
+    return false;
+}
+
 fn letter(ch:u8) -> bool {
     return (ch >= 65_u8 && ch <= 90_u8) || (ch >= 97_u8 && ch <= 122_u8) || ch == 95_u8 || ch == 46_u8;
 }
@@ -178,6 +264,7 @@ fn target() -> u32 {
 }
 
 fn operation(op:[]const u8) -> () {
+    if system_operation(op) { return (); }
     var f3:u32 = 0;
     var f7:u32 = 0;
     var kind:u32 = 0;
@@ -301,6 +388,10 @@ fn operation(op:[]const u8) -> () {
     if model::equal(op, "sb") {
         kind = 4;
         f3 = 0;
+    }
+    if model::equal(op, "sh") {
+        kind = 4;
+        f3 = 1;
     }
     if model::equal(op, "sw") {
         kind = 4;

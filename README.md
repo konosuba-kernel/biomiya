@@ -1,6 +1,6 @@
 # biomiya
 
-konOSuba 的教学系统语言与自举编译器。当前维护实现为 **S-next 0.1**，优先级是自举、简单、现代。编译器用 S-next 编写，在 RV64 Linux-user 下运行。Linux-user 自编译不等于 suba 内自举。
+konOSuba 的教学系统语言与自举编译器。当前维护实现为 **S-next 0.1**，优先级是自举、简单、现代。编译器用 S-next 编写，在 RV64 Linux-user 下运行，支持固定的 linux-user、suba-user、suba-boot、suba-kernel 输出 profile。Linux-user 自编译不等于 suba 内自举。
 
 从 [语言参考](docs/reference/s-next-0.1.md)、[构建与验证](docs/building.md) 和 [VS Code 插件](editors/vscode/README.md) 开始。所有维护命令统一从仓库根目录执行。
 
@@ -19,4 +19,4 @@ konOSuba 的教学系统语言与自举编译器。当前维护实现为 **S-nex
 | [legacy/](legacy/README.md) | 旧 0.5 实现 |
 | build/ | 忽略的本地构建和验证产物 |
 
-本轮不改变编译器语义。旧路径映射与冻结约束见 [目录迁移说明](docs/layout-migration.md)。已有编译器结果见 [交付记录](docs/history/s-next/compiler/release.json)，源码规模、功能边界和自举正确性分别报告。
+原有未提交的 K0 工作随目录迁移保留，本轮不改变编译器语义。旧路径映射与冻结约束见 [目录迁移说明](docs/layout-migration.md)。已有平台结果见 [K0 实施记录](../suba/docs/workflows/k0/DELIVERY.md)，源码规模、功能边界和自举正确性分别报告。

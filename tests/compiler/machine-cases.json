@@ -950,7 +950,7 @@
     "output_absent": "out.elf",
     "files": {
       "input.s0": {
-        "text": "csrrw x1,0,x2"
+        "text": "csrr x1,0"
       }
     }
   },

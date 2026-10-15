@@ -1,0 +1,85 @@
+// Compiler process environment on Linux; selected by the compiler's build manifest.
+// This module has no target-profile state. A different host provides the same six
+// operations; it does not inherit Linux descriptor or syscall conventions.
+module runtime::host;
+import runtime::linux;
+
+pub enum BytesResult { Value([]const u8), Failed(u32) }
+pub enum CountResult { Value(usize), Failed(u32) }
+pub struct SaveError {
+    pub phase: []const u8,
+    pub errno: u32,
+    pub close_errno: u32,
+    pub cleanup_errno: u32,
+}
+pub enum SaveResult { Done, Failed(SaveError) }
+
+extern abi(C) fn __b2_syscall6(n: usize, a: usize, b: usize, c: usize,
+                             d: usize, e: usize, f: usize) -> usize;
+
+// Argument bytes are immutable process-owned storage, valid until exit.
+// Argument index includes argv[0]; values longer than 96 bytes fail.
+pub fn argc() -> usize { return linux::argc(); }
+
+pub fn argument(index: usize) -> BytesResult {
+    match linux::argument(index) {
+        linux::BytesResult::Value(value) => { return BytesResult::Value(value); },
+        linux::BytesResult::Failed(code) => { return BytesResult::Failed(code); },
+    }
+}
+
+// Synchronous whole-file input; may block. Caller keeps path readable and buffer
+// exclusively writable until return. No borrowed pointer survives the operation.
+// The buffer includes one extra byte: contents >= buffer.len are rejected.
+// Empty, >96-byte and NUL-bearing paths fail. A failure may modify buffer.
+pub unsafe fn read_file(path: []const u8, buffer: []u8) -> CountResult {
+    unsafe {
+        match linux::read_file(path, buffer) {
+            linux::CountResult::Value(count) => { return CountResult::Value(count); },
+            linux::CountResult::Failed(code) => { return CountResult::Failed(code); },
+        }
+    }
+}
+
+// Synchronous exclusive creation; may block. Caller keeps path/data readable and
+// owns the pathname (no concurrent replacement). Existing output is never replaced.
+// Completion includes final permissions and close, not durability or publication.
+// Failure preserves the first phase/error and additional close/cleanup failures;
+// cleanup_errno != 0 means output may remain. Error numbers are host-local details,
+// consumed only for diagnostics. Phase text is static and backend-owned.
+pub unsafe fn save_new(path: []const u8, data: []const u8) -> SaveResult {
+    unsafe {
+        match linux::save_new(path, data) {
+            linux::SaveResult::Done => { return SaveResult::Done; },
+            linux::SaveResult::Failed(error) => {
+                var phase: []const u8 = "create";
+                match error.phase {
+                    linux::SavePhase::Create => {},
+                    linux::SavePhase::Write => { phase = "write"; },
+                    linux::SavePhase::Mode => { phase = "chmod"; },
+                    linux::SavePhase::Close => { phase = "close"; },
+                }
+                return SaveResult::Failed(make SaveError {
+                    phase: phase, errno: error.errno,
+                    close_errno: error.close_errno, cleanup_errno: error.cleanup_errno
+                });
+            },
+        }
+    }
+}
+
+// Best-effort synchronous diagnostic sink; may block and may partially write.
+// Caller keeps text readable until return. Sink errors are deliberately discarded:
+// diagnostics must not replace the original compiler error or status.
+pub unsafe fn diagnostic(text: []const u8) -> () {
+    unsafe { let ignored: linux::WriteResult = linux::write_all(2, text); }
+    return ();
+}
+
+// Terminal operation: never returns, even if the host unexpectedly returns from exit.
+pub fn exit(status: u32) -> () {
+    // SAFETY: Linux exit has no pointer arguments and terminates this process.
+    unsafe { let ignored: usize = __b2_syscall6(93, status as usize, 0, 0, 0, 0, 0); }
+    loop {}
+    return ();
+}

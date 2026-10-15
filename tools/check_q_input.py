@@ -14,7 +14,7 @@ import subprocess
 import tempfile
 
 CORE = Path(__file__).resolve().parents[1]
-SOURCES = ['compiler/model.vt', 'compiler/lex.vt', 'compiler/input.vt', 'compiler/runtime/linux.vt', 'compiler/runtime/bytes.vt']
+SOURCES = ['compiler/model.vt', 'compiler/target.vt', 'compiler/runtime/host_linux.vt', 'compiler/lex.vt', 'compiler/input.vt', 'compiler/runtime/linux.vt', 'compiler/runtime/bytes.vt']
 IDENTITIES = [
     "target_lexer_decodes_numbers_strings_ranges_and_nested_comments",
     "target_input_keeps_manifest_snapshots_and_handles_short_io",

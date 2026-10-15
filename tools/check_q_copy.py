@@ -14,7 +14,7 @@ import shutil
 import subprocess
 
 CORE = Path(__file__).resolve().parents[1]
-SOURCES = ['compiler/model.vt', 'compiler/input.vt', 'compiler/lex.vt', 'compiler/runtime/linux.vt', 'compiler/runtime/bytes.vt', 'tests/compiler/copy.vt']
+SOURCES = ['compiler/model.vt', 'compiler/target.vt', 'compiler/runtime/host_linux.vt', 'compiler/input.vt', 'compiler/lex.vt', 'compiler/runtime/linux.vt', 'compiler/runtime/bytes.vt', 'tests/compiler/copy.vt']
 
 
 def sha(data):

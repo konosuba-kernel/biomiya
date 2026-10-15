@@ -1,0 +1,8 @@
+module k0_s0;
+extern abi(C) fn __k0_halfword() -> usize;
+pub fn run() -> u32 {
+    unsafe {
+        if __k0_halfword() != 291_usize { return 1; }
+    }
+    return 0;
+}

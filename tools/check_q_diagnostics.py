@@ -91,7 +91,7 @@ def main():
         report['cases'].append(result)
         manifest = 'format 1\nprofile linux-user\nentry diagnostic_ir::run\n'
         names = [f'compiler/{name}.vt' for name in
-                 ('model', 'input', 'image', 'rules', 'lex', 'parse', 'types', 'init', 'ir', 'check',
+                 ('model', 'target', 'runtime/host_linux', 'input', 'image', 'rules', 'lex', 'parse', 'types', 'init', 'ir', 'check',
                   'runtime/bytes', 'runtime/linux')]
         names += ['compiler/runtime/linux.s0', 'tests/compiler/behavior-diagnostic-ir.vt']
         for name in names:

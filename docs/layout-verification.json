@@ -1,6 +1,6 @@
 {
   "date": "2026-10-14",
-  "scope": "Layout migration validation performed on the working tree including uncommitted K0 changes; not validation of a committed K0 implementation.",
+  "scope": "Repository layout migration; compiler VT/S0 bytes and pre-existing K0 work preserved.",
   "git_base": "0460ad7ba82837d52c26cc21b2204655cbe75966",
   "layout": {
     "passed": true,
@@ -203,6 +203,6 @@
   "notes": [
     "Historical evidence bytes and hashes were not rewritten. Old relative paths remain historical.",
     "These are mechanical migration checks, not new language or independent K0 acceptance.",
-    "The source backup and full selfhost records include uncommitted K0 work, which is excluded from the directory migration commit."
+    "The source backup includes pre-existing uncommitted work. No commit or push was made."
   ]
 }

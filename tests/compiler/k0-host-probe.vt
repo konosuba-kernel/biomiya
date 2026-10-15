@@ -1,0 +1,12 @@
+module k0_host;
+import bootstrap::model;
+import runtime::host;
+pub fn capture() -> u32 {
+    model::fail(model::ERROR_TYPE, 7, 19);
+    return 84;
+}
+pub fn silent() -> u32 {
+    host::discard_diagnostics();
+    model::fail(model::ERROR_TYPE, 7, 19);
+    return 84;
+}

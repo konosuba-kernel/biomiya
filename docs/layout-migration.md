@@ -1,6 +1,6 @@
 # 2026-10-14 仓库目录迁移
 
-本次按职责整理目录，不改变编译器 .vt/.s0 内容、模块名、语言或 ABI。
+本次按职责整理目录，保留原工作区 K0 改动，不改变编译器 .vt/.s0 内容、模块名、语言或 ABI。
 
 | 原路径 | 当前路径 |
 | --- | --- |
@@ -27,4 +27,4 @@ seed.json 原字节不变，71 个 source_sha256 路径相对于 bootstrap/froze
 
 维护清单统一从仓库根目录解析；冻结验证器在保留原布局的内部树执行。旧 P3 记录继续保留，但新目录必须生成新 P3/P4 证据。当前成本统计写入 build/cost.json，不覆盖历史成本。
 
-相邻 suba 的参考链接同步使用新路径。未提交的 K0 工作不包含在目录迁移提交中。迁移检查运行 python3 tools/check_layout.py；固定点与专项结果写入新的 build/layout-*，汇总见 [迁移验证记录](layout-verification.json)。
+相邻 suba 的 ABI 工具和当前操作文档同步使用新路径，历史 K0 记录保留原内容。迁移检查运行 python3 tools/check_layout.py；固定点与专项结果写入新的 build/layout-*，汇总见 [迁移验证记录](layout-verification.json)。

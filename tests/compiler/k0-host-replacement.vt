@@ -1,0 +1,43 @@
+// Test-only process environment: no Linux runtime module or descriptors.
+module runtime::host;
+static mut CAPTURE: [64]u8 = zero;
+static mut USED: usize = 0;
+static mut SILENT: bool = false;
+extern abi(C) fn __k0_test_exit(status: usize) -> usize;
+
+pub fn discard_diagnostics() -> () { unsafe { SILENT = true; } return (); }
+
+pub unsafe fn diagnostic(text: []const u8) -> () {
+    unsafe {
+        if SILENT { return (); }
+        var i: usize = 0;
+        while i < text.len && USED < 64_usize {
+            CAPTURE[USED] = text[i];
+            USED = USED + 1_usize;
+            i = i + 1_usize;
+        }
+    }
+    return ();
+}
+
+pub fn exit(status: u32) -> () {
+    let expected: []const u8 = "E_TYPE file=7 byte=19\n";
+    var result: usize = 77;
+    unsafe {
+        if status != 1_u32 { result = 80; }
+        if SILENT {
+            if USED != 0_usize { result = 81; }
+            if result == 77_usize { result = 79; }
+        } else {
+            if USED != expected.len { result = 82; }
+            var i: usize = 0;
+            while i < expected.len {
+                if CAPTURE[i] != expected[i] { result = 83; }
+                i = i + 1_usize;
+            }
+        }
+        let ignored: usize = __k0_test_exit(result);
+    }
+    loop {}
+    return ();
+}

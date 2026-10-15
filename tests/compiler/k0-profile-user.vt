@@ -1,0 +1,8 @@
+module profile_user;
+static DATA: []const u8 = "linked";
+pub fn run() -> u32 {
+    unsafe {
+        if DATA.len == 6_usize && DATA[5_usize] == 100_u8 { return 37; }
+    }
+    return 1;
+}

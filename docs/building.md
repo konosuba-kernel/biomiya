@@ -36,6 +36,10 @@ python3 tools/check_q_diagnostics.py --compiler build/p4-new/e3.elf --record-dir
 python3 tools/check_q_blocking.py --compiler build/p4-new/e3.elf --record-dir build/blocking-new
 python3 tools/check_q_interfaces.py --compiler build/p4-new/e3.elf --record-dir build/interfaces-new
 python3 tools/check_q_limits.py --compiler build/p4-new/e3.elf --record-dir build/limits-new
+git show 0460ad7:core-s/next/q/model.vt > build/pre-host-model.vt
+python3 tools/check_q_host.py --compiler build/p4-new/e3.elf --record-dir build/host-new --baseline-model build/pre-host-model.vt
+python3 tools/check_q_profiles.py --compiler build/p4-new/e3.elf --record-dir build/profiles-new
+python3 tools/check_q_s0_system.py --compiler build/p4-new/e3.elf --record-dir build/s0-new
 python3 tools/check_next_reference.py --compiler build/p4-new/e3.elf --record-dir build/reference-new
 python3 tools/check_q_tool_guards.py --compiler build/p4-new/e3.elf
 python3 experiments/system/check_system.py --compiler build/p4-new/e3.elf --out build/system-new

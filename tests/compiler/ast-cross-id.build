@@ -13,4 +13,6 @@ source compiler/runtime/bytes.vt
 source compiler/runtime/linux.vt
 source tests/compiler/ast-cross-id.vt
 assembly compiler/runtime/linux.s0
+source compiler/target.vt
+source compiler/runtime/host_linux.vt
 output build/q-ast-cross-id.elf

@@ -4,7 +4,7 @@
 
 | 文档 | 对应对象 | 用途 |
 | --- | --- | --- |
-| [S-next 0.1 参考](s-next-0.1.md) | Q，RV64 Linux-user | 当前实现的语法、执行行为、平台接口与实现限制 |
+| [S-next 0.1 参考](s-next-0.1.md) | Q，四种固定RV64 profile | 当前实现的语法、执行行为、平台接口与实现限制 |
 | [B3.1 参考](b3.1.md) | 冻结 VT 引导编译器 | 旧程序与 B/P 引导链使用；不再同步新语言 |
 | [旧 0.5 参考](../../../docs/reference.md) | 根目录旧 Rust 编译器 | 历史版本，不能据此推断 Core S 支持范围 |
 | [S-next 方案](../../../docs/design/core-s-next.md) | 阶段和架构目标 | 完成状态见执行 DAG，不替代使用参考 |
@@ -14,7 +14,7 @@
 
 S-next 的 ELF 身份登记在 [s-next-0.1.json](s-next-0.1.json)，示例验证器要求哈希匹配；固定点、源码扰动和独立验收见 [执行记录](../../next/delivery.md)。Cargo 包版本不代表语言版本，也不能用任意一次成功编译冒充已登记候选。
 
-当前S-next参考为修订3（2026-10-14），绑定四项行为修复产物；没有新增语言特性，明确保存失败与字段诊断位置。新旧ELF身份均保留，新产物的实际证据与独立判定见[维护记录](../../next/q/maintenance-2026-10-14.json)。
+当前S-next参考为修订4（2026-10-14），绑定K0工具链产物；核心语义不变，新增固定profile、桥和S0机器操作的使用合同。新旧ELF身份均保留，新产物的实际证据与独立判定见[维护记录](../../next/q/k0-2026-10-14.json)。
 
 B3.1 编译器实现基线为 `51530f9`；`61d10a2` 只整理目录和验证入口，没有改变目标编译器源码。原始目标 ELF 与兼容维护产物的 SHA-256 登记在 [b3.1.json](b3.1.json)，例子验证器拒绝使用不匹配的编译器。Rust seed 的 Cargo 包版本 `0.1.0` 不能用来选择语言参考。
 
@@ -27,7 +27,7 @@ B3.1 编译器实现基线为 `51530f9`；`61d10a2` 只整理目录和验证入�
 在 `core-s/` 下执行：
 
 ```sh
-python3 tools/check_next_reference.py --compiler build/behavior-fixes-p4-r1/e3.elf --record-dir build/reference-new
+python3 tools/check_next_reference.py --compiler build/k0-p4-r2/e3.elf --record-dir build/reference-new
 ```
 
 B3.1 的历史参考仍可分别验证：

@@ -1,6 +1,6 @@
 # Core S S-next 0.1 使用参考
 
-文档修订 3，2026-10-14。目标：RV64 小端、Linux-user。本文绑定行为修复编译器 SHA-256 `8051f3599704a6bf180496b14632691c3463f1239946893641f65aae21969904`；构建来源、回归证据及独立验收状态见[维护记录](../history/s-next/compiler/maintenance-2026-10-14.json)。修订3明确保存失败与诊断位置，不新增语言特性；[修订2的发布证据](../history/s-next/compiler/release.json)保留。
+文档修订 4，2026-10-14。ISA仍为RV64小端；编译器当前运行于Linux，可输出linux-user、suba-user、suba-boot、suba-kernel四种固定profile。本文绑定K0编译器SHA-256 `049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144`；构建、实测与独立验收状态见[K0记录](../../../suba/docs/workflows/k0/DELIVERY.md)。修订4增加有限目标/桥/S0机器操作，不改变核心语言语义。[修订3维护证据](../history/s-next/compiler/maintenance-2026-10-14.json)和[原发布证据](../history/s-next/compiler/release.json)保留。
 
 本页描述 `compiler/` 的输入语言。B3.1 是冻结的引导版本，两者不兼容；旧 Result、问号和块式 defer 不属于本版。Q 是今后的维护实现，`bootstrap/transition/`的 P 仅供一次性引导，Rust 种子不追踪本版语义。
 
@@ -35,11 +35,28 @@ qemu-riscv64 program.elf
 
 程序退出 42；Linux shell 的退出状态仅保留低 8 位。真实 RV64 Linux 可直接执行 ELF。编译器 CLI 是 `build|check MANIFEST [--blocking POLICY]`，没有 `--version`；版本依据完整 ELF SHA-256。统计前缀为 `S-next-0.1`。
 
-清单显式列出全部 `.vt` 与可选 `.s0` 输入；没有包搜索、隐式标准库、libc 或外部链接器。入口为安全、无参数、返回 u32 的普通函数，写完整模块名。`format 1`、`profile linux-user`、`entry`、`output` 各一次，source 1–32 个，assembly 0–8 个；路径不得重复。
+清单显式列出全部 `.vt` 与可选 `.s0` 输入；没有包搜索、隐式标准库、libc 或外部链接器。入口为普通安全函数，写完整模块名；用户profile无参数、返回u32，机器profile见下表。`format 1`、`profile`、`entry`、`output` 各一次，source 1–32个，assembly 0–8个；路径不得重复。
 
 路径相对**进程工作目录**。最长 96 字节；禁止绝对路径、空分量、`.`、`..`、反斜线、空白与控制字符。每条有效清单行恰好两个词；允许空行和整行 `#` 注释。输出父目录必须已经存在。
 
 `check` 完成语义、目标检查与链接，不写 ELF；`build` 独占新建输出，拒绝覆盖已有文件。类型、链接或要求的 Blocking 分析失败时不发布新 ELF。保存失败会关闭文件并尝试删除本次新建输出；删除失败时报告可能残留的路径。完整写入后才设置可执行权限；关闭失败仍属于保存失败。不承诺并发替换输出路径安全或突然断电事务。
+
+### 固定目标与启动桥
+
+编译器的运行环境由其构建清单选择`runtime::host`实现；输出profile由被编译程序的清单选择。四种profile都直接生成三个RX/R/RW的ELF段，无外部链接器，也没有任意链接脚本。
+
+| profile | text基址 / 映像上限 | entry签名 |
+|---|---|---|
+| linux-user | 0x10000 / 64 MiB | `()->u32` |
+| suba-user | 0x10000 / 64 MiB | `()->u32` |
+| suba-boot | 0x80200000 / 2 MiB | `(hart:usize,dtb:usize)->u32` |
+| suba-kernel | 0x80400000 / 64 MiB | `(info:usize)->u32` |
+
+boot/kernel还必须提供`bind panic=module::function`，kernel必须提供`bind trap_dispatch=module::function`。每行仍恰好两个词。panic是安全普通`(u32)->u32`，trap_dispatch是安全普通`(usize)->usize`。重复、未知、缺失、错签名绑定拒绝；用户profile拒绝bind，boot拒绝trap_dispatch。没有通用export或可取函数地址。
+
+机器profile的最低PT_LOAD首字节等于e_entry。入口先关闭SIE、清BSS、建立16字节对齐的128KiB栈（计入窗口）、将x27清零，再保留a0/a1进入普通函数。函数返回进入panic(reason=102)，语言checked panic为101；panic返回后跳S0提供的`__suba_halt`，该符号必须存在且不返回。独立紧急栈、guard、完整trap保存由系统实现，编译器没有代为提供。S0可call`__suba_trap_dispatch`，a0传现场地址并返回待恢复现场地址；桥只是保留ra的尾跳，不保存中断现场。
+
+linux-user的x27保留Linux初始sp；suba-user的x27保存loader在a0传入的只读参数块地址，sp由loader提供。suba-user正常返回及panic101进入运行库的`__suba_exit`（a0退出码），缺少它则链接失败。它必须实现suba真实退出协议，不能把Linux退出包装伪装为suba服务。当前K0只完成这类产物的布局/链接边界；suba用户装载器和系统内编译仍待后续阶段。
 
 ## 2 文件、名字与权限
 
@@ -239,6 +256,22 @@ AST 表达式深度、类型准备、布局/常量计算各有明确递归限制
 
 保存失败在 `E_IO file=0 byte=0` 前补充 `save path=… phase=… errno=… close_errno=… cleanup_errno=…`。phase 为 create/write/chmod/close，errno 保留主错误；后两项为关闭与清理错误，零表示没有相应错误。清理失败还打印 `residual=…`；不能仅凭输出文件存在判断构建成功。记录构造的未知、重复或不可见字段定位到字段名，遗漏字段定位到整个构造，字段值自身的错误仍定位到该值。
 
-不支持：有符号/浮点/额外整数宽度、用户泛型、宏、函数指针、闭包、对象、trait、隐式转换、借用检查、自动内存/资源管理、通用编译期执行、多目标或优化框架。Linux-user 自编译不等于 SOS 内自举；真实硬件切片的监控程序与平台成本另行列账。
+不支持：有符号/浮点/额外整数宽度、用户泛型、宏、函数指针、闭包、对象、trait、隐式转换、借用检查、自动内存/资源管理、通用编译期执行、多目标或优化框架。Linux-user 自编译不等于 suba 内自举；真实硬件切片的监控程序与平台成本另行列账。
 
-本页完整示例由 `tools/check_next_reference.py` 验证；语言规则正反例见 `next/tests/p3/cases.json`。候选身份、固定点、目标测试与成本结论以 `compiler/release.json` 和执行记录为准。
+本页完整示例由 `tools/check_next_reference.py` 验证；语言规则正反例见 `tests/language/p3/cases.json`。当前候选身份、固定点、目标测试与成本以K0记录和执行记录为准；旧release.json是历史基线。
+
+## 12 S0机器边界扩展（K0）
+
+S0仍为有限汇编适配器：数字寄存器x0..x31、标签、call/jump/address；没有GNU宏、section、任意数据指令或符号CSR名字。所有寄存器/数值/多余操作数均检查。
+
+| 新语法 | 合同 |
+|---|---|
+| `sh xS, offset(xB)` | offset为−2048..2047，单次16位存储 |
+| `csrrw/csrrs/csrrc xD, csr, xS` | csr为无符号0..4095 |
+| `csrrwi/csrrsi/csrrci xD, csr, zimm` | zimm为0..31，与csr独立验证 |
+| `sfence.vma xAddress, xAsid` | 两个寄存器均需明确给出 |
+| `sret`、`wfi`、`fence.i` | 无操作数；权限/平台责任由机器层承担 |
+| `fence` | 无操作数，固定完整iorw,iorw屏障 |
+| `align N` | N为4..4096的2幂，填充32位NOP，影响随后标签地址 |
+
+新增unsigned字段接受十进制或小写0x十六进制，不接受负号或溢出后截位。支持机器指令不表示用户程序获得S-mode权限。实际CSR、MMIO及完整现场保存需要系统合同和QEMU验证。

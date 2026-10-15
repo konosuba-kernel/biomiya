@@ -5,4 +5,7 @@ source compiler/model.vt
 source compiler/rules.vt
 source tests/compiler/pure-rules.vt
 assembly compiler/runtime/linux.s0
+source compiler/target.vt
+source compiler/runtime/linux.vt
+source compiler/runtime/host_linux.vt
 output build/pure-rules.elf

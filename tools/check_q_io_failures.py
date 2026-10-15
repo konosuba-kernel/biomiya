@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 CORE = Path(__file__).resolve().parents[1]
-SOURCES = ['compiler/model.vt', 'compiler/input.vt', 'compiler/runtime/linux.vt', 'compiler/runtime/bytes.vt']
+SOURCES = ['compiler/model.vt', 'compiler/target.vt', 'compiler/runtime/host_linux.vt', 'compiler/input.vt', 'compiler/runtime/linux.vt', 'compiler/runtime/bytes.vt']
 FIXTURES = ['tests/compiler/behavior-io-save.vt', 'tests/compiler/behavior-io-shim.s0', 'compiler/runtime/linux.s0']
 PAYLOAD = b'0123456789abcdef0123456789abcdef'
 

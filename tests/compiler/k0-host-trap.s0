@@ -1,0 +1,8 @@
+# Test-only Linux process termination, distinct from the replaced host implementation.
+# Any accidental direct legacy syscall exits 85 instead of reaching the host sentinel.
+__b2_syscall6:
+addi x10, x0, 85
+__k0_test_exit:
+addi x17, x0, 93
+ecall
+jalr x0, 0(x1)

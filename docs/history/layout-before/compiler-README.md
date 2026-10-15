@@ -2,11 +2,27 @@
 
 语言使用者从 [版本参考](../../docs/reference/s-next-0.1.md) 开始；实现者从 `main.vt` 的阶段顺序开始。目录名是显式构建清单的路径，不形成自动模块搜索规则。模块名暂为 `bootstrap::*`，本目录与旧 bootstrap 不可同时选入一个清单。
 
-## 当前维护修订（2026-10-14）
+## 当前K0修订（2026-10-14）
 
-四项行为修复的当前编译器为 `core-s/build/behavior-fixes-p4-r1/e3.elf`，SHA-256 `8051f3599704a6bf180496b14632691c3463f1239946893641f65aae21969904`。E1=E2=E3；ELF 1,011,792字节，RW预留55,135,764字节，映像跨度56,143,380字节，最大单函数frame仍25,808字节。
+当前产物为 `core-s/build/k0-p4-r2/e3.elf`，SHA-256 `049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144`。完整E1=E2=E3及源码扰动通过；功能与独立验收状态见[K0记录](k0-2026-10-14.json)和[suba交付记录](../../../../suba/docs/workflows/k0/DELIVERY.md)。
 
-修复验证工具优化模式假通过、NUL删除路径、保存错误与清理结果丢失、记录字段诊断错位。当前生产VT为11,018行，VT runtime另290行、S0仍19行。证据与最终独立判定见[维护记录](maintenance-2026-10-14.json)及[组合说明](../../../docs/workflows/behavior-fixes-2026-10-14/I-summary.md)；下面保留前一基线的原始身份和统计。没有新增语言特性，K0尚未实施。
+K0新增四个固定profile、有限panic/trap桥、启动栈与BSS初始化、S0机器指令，以及host/target边界。Q仍运行于Linux-user；suba内宿主服务与自举尚未实现。核心语言语义不变，平台能力见参考修订4。
+
+生产VT为11,307物理行，runtime VT另375行、S0另19行。ELF 1,036,432字节，RW预留55,135,836字节，映像跨度56,168,028字节；最大单函数frame 25,808字节。分类、源哈希和测试成本见[本轮成本](../../../../suba/docs/workflows/k0/I-cost.json)。
+
+新增验证入口（在core-s下，记录目录必须不存在）：
+
+```sh
+python3 tools/check_q_profiles.py --compiler build/k0-p4-r2/e3.elf --record-dir build/profiles-new
+python3 tools/check_q_s0_system.py --compiler build/k0-p4-r2/e3.elf --record-dir build/s0-new
+python3 tools/check_q_host.py --compiler build/k0-p4-r2/e3.elf --record-dir build/host-new
+```
+
+## 前一轮行为修复（2026-10-14）
+
+四项行为修复当时的编译器为 `core-s/build/behavior-fixes-p4-r1/e3.elf`，SHA-256 `8051f3599704a6bf180496b14632691c3463f1239946893641f65aae21969904`。E1=E2=E3；ELF 1,011,792字节，RW预留55,135,764字节，映像跨度56,143,380字节，最大单函数frame仍25,808字节。
+
+修复验证工具优化模式假通过、NUL删除路径、保存错误与清理结果丢失、记录字段诊断错位。该修订生产VT为11,018行，VT runtime另290行、S0仍19行。证据与最终独立判定见[维护记录](maintenance-2026-10-14.json)及[组合说明](../../../docs/workflows/behavior-fixes-2026-10-14/I-summary.md)；下面保留前一基线的原始身份和统计。该修订没有新增语言特性，当时K0尚未实施。
 
 新增回归入口（在core-s下，使用不存在的证据目录）：
 

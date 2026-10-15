@@ -1,0 +1,44 @@
+{
+  "language": "S-next 0.1",
+  "documentation_revision": 4,
+  "date": "2026-10-14",
+  "compiler": {
+    "path": "build/layout-p4-r1/e3.elf",
+    "sha256": "049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144",
+    "elf_bytes": 1036432
+  },
+  "source_sha256": {
+    "compiler/blocking.vt": "63639c5fb1447fdd884c2c762446af7f02446a114be98117c140a3e3c4d9d1bc",
+    "compiler/check.vt": "7fbd67385fcc3de9c68cd6056a281a48409d48fbd4a8a17fb3eaca2aad2adff0",
+    "compiler/compiler.build": "556d94d804c9aff5635c9cb9d478749a5d5b5ccc7a1f05b631e91473728587b0",
+    "compiler/image.vt": "d47f5bfa9b5b7db906e733b637010095b1eb99f1d0e43e1e63164d2127ee9d06",
+    "compiler/init.vt": "f4987677b55d793df25f648881f34cfa7717f2affb0ee6915d967bdb1739a6b2",
+    "compiler/input.vt": "042fd5b1ccfef978223692b525a0e6df2386fe6c53a328a23333b007fe2a3c00",
+    "compiler/ir.vt": "083ea475e6871ca1940b66b1c1b6830984564f75d27d3a4b7d049c7d484bc2b8",
+    "compiler/lex.vt": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28",
+    "compiler/main.vt": "1fd5f5ff2118137c9f1bddc0408d3f6f0ac1f33a57d28cd3fe0b2af0a0c87516",
+    "compiler/model.vt": "f7fe40f50f8f3d81b91573f4f746d439454e3ca609eca902f8da01897b0ddc7a",
+    "compiler/parse.vt": "d2cff4e7f2fcd7a66968a34eb8c116c815ee477bbb9d606d626a373793fa8b7c",
+    "compiler/rules.vt": "8b3846de0315501e992bfc381653c26dc83122432338a64cc675249e71a90951",
+    "compiler/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "compiler/runtime/host_linux.vt": "48df4f0682a857f7f14fb87627d7573960f7014d895a7b7e0bff1baa5b1eee37",
+    "compiler/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+    "compiler/runtime/linux.vt": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0",
+    "compiler/rv64.vt": "dff6ec62795132d11ff969b1310c6f5cae1402db4f67adfd735eefd9b87cb3c0",
+    "compiler/s0.vt": "3fbed647d066fb023dcccb60c441cad23a4f4905cbcdf13aafbc34acf74ee2fe",
+    "compiler/target.vt": "a3f454b2b2535383a7a479d92f9670b56496b122cae0f09ea4f1f1f5368c3108",
+    "compiler/types.vt": "d43ea325af473099d368d5ed350aa5b3727c93d3aa300120fc49fd04ffdf9ee3"
+  },
+  "bootstrap_record": "build/layout-p4-r1/verification.json",
+  "bootstrap_record_sha256": "da171f3fb8cacf3126f9640422d7e7b2cb22b95d5df591f5f3747dcdb76dd5ed",
+  "e1_e2_e3_equal": true,
+  "source_perturbation_observed": true,
+  "independent_acceptance": "../../suba/docs/workflows/k0/DELIVERY.md",
+  "evidence": "../../suba/docs/workflows/k0/I-results-r2.json",
+  "cost": "../../suba/docs/workflows/k0/I-cost-r3.json",
+  "boundaries": [
+    "Compiler runs on RV64 Linux-user; suba-native host backend and self-build are not implemented.",
+    "suba-user is a target layout/bridge contract, not evidence of a user process or working syscall service.",
+    "Boot-to-kernel test uses QEMU-preloaded RAM, not disk stage0 or persistent reboot."
+  ]
+}

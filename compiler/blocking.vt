@@ -2,7 +2,7 @@
 module bootstrap::blocking;
 import bootstrap::model;
 import bootstrap::ir;
-import runtime::linux;
+import runtime::host;
 import runtime::bytes;
 // Bits are independent: a function can reach both a blocking and an unknown call.
 const MAY_BLOCK:u32 = 1;
@@ -27,14 +27,9 @@ static mut policy_offset:usize = 0;
 static mut policy_path:[]const u8 = "";
 static mut requirement_count:u32 = 0;
 fn text(value:[]const u8) -> () {
-    unsafe {
-        match linux::write_all(2, value) {
-            linux::WriteResult::Done => {
-            },
-            linux::WriteResult::Failed(error) => {
-            },
-        }
-    }
+    // SAFETY: analysis formatting keeps each literal/local slice alive for this call.
+    // Diagnostic failure does not replace the analysis result.
+    unsafe { host::diagnostic(value); }
     return ();
 }
 
@@ -161,11 +156,11 @@ pub fn load(path:[]const u8) -> bool {
             id = id+1_u32;
         }
         var length:usize = 0;
-        match linux::read_file(path, core::slice_of_mut(policy_buffer)) {
-            linux::CountResult::Value(n) => {
+        match host::read_file(path, core::slice_of_mut(policy_buffer)) {
+            host::CountResult::Value(n) => {
                 length = n;
             },
-            linux::CountResult::Failed(error) => {
+            host::CountResult::Failed(error) => {
                 return invalid();
             },
         }

@@ -1,0 +1,69 @@
+// Owns the fixed output layout selected once by the build manifest. This is
+// independent of the compiler's host services; no target performs host I/O.
+module bootstrap::target;
+import bootstrap::model;
+
+pub enum Profile { LinuxUser, SubaUser, SubaBoot, SubaKernel }
+pub struct Layout {
+    pub profile: Profile,
+    pub base: usize,
+    pub window: usize,
+    pub stack: usize
+}
+static mut selected: Layout = make Layout {
+    profile: Profile::LinuxUser, base: 65536, window: 67108864, stack: 0
+};
+
+pub fn reset() -> () {
+    unsafe {
+        selected = make Layout {
+            profile: Profile::LinuxUser, base: 65536, window: 67108864, stack: 0
+        };
+    }
+    return ();
+}
+
+pub fn select(name: []const u8, line: usize) -> () {
+    var profile: Profile = Profile::LinuxUser;
+    var base: usize = 65536;
+    var window: usize = 67108864;
+    var stack: usize = 0;
+    if model::equal(name, "linux-user") {
+        profile = Profile::LinuxUser;
+    } else if model::equal(name, "suba-user") {
+        profile = Profile::SubaUser;
+    } else if model::equal(name, "suba-boot") {
+        profile = Profile::SubaBoot;
+        base = 0x80200000;
+        window = 2097152;
+        stack = 131072;
+    } else if model::equal(name, "suba-kernel") {
+        profile = Profile::SubaKernel;
+        base = 0x80400000;
+        stack = 131072;
+    } else {
+        model::fail(model::ERROR_UNSUPPORTED, 0, line);
+    }
+    unsafe { selected = make Layout { profile: profile, base: base, window: window, stack: stack }; }
+    return ();
+}
+
+pub fn layout() -> Layout { unsafe { return selected; } }
+
+pub fn machine() -> bool {
+    match layout().profile {
+        Profile::SubaBoot => { return true; },
+        Profile::SubaKernel => { return true; },
+        Profile::LinuxUser => { return false; },
+        Profile::SubaUser => { return false; },
+    }
+}
+
+pub fn entry_parameters() -> u32 {
+    match layout().profile {
+        Profile::SubaBoot => { return 2; },
+        Profile::SubaKernel => { return 1; },
+        Profile::LinuxUser => { return 0; },
+        Profile::SubaUser => { return 0; },
+    }
+}

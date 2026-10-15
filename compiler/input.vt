@@ -1,6 +1,7 @@
 module bootstrap::input;
 import bootstrap::model;
-import runtime::linux;
+import bootstrap::target;
+import runtime::host;
 import runtime::bytes;
 // Input owns immutable byte snapshots and one-time module header completion.
 enum SourceEntry { Empty, Value(model::Source) }
@@ -16,6 +17,8 @@ static mut phase:u32 = 0;
 static mut path_bytes:usize = 0;
 static mut entry:[]const u8 = "";
 static mut output:[]const u8 = "";
+static mut panic_binding: []const u8 = "";
+static mut trap_binding: []const u8 = "";
 static mut source_bytes:usize = 0;
 static mut assembly_bytes:usize = 0;
 
@@ -24,6 +27,7 @@ fn require_phase(expected:u32) -> () {
     return ();
 }
 pub fn begin_compile() -> () {
+    target::reset();
     unsafe {
         if phase == 1_u32 { model::fail(model::ERROR_INTERNAL, 0, 0); }
         phase = 1;
@@ -35,6 +39,8 @@ pub fn begin_compile() -> () {
         assembly_bytes = 0;
         entry = "";
         output = "";
+        panic_binding = "";
+        trap_binding = "";
         var i:usize = 1;
         while i < 33_usize { headers[i] = false; i = i+1_usize; }
     }
@@ -58,6 +64,8 @@ pub fn import_count() -> u32 { unsafe { return import_used; } }
 pub fn source_size() -> usize { unsafe { return source_bytes; } }
 pub fn assembly_size() -> usize { unsafe { return assembly_bytes; } }
 pub fn entry_name() -> []const u8 { require_phase(2); unsafe { return entry; } }
+pub fn panic_name() -> []const u8 { require_phase(2); unsafe { return panic_binding; } }
+pub fn trap_name() -> []const u8 { require_phase(2); unsafe { return trap_binding; } }
 pub fn output_path() -> []const u8 { require_phase(2); unsafe { return output; } }
 pub fn source(id:u32) -> model::Source {
     require_phase(2);
@@ -141,11 +149,11 @@ static mut source_buffer:[4194305]u8 = zero;
 static mut assembly_buffer:[1048577]u8 = zero;
 fn read(path:[]const u8, buffer:[]u8, file:u32, used:usize, capacity:usize) -> usize {
     unsafe {
-        match linux::read_file(path, buffer) {
-            linux::CountResult::Value(n) => {
+        match host::read_file(path, buffer) {
+            host::CountResult::Value(n) => {
                 return n;
             },
-            linux::CountResult::Failed(e) => {
+            host::CountResult::Failed(e) => {
                 if e == 17_u32 {
                     model::limit_at(used+buffer.len, capacity, file, buffer.len-1_usize);
                 }
@@ -208,6 +216,31 @@ fn utf8(data:[]const u8, file:u32) -> () {
     return ();
 }
 
+// Only two role names exist. The value stays in immutable manifest storage.
+fn bind(value: []const u8, line: usize) -> () {
+    var at: usize = 0;
+    unsafe {
+        while at < value.len && value[at] != 61_u8 { at = at + 1_usize; }
+        if at == value.len || at + 1_usize == value.len {
+            model::fail(model::ERROR_PARSE, 0, line);
+        }
+        let role: []const u8 = bytes::view(value, 0, at);
+        let name: []const u8 = bytes::view(value, at + 1_usize, value.len);
+        if bytes::equal(role, "panic") {
+            if panic_binding.len != 0_usize { model::fail(model::ERROR_PARSE, 0, line); }
+            panic_binding = name;
+            return ();
+        }
+        if bytes::equal(role, "trap_dispatch") {
+            if trap_binding.len != 0_usize { model::fail(model::ERROR_PARSE, 0, line); }
+            trap_binding = name;
+            return ();
+        }
+    }
+    model::fail(model::ERROR_UNSUPPORTED, 0, line);
+    return ();
+}
+
 pub fn load(path:[]const u8) -> () {
     begin_compile();
     unsafe {
@@ -262,9 +295,9 @@ pub fn load(path:[]const u8) -> () {
                 }
             } else if bytes::equal(key, "profile") {
                 bit = 2;
-                if !bytes::equal(value, "linux-user") {
-                    model::fail(model::ERROR_UNSUPPORTED, 0, line);
-                }
+                target::select(value, line);
+            } else if bytes::equal(key, "bind") {
+                bind(value, line);
             } else if bytes::equal(key, "entry") {
                 bit = 4;
                 entry = value;
@@ -352,7 +385,7 @@ pub fn load(path:[]const u8) -> () {
 // Best effort terminal diagnostic: stderr failure must not replace the save error.
 fn save_text(text: []const u8) -> () {
     // SAFETY: all diagnostic strings/views remain readable until this blocking write returns.
-    unsafe { let ignored: linux::WriteResult = linux::write_all(2, text); }
+    unsafe { host::diagnostic(text); }
     return ();
 }
 
@@ -373,16 +406,11 @@ fn save_number(value: u32) -> () {
     return ();
 }
 
-fn save_failure(path: []const u8, failure: linux::SaveError) -> () {
+fn save_failure(path: []const u8, failure: host::SaveError) -> () {
     save_text("save path=");
     save_text(path);
     save_text(" phase=");
-    match failure.phase {
-        linux::SavePhase::Create => { save_text("create"); },
-        linux::SavePhase::Write => { save_text("write"); },
-        linux::SavePhase::Mode => { save_text("chmod"); },
-        linux::SavePhase::Close => { save_text("close"); },
-    }
+    save_text(failure.phase);
     save_text(" errno=");
     save_number(failure.errno);
     save_text(" close_errno=");
@@ -403,9 +431,9 @@ pub fn save(data:[]const u8) -> () {
     // SAFETY: output is owned immutable input storage; the driver keeps the sealed
     // image data readable throughout save and owns the output path exclusively.
     unsafe {
-        match linux::save_new(output, data) {
-            linux::SaveResult::Done => {},
-            linux::SaveResult::Failed(failure) => { save_failure(output, failure); },
+        match host::save_new(output, data) {
+            host::SaveResult::Done => {},
+            host::SaveResult::Failed(failure) => { save_failure(output, failure); },
         }
     }
     return ();

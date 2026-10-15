@@ -1,0 +1,43 @@
+module profile_probe;
+extern abi(C) fn __probe_registers() -> usize;
+extern abi(C) fn __probe_trap(frame: usize) -> usize;
+static mut STATUS: u32 = zero;
+static mut ZEROES: [4096]u8 = zero;
+static DATA: []const u8 = "relocated";
+
+fn verify() -> u32 {
+    unsafe {
+        if STATUS != 0_u32 { return 1; }
+        var at: usize = 0;
+        while at < 4096_usize {
+            if ZEROES[at] != 0_u8 { return 2; }
+            at = at + 1_usize;
+        }
+        if DATA.len != 9_usize || DATA[8_usize] != 100_u8 { return 3; }
+        if __probe_registers() != 0_usize { return 4; }
+    }
+    return 0;
+}
+
+pub fn boot(hart: usize, dtb: usize) -> u32 {
+    unsafe {
+        STATUS = verify();
+        if hart != 0_usize || dtb == 0_usize { STATUS = 5; }
+    }
+    return 0;
+}
+
+pub fn kernel(info: usize) -> u32 {
+    unsafe {
+        STATUS = verify();
+        if __probe_trap(123_usize) != 124_usize { STATUS = 6; }
+    }
+    return 0;
+}
+
+pub fn trap(frame: usize) -> usize { return frame + 1_usize; }
+
+pub fn panic(reason: u32) -> u32 {
+    if reason != 102_u32 { return 7; }
+    unsafe { return STATUS; }
+}

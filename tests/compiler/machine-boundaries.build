@@ -11,4 +11,6 @@ source compiler/s0.vt
 source tests/compiler/machine-boundaries.vt
 source compiler/runtime/linux.vt
 assembly compiler/runtime/linux.s0
+source compiler/target.vt
+source compiler/runtime/host_linux.vt
 output build/q-machine.elf

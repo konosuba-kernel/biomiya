@@ -1,6 +1,6 @@
 # Core S
 
-当前开发实现是 **S-next 0.1**，源码在 [next/q/](next/q/)。它已在 RV64 Linux-user 完成 E1=E2=E3 的完整自编译固定点；2026-10-14行为修复的源码扰动、回归与独立验收状态见 [本轮交付记录](../docs/workflows/behavior-fixes-2026-10-14/DELIVERY.md)，此前架构交付见 [原交付记录](next/delivery.md)。Linux-user 自举不代表 suba 内自举。
+当前开发实现是 **S-next 0.1**，源码在 [next/q/](next/q/)。它已在 RV64 Linux-user 完成 E1=E2=E3 的完整自编译固定点；2026-10-14 K0工具链及首条内核路径的源码扰动、回归与独立验收状态见 [本轮交付记录](../../suba/docs/workflows/k0/DELIVERY.md)，此前架构交付见 [原交付记录](next/delivery.md)。Linux-user 自举不代表 suba 内自举。
 
 ## 入口
 
@@ -37,7 +37,7 @@ python3 tools/check_q.py --compiler build/p4-new/e3.elf --record-dir build/langu
 证据目录和目标输出必须是新路径。完整机器、输入、参考和系统复验命令见 [Q 阅读与验证入口](next/q/README.md)。直接运行已有 Q：
 
 ```sh
-qemu-riscv64 -s 1048576 build/behavior-fixes-p4-r1/e3.elf check next/q/compiler.build
+qemu-riscv64 -s 1048576 build/k0-p4-r2/e3.elf check next/q/compiler.build
 ```
 
 目标 CLI：`build|check MANIFEST [--blocking POLICY]`。清单路径相对进程工作目录，build 拒绝覆盖文件，check 不发布。Rust 种子的 CLI 为 `project MANIFEST [--root DIRECTORY]`，不可混用。
@@ -46,7 +46,7 @@ qemu-riscv64 -s 1048576 build/behavior-fixes-p4-r1/e3.elf check next/q/compiler.
 
 S-next 支持具体结构/枚举、单向局部定型、显式 make/zero、私有字段、调用式 defer、原始指针/切片、有限常量与静态初始化。固定 Result、问号、块式 defer、隐式根模块和 root 特殊路径已删除。仍无用户泛型、函数指针、闭包、额外整数宽度、完整 C ABI 或通用优化框架。
 
-当前固定点 ELF 为 1,011,792 字节，SHA-256 `8051f3599704a6bf180496b14632691c3463f1239946893641f65aae21969904`。Q 生产源码 **11,018 行**，高于 8,000 行原型预算；不能把已自举等同于已经简洁。本轮[维护记录](next/q/maintenance-2026-10-14.json)与[成本](../docs/workflows/behavior-fixes-2026-10-14/I-cost.json)单列，原发布证据不覆盖。完整边界与复现见 [Q 记录](next/q/README.md)。
+当前固定点 ELF 为 1,036,432 字节，SHA-256 `049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144`。Q 生产源码 **11,307 行**，高于 8,000 行原型预算；不能把已自举等同于已经简洁。本轮[维护记录](next/q/k0-2026-10-14.json)与[成本](../../suba/docs/workflows/k0/I-cost.json)单列，原发布证据不覆盖。完整边界与复现见 [Q 记录](next/q/README.md)。
 
 维护中的验收工具会在优化模式下提前拒绝运行。冻结种子工具 `verify.py`、`check_reference.py` 必须用普通Python，不能设置 `PYTHONOPTIMIZE` 或使用 `-O/-OO`；其原字节与种子身份保持不变。
 

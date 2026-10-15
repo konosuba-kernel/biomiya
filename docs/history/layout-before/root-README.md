@@ -16,7 +16,7 @@ konOSuba 的教学系统语言与自举编译器。当前开发实现是 **Core 
 
 请从 [Core S 构建与使用](core-s/README.md) 开始。当前实现仍是有明确限制的语言子集；Linux-user 自编译不代表 suba 内自举。面向语言使用者的规则见 [S-next 0.1 参考](core-s/docs/reference/s-next-0.1.md)，版本与历史文档关系见 [参考索引](core-s/docs/reference/README.md)。
 
-[S-next 方案](docs/design/core-s-next.md)已推进到 Q 完整自编译和实际系统切片；分阶段与独立验收见 [执行记录](core-s/next/README.md)。2026-10-14 的[四项行为修复](docs/workflows/behavior-fixes-2026-10-14/I-summary.md)单独记录当前产物与验收。Q 当前 11,018 生产行，8,000 行原型预算未达；自举正确性与复杂度目标分别报告。冻结的 B3.1 位于 `core-s/bootstrap/`，过渡 P 位于 `core-s/next/` 顶层。
+[S-next 方案](docs/design/core-s-next.md)已推进到 Q 完整自编译和实际系统切片；分阶段与独立验收见 [执行记录](core-s/next/README.md)。2026-10-14 的[K0工具链修订](core-s/next/q/k0-2026-10-14.json)及[suba实施记录](../suba/docs/workflows/k0/DELIVERY.md)记录当前产物与验收。Q 当前 11,307 生产VT行，runtime另375行VT和19行S0，8,000 行原型预算未达；自举正确性与复杂度目标分别报告。冻结的 B3.1 位于 `core-s/bootstrap/`，过渡 P 位于 `core-s/next/` 顶层。
 
 ## 保留的历史内容
 

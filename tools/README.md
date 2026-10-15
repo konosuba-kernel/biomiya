@@ -12,6 +12,7 @@
 | check_q_input.py、check_q_copy.py、check_q_io_failures.py | 输入与 I/O |
 | check_q_diagnostics.py、check_q_interfaces.py、check_q_limits.py | 诊断、接口、容量 |
 | check_q_blocking.py | Blocking 分析 |
+| check_q_host.py、check_q_profiles.py、check_q_s0_system.py | 宿主桥、目标、汇编 |
 | check_next_reference.py、check_reference.py | 当前与冻结参考示例 |
 | check_q_tool_guards.py | 优化模式拒绝及错误预期负例 |
 | measure_next.py | 成本统计，写入 build/cost.json |

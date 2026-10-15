@@ -1,0 +1,18 @@
+# Linux U-mode, no arguments; returns 291 in x10.
+# Caller-aligned sp is restored; x27 preserved; only x10/sp are changed.
+# Private 16-byte stack area is owned until return. No privileged operations.
+__k0_halfword:
+    addi x2, x2, -16
+    sd x0, 0(x2)
+    addi x10, x0, 291
+    sh x10, 2(x2)
+    fence
+    fence.i
+    lwu x10, 0(x2)
+    srli x10, x10, 16
+    jump .Lreturn
+    unimp
+    align 4096
+.Lreturn:
+    addi x2, x2, 16
+    jalr x0, 0(x1)

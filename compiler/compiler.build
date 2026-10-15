@@ -2,6 +2,7 @@ format 1
 profile linux-user
 entry bootstrap::main::run
 source compiler/model.vt
+source compiler/target.vt
 source compiler/rules.vt
 source compiler/lex.vt
 source compiler/input.vt
@@ -17,5 +18,6 @@ source compiler/blocking.vt
 source compiler/main.vt
 source compiler/runtime/bytes.vt
 source compiler/runtime/linux.vt
+source compiler/runtime/host_linux.vt
 assembly compiler/runtime/linux.s0
 output build/snext-q.elf

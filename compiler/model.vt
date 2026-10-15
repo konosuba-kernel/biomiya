@@ -1,5 +1,6 @@
 // Shared concrete B3 records. IDs are one-based; capacity is checked before append.
 module bootstrap::model;
+import runtime::host;
 // Stable kind discriminants. Primitive identity binding is explicit in primitive_type.
 // Ordered ranges below are intentional: scalar types and comparisons.
 pub const TYPE_INVALID:u32 = 0;
@@ -72,7 +73,6 @@ pub const SLOT_PARAMETER:u32 = 1;
 pub const SYMBOL_UNSPECIFIED:u32 = 0;
 pub const SYMBOL_FUNCTION:u32 = 1;
 pub const SYMBOL_DATA:u32 = 2;
-extern abi(C) fn __b2_syscall6(n:usize, a:usize, b:usize, c:usize, d:usize, e:usize, f:usize) -> usize;
 pub struct Span {
     pub file:u32,
     pub start:u32,
@@ -386,19 +386,9 @@ pub static mut error_file:u32 = 0;
 pub static mut error_offset:usize = 0;
 // Diagnostic output is intentionally primitive and independent of lexer/driver.
 fn output(text:[]const u8) -> () {
-    var done:usize = 0;
-    unsafe {
-        while done < text.len {
-            let remaining:usize = text.len-done;
-            let written:usize = __b2_syscall6(64, 2, core::addr(core::ptr_add(text.data, done)), remaining, 0, 0, 0);
-            if written != 0xfffffffffffffffc_usize {
-                if written == 0_usize || written > remaining {
-                    return ();
-                }
-                done = done+written;
-            }
-        }
-    }
+    // SAFETY: formatting passes literals or live local digit storage synchronously.
+    // Diagnostic failure is best-effort; retain the original compiler error/status.
+    unsafe { host::diagnostic(text); }
     return ();
 }
 
@@ -452,11 +442,7 @@ pub fn fail(code:u32, file:u32, offset:usize) -> () {
     output(" byte=");
     decimal(offset);
     output("\n");
-    unsafe {
-        let ignored:usize = __b2_syscall6(93, 1, 0, 0, 0, 0, 0);
-    }
-    loop {
-    }
+    host::exit(1);
     return ();
 }
 

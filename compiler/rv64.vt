@@ -3,6 +3,7 @@ module bootstrap::rv64;
 import bootstrap::model;
 import bootstrap::image;
 import bootstrap::ir;
+import bootstrap::target;
 static mut panic_symbol:u32 = 0;
 static mut copy_symbol:u32 = 0;
 static mut labels:[65537]u32 = zero;
@@ -1291,22 +1292,76 @@ pub fn emit_function(id:u32) -> () {
     return ();
 }
 
-pub fn start(entry:u32) -> u32 {
-    let first:u32 = image::fresh();
+// Entry preparation has no caller stack. a0/a1 survive BSS clearing. x27 is
+// the user parameter block, or zero for privileged code. Interrupts stay off.
+fn machine_entry() -> () {
+    let stack: u32 = image::fresh();
+    let stack_bytes: usize = target::layout().stack;
+    image::data(stack, true, 16, "", stack_bytes);
+    image::word(0x10017073); // csrrci x0, sstatus, 2 (clear SIE).
+    transfer(5, image::bss_boundary(false), false);
+    transfer(6, image::bss_boundary(true), false);
+    let again: u32 = image::fresh();
+    let done: u32 = image::fresh();
+    mark(again);
+    branch(0, 5, 6, done);
+    store(0, 5, 0, 1);
+    i(19, 0, 5, 5, 1);
+    transfer(0, again, true);
+    mark(done);
+    transfer(2, stack, false);
+    constant(5, stack_bytes);
+    r(0, 0, 2, 2, 5);
+    mov(27, 0);
+    return ();
+}
+
+// __suba_halt / __suba_exit must be supplied by the profile's S0 runtime and
+// must not return. A returned machine entry reports 102; checked panic is 101.
+fn terminate(machine_panic: u32) -> () {
+    match target::layout().profile {
+        target::Profile::LinuxUser => {
+            constant(17, 93);
+            image::word(115);
+            image::word(3221229683);
+        },
+        target::Profile::SubaUser => { transfer(0, image::symbol("__suba_exit"), true); },
+        target::Profile::SubaBoot => {
+            transfer(1, machine_panic, true);
+            transfer(0, image::symbol("__suba_halt"), true);
+        },
+        target::Profile::SubaKernel => {
+            transfer(1, machine_panic, true);
+            transfer(0, image::symbol("__suba_halt"), true);
+        },
+    }
+    return ();
+}
+
+pub fn start_bound(entry: u32, machine_panic: u32, trap: u32) -> u32 {
+    let first: u32 = image::fresh();
     mark(first);
-    mov(27, 2);
+    match target::layout().profile {
+        target::Profile::LinuxUser => { mov(27, 2); },
+        target::Profile::SubaUser => { mov(27, 10); },
+        target::Profile::SubaBoot => { machine_entry(); },
+        target::Profile::SubaKernel => { machine_entry(); },
+    }
     transfer(1, entry, true);
-    constant(17, 93);
-    image::word(115);
-    image::word(3221229683);
+    if target::machine() { constant(10, 102); }
+    terminate(machine_panic);
     unsafe {
         panic_symbol = image::fresh();
         mark(panic_symbol);
     }
     constant(10, 101);
-    constant(17, 93);
-    image::word(115);
-    image::word(3221229683);
+    terminate(machine_panic);
+    if trap != 0_u32 {
+        // Tail transfer preserves the S0 caller's ra and aligned stack. The
+        // assembly caller owns saving all interrupted registers and trap CSRs.
+        mark(image::symbol("__suba_trap_dispatch"));
+        transfer(0, trap, true);
+    }
     unsafe {
         copy_symbol = image::fresh();
         mark(copy_symbol);
@@ -1314,3 +1369,6 @@ pub fn start(entry:u32) -> u32 {
     copy_body();
     return first;
 }
+
+// Existing internal backend probes select the default Linux profile.
+pub fn start(entry: u32) -> u32 { return start_bound(entry, 0, 0); }

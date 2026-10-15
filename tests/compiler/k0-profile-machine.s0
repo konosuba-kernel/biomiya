@@ -1,0 +1,33 @@
+# Test-only QEMU virt finisher. Panic result 0 passes, nonzero fails.
+# Machine profile, S-mode, a0 status. No stack/return; x27 unused.
+__suba_halt:
+addi x5, x0, 1
+slli x5, x5, 20
+beq x10, x0, .pass
+slli x10, x10, 16
+addi x6, x0, 5
+slli x6, x6, 12
+addi x6, x6, 1363
+or x6, x6, x10
+sw x6, 0(x5)
+.stop:
+jump .stop
+.pass:
+addi x6, x0, 5
+slli x6, x6, 12
+addi x6, x6, 1365
+sw x6, 0(x5)
+jump .stop
+# C ABI, checks 16-byte stack alignment and zero x27; preserves x27.
+__probe_registers:
+addi x5, x0, 15
+and x10, x2, x5
+or x10, x10, x27
+csrrs x5, 256, x0
+addi x6, x0, 2
+and x5, x5, x6
+or x10, x10, x5
+jalr x0, 0(x1)
+# Tail bridge retains caller ra; generated dispatcher then tail-calls VT.
+__probe_trap:
+jump __suba_trap_dispatch
