@@ -6,13 +6,14 @@ import runtime::bytes;
 // Input owns immutable byte snapshots and one-time module header completion.
 enum SourceEntry { Empty, Value(model::Source) }
 enum ImportEntry { Empty, Value(model::Import) }
-static mut sources:[33]SourceEntry = zero;
+// SOURCE_CAP + 1 slots; index zero is never a source identity.
+static mut sources:[model::SOURCE_CAP as usize + 1_usize]SourceEntry = zero;
 static mut source_used:u32 = 0;
 static mut assemblies:[9]SourceEntry = zero;
 static mut assembly_used:u32 = 0;
 static mut imports:[1025]ImportEntry = zero;
 static mut import_used:u32 = 0;
-static mut headers:[33]bool = zero;
+static mut headers:[model::SOURCE_CAP as usize + 1_usize]bool = zero;
 static mut phase:u32 = 0;
 static mut path_bytes:usize = 0;
 static mut entry:[]const u8 = "";
@@ -42,7 +43,7 @@ pub fn begin_compile() -> () {
         panic_binding = "";
         trap_binding = "";
         var i:usize = 1;
-        while i < 33_usize { headers[i] = false; i = i+1_usize; }
+        while i <= model::SOURCE_CAP as usize { headers[i] = false; i = i+1_usize; }
     }
     return ();
 }
@@ -126,7 +127,7 @@ pub fn complete_header(file:u32, module_id:model::NameId, first:u32, count:u32) 
 pub fn add_source(path:[]const u8, data:[]const u8) -> u32 {
     require_phase(1);
     unsafe {
-        if source_used >= 32_u32 { model::limit((source_used as usize)+1_usize, 32); }
+        if source_used >= model::SOURCE_CAP { model::limit((source_used as usize)+1_usize, model::SOURCE_CAP as usize); }
         if data.len > 4194304_usize-source_bytes { model::limit(source_bytes+data.len, 4194304); }
         if !bytes::path(path) || path.len > 16384_usize-path_bytes { model::fail(model::ERROR_PARSE, 0, 0); }
         let path_first:usize = path_bytes;
@@ -330,8 +331,8 @@ pub fn load(path:[]const u8) -> () {
                     n = n+1_u32;
                 }
                 if is_source {
-                    if source_used == 32_u32 {
-                        model::limit_at(33, 32, 0, line);
+                    if source_used >= model::SOURCE_CAP {
+                        model::limit_at((source_used as usize)+1_usize, model::SOURCE_CAP as usize, 0, line);
                     }
                     source_used = source_used+1_u32;
                     sources[source_used as usize] = SourceEntry::Value(make_source(value, ""));

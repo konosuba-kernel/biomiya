@@ -1,0 +1,253 @@
+{
+  "format": 1,
+  "node": "C64",
+  "revision": 1,
+  "status": "awaiting-independent-acceptance",
+  "author": "/root/ram_fdt",
+  "reviewer": "/root",
+  "baseline_commit": "d2c6e98a7cbe95c267cb554eb5c0c07ab33c6624",
+  "source_cap": 64,
+  "assembly_cap": 8,
+  "guest_stack_bytes": 1048576,
+  "prepare_depth": 32,
+  "compiler": {
+    "path": "build/source-cap64-p4-r3/e3.elf",
+    "bytes": 1036432,
+    "sha256": "22d2c81fd0dbfc6de6b3b13fb2f485b1c64913849d9e59eeabe8c2757d27ebf4"
+  },
+  "production_inputs": {
+    "compiler/blocking.vt": "63639c5fb1447fdd884c2c762446af7f02446a114be98117c140a3e3c4d9d1bc",
+    "compiler/check.vt": "7fbd67385fcc3de9c68cd6056a281a48409d48fbd4a8a17fb3eaca2aad2adff0",
+    "compiler/compiler.build": "556d94d804c9aff5635c9cb9d478749a5d5b5ccc7a1f05b631e91473728587b0",
+    "compiler/image.vt": "d47f5bfa9b5b7db906e733b637010095b1eb99f1d0e43e1e63164d2127ee9d06",
+    "compiler/init.vt": "f4987677b55d793df25f648881f34cfa7717f2affb0ee6915d967bdb1739a6b2",
+    "compiler/input.vt": "dd13f93d90fc6249e155dcaa196c0a0332ea0f1738e682a3d07e8caad30d24f1",
+    "compiler/ir.vt": "083ea475e6871ca1940b66b1c1b6830984564f75d27d3a4b7d049c7d484bc2b8",
+    "compiler/lex.vt": "275e04dd18ba1013d0594729704f1ebe4634eaab8c24f91dc9a211af608a7f28",
+    "compiler/main.vt": "1fd5f5ff2118137c9f1bddc0408d3f6f0ac1f33a57d28cd3fe0b2af0a0c87516",
+    "compiler/model.vt": "11f12186e923f25362bd0f91d3df377dffeaa72dac76bf7f1195174fb7443114",
+    "compiler/parse.vt": "d2cff4e7f2fcd7a66968a34eb8c116c815ee477bbb9d606d626a373793fa8b7c",
+    "compiler/rules.vt": "8b3846de0315501e992bfc381653c26dc83122432338a64cc675249e71a90951",
+    "compiler/runtime/bytes.vt": "7426e1141b909998d2d9426f1fac473051f0de79c6fbce950c4d4655148959a5",
+    "compiler/runtime/host_linux.vt": "48df4f0682a857f7f14fb87627d7573960f7014d895a7b7e0bff1baa5b1eee37",
+    "compiler/runtime/linux.s0": "b24d8f667eb65a367405e53c3eea1ee7f4e16d927e5139aead47457d9c28c48a",
+    "compiler/runtime/linux.vt": "8637c7763b101d37bc6a87e4d000227b39660dab4001804687cb160996db0ac0",
+    "compiler/rv64.vt": "dff6ec62795132d11ff969b1310c6f5cae1402db4f67adfd735eefd9b87cb3c0",
+    "compiler/s0.vt": "3fbed647d066fb023dcccb60c441cad23a4f4905cbcdf13aafbc34acf74ee2fe",
+    "compiler/target.vt": "a3f454b2b2535383a7a479d92f9670b56496b122cae0f09ea4f1f1f5368c3108",
+    "compiler/types.vt": "d46e55ea1554dc7798b4cd41636f8c3cb562418f1ec460ceec5a073fa97bfcaf"
+  },
+  "changed_files": {
+    "compiler/input.vt": "dd13f93d90fc6249e155dcaa196c0a0332ea0f1738e682a3d07e8caad30d24f1",
+    "compiler/model.vt": "11f12186e923f25362bd0f91d3df377dffeaa72dac76bf7f1195174fb7443114",
+    "compiler/types.vt": "d46e55ea1554dc7798b4cd41636f8c3cb562418f1ec460ceec5a073fa97bfcaf",
+    "docs/reference/s-next-0.1.json": "639b5059d45f1cd23539ace92f883e639101dccc4d91212e0c288c2c5a98367c",
+    "docs/reference/s-next-0.1.md": "1ac2005fc758916d4571411d51e34cab2bcdfd94d66837ddb8155997225ade13",
+    "tests/compiler/input.vt": "04b0f04e2c515c68f15c736f88e1996c85ad50d302f3f572a70daee8f9f576ed",
+    "tools/check_next_reference.py": "3032d479d49934c7aa540fdcc0acd38d7f09ee5533944ca50895f98ab51096e2",
+    "tools/check_q_input.py": "fd10f6a590660a597ea8bf4d40bef9c42fcade13f905473c6df0cf2df0c4396d",
+    "tools/check_q_interfaces.py": "5f4382ce6e1e4aa5c4bfece6687c6ca1a622a54be68ffe6d52e5716a7bb52f96",
+    "docs/history/source-cap64/report.md": "456438486057c4dc6f7652eda2c601a6a4e15ac06b0b0dbf74271466b31bdae4",
+    "docs/history/source-cap64/engineering-notes.md": "dc286e8d2f538bbfcbaeadfc46e3dd9b7180b19205d83672983f80e62e473057"
+  },
+  "verification_tools": {
+    "tools/check_layout.py": "9864512ba1e90c2fe1808fdf9240f131053c46ba26dd259eb1229d65c9e9c611",
+    "tools/check_next.py": "d50a14043245242cb595764fd2bcdbcf8c016f238e454deeef93e27cd7935405",
+    "tools/check_next_reference.py": "3032d479d49934c7aa540fdcc0acd38d7f09ee5533944ca50895f98ab51096e2",
+    "tools/check_q.py": "6c160893ed469c82fb05e9eb897181d91a7e3ab607399ee0185f4240d7abce4b",
+    "tools/check_q_blocking.py": "bad89a735964d9a1a9d02567d27aff06234e132ba15c583a41d91bc4da9af9ab",
+    "tools/check_q_copy.py": "70a39e1a00784af9080510fa657ba700f9c59e35e8959c69d6578e0eadbe7a79",
+    "tools/check_q_diagnostics.py": "d1e385947048907af26d0be6fe27ded242beaa404d8876a97c6d30949d191a98",
+    "tools/check_q_input.py": "fd10f6a590660a597ea8bf4d40bef9c42fcade13f905473c6df0cf2df0c4396d",
+    "tools/check_q_interfaces.py": "5f4382ce6e1e4aa5c4bfece6687c6ca1a622a54be68ffe6d52e5716a7bb52f96",
+    "tools/check_q_io_failures.py": "e741a15e6f4a6f04212b67832a04647af2b35806859bdec6c3304024bd045c38",
+    "tools/check_q_limits.py": "a2c8efdecc58312893072330f4a0ed18116bc94ed4b738d85fa3d70293f2907f",
+    "tools/check_q_machine.py": "168b256bcf2a952a9bc5578dcac46dddcacc4b76c5d650e49a5bc87d13920e5f",
+    "tools/check_q_profiles.py": "ff731877bbe556af752cfe470b95544a8ac7bec7630b87197f345c576feac637",
+    "tools/check_q_s0_system.py": "e776949aafc51721fdeb57a975338778b7299014d5fc1b45ce483f0cad04d796",
+    "tools/check_q_tool_guards.py": "3e90f8f276c8296f0fd42f79b3b524a241863979c96a0e3be7d7bbeee06e320b",
+    "tools/selfhost_next.py": "ce6699c0187d521856bf27c02ce03106015d64d63b94af9c92df779957bea618"
+  },
+  "dependencies": [
+    {
+      "path": "build/layout-seed-r1/compiler.elf",
+      "bytes": 1079368,
+      "sha256": "90c9523de43bebbd0a6932e74abc8cd670b60478c3b4f0fc1eff74fbf4cfb686"
+    },
+    {
+      "path": "build/layout-p4-r1/e3.elf",
+      "bytes": 1036432,
+      "sha256": "049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144"
+    }
+  ],
+  "bootstrap_records": [
+    {
+      "path": "build/source-cap64-p3-r1/verification.json",
+      "bytes": 236692,
+      "sha256": "6e74adc8a82a3795517953fe671eccd85ddce62138e9c5abf9633c6a1bf5d865"
+    },
+    {
+      "path": "build/source-cap64-p4-r3/verification.json",
+      "bytes": 45243,
+      "sha256": "19663995d21331e44416c2b0ced1ccec2e3348d37c8b5039b99db884943ac078"
+    },
+    {
+      "path": "build/source-cap64-array-probe/verification.json",
+      "bytes": 734,
+      "sha256": "1c00e359d6cf7bab1f18533601d85205592b0da4aaa7e1fa435343fa081dd541"
+    }
+  ],
+  "e1_e2_e3_equal": true,
+  "source_perturbation_observed": true,
+  "regressions": [
+    {
+      "tool": "check_q_interfaces",
+      "cases": 86,
+      "record": {
+        "path": "build/source-cap64-check_q_interfaces-r2/verification.json",
+        "bytes": 145015,
+        "sha256": "d3f5876a80f885ce15f67082a14a01f7322010575821e2bc9246231bc0084206"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_input",
+      "cases": 26,
+      "record": {
+        "path": "build/source-cap64-check_q_input-r2/verification.json",
+        "bytes": 16397,
+        "sha256": "c212541c2bde79403004df3a9402a0940d2bd0706033525938eff715a9ee7aa0"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q",
+      "cases": 126,
+      "record": {
+        "path": "build/source-cap64-check_q-r2/verification.json",
+        "bytes": 230531,
+        "sha256": "0d0ffbe1dca361115d1d211647a630454321cacc5ad19fd0fe8bbed878fa9d96"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_limits",
+      "cases": 15,
+      "record": {
+        "path": "build/source-cap64-check_q_limits-r2/verification.json",
+        "bytes": 7713,
+        "sha256": "5e9804adaeaf90e44f03cef03dfd22105168f977faf8b6d6021760830ab38192"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_machine",
+      "cases": 105,
+      "record": {
+        "path": "build/source-cap64-check_q_machine-r2/verification.json",
+        "bytes": 148883,
+        "sha256": "2add48a5800f1376015078c294e6fa7e4525066eac129f0084d5dd3eb76b5d94"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_profiles",
+      "cases": 26,
+      "record": {
+        "path": "build/source-cap64-check_q_profiles-r2/verification.json",
+        "bytes": 30480,
+        "sha256": "b2ec68920094235b6d3322bff42925fdfc0de51ec6e17adc99d7041ad50b30ae"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_s0_system",
+      "cases": 167,
+      "record": {
+        "path": "build/source-cap64-check_q_s0_system-r2/verification.json",
+        "bytes": 97952,
+        "sha256": "db6de8385d1f38fe31a178a0f6acf7abb30f9611e4942b99e00cff267659d5ff"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_diagnostics",
+      "cases": 18,
+      "record": {
+        "path": "build/source-cap64-check_q_diagnostics-r2/verification.json",
+        "bytes": 20225,
+        "sha256": "88873da911b39789ccca01c34c496e9d53d3944d17091f4b9005ce30f947ad22"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_blocking",
+      "cases": 48,
+      "record": {
+        "path": "build/source-cap64-check_q_blocking-r2/verification.json",
+        "bytes": 51272,
+        "sha256": "d5adab32b8c8c62c6a6eb9934423f16f6633514b92e9c9d50022c137861b2a2e"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_copy",
+      "cases": 8,
+      "record": {
+        "path": "build/source-cap64-check_q_copy-r2/verification.json",
+        "bytes": 73894,
+        "sha256": "229393f16a6d489d0f85096a82f495509cb4e024e1a8cc011d6910e9932e0b8b"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_q_io_failures",
+      "cases": 12,
+      "record": {
+        "path": "build/source-cap64-check_q_io_failures-r2/verification.json",
+        "bytes": 10403,
+        "sha256": "1ba0aa1614112d6e869e8a88e0005b3a800d89b8a8710c8c17d675ee2eafe624"
+      },
+      "passed": true
+    },
+    {
+      "tool": "check_next_reference",
+      "cases": 3,
+      "record": {
+        "path": "build/source-cap64-check_next_reference-r2/verification.json",
+        "bytes": 5635,
+        "sha256": "4d1dfd9438c5852bdc7bb7480efc7e2dee78a7ed096c33a04816c0f47e9b75b6"
+      },
+      "passed": true
+    }
+  ],
+  "regression_case_count": 640,
+  "additional_checks": [
+    {
+      "path": "build/source-cap64-tool-guards-r1.log",
+      "bytes": 32782,
+      "sha256": "fb6ecf563eded94da91c359edd32c91fd751628839cab9572d90d5a52d0d5871"
+    },
+    {
+      "path": "build/source-cap64-layout-r3.log",
+      "bytes": 84,
+      "sha256": "6d6f5360d319b7c535024c3921a43bd46f059262c2a59f6440c89bedb38d9c3d"
+    }
+  ],
+  "cost": {
+    "path": "build/source-cap64-cost-r1.json",
+    "bytes": 1511,
+    "sha256": "deab5e0581b679555a20c0689e196704aad004a76da5e0e4ff762a2248c70034"
+  },
+  "evidence_inventory": {
+    "path": "build/source-cap64-evidence-inventory-r1.json",
+    "bytes": 594822,
+    "sha256": "4518889a56fcc85c12840c05126f6ad210f5d5292bcc4da7ff333098796d91b9"
+  },
+  "notes": [
+    "P4-r1 rejected stale P3 verification inputs; P3 was rerun without frozen source edits.",
+    "P4-r2 was intentionally stopped and superseded after deriving all table lengths from SOURCE_CAP.",
+    "Regression driver path is r3/e1.elf; its bytes equal final r3/e2.elf and e3.elf.",
+    "Full evidence files remain in ignored build; this is author verification, not independent acceptance."
+  ]
+}

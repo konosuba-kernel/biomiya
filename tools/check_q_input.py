@@ -104,10 +104,17 @@ def main():
 
     try:
         images = {"tokens": build("tokens", "probe::tokens"),
+                  "capacity": build("capacity", "probe::capacity"),
                   "normal": build("normal", "probe::run"),
                   "short": build("short", "probe::run", "input-short.s0"),
                   "failure": build("failure", "probe::run", "input-write-failure.s0")}
         execute(IDENTITIES[0], "tokens", images["tokens"], prepare("tokens"), 0)
+        execute(IDENTITIES[3], "memory-capacity-reset", images["capacity"], prepare("memory-capacity-reset"), 0)
+        work = prepare("memory-capacity-over")
+        outcome = invoke([qemu, "-s", "1048576", str(images["capacity"]), "overflow"], work, 30)
+        report["tests"].append({"identity": IDENTITIES[3], "case": "memory-capacity-over", **outcome})
+        assert outcome["exit"] == 1 and outcome["stderr"] == "actual=65 limit=64 I_LIMIT file=0 byte=0\n", outcome
+        assert not (work / "copied.vt").exists()
         text = ("/* 注释 */ fn example()->u32{return 0xff_u8 as u32;}\n" * 180).encode()
         for mode in ["normal", "short"]:
             work = prepare(mode, text, PROJECT + "source empty.vt\n")

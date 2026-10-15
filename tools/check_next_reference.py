@@ -30,6 +30,9 @@ def main():
     compiler_hash = sha(compiler_bytes)
     if compiler_hash not in spec['compiler_sha256']:
         raise SystemExit('Compiler identity is not registered for S-next 0.1; rebuild the documented candidate.')
+    capacities = spec['source_capacity_by_compiler']
+    assert set(capacities) == set(spec['compiler_sha256']), 'incomplete compiler capacity identity map'
+    assert capacities[compiler_hash] in (32, 64), 'unknown source capacity'
     out = args.record_dir.resolve()
     out.mkdir(parents=True, exist_ok=False)
     compiler = out / 'compiler.elf'
@@ -47,7 +50,8 @@ def main():
         dest.write_bytes(data)
     examples = extract((CORE / 'docs/reference/s-next-0.1.md').read_text())
     assert set(examples) == {case['name'] for case in spec['cases']}
-    record = {'version': spec['version'], 'compiler_sha256': compiler_hash, 'inputs': inputs, 'cases': []}
+    record = {'version': spec['version'], 'compiler_sha256': compiler_hash,
+              'source_capacity': capacities[compiler_hash], 'inputs': inputs, 'cases': []}
     for case in spec['cases']:
         work = out / case['name']
         work.mkdir()

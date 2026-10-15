@@ -40,3 +40,36 @@ pub fn tokens() -> u32 {
  }
  return 0;
 }
+
+// Direct client boundary and repeated-header lifecycle. This bypasses manifest
+// load so a forgotten add_source guard or high-index reset cannot hide behind it.
+pub fn capacity() -> u32 {
+ model::reset_all();
+ var overflow:bool = false;
+ match linux::argument(1) {
+  linux::BytesResult::Value(mode)=>{overflow=model::equal(mode,"overflow");},
+  linux::BytesResult::Failed(e)=>{return e;},
+ }
+ var round:u32 = 0;
+ while round < 2_u32 {
+  input::begin_compile();
+  var file:u32 = 1;
+  while file <= 64_u32 {
+   let added:u32 = input::add_source("memory", "module sample;");
+   if added != file {return 10;}
+   file=file+1_u32;
+  }
+  if overflow {let rejected:u32=input::add_source("extra", "");return 11;}
+  input::freeze();
+  if input::source_count()!=64_u32 || !model::equal(input::source(64).bytes,"module sample;") {return 12;}
+  let name:model::NameId=model::name("sample");
+  file=1;
+  while file <= 64_u32 {
+   input::complete_header(file,name,1,0);
+   if !model::same_name(input::source(file).module_id,name) {return 13;}
+   file=file+1_u32;
+  }
+  round=round+1_u32;
+ }
+ return 0;
+}

@@ -25,12 +25,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--compiler', type=Path, required=True)
     parser.add_argument('--record-dir', type=Path, required=True)
+    parser.add_argument('--baseline-compiler', type=Path, help='optional accepted 32-source negative control')
     args = parser.parse_args()
     out = args.record_dir.resolve()
     out.mkdir(parents=True, exist_ok=False)
     compiler = out / 'compiler.elf'
     compiler.write_bytes(args.compiler.read_bytes())
     compiler.chmod(0o755)
+    baseline = None
+    if args.baseline_compiler:
+        baseline = out / 'baseline.elf'
+        baseline.write_bytes(args.baseline_compiler.read_bytes())
+        baseline.chmod(0o755)
     qemu = shutil.which('qemu-riscv64')
     assert qemu
     (out / 'tool.py').write_bytes(Path(__file__).read_bytes())
@@ -42,7 +48,8 @@ def main():
         p = subprocess.run(command, cwd=directory, env={'PATH': ''}, capture_output=True, text=True, timeout=120)
         return {'command': command, 'exit': p.returncode, 'stdout': p.stdout, 'stderr': p.stderr}
 
-    def case(name, files=None, manifest=BASE, error=None, run_exit=None, existing=False):
+    def case(name, files=None, manifest=BASE, error=None, run_exit=None, existing=False, driver=None):
+        driver = driver or compiler
         directory = out / name
         directory.mkdir()
         for filename, value in (files or {'main.vt': MAIN}).items():
@@ -53,10 +60,10 @@ def main():
         if existing:
             (directory / 'out.elf').write_bytes(b'keep old artifact')
         before = {str(p.relative_to(directory)): p.read_bytes() for p in directory.rglob('*') if p.is_file()}
-        result = {'name': name, 'commands': [], 'inputs': {n: sha(v) for n, v in before.items()}, 'passed': False}
+        result = {'name': name, 'compiler_sha256': sha(driver.read_bytes()), 'commands': [], 'inputs': {n: sha(v) for n, v in before.items()}, 'passed': False}
         report['cases'].append(result)
         mode = 'build' if error or existing or run_exit is not None else 'check'
-        actual = invoke(directory, [compiler, mode, 'project'])
+        actual = invoke(directory, [driver, mode, 'project'])
         result['commands'].append(actual)
         assert actual['exit'] == (1 if error else 0), result
         if error:
@@ -134,15 +141,56 @@ def main():
         case('profile-invalid', manifest=BASE.replace('linux-user', 'sos'), error='I_UNSUPPORTED file=0')
         manifest = BASE
         files = {'main.vt': MAIN}
-        for i in range(1, 32):
+        for i in range(1, 64):
             files[f's{i}.vt'] = f'module extra{i};'
             manifest += f'source s{i}.vt\n'
         for i in range(8):
             files[f'a{i}.s0'] = '# empty adapter\n'
             manifest += f'assembly a{i}.s0\n'
-        case('input-capacities-exact', files, manifest)
-        case('source-capacity-over', files, manifest + 'source overflow.vt\n', error='I_LIMIT')
+        case('input-capacities-exact', files, manifest, run_exit=42)
+        case('source-capacity-over', files, manifest + 'source overflow.vt\n',
+             error=f'actual=65 limit=64 I_LIMIT file=0 byte={len(manifest)}\n')
         case('assembly-capacity-over', files, manifest + 'assembly overflow.s0\n', error='I_LIMIT')
+        # Old boundary, first newly supported file, and the last source all run.
+        for count in [32, 33, 64]:
+            files = {'main.vt': 'module app;import tail;fn run()->u32{return tail::answer();}'}
+            manifest = BASE
+            for i in range(1, count):
+                files[f's{i}.vt'] = ('module tail;pub fn answer()->u32{return 42;}'
+                                     if i == count-1 else f'module extra{i};')
+                manifest += f'source s{i}.vt\n'
+            case(f'sources-{count}-last-entry', files, manifest, run_exit=42)
+            if count == 33 and baseline:
+                offset = manifest.index('source s32.vt')
+                case('source-33-old-capacity', files, manifest,
+                     error=f'actual=33 limit=32 I_LIMIT file=0 byte={offset}\n', driver=baseline)
+        tail = 'module tail;pub fn answer()->u32{return missing;}'
+        invalid = {**files, 's63.vt': tail}
+        case('source-64-diagnostic', invalid, manifest,
+             error=f'E_NAME file=64 byte={tail.index("missing")}\n')
+        # Complete assembly numbering and file-local label namespaces at 65..72.
+        files['s63.vt'] = 'module tail;extern abi(C) fn asm7()->u32;pub fn answer()->u32{unsafe{return asm7();}}'
+        for i in range(8):
+            files[f'a{i}.s0'] = f'asm{i}:\njump .Ldone\n.Ldone:\naddi x10, x0, 42\njalr x0, 0(x1)\n'
+            manifest += f'assembly a{i}.s0\n'
+        case('sources-64-assembly-8-last-call', files, manifest, run_exit=42)
+        invalid = {**files, 'a7.s0': 'invalid_opcode\n'}
+        case('assembly-72-diagnostic', invalid, manifest, error='I_UNSUPPORTED file=72 byte=0\n')
+        # Traverse all source-indexed semantic states, not just empty headers.
+        chain = {}
+        manifest = BASE.replace('source main.vt\n', '')
+        for i in range(64):
+            name = 'app' if i == 0 else f'm{i}'
+            body = f'import m{i+1};pub const N:u32=m{i+1}::N+1_u32;' if i < 63 else 'pub const N:u32=0;'
+            chain[f'm{i}.vt'] = f'module {name};' + body + ('fn run()->u32{return N;}' if i == 0 else '')
+            manifest += f'source m{i}.vt\n'
+        case('modules-64-chain', chain, manifest, run_exit=63)
+        cycle = {**chain, 'm63.vt': 'module m63;import app;pub const N:u32=0;'}
+        case('modules-64-cycle', cycle, manifest, error='E_NAME file=64')
+        shared = {'m0.vt': 'module app;fn run()->u32{return last();}'}
+        shared.update({f'm{i}.vt': 'module app;' for i in range(1, 63)})
+        shared['m63.vt'] = 'module app;fn last()->u32{return 42;}'
+        case('same-module-64-files', shared, manifest, run_exit=42)
         manifest = BASE + '#' + 'x' * (16384-len(BASE)-1)
         case('manifest-exact', manifest=manifest)
         case('manifest-over', manifest=manifest + 'x', error='I_LIMIT')

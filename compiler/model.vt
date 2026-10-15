@@ -343,7 +343,7 @@ pub struct Fixup {
     pub addend:usize
 }
 
-pub const SOURCE_CAP:u32 = 32;
+pub const SOURCE_CAP:u32 = 64;
 pub const ASSEMBLY_CAP:u32 = 8;
 pub const NAME_CAP:u32 = 8192;
 static mut names:[8193]Name = zero;

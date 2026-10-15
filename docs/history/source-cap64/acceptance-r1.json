@@ -1,0 +1,23 @@
+{
+  "node": "C64",
+  "revision": 1,
+  "decision": "accepted",
+  "reviewer": "/root",
+  "author": "/root/ram_fdt",
+  "compiler_sha256": "22d2c81fd0dbfc6de6b3b13fb2f485b1c64913849d9e59eeabe8c2757d27ebf4",
+  "records": {
+    "docs/history/source-cap64/candidate-r1.json": "edaf2e50a13a117788404e0b19280b2a1591d52abca200c1a1ed03cc94d82699",
+    "docs/history/source-cap64/independent-r1.py": "75760d4342f1a9e136b31b0499ce186e69ee1cdbbef38ad38ae482e183c7d8c0",
+    "build/source-cap64-root-review-r1/identity.json": "2274f1e0543f46115db9ad608c516858f8908ffe52c6ffce741f0cdf1e775395",
+    "build/source-cap64-root-review-r1/cost.json": "640306095b29deaf45c2faabd74cd74b544f523129d0dba4ad4ea068a495f33d",
+    "build/source-cap64-root-cases-r1/verification.json": "60bfb50f2e15763e6740c922309f48423964188ea5d827bb253f4cb7ec59f6a4",
+    "build/source-cap64-root-consumer-r1/verification.json": "d8bf904c032520b1cbbc3e4fe2d12213236cbdaa3d1827c1b7b6293dcfd20d48"
+  },
+  "independent_cases": 5,
+  "accepted_kernel_byte_identical": true,
+  "full_author_evidence_inventory_verified": 2987,
+  "limitations": [
+    "The independent reviewer checked complete bootstrap records and ELF identity but did not rerun the full chain.",
+    "No K3/K4 completion claim; the K2 consumer was an accepted frozen snapshot."
+  ]
+}

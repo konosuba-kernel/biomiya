@@ -16,7 +16,8 @@ static mut layout_origins:[8193]model::Span = zero;
 static mut layout_depth:u32 = 0;
 static mut fullnames:[8193]model::NameEntry = zero;
 static mut preparing:[8193]u32 = zero;
-static mut module_state:[33]u32 = zero;
+// SOURCE_CAP + 1 slots, matching input source identities including the sentinel.
+static mut module_state:[model::SOURCE_CAP as usize + 1_usize]u32 = zero;
 static mut prepare_depth:u32 = 0;
 static mut type_depth:u32 = 0;
 static mut constant_depth:u32 = 0;

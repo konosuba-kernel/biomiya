@@ -1,6 +1,6 @@
 # Core S S-next 0.1 使用参考
 
-文档修订 4，2026-10-14。ISA仍为RV64小端；编译器当前运行于Linux，可输出linux-user、suba-user、suba-boot、suba-kernel四种固定profile。本文绑定K0编译器SHA-256 `049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144`；构建、实测与独立验收状态见[K0记录](../../../suba/docs/workflows/k0/DELIVERY.md)。修订4增加有限目标/桥/S0机器操作，不改变核心语言语义。[修订3维护证据](../history/s-next/compiler/maintenance-2026-10-14.json)和[原发布证据](../history/s-next/compiler/release.json)保留。
+文档修订 5，2026-10-15。ISA仍为RV64小端；编译器运行于Linux，可输出linux-user、suba-user、suba-boot、suba-kernel四种固定profile。本修订的C64候选SHA-256为 `22d2c81fd0dbfc6de6b3b13fb2f485b1c64913849d9e59eeabe8c2757d27ebf4`，源文件上限64；独立验收状态见[C64交付记录](../history/source-cap64/report.md)。原K0编译器 `049c6e094ccd044fba3b5d357583013b77f0e8e9a98d431ad919e02b0cda2144` 及JSON登记的更早身份仍为32源文件，见[K0记录](../../../suba/docs/workflows/k0/DELIVERY.md)。修订5只增加源文件容量，不改变核心语言语义或其他容量。[修订3维护证据](../history/s-next/compiler/maintenance-2026-10-14.json)和[原发布证据](../history/s-next/compiler/release.json)保留。
 
 本页描述 `compiler/` 的输入语言。B3.1 是冻结的引导版本，两者不兼容；旧 Result、问号和块式 defer 不属于本版。Q 是今后的维护实现，`bootstrap/transition/`的 P 仅供一次性引导，Rust 种子不追踪本版语义。
 
@@ -35,7 +35,7 @@ qemu-riscv64 program.elf
 
 程序退出 42；Linux shell 的退出状态仅保留低 8 位。真实 RV64 Linux 可直接执行 ELF。编译器 CLI 是 `build|check MANIFEST [--blocking POLICY]`，没有 `--version`；版本依据完整 ELF SHA-256。统计前缀为 `S-next-0.1`。
 
-清单显式列出全部 `.vt` 与可选 `.s0` 输入；没有包搜索、隐式标准库、libc 或外部链接器。入口为普通安全函数，写完整模块名；用户profile无参数、返回u32，机器profile见下表。`format 1`、`profile`、`entry`、`output` 各一次，source 1–32个，assembly 0–8个；路径不得重复。
+清单显式列出全部 `.vt` 与可选 `.s0` 输入；没有包搜索、隐式标准库、libc 或外部链接器。入口为普通安全函数，写完整模块名；用户profile无参数、返回u32，机器profile见下表。`format 1`、`profile`、`entry`、`output` 各一次，source 1–64个（旧编译器身份为1–32个），assembly 0–8个；路径不得重复。
 
 路径相对**进程工作目录**。最长 96 字节；禁止绝对路径、空分量、`.`、`..`、反斜线、空白与控制字符。每条有效清单行恰好两个词；允许空行和整行 `#` 注释。输出父目录必须已经存在。
 
@@ -246,7 +246,9 @@ require app::run
 
 ## 11 限制与版本身份
 
-输入硬容量为清单 16 KiB、源码总量 4 MiB、汇编总量 1 MiB。当前主要容量：32 源文件、8 汇编文件、8192 名字/声明/具体类型、32768 字段/参数、每个结构最多 256 字段、每个枚举最多 256 标签；逐函数 32768 AST 节点、32768 语义槽、65536 IR 指令/标签/保存实参、256 形参、8192 局部绑定、1024 已登记清理、256 层循环。头部语法与当前函数共享 AST/类型语法容量，不是各有一份满额预算。
+本版按具体ELF身份区分容量：[身份清单](s-next-0.1.json)中的 `source_capacity_by_compiler` 精确对应各SHA-256。共同语言版本号不能替代这一容量身份；旧32文件编译器不会因参考更新而获得64文件支持。
+
+输入硬容量为清单 16 KiB、源码总量 4 MiB、汇编总量 1 MiB。C64候选主要容量：64 源文件（旧登记身份为32）、8 汇编文件、8192 名字/声明/具体类型、32768 字段/参数、每个结构最多 256 字段、每个枚举最多 256 标签；逐函数 32768 AST 节点、32768 语义槽、65536 IR 指令/标签/保存实参、256 形参、8192 局部绑定、1024 已登记清理、256 层循环。头部语法与当前函数共享 AST/类型语法容量，不是各有一份满额预算。
 
 AST 表达式深度、类型准备、布局/常量计算各有明确递归限制；容量超限报告 I_LIMIT。编译器自编译以 1 MiB guest 栈、64 MiB 映像/可写段为验收预算，不是承诺任意用户程序的递归或峰值 RSS。
 
