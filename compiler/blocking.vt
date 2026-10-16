@@ -157,12 +157,11 @@ pub fn load(path:[]const u8) -> bool {
         }
         var length:usize = 0;
         match host::read_file(path, core::slice_of_mut(policy_buffer)) {
-            host::CountResult::Value(n) => {
+            host::ReadResult::Value(n) => {
                 length = n;
             },
-            host::CountResult::Failed(error) => {
-                return invalid();
-            },
+            host::ReadResult::Failed(error) => { return invalid(); },
+            host::ReadResult::TooLarge => { return invalid(); },
         }
         if length > 16384_usize {
             return invalid();

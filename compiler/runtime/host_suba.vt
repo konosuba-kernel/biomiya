@@ -1,0 +1,161 @@
+// Compiler environment on suba. The compiler core and generated target are independent.
+// Selected in place of host_linux; target-profile rules remain in compiler/target.
+module runtime::host;
+import suba::abi;
+import suba::files;
+import libsuba::syscall;
+import libsuba::services;
+import libsuba::arguments;
+
+pub enum BytesResult { Value([]const u8), Failed(u32) }
+pub enum ReadResult { Value(usize), TooLarge, Failed(u32) }
+pub struct SaveError {
+    pub phase: []const u8,
+    pub errno: u32,
+    pub close_errno: u32,
+    pub cleanup_errno: u32,
+}
+pub enum SaveResult { Done, Failed(SaveError) }
+
+pub fn argc() -> usize { return arguments::count(); }
+
+pub fn argument(index: usize) -> BytesResult {
+    match arguments::argument(index) {
+        arguments::BytesResult::Invalid => { return BytesResult::Failed(abi::INVALID as u32); },
+        arguments::BytesResult::Value(value) => {
+            if value.len > 96_usize { return BytesResult::Failed(abi::LIMIT as u32); }
+            return BytesResult::Value(value);
+        },
+    }
+}
+
+unsafe fn path_valid(path: []const u8) -> bool {
+    if path.len == 0_usize || path.len > 96_usize { return false; }
+    // SAFETY: caller retains path until this synchronous check returns.
+    unsafe {
+        var i: usize = 0;
+        while i < path.len {
+            if path[i] == 0_u8 { return false; }
+            i = i + 1_usize;
+        }
+    }
+    return true;
+}
+
+unsafe fn read_buffer(handle: usize, buffer: []u8) -> ReadResult {
+    var used: usize = 0;
+    // SAFETY: caller exclusively owns buffer until return; kernel validates every view.
+    unsafe {
+        while used < buffer.len {
+            var count: usize = buffer.len - used;
+            if count > abi::IO_BYTES_MAX { count = abi::IO_BYTES_MAX; }
+            let reply: syscall::Reply = syscall::invoke(abi::SYS_FILE_READ_AT, handle, used,
+                core::addr(core::ptr_add(buffer.data, used)), count, 0, 0);
+            if reply.status != abi::OK { return ReadResult::Failed(reply.status as u32); }
+            if reply.value > count { return ReadResult::Failed(abi::IO as u32); }
+            if reply.value == 0_usize { return ReadResult::Value(used); }
+            used = used + reply.value;
+        }
+    }
+    // The caller deliberately supplied one extra byte; filling it is overflow.
+    return ReadResult::TooLarge;
+}
+
+// May block. Read a whole immutable source through one read lease, including an
+// extra overflow-detection byte. Failed reads may change the caller's buffer.
+pub unsafe fn read_file(path: []const u8, buffer: []u8) -> ReadResult {
+    unsafe {
+        if !path_valid(path) { return ReadResult::Failed(abi::INVALID as u32); }
+        let opened: syscall::Reply = syscall::invoke(abi::SYS_FILE_OPEN,
+            core::addr(path.data), path.len, files::READ, 0, 0, 0);
+        if opened.status != abi::OK { return ReadResult::Failed(opened.status as u32); }
+        let result: ReadResult = read_buffer(opened.value, buffer);
+        let closed: syscall::Reply = syscall::close(opened.value);
+        match result {
+            ReadResult::TooLarge => { return ReadResult::TooLarge; },
+            ReadResult::Failed(code) => { return ReadResult::Failed(code); },
+            ReadResult::Value(count) => {
+                if closed.status != abi::OK { return ReadResult::Failed(closed.status as u32); }
+                return ReadResult::Value(count);
+            },
+        }
+    }
+}
+
+unsafe fn write_all(handle: usize, data: []const u8) -> usize {
+    var used: usize = 0;
+    // SAFETY: data remains readable; no pointer is retained between synchronous calls.
+    unsafe {
+        while used < data.len {
+            var count: usize = data.len - used;
+            if count > abi::IO_BYTES_MAX { count = abi::IO_BYTES_MAX; }
+            let reply: syscall::Reply = syscall::invoke(abi::SYS_FILE_WRITE_AT, handle, used,
+                core::addr(core::ptr_add(data.data, used)), count, 0, 0);
+            if reply.status != abi::OK { return reply.status; }
+            if reply.value == 0_usize || reply.value > count { return abi::IO; }
+            used = used + reply.value;
+        }
+    }
+    return abi::OK;
+}
+
+// May block. Exclusive transient creation, complete write, FLUSH + seal, close.
+// A killed compiler leaves an unsealed inode for kernel-owned cleanup. Successful
+// seal is still not build publication: the Job owner validates and copies output.
+// Caller owns pathname against concurrent replacement until return.
+pub unsafe fn save_new(path: []const u8, data: []const u8) -> SaveResult {
+    var failure: SaveError = make SaveError {
+        phase: "create", errno: 0, close_errno: 0, cleanup_errno: 0
+    };
+    unsafe {
+        if !path_valid(path) || data.len > abi::FS_FILE_BYTES_MAX {
+            failure.errno = abi::INVALID as u32;
+            return SaveResult::Failed(failure);
+        }
+        let opened: syscall::Reply = syscall::invoke(abi::SYS_FILE_OPEN,
+            core::addr(path.data), path.len, files::WRITE | files::CREATE_NEW | files::TRANSIENT, 0, 0, 0);
+        if opened.status != abi::OK {
+            failure.errno = opened.status as u32;
+            return SaveResult::Failed(failure);
+        }
+        failure.phase = "write";
+        failure.errno = write_all(opened.value, data) as u32;
+        if failure.errno == 0_u32 {
+            failure.phase = "sync";
+            let synced: syscall::Reply = syscall::invoke(abi::SYS_FILE_SYNC, opened.value, files::SEAL, 0, 0, 0, 0);
+            failure.errno = synced.status as u32;
+        }
+        let closed: syscall::Reply = syscall::close(opened.value);
+        failure.close_errno = closed.status as u32;
+        if failure.errno == 0_u32 {
+            failure.phase = "close";
+            failure.errno = failure.close_errno;
+        }
+        if failure.errno == 0_u32 { return SaveResult::Done; }
+        let removed: syscall::Reply = syscall::invoke(abi::SYS_UNLINK, core::addr(path.data), path.len, 0, 0, 0, 0);
+        failure.cleanup_errno = removed.status as u32;
+        return SaveResult::Failed(failure);
+    }
+}
+
+// Best-effort sink: preserve the compiler's primary error if stderr is closed.
+pub unsafe fn diagnostic(text: []const u8) -> () {
+    var used: usize = 0;
+    let handle: usize = arguments::output(true);
+    unsafe {
+        while used < text.len {
+            var count: usize = text.len - used;
+            if count > abi::IO_BYTES_MAX { count = abi::IO_BYTES_MAX; }
+            let part: []const u8 = core::slice_from_raw_parts(core::ptr_add(text.data, used), count);
+            let reply: syscall::Reply = services::write(handle, part, false);
+            if reply.status != abi::OK || reply.value == 0_usize || reply.value > count { return (); }
+            used = used + reply.value;
+        }
+    }
+    return ();
+}
+
+pub fn exit(status: u32) -> () {
+    syscall::exit(status);
+    return ();
+}

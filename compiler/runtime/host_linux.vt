@@ -5,7 +5,7 @@ module runtime::host;
 import runtime::linux;
 
 pub enum BytesResult { Value([]const u8), Failed(u32) }
-pub enum CountResult { Value(usize), Failed(u32) }
+pub enum ReadResult { Value(usize), TooLarge, Failed(u32) }
 pub struct SaveError {
     pub phase: []const u8,
     pub errno: u32,
@@ -32,11 +32,15 @@ pub fn argument(index: usize) -> BytesResult {
 // exclusively writable until return. No borrowed pointer survives the operation.
 // The buffer includes one extra byte: contents >= buffer.len are rejected.
 // Empty, >96-byte and NUL-bearing paths fail. A failure may modify buffer.
-pub unsafe fn read_file(path: []const u8, buffer: []u8) -> CountResult {
+pub unsafe fn read_file(path: []const u8, buffer: []u8) -> ReadResult {
     unsafe {
         match linux::read_file(path, buffer) {
-            linux::CountResult::Value(count) => { return CountResult::Value(count); },
-            linux::CountResult::Failed(code) => { return CountResult::Failed(code); },
+            linux::CountResult::Value(count) => { return ReadResult::Value(count); },
+            linux::CountResult::Failed(code) => {
+                // Linux adapter's private read-buffer sentinel never escapes this boundary.
+                if code == 17_u32 { return ReadResult::TooLarge; }
+                return ReadResult::Failed(code);
+            },
         }
     }
 }

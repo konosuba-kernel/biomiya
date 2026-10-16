@@ -151,13 +151,14 @@ static mut assembly_buffer:[1048577]u8 = zero;
 fn read(path:[]const u8, buffer:[]u8, file:u32, used:usize, capacity:usize) -> usize {
     unsafe {
         match host::read_file(path, buffer) {
-            host::CountResult::Value(n) => {
+            host::ReadResult::Value(n) => {
                 return n;
             },
-            host::CountResult::Failed(e) => {
-                if e == 17_u32 {
-                    model::limit_at(used+buffer.len, capacity, file, buffer.len-1_usize);
-                }
+            host::ReadResult::TooLarge => {
+                model::limit_at(used+buffer.len, capacity, file, buffer.len-1_usize);
+                return 0;
+            },
+            host::ReadResult::Failed(e) => {
                 model::fail(model::ERROR_IO, file, 0);
                 return 0;
             },
